@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;700&family=Roboto:wght@400;500;700&display=swap");
 :root {
   --primary: #fff;
   --secondary: #242325;
@@ -26,16 +26,17 @@ html,
 body {
   width: 100vw;
   height: 100vh;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden;
   min-height: fit-content;
   margin: 0;
   box-sizing: border-box;
 }
 html {
-  overflow: hidden;
-  width: 100vw;
-  height: 100vh;
+  overflow-y: scroll;
+}
+body {
+  overflow-y: hidden;
+  height: fit-content;
 }
 /* HEADER */
 header {
@@ -47,6 +48,10 @@ header,
 #nav-top-actions nav {
   display: inline-flex;
   align-items: center;
+}
+#page-logo {
+  height: 50px;
+  width: 50px;
 }
 h1 {
   font-family: "Poppins", "Inter", sans-serif;
@@ -149,6 +154,7 @@ main {
   /* min-height: 100vh; */
   height: 100vh;
   min-height: fit-content;
+  flex-shrink: 0;
 }
 main {
   display: flex;
@@ -201,12 +207,76 @@ main > * {
     max-width: 100%;
   }
 }
-@media (max-width: 500px) {
+@media (max-width: 600px) {
   #padded-content {
     padding: 10px 20px;
   }
   main {
     height: fit-content;
+  }
+  #page-logo {
+    display: block !important;
+    margin-right: 10px;
+  }
+  #nav-auth-action {
+    display: none;
+  }
+  h1 {
+    font-size: 26px;
+    font-family: "Montserrat", "Poppins", sans-serif;
+  }
+}
+@media (max-width: 500px) {
+  main #main-content h2 {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 700;
+    font-size: 37px;
+    text-align: center;
+    line-height: 45px;
+  }
+  h4 {
+    display: none;
+  }
+  main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 100px;
+  }
+  #main-content,
+  #right-box {
+    flex-grow: 0;
+  }
+  #right-box {
+    width: 70%;
+    height: auto;
+    object-fit: contain;
+    object-position: center;
+    display: flex;
+  }
+  #accent-img,
+  #accent-img * {
+    width: 100% !important;
+    transform-origin: center !important;
+  }
+  #padded-content {
+    padding: 30px;
+  }
+  #main-page-action {
+    --button-padding: 30px;
+    position: absolute;
+    bottom: var(--button-padding);
+    left: var(--button-padding);
+    width: calc(100% - (var(--button-padding) * 2));
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+    font-family: "Roboto", sans-serif;
+    font-size: 20px;
+    font-weight: 500;
   }
 }
 #accent-img {
