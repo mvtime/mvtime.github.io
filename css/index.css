@@ -11,7 +11,7 @@
 }
 * {
   box-sizing: inherit;
-  margin: inherit;
+  /* margin: inherit; */
 }
 body {
   background-color: var(--primary);
@@ -53,6 +53,8 @@ h1 {
   font-size: 34px;
   font-weight: 600;
   white-space: nowrap;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 header {
   display: flex;
@@ -144,7 +146,9 @@ main {
   flex-grow: 1;
   display: flex;
   flex-flow: column;
-  min-height: 100vh;
+  /* min-height: 100vh; */
+  height: 100vh;
+  min-height: fit-content;
 }
 main {
   display: flex;
@@ -160,6 +164,7 @@ main > * {
   width: 575px;
   line-height: 71px;
   margin-bottom: 30px;
+  margin-top: 0px;
 }
 #main-content > h4 {
   margin-bottom: 20px;
@@ -175,6 +180,7 @@ main > * {
   justify-content: center;
   align-items: center;
   position: relative;
+  max-height: calc(100vh - (40px + 70px));
 }
 @media (max-width: 1000px) {
   #right-box {
@@ -188,16 +194,16 @@ main > * {
   #page-links {
     display: none !important;
   }
-}
-@media (max-width: 500px) {
   #main-content {
     max-width: 100%;
   }
-  #padded-content {
-    padding: 10px 20px;
-  }
   #main-content * {
     max-width: 100%;
+  }
+}
+@media (max-width: 500px) {
+  #padded-content {
+    padding: 10px 20px;
   }
   main {
     height: fit-content;
