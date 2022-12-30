@@ -22,6 +22,7 @@ body {
   margin: 0;
   justify-content: stretch;
 }
+
 html,
 body {
   width: 100vw;
@@ -33,6 +34,7 @@ body {
 }
 html {
   overflow-y: scroll;
+  /* height: 100%; */
 }
 body {
   overflow-y: overlay;
