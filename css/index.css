@@ -35,7 +35,7 @@ html {
   overflow-y: scroll;
 }
 body {
-  overflow-y: hidden;
+  overflow-y: overlay;
   height: fit-content;
 }
 /* HEADER */
@@ -143,7 +143,7 @@ body {
 }
 main {
   flex-grow: 1;
-  margin: 20px 0;
+  padding: 20px 0;
 }
 #padded-content {
   padding: 70px 90px;
@@ -151,10 +151,9 @@ main {
   flex-grow: 1;
   display: flex;
   flex-flow: column;
-  /* min-height: 100vh; */
-  height: 100vh;
-  min-height: fit-content;
+  min-height: 100vh;
   flex-shrink: 0;
+  height: fit-content;
 }
 main {
   display: flex;
@@ -181,6 +180,8 @@ main > * {
 }
 /* ACCENT IMG */
 #right-box {
+  width: 100px;
+  flex-grow: 1;
   height: fit-content;
   display: flex;
   justify-content: center;
@@ -188,7 +189,7 @@ main > * {
   position: relative;
   max-height: calc(100vh - (40px + 70px));
 }
-@media (max-width: 1000px) {
+@media (max-width: 950px) {
   #right-box {
     display: none;
   }
@@ -207,7 +208,7 @@ main > * {
     max-width: 100%;
   }
 }
-@media (max-width: 600px) {
+@media (max-width: 550px) {
   #padded-content {
     padding: 10px 20px;
   }
@@ -242,7 +243,7 @@ main > * {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding-bottom: 100px;
+    /* padding-bottom: 100px; */
   }
   #main-content,
   #right-box {
@@ -279,13 +280,26 @@ main > * {
     font-weight: 500;
   }
 }
+@media (max-width: 500px) and (min-height: 500px) {
+  main {
+    margin-top: -50px;
+  }
+}
+@media (max-width: 500px) and (min-height: 600px) {
+  main {
+    margin-top: -100px;
+  }
+}
 #accent-img {
-  height: auto;
+  height: 100%;
   width: 100%;
   z-index: -1;
   display: flex;
   justify-content: center;
   align-items: center;
+  /* overflow: hidden; */
+  object-fit: contain;
+  object-position: center;
 }
 #accent-img * {
   width: 100%;
@@ -293,7 +307,9 @@ main > * {
   max-height: 400px;
   height: auto;
   transform-origin: left center;
-  transform: rotate(-8.67deg);
+  transform: rotate(-8.67deg) /* scale(calc(100vh / 60vw)) */;
+  object-fit: contain;
+  object-position: center;
 }
 #padded-content {
   padding-bottom: 0;
