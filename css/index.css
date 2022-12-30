@@ -183,7 +183,7 @@ main > * {
 /* ACCENT IMG */
 #right-box {
   width: 100px;
-  flex-grow: 1;
+  flex-grow: 4;
   height: fit-content;
   display: flex;
   justify-content: center;
@@ -257,6 +257,7 @@ main > * {
     object-fit: contain;
     object-position: center;
     display: flex;
+    flex-grow: 0;
   }
   #accent-img,
   #accent-img * {
