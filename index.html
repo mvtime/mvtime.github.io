@@ -4,9 +4,21 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MVHS Test Tracker - Sign In</title>
+    <title>MVHS Test Tracker - Get Started</title>
     <link rel="shortcut icon" href="img/favicon-50.png" type="image/png" />
     <link rel="stylesheet" href="css/index.css" />
+    <style>
+      @media (max-width: 500px) and (min-height: 500px) {
+        main {
+          margin-top: -50px;
+        }
+      }
+      @media (max-width: 500px) and (min-height: 600px) {
+        main {
+          margin-top: -100px;
+        }
+      }
+    </style>
   </head>
   <body>
     <div id="padded-content">
@@ -20,7 +32,7 @@
             <a href="contact.html">Contact</a>
           </nav>
           <nav id="user-actions">
-            <a id="nav-auth-action" auth-role="signin" href="sign-in.html">Sign In</a>
+            <a id="nav-auth-action" auth-role="signin" href="login.html">Log In</a>
           </nav>
         </div>
       </header>
@@ -28,7 +40,7 @@
         <div id="main-content">
           <h2>Organize. Plan. Study.</h2>
           <h4>Test tracker provides an effective way to manage upcoming exams.</h4>
-          <a id="main-page-action" auth-role="signin" href="sign-in.html">Sign In</a>
+          <a id="main-page-action" auth-role="signin" href="sign-up.html">Sign up</a>
         </div>
         <div id="right-box">
           <picture id="accent-img">
