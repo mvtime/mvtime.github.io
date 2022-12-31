@@ -312,7 +312,7 @@ main > * {
 }
 @keyframes accent-in {
   0% {
-    transform: rotate(0) scale(0);
+    transform: rotate(0) scale(0.5);
     opacity: 0;
   }
   100% {
