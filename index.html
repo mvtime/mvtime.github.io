@@ -1,66 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MVHS Test Tracker - Get Started</title>
-    <link rel="shortcut icon" href="img/favicon-50.png" type="image/png" />
-    <link rel="stylesheet" href="css/index.css" />
-    <style>
-      @media (max-width: 500px) and (min-height: 500px) {
-        main {
-          margin-top: -50px;
-        }
-      }
-      @media (max-width: 500px) and (min-height: 600px) {
-        main {
-          margin-top: -100px;
-        }
-      }
-    </style>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vite App</title>
   </head>
   <body>
-    <div id="padded-content">
-      <header>
-        <img style="display: none" id="page-logo" src="img/favicon-64.png" alt="MV Test Tracker Icon" />
-        <h1>MV Test Tracker</h1>
-        <div id="nav-top-actions">
-          <nav id="page-links">
-            <a href="index.html">Home</a>
-            <a href="about.html">About</a>
-            <a href="contact.html">Contact</a>
-          </nav>
-          <nav id="user-actions">
-            <a id="nav-auth-action" auth-role="signin" href="login.html">Log In</a>
-          </nav>
-        </div>
-      </header>
-      <main>
-        <div id="main-content">
-          <h2>Organize. Plan. Study.</h2>
-          <h4>Test tracker provides an effective way to manage upcoming exams.</h4>
-          <a id="main-page-action" auth-role="signin" href="sign-up.html">Sign up</a>
-        </div>
-        <div id="right-box">
-          <picture id="accent-img">
-            <!-- <source media="(min-width:1500px)" srcset="img/award-1000x1000.png" />
-            <source media="(min-width:750px)" srcset="img/award-500x500.png" /> -->
-            <img src="img/award-1000x1000.png" alt="Artwork - Man Carrying Award" />
-          </picture>
-        </div>
-      </main>
-    </div>
-    <footer>
-      <p>&copy; 2022-2023 MVHS Test Tracker. Website by <a href="https://sander.vonk.one/Projects/">Sander Vonk</a></p>
-    </footer>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
   </body>
-  <script>
-    window.addEventListener("load", function () {
-      setTimeout(function () {
-        // This hides the address bar:
-        window.scrollTo(0, 1);
-      }, 5000);
-    });
-  </script>
 </html>
