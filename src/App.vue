@@ -9,15 +9,15 @@
 </template>
 
 <script>
-import BaseNav from '@/components/BaseNav.vue'
-import BaseFooter from '@/components/BaseFooter.vue'
+import BaseNav from "@/components/BaseNav.vue";
+import BaseFooter from "@/components/BaseFooter.vue";
 export default {
-  name: 'App',
+  name: "App",
   components: {
     BaseNav,
-    BaseFooter
-  }
-}
+    BaseFooter,
+  },
+};
 </script>
 
 <style>
