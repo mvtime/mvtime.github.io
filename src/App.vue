@@ -1,4 +1,4 @@
-<template></template>
+<template>Hello</template>
 
 <script>
 export default {}
