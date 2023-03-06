@@ -1,0 +1,63 @@
+/* import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;700&family=Roboto:wght@400;500;700&display=swap');
+
+/* general vars */
+:root {
+  --footer-height: 36px;
+  --nav-spacing: 0.5rem;
+}
+
+/* light theme colors for the project */
+:root {
+  /* colors */
+  --color-bg: #ffffff;
+  --color-primary: #242325;
+  --color-on-primary: #ffffff;
+  --color-text: #000;
+  --color-accent: #000;
+  --color-footer: #ddd;
+  --color-footer-text: #222;
+}
+
+/* dark theme alternatives */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /*! dark color scheme */
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  position: relative;
+  font-weight: normal;
+}
+html,
+body {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+body {
+  font-family: 'Inter', 'Poppins', 'Open Sans', sans-serif;
+  min-height: 100vh;
+  color: var(--color-text);
+  background: var(--color-bg);
+  font-size: 16px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+a[href],
+input,
+textarea,
+select,
+.router-link-exact-active {
+  cursor: pointer;
+}
