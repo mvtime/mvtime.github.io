@@ -1,3 +1,4 @@
+import { placeholderToast } from '@/util/util'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 
@@ -12,3 +13,10 @@ app.use(createPinia())
 app.use(router)
 
 app.mount('#app')
+
+// import jquery
+import $ from 'jquery'
+//! placeholder
+$(document.body).on('click', '.auth-action', (e) => {
+  placeholderToast()
+})
