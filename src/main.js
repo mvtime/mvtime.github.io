@@ -11,6 +11,6 @@ import "./assets/main.css";
 // import jquery
 import $ from "jquery";
 //! placeholder
-$(document.body).on("click", ".auth-action", (e) => {
+$(document.body).on("click", ".auth-action", function () {
   placeholderToast();
 });
