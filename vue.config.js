@@ -1,4 +1,19 @@
-const { defineConfig } = require('@vue/cli-service')
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+
+const { defineConfig } = require("@vue/cli-service");
+
 module.exports = defineConfig({
-  transpileDependencies: true
-})
+  configureWebpack: {
+    plugins: [
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: "public/index.html",
+            to: "404.html",
+          },
+        ],
+      }),
+    ],
+  },
+  transpileDependencies: true,
+});
