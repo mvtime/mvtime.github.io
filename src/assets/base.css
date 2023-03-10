@@ -1,5 +1,5 @@
 /* import fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;700&family=Roboto:wght@400;500;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Montserrat:wght@400;700&family=Roboto:wght@400;500;700&display=swap");
 
 /* general vars */
 :root {
@@ -23,6 +23,13 @@
 @media (prefers-color-scheme: dark) {
   :root {
     /*! dark color scheme */
+    --color-bg: #242325;
+    --color-primary: #ffffff;
+    --color-on-primary: #242325;
+    --color-text: #fff;
+    --color-accent: #fff;
+    --color-footer: #222;
+    --color-footer-text: #ddd;
   }
 }
 
@@ -43,7 +50,7 @@ body {
   overflow: hidden;
 }
 body {
-  font-family: 'Inter', 'Poppins', 'Open Sans', sans-serif;
+  font-family: "Inter", "Poppins", "Open Sans", sans-serif;
   min-height: 100vh;
   color: var(--color-text);
   background: var(--color-bg);
