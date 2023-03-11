@@ -66,6 +66,7 @@ button {
 }
 .toast-icon {
   height: 25px;
+  width: 25px;
   align-self: center;
   margin-right: 15px;
 }
