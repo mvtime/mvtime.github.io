@@ -27,6 +27,16 @@ export default {
   display: flex;
   flex-flow: column nowrap;
 }
+@media (max-width: 1000px) {
+  .base {
+    padding: 50px 60px;
+  }
+}
+@media (max-width: 500px) {
+  .base {
+    padding: 40px 40px;
+  }
+}
 .inner-base {
   padding: 20px 0;
   flex-grow: 1;

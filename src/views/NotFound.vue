@@ -1,7 +1,7 @@
 <template>
   <div class="not-found">
     <h1>404</h1>
-    <h2>Page Not Found</h2>
+    <h2 class="hideoverflow">Page Not Found</h2>
     <hr class="err-break" />
     <nav>
       <router-link class="router-link" to="/">Home</router-link>

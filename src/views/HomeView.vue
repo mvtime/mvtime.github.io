@@ -18,6 +18,9 @@
   justify-content: stretch;
   align-items: center;
   height: 100%;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
 }
 #home-main > * {
   max-width: 600px;

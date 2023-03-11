@@ -45,6 +45,13 @@ h4 {
   font-weight: 500;
 }
 
+/* text */
+.hideoverflow {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
 /* buttons */
 .action-btn {
   font-size: 24px;
@@ -57,7 +64,7 @@ h4 {
 }
 .small-action-btn {
   padding: 7px 10px;
-  padding-left: 40px;
+  padding-left: 2.22em;
   background-color: var(--color-theme);
   border-radius: 10px;
   font-weight: 700;
@@ -67,6 +74,6 @@ h4 {
   background-image: url(@/assets/img/general/user-icon.png);
   background-repeat: no-repeat;
   background-position: 7px center;
-  background-size: 26px;
+  background-size: 1.44em;
   margin-right: 0px;
 }

@@ -21,6 +21,8 @@ import { removePopup } from "@/util/util";
 router.afterEach((to) => {
   if (to.meta && to.meta.page_title) {
     document.title = "MV Test Tracker | " + to.meta.page_title;
+  } else {
+    document.title = "MV Test Tracker";
   }
   if (to.meta && to.meta.theme_color && to.meta.theme_color.light && to.meta.theme_color.dark) {
     $("meta.theme-color").attr("content", to.meta.theme_color.light);
