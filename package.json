@@ -11,6 +11,7 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@svonk/util": "^0.0.1",
     "core-js": "^3.8.3",
     "jquery": "^3.6.4",
     "vue": "^3.2.13",

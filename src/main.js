@@ -1,7 +1,7 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
-import { placeholderToast } from "@/util/util";
+import { placeholderToast } from "@svonk/util";
 
 createApp(App).use(router).mount("#app");
 
@@ -17,7 +17,7 @@ $(document.body).on("click", ".auth-action", function () {
 
 // page change
 
-import { removePopup } from "@/util/util";
+import { removePopup } from "@svonk/util";
 router.afterEach((to) => {
   if (to.meta && to.meta.page_title) {
     document.title = "MV Test Tracker | " + to.meta.page_title;
