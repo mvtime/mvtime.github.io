@@ -28,4 +28,12 @@
 .home .middle-text {
   margin: 25px 0;
 }
+@media (max-width: 450px) {
+  .home .action-btn {
+    position: absolute;
+    bottom: 40px;
+    right: 40px;
+    width: calc(100% - 80px);
+  }
+}
 </style>

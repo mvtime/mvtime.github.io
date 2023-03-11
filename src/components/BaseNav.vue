@@ -119,6 +119,7 @@ header nav a {
   }
   header {
     flex-flow: row nowrap;
+    position: relative;
   }
   header .flex-spacer {
     flex-grow: 0;
