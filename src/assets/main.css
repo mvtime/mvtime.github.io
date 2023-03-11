@@ -62,6 +62,24 @@ h4 {
   border-radius: 10px;
   border: none;
 }
+.click-action-inline {
+  display: inline-block;
+}
+.click-action
+/* ,.click-action-inline  */ {
+  cursor: pointer;
+  transform: scale(1);
+  transition: transform 0.3s ease-out;
+  transform-origin: center;
+}
+.click-action:hover
+/* ,.click-action-inline:hover  */ {
+  transform: scale(1.05);
+}
+.click-action:active
+/* ,.click-action-inline:active */ {
+  transform: scale(0.95);
+}
 .small-action-btn {
   padding: 7px 10px;
   padding-left: 2.22em;

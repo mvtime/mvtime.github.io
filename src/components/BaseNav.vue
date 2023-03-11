@@ -15,12 +15,14 @@
       ></button>
       <nav class="base-pages-nav">
         <!-- show only if not on that page -->
-        <router-link to="/" @click="mobile_menu_open = false">Home</router-link>
-        <router-link to="/about" @click="mobile_menu_open = false">About</router-link>
-        <router-link to="/contact" @click="mobile_menu_open = false">Contact</router-link>
+        <router-link class="click-action-inline" to="/" @click="closeMenu">Home</router-link>
+        <router-link class="click-action-inline" to="/about" @click="closeMenu">About</router-link>
+        <router-link class="click-action-inline" to="/contact" @click="closeMenu"
+          >Contact</router-link
+        >
       </nav>
       <span class="flex-spacer"></span>
-      <button id="nav-auth-btn" class="small-action-btn auth-action">Log In</button>
+      <button id="nav-auth-btn" class="small-action-btn auth-action click-action">Log In</button>
     </div>
   </header>
 </template>
@@ -37,7 +39,10 @@ export default {
   methods: {
     resize() {
       this.mobile = window.innerWidth <= 800;
-      if (!this.mobile) this.mobile_menu_open = false;
+      if (!this.mobile) this.c();
+    },
+    closeMenu() {
+      this.mobile_menu_open = false;
     },
   },
   mounted() {

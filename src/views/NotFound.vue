@@ -4,11 +4,11 @@
     <h2 class="hideoverflow">Page Not Found</h2>
     <hr class="err-break" />
     <nav>
-      <router-link class="router-link" to="/">Home</router-link>
+      <router-link class="router-link click-action-inline" to="/">Home</router-link>
       <span>&nbsp;|&nbsp;</span>
-      <router-link class="router-link" to="/about">About</router-link>
+      <router-link class="router-link click-action-inline" to="/about">About</router-link>
       <span>&nbsp;|&nbsp;</span>
-      <router-link class="router-link" to="/contact">Contact</router-link>
+      <router-link class="router-link click-action-inline" to="/contact">Contact</router-link>
     </nav>
 
     <div class="err-pad-bottom"></div>

@@ -3,9 +3,9 @@
     <div id="home-main">
       <h2>Organize. Plan. Study.</h2>
       <h4 class="middle-text">Test tracker provides an effective way to manage upcoming exams.</h4>
-      <button class="action-btn auth-action">Sign up</button>
+      <button class="action-btn auth-action click-action">Sign up</button>
     </div>
-    <div id="home-art"></div>
+    <div id="home-art" style="display: none"></div>
   </main>
 </template>
 
@@ -28,7 +28,7 @@
 .home .middle-text {
   margin: 25px 0;
 }
-@media (max-width: 450px) {
+@media (max-width: 450px) and (max-height: 900px) {
   .home .action-btn {
     position: absolute;
     bottom: 40px;
