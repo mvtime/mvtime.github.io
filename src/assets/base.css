@@ -17,19 +17,28 @@
   --color-accent: #000;
   --color-footer: #ddd;
   --color-footer-text: #222;
+  --color-link: #45818e;
+  --color-theme: #f5c14b;
+  --color-theme-accent: #000;
+  --color-theme-accent-border: #4c4c4c;
+  --color-on-action: #fff;
+  --color-action: #242325;
 }
 
 /* dark theme alternatives */
 @media (prefers-color-scheme: dark) {
   :root {
     /*! dark color scheme */
-    --color-bg: #242325;
+    --color-bg: #16130d;
     --color-primary: #ffffff;
     --color-on-primary: #242325;
     --color-text: #fff;
     --color-accent: #fff;
-    --color-footer: #222;
+    --color-footer: #3a3a3a;
     --color-footer-text: #ddd;
+    --color-link: #178ca7;
+    --color-action: #f5c14b;
+    --color-on-action: #000;
   }
 }
 
@@ -67,4 +76,11 @@ textarea,
 select,
 .router-link-exact-active {
   cursor: pointer;
+}
+
+a[href],
+.router-link-exact-active {
+  color: var(--color-link);
+  text-decoration: none;
+  font-weight: 600;
 }

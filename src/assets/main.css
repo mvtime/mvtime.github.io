@@ -1,4 +1,4 @@
-@import './base.css';
+@import "./base.css";
 
 #app {
   /*! set max width */
@@ -28,7 +28,7 @@
 
 /* headings */
 h1 {
-  font-family: 'Poppins', 'Inter', sans-serif;
+  font-family: "Poppins", "Inter", sans-serif;
   font-size: 34px;
   font-weight: 600;
   margin-top: 0;
@@ -49,20 +49,20 @@ h4 {
 .action-btn {
   font-size: 24px;
   font-weight: 700;
-  color: var(--color-on-primary);
-  background-color: var(--color-primary);
+  color: var(--color-on-action);
+  background-color: var(--color-action);
   padding: 16px 75px;
   border-radius: 10px;
 }
 .small-action-btn {
   padding: 7px 10px;
   padding-left: 40px;
-  background-color: #f5c14b;
+  background-color: var(--color-theme);
   border-radius: 10px;
   font-weight: 700;
   font-size: 18px;
-  color: #000;
-  border: solid 2px #000;
+  color: var(--color-theme-accent);
+  border: solid 2px var(--color-theme-accent-border);
   background-image: url(@/assets/img/general/user-icon.png);
   background-repeat: no-repeat;
   background-position: 7px center;
