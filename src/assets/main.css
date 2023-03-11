@@ -53,6 +53,7 @@ h4 {
   background-color: var(--color-action);
   padding: 16px 75px;
   border-radius: 10px;
+  border: none;
 }
 .small-action-btn {
   padding: 7px 10px;

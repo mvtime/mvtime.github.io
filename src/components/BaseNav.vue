@@ -4,6 +4,7 @@
     <span class="flex-spacer"></span>
     <div class="nav-actions">
       <nav class="base-pages-nav">
+        <!-- show only if not on that page -->
         <router-link to="/">Home</router-link>
         <router-link to="/about">About</router-link>
         <router-link to="/contact">Contact</router-link>
@@ -14,7 +15,7 @@
 </template>
 
 <script>
-export default {}
+export default {};
 </script>
 
 <style scoped>
@@ -39,5 +40,9 @@ header nav a {
 }
 #nav-auth-btn {
   margin-left: var(--nav-spacing);
+}
+.base-pages-nav > .router-link-exact-active {
+  /* opacity: 0.75; */
+  box-shadow: inset 0 -2px 0 var(--color-theme);
 }
 </style>
