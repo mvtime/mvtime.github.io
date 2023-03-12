@@ -1,0 +1,2 @@
+"use strict";(self["webpackChunkmvtime"]=self["webpackChunkmvtime"]||[]).push([[576],{7576:function(n,e,r){r.r(e),r.d(e,{default:function(){return o}});var t=r(3396);const a={class:"portal"};function s(n,e,r,s,u,c){const i=(0,t.up)("router-view");return(0,t.wg)(),(0,t.iD)("main",a,[(0,t.Wm)(i,{class:"inner-base"})])}var u={name:"AppPortal"},c=r(89);const i=(0,c.Z)(u,[["render",s]]);var o=i}}]);
+//# sourceMappingURL=576.5547c112.js.map

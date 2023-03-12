@@ -1,0 +1,2 @@
+"use strict";(self["webpackChunkmvtime"]=self["webpackChunkmvtime"]||[]).push([[486],{1486:function(n,t,e){e.r(t),e.d(t,{default:function(){return o}});var u=e(3396);const r={class:"about"};function a(n,t,e,a,c,s){return(0,u.wg)(),(0,u.iD)("main",r,"About")}var c={},s=e(89);const i=(0,s.Z)(c,[["render",a]]);var o=i}}]);
+//# sourceMappingURL=486.b6ebfd4f.js.map
