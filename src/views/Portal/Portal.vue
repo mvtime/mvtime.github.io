@@ -1,7 +1,13 @@
 <template>
   <main class="portal">
     <LeftBar ref="LeftBar" @close_right_bar="close_right_bar" />
-    <div class="portal_content">
+    <div
+      class="portal_content"
+      @click="
+        close_right_bar();
+        close_left_bar();
+      "
+    >
       <header class="portal_info">
         <div class="portal_info_title">
           <span class="portal_info_usertype"
