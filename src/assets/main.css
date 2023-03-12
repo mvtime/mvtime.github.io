@@ -103,3 +103,9 @@ h4 {
     max-width: unset;
   }
 }
+/* for page sizing */
+.center-1000 {
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+}

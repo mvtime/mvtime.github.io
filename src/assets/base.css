@@ -62,7 +62,7 @@
   box-sizing: border-box;
   margin: 0;
   position: unset;
-  font-weight: normal;
+  /* font-weight: normal; */
 }
 html,
 body {

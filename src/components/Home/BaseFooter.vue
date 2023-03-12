@@ -28,6 +28,7 @@ footer p {
   flex-flow: row nowrap;
   align-items: center;
   justify-content: center;
+  height: 100%;
 }
 p > span {
   flex-grow: 1;

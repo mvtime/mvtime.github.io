@@ -32,19 +32,19 @@ const router = createRouter({
             requiresAuth: false,
           },
         },
-        // {
-        //   path: "about",
-        //   name: "about",
-        //   component: () => import("../views/Home/AboutView.vue"),
-        //   meta: {
-        //     page_title: "About",
-        //     theme_color: {
-        //       light: "#ffffff",
-        //       dark: "#16130e",
-        //     },
-        //     requiresAuth: false,
-        //   },
-        // },
+        {
+          path: "about",
+          name: "about",
+          component: () => import("../views/Home/AboutView.vue"),
+          meta: {
+            page_title: "About",
+            theme_color: {
+              light: "#ffffff",
+              dark: "#16130e",
+            },
+            requiresAuth: false,
+          },
+        },
         // {
         //   path: "contact",
         //   name: "contact",
