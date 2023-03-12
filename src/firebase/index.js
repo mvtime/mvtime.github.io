@@ -3,7 +3,7 @@
 // import firebase
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, onSnapshot, doc } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 
 // firebase config
@@ -31,12 +31,14 @@ import { useMainStore } from "../store";
 auth.onAuthStateChanged((user) => {
   const store = useMainStore();
   if (user) {
-    store.user = {
-      id: user.uid,
-      name: user.displayName,
-      email: user.email,
-    };
+    store.set_user(user);
+    // setup onSnapshot listener for user data
+    onSnapshot(doc(db, "users", user.uid), { includeMetadataChanges: true }, (doc) => {
+      console.warn("remote data updated");
+      store.doc = doc.data();
+    });
+    // rewrite the above with firebase 9 functions
   } else {
-    store.user = null;
+    store.clear();
   }
 });

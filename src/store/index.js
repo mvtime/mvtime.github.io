@@ -35,7 +35,21 @@ export const useMainStore = defineStore({
   // store getters
   getters: {},
   actions: {
-    // set user data
+    set_user(user) {
+      this.user = user;
+      // if router has a redirect, go to it
+      if (router.currentRoute.query && router.currentRoute.query.redirect) {
+        router.push(router.currentRoute.query.redirect);
+      }
+    },
+    clear() {
+      this.user = null;
+      this.doc = null;
+      // if page requires auth, redirect to home
+      if (router.currentRoute.meta && router.currentRoute.meta.requiresAuth) {
+        router.push("/");
+      }
+    },
     async login() {
       new Toast(
         "Opening login popup...",
@@ -45,35 +59,23 @@ export const useMainStore = defineStore({
       );
       // sign in with google, then set user data
       await signInWithPopup(auth, provider)
-        .then((result) => {
-          const user = result.user;
-          this.user = {
-            id: user.uid,
-            name: user.displayName,
-            email: user.email,
-          };
-          // show success toast
+        .then(() => {
           new Toast(
-            "Logged in as " + user.displayName + "!",
+            "Logged in as " + this.user.displayName + "!",
             "default",
             2000,
             require("@svonk/util/assets/info-unlocked-icon.svg")
           );
+          // push to portal
+          router.push("/portal");
         })
         .catch((error) => {
-          // show error toast
-          new ErrorToast("Error logging in", cleanError(error), 2000);
+          new ErrorToast("Couldn't log in", cleanError(error), 2000);
         });
     },
-    // clear user data
     async logout() {
       await auth.signOut();
       new Toast("Logged Out", "default", 10000, require("@svonk/util/assets/info-locked-icon.svg"));
-      // clear doc & user
-      this.user = null;
-      this.doc = null;
-      // push to home
-      router.push("/");
     },
     // set document data
     setDoc(doc) {

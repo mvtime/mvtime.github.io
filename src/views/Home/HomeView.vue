@@ -22,12 +22,12 @@ export default {
       return useMainStore();
     },
     logged_in() {
-      return !!this.store.user;
+      return this.store.user;
     },
   },
   methods: {
     do_auth() {
-      if (this.logged_in) {
+      if (this.store.user) {
         this.$router.push("/portal");
       } else {
         // have store launch auth
