@@ -23,9 +23,9 @@ import { useMainStore } from "./store";
 
 $(document.body).on("click", ".auth-action", function () {
   const store = useMainStore();
-  if ($(this).hasClass("login")) {
+  if (!store.user) {
     store.login();
-  } else if ($(this).hasClass("logout")) {
+  } else {
     store.logout();
   }
 });
@@ -64,9 +64,6 @@ router.beforeEach((to) => {
       1500,
       require("@svonk/util/assets/info-locked-icon.svg")
     );
-    store.login().then(() => {
-      router.push(to.path);
-    });
     return "/";
   }
 });
