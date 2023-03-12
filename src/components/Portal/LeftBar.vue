@@ -22,14 +22,10 @@ export default {
     };
   },
   mounted() {
-    window.addEventListener("resize", function () {
-      this.sidebar_open = false;
-    });
+    window.addEventListener("resize", this.close_sidebar);
   },
   unmounted() {
-    window.removeEventListener("resize", function () {
-      this.sidebar_open = false;
-    });
+    window.removeEventListener("resize", this.close_sidebar);
   },
   methods: {
     show_if_inactive() {
