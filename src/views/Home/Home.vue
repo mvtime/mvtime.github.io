@@ -1,5 +1,5 @@
 <template>
-  <main class="hidescroll scrolloverflow">
+  <main class="apphome hidescroll scrolloverflow">
     <main class="base fullheightcontent">
       <BaseNav />
       <router-view class="inner-base" />
@@ -21,6 +21,9 @@ export default {
 </script>
 
 <style>
+.apphome {
+  background-color: var(--color-home);
+}
 .base {
   padding: 70px 90px;
   padding-bottom: calc(70px - var(--footer-height));

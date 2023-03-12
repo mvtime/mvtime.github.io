@@ -1,14 +1,18 @@
 <template>
-  <main class="right-bar">
+  <div class="right-bar portal_sidebar" :class="{ open: sidebar_open }">
     <!-- log out button -->
     <!-- Upcoming exams 
         use exam card component
     -->
-  </main>
+  </div>
 </template>
 
 <script>
 export default {};
 </script>
 
-<style></style>
+<style scoped>
+.right-bar {
+  border-radius: var(--radius-sidebar) 0 0 var(--radius-sidebar);
+}
+</style>
