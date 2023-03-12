@@ -6,9 +6,17 @@
     <nav>
       <router-link class="router-link click-action-inline" to="/">Home</router-link>
       <span>&nbsp;|&nbsp;</span>
-      <router-link class="router-link click-action-inline" to="/about">About</router-link>
-      <span>&nbsp;|&nbsp;</span>
-      <router-link class="router-link click-action-inline" to="/contact">Contact</router-link>
+
+      <router-link v-if="logged_in" class="router-link click-action-inline" to="/portal"
+        >Portal</router-link
+      >
+      <span class="nostyle" v-else>
+        <router-link class="router-link click-action-inline" to="/about">About</router-link>
+        <span>&nbsp;|&nbsp;</span>
+        <router-link class="router-link click-action-inline" to="/contact"
+          >Contact</router-link
+        ></span
+      >
     </nav>
 
     <div class="err-pad-bottom"></div>
@@ -16,8 +24,18 @@
 </template>
 
 <script>
+// import store
+import { useMainStore } from "@/store";
 export default {
   name: "NotFound",
+  computed: {
+    store() {
+      return useMainStore();
+    },
+    logged_in() {
+      return this.store.user;
+    },
+  },
 };
 </script>
 
@@ -53,11 +71,11 @@ h2 {
   opacity: 0.8;
   background-image: linear-gradient(to right, var(--color-theme) 50px, rgba(0, 0, 0, 0) 75%);
 }
-nav > span {
+nav span:not(.router-link):not(.nostyle) {
   opacity: 0.7;
   color: var(--color-theme-accent-border);
 }
-nav > .router-link {
+nav .router-link {
   opacity: 1;
   color: var(--color-theme);
 }
