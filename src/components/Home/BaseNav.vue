@@ -22,12 +22,15 @@
         >
       </nav>
       <span class="flex-spacer"></span>
-      <button id="nav-auth-btn" class="small-action-btn auth-action click-action">Log In</button>
+      <button @click="do_auth" id="nav-auth-btn" class="small-action-btn auth-action click-action">
+        Log {{ logged_in ? "Out" : "In" }}
+      </button>
     </div>
   </header>
 </template>
 
 <script>
+import { useMainStore } from "../../store";
 export default {
   name: "BaseNav",
   data() {
@@ -39,10 +42,17 @@ export default {
   methods: {
     resize() {
       this.mobile = window.innerWidth <= 800;
-      if (!this.mobile) this.c();
+      if (!this.mobile) this.closeMenu();
     },
     closeMenu() {
       this.mobile_menu_open = false;
+    },
+    do_auth() {
+      if (this.logged_in) {
+        this.store.logout();
+      } else {
+        this.store.login();
+      }
     },
   },
   mounted() {
@@ -50,6 +60,14 @@ export default {
   },
   unmounted() {
     window.removeEventListener("resize", this.resize);
+  },
+  computed: {
+    store() {
+      return useMainStore();
+    },
+    logged_in() {
+      return !!this.store.user;
+    },
   },
 };
 // using the mounted() hook to add an event listener
@@ -92,13 +110,13 @@ header nav a {
   height: 40px;
   background-size: contain;
   background-repeat: no-repeat;
-  background-image: url(../assets/img/general/menu/menu-icon.png);
-  background-image: url(../assets/img/general/menu/menu-icon.svg);
+  background-image: url(@/assets/img/general/menu/menu-icon.png);
+  background-image: url(@/assets/img/general/menu/menu-icon.svg);
   filter: var(--filter-icon);
 }
 .nav-mobile-btn.alt-btn {
-  background-image: url(../assets/img/general/menu/menu-close-icon.png);
-  background-image: url(../assets/img/general/menu/menu-close-icon.svg);
+  background-image: url(@/assets/img/general/menu/menu-close-icon.png);
+  background-image: url(@/assets/img/general/menu/menu-close-icon.svg);
   margin-left: auto;
 }
 /* mobile */

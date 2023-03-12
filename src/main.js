@@ -1,22 +1,36 @@
 import { createApp } from "vue";
+import { createPinia } from "pinia";
 import App from "./App.vue";
 import router from "./router";
 import { placeholderToast } from "@svonk/util";
-
-createApp(App).use(router).mount("#app");
+// create instances of app requisites
+const pinia = createPinia();
+const app = createApp(App);
+// setup app requisites
+app.use(router);
+app.use(pinia);
+// mount app
+app.mount("#app");
 
 // styles
 import "./assets/main.css";
 
-// import jquery
+// import jquery and store
 import $ from "jquery";
-//! placeholder
+
+import { useMainStore } from "./store";
+// auth
+
 $(document.body).on("click", ".auth-action", function () {
-  placeholderToast();
+  const store = useMainStore();
+  if ($(this).hasClass("login")) {
+    store.login();
+  } else if ($(this).hasClass("logout")) {
+    store.logout();
+  }
 });
 
 // page change
-
 import { removePopup } from "@svonk/util";
 router.afterEach((to) => {
   if (to.meta && to.meta.page_title) {
@@ -36,3 +50,23 @@ router.afterEach((to) => {
 
 window.toast = placeholderToast;
 window.$ = $;
+
+// router guard
+import { Toast } from "@svonk/util";
+router.beforeEach((to) => {
+  const store = useMainStore();
+
+  if (to.meta && to.meta.requiresAuth && !store.user) {
+    // launch auth popup through store action
+    new Toast(
+      "Please log in to access this page",
+      "default",
+      1500,
+      require("@svonk/util/assets/info-locked-icon.svg")
+    );
+    store.login().then(() => {
+      router.push(to.path);
+    });
+    return "/";
+  }
+});

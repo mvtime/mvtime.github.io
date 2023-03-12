@@ -3,13 +3,40 @@
     <div id="home-main">
       <h2>Organize. Plan. Study.</h2>
       <h4 class="middle-text">Test tracker provides an effective way to manage upcoming exams.</h4>
-      <button class="action-btn auth-action click-action">Sign up</button>
+      <button class="action-btn auth-action click-action" @click="do_auth">
+        {{ logged_in ? "Open App" : "Get Started" }}
+      </button>
     </div>
     <div id="home-art" style="display: none"></div>
   </main>
 </template>
 
-<script setup></script>
+<script>
+// import store
+import { useMainStore } from "@/store";
+
+export default {
+  name: "HomeView",
+  computed: {
+    store() {
+      return useMainStore();
+    },
+    logged_in() {
+      return !!this.store.user;
+    },
+  },
+  methods: {
+    do_auth() {
+      if (this.logged_in) {
+        this.$router.push("/portal");
+      } else {
+        // have store launch auth
+        this.store.login();
+      }
+    },
+  },
+};
+</script>
 
 <style>
 .home {

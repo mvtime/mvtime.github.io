@@ -11,9 +11,11 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
-    "@svonk/util": "^0.0.4",
+    "@svonk/util": "^1.0.3",
     "core-js": "^3.8.3",
+    "firebase": "^9.17.2",
     "jquery": "^3.6.4",
+    "pinia": "^2.0.33",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3"
   },
