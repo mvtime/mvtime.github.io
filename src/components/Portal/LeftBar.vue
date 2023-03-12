@@ -15,6 +15,7 @@ export default {
   components: {
     SidebarToggle,
   },
+  emits: ["close_right_bar"],
   data() {
     return {
       sidebar_open: false,
@@ -33,6 +34,8 @@ export default {
   methods: {
     show_if_inactive() {
       if (!this.sidebar_open) this.sidebar_open = true;
+
+      this.$emit("close_right_bar");
     },
     close_sidebar() {
       if (this.sidebar_open) setTimeout(() => (this.sidebar_open = false), 10);

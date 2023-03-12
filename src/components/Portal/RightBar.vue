@@ -15,24 +15,23 @@ export default {
   components: {
     SidebarToggle,
   },
+  emits: ["close_left_bar"],
   data() {
     return {
       sidebar_open: false,
     };
   },
   mounted() {
-    window.addEventListener("resize", function () {
-      this.sidebar_open = false;
-    });
+    window.addEventListener("resize", this.close_sidebar);
   },
   unmounted() {
-    window.removeEventListener("resize", function () {
-      this.sidebar_open = false;
-    });
+    window.removeEventListener("resize", this.close_sidebar);
   },
   methods: {
     show_if_inactive() {
       if (!this.sidebar_open) this.sidebar_open = true;
+      // emit event to close left bar
+      this.$emit("close_left_bar");
     },
     close_sidebar() {
       if (this.sidebar_open) setTimeout(() => (this.sidebar_open = false), 10);

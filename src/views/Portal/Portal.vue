@@ -1,6 +1,6 @@
 <template>
   <main class="portal">
-    <LeftBar />
+    <LeftBar ref="LeftBar" @close_right_bar="close_right_bar" />
     <div class="portal_content">
       <header class="portal_info">
         <div class="portal_info_title">
@@ -20,7 +20,7 @@
       </header>
       <!-- calendar -->
     </div>
-    <RightBar />
+    <RightBar ref="RightBar" @close_left_bar="close_left_bar" />
   </main>
 </template>
 
@@ -42,6 +42,14 @@ export default {
       let store = this.store;
       if (store.user && store.user.displayName) return store.user.displayName.split(" ")[0];
       return "User";
+    },
+  },
+  methods: {
+    close_left_bar() {
+      this.$refs.LeftBar.close_sidebar();
+    },
+    close_right_bar() {
+      this.$refs.RightBar.close_sidebar();
     },
   },
 };
@@ -75,6 +83,17 @@ main.portal .portal_sidebar {
   transition: transform 0.3s ease-out;
 }
 @media (max-width: 1200px) {
+  main.portal .portal_content {
+    position: absolute;
+    z-index: 1;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+  }
+  main.portal .portal_sidebar {
+    z-index: 2;
+  }
   main.portal .portal_sidebar:not(.active) {
     cursor: pointer;
   }
