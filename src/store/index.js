@@ -2,7 +2,7 @@
 
 // setup Pinia store
 import { defineStore } from "pinia";
-import { Toast, ErrorToast, cleanError } from "@svonk/util";
+import { Toast, ErrorToast, cleanError, WarningToast } from "@svonk/util";
 
 // get firebase requirements
 import { auth, db } from "../firebase";
@@ -21,7 +21,9 @@ provider.setCustomParameters({
 
 // import router
 import router from "../router";
-
+function validAccount(userEmail) {
+  return userEmail.split("@")[1] == "mvla.net";
+}
 // define store
 export const useMainStore = defineStore({
   // store name
@@ -36,7 +38,15 @@ export const useMainStore = defineStore({
   getters: {},
   actions: {
     set_user(user) {
+      if (!user.email || !validAccount(user.email)) {
+        auth.signOut();
+        console.warn("Invalid account: " + user.email);
+        new WarningToast("Please use your MVLA email to log in", 2000);
+        this.clear();
+        return;
+      }
       this.user = user;
+
       // if router has a redirect, go to it
       if (
         router.currentRoute.value &&
@@ -68,6 +78,7 @@ export const useMainStore = defineStore({
       // sign in with google, then set user data
       await signInWithPopup(auth, provider)
         .then(() => {
+          if (!this.user || !this.user.email || !validAccount(this.user.email)) return;
           new Toast(
             "Logged in as " + this.user.displayName + "!",
             "default",
