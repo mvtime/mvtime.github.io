@@ -80,7 +80,7 @@ const router = createRouter({
         page_title: "Portal",
         theme_color: {
           light: "#ffffff",
-          dark: "#16130e",
+          dark: "#121212",
         },
         requiresAuth: true,
       },
