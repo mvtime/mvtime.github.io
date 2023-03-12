@@ -23,7 +23,7 @@ import { useMainStore } from "./store";
 
 $(document.body).on("click", ".auth-action", function () {
   const store = useMainStore();
-  if (!store.user) {
+  if (!store.user && $(this).hasClass("can-login")) {
     store.login();
   } else if ($(this).hasClass("can-logout")) {
     store.logout();
@@ -64,6 +64,10 @@ router.beforeEach((to) => {
       1500,
       require("@svonk/util/assets/info-locked-icon.svg")
     );
-    return "/";
+    // set redirect
+    return {
+      path: "/",
+      query: { redirect: to.fullPath },
+    };
   }
 });

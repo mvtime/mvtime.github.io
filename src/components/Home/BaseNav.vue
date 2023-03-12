@@ -22,7 +22,10 @@
         >
       </nav>
       <span class="flex-spacer"></span>
-      <button id="nav-auth-btn" class="small-action-btn auth-action can-logout click-action">
+      <button
+        id="nav-auth-btn"
+        class="small-action-btn auth-action can-logout can-login click-action"
+      >
         Log {{ logged_in ? "Out" : "In" }}
       </button>
     </div>

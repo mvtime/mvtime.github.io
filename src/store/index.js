@@ -38,15 +38,23 @@ export const useMainStore = defineStore({
     set_user(user) {
       this.user = user;
       // if router has a redirect, go to it
-      if (router.currentRoute.query && router.currentRoute.query.redirect) {
-        router.push(router.currentRoute.query.redirect);
+      if (
+        router.currentRoute.value &&
+        router.currentRoute.value.query &&
+        router.currentRoute.value.query.redirect
+      ) {
+        router.push(router.currentRoute.value.query.redirect);
       }
     },
     clear() {
       this.user = null;
       this.doc = null;
       // if page requires auth, redirect to home
-      if (router.currentRoute.meta && router.currentRoute.meta.requiresAuth) {
+      if (
+        router.currentRoute.value &&
+        router.currentRoute.value.meta &&
+        router.currentRoute.value.meta.requiresAuth
+      ) {
         router.push("/");
       }
     },
@@ -66,8 +74,15 @@ export const useMainStore = defineStore({
             2000,
             require("@svonk/util/assets/info-unlocked-icon.svg")
           );
-          // push to portal
-          router.push("/portal");
+          if (
+            !(
+              router.currentRoute.value &&
+              router.currentRoute.value.query &&
+              router.currentRoute.value.query.redirect
+            )
+          ) {
+            router.push("/portal");
+          }
         })
         .catch((error) => {
           new ErrorToast("Couldn't log in", cleanError(error), 2000);
@@ -75,7 +90,7 @@ export const useMainStore = defineStore({
     },
     logout() {
       auth.signOut();
-      new Toast("Logged Out", "default", 10000, require("@svonk/util/assets/info-locked-icon.svg"));
+      new Toast("Logged Out", "default", 1500, require("@svonk/util/assets/info-locked-icon.svg"));
     },
     // set document data
     setDoc(doc) {

@@ -89,6 +89,9 @@ const router = createRouter({
     {
       path: "/app",
       redirect: "/portal",
+      meta: {
+        requiresAuth: true,
+      },
     },
   ],
 });

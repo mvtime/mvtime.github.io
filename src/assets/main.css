@@ -95,3 +95,11 @@ h4 {
   background-size: 1.44em;
   margin-right: 0px;
 }
+
+/* override toast min width */
+@media (min-width: 500px) {
+  .toast {
+    width: unset;
+    max-width: unset;
+  }
+}

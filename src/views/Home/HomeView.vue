@@ -3,7 +3,7 @@
     <div id="home-main">
       <h2>Organize. Plan. Study.</h2>
       <h4 class="middle-text">Test tracker provides an effective way to manage upcoming exams.</h4>
-      <button class="action-btn auth-action click-action" @click="tomain">
+      <button class="action-btn auth-action can-login click-action" @click="tomain">
         {{ logged_in ? "Open App" : "Get Started" }}
       </button>
     </div>
