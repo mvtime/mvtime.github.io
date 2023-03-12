@@ -13,7 +13,7 @@ const router = createRouter({
         page_title: "Home",
         theme_color: {
           light: "#ffffff",
-          dark: "#000000",
+          dark: "#16130e",
         },
         requiresAuth: false,
       },
@@ -27,7 +27,7 @@ const router = createRouter({
             page_title: "Home",
             theme_color: {
               light: "#ffffff",
-              dark: "#000000",
+              dark: "#16130e",
             },
             requiresAuth: false,
           },
@@ -40,7 +40,7 @@ const router = createRouter({
         //     page_title: "About",
         //     theme_color: {
         //       light: "#ffffff",
-        //       dark: "#000000",
+        //       dark: "#16130e",
         //     },
         //     requiresAuth: false,
         //   },
@@ -53,7 +53,7 @@ const router = createRouter({
         //     page_title: "Contact",
         //     theme_color: {
         //       light: "#ffffff",
-        //       dark: "#000000",
+        //       dark: "#16130e",
         //     },
         //     requiresAuth: false,
         //   },
@@ -66,7 +66,7 @@ const router = createRouter({
             page_title: "404",
             theme_color: {
               light: "#ffffff",
-              dark: "#000000",
+              dark: "#16130e",
             },
           },
         },
@@ -80,7 +80,7 @@ const router = createRouter({
         page_title: "Portal",
         theme_color: {
           light: "#ffffff",
-          dark: "#000000",
+          dark: "#16130e",
         },
         requiresAuth: true,
       },
