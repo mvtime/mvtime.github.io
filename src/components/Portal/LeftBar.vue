@@ -1,6 +1,6 @@
 <template>
   <div class="left-bar portal_sidebar" :class="{ active: sidebar_open }" @click="show_if_inactive">
-    <div class="branding-title">MV Test Tracker</div>
+    <div class="branding-title gohome">MV Test Tracker</div>
     <!-- Actions Panel -->
     <!-- Class List -->
     <!-- Settings Button -->

@@ -1,6 +1,6 @@
 <template>
   <header>
-    <h1 class="hideoverflow">MV Test Tracker</h1>
+    <h1 class="gohome hideoverflow">MV Test Tracker</h1>
     <span class="flex-spacer"></span>
     <button
       class="nav-mobile-btn"

@@ -29,6 +29,9 @@ $(document.body).on("click", ".auth-action", function () {
     store.logout();
   }
 });
+$(document.body).on("click", ".gohome", function () {
+  router.push("/");
+});
 
 // page change
 import { removePopup } from "@svonk/util";
