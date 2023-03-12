@@ -3,7 +3,7 @@
     <div id="home-main">
       <h2>Organize. Plan. Study.</h2>
       <h4 class="middle-text">Test tracker provides an effective way to manage upcoming exams.</h4>
-      <button class="action-btn auth-action click-action" @click="do_auth">
+      <button class="action-btn auth-action click-action" @click="tomain">
         {{ logged_in ? "Open App" : "Get Started" }}
       </button>
     </div>
@@ -26,12 +26,9 @@ export default {
     },
   },
   methods: {
-    do_auth() {
+    tomain() {
       if (this.store.user) {
         this.$router.push("/portal");
-      } else {
-        // have store launch auth
-        this.store.login();
       }
     },
   },

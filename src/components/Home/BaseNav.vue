@@ -22,7 +22,7 @@
         >
       </nav>
       <span class="flex-spacer"></span>
-      <button @click="do_auth" id="nav-auth-btn" class="small-action-btn auth-action click-action">
+      <button id="nav-auth-btn" class="small-action-btn auth-action can-logout click-action">
         Log {{ logged_in ? "Out" : "In" }}
       </button>
     </div>
@@ -46,13 +46,6 @@ export default {
     },
     closeMenu() {
       this.mobile_menu_open = false;
-    },
-    do_auth() {
-      if (this.logged_in) {
-        this.store.logout();
-      } else {
-        this.store.login();
-      }
     },
   },
   mounted() {

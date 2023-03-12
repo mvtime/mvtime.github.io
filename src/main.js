@@ -25,7 +25,7 @@ $(document.body).on("click", ".auth-action", function () {
   const store = useMainStore();
   if (!store.user) {
     store.login();
-  } else {
+  } else if ($(this).hasClass("can-logout")) {
     store.logout();
   }
 });

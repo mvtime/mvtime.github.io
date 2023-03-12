@@ -73,8 +73,8 @@ export const useMainStore = defineStore({
           new ErrorToast("Couldn't log in", cleanError(error), 2000);
         });
     },
-    async logout() {
-      await auth.signOut();
+    logout() {
+      auth.signOut();
       new Toast("Logged Out", "default", 10000, require("@svonk/util/assets/info-locked-icon.svg"));
     },
     // set document data
