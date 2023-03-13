@@ -9,7 +9,8 @@
     "postbuild": "copy /Y dist\\index.html dist\\404.html && echo 'Copied index.html to 404.html'",
     "lint": "vue-cli-service lint",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "npm run publish",
+    "publish": "gh-pages -d dist"
   },
   "dependencies": {
     "@svonk/util": "^1.0.3",
