@@ -1,5 +1,17 @@
 <template>
-  <main class="calendar"></main>
+  <main class="calendar">
+    <nav class="calendar_actions">
+      <button class="calendar_action">
+        <div class="action_icon arrow-icon left"></div>
+      </button>
+      <button class="calendar_action">
+        <div class="action_icon cal-icon"></div>
+      </button>
+      <button class="calendar_action">
+        <div class="action_icon arrow-icon right"></div>
+      </button>
+    </nav>
+  </main>
 </template>
 
 <script>
@@ -16,13 +28,71 @@ main.calendar {
   width: 100%;
   max-width: 700px;
   margin: 0 auto;
+  box-sizing: border-box;
+  padding: var(--padding-calendar);
+  padding-top: calc(var(--padding-calendar) * 1.5 + var(--size-calendar-button));
+  position: relative;
+  /* style */
+  background-color: var(--color-calendar);
+  border-radius: var(--radius-calendar);
+  box-shadow: var(--shadow-highlight);
 }
 /* use a ::before or ::after to force it to a 4:3 ratio */
 main.calendar::before {
   content: "";
   display: block;
   padding-top: 75%;
-  background-color: var(--color-calendar-bg);
-  border-radius: var(--radius-calendar);
+}
+.calendar_actions {
+  position: absolute;
+  top: calc(var(--padding-calendar) / 2);
+  right: calc(var(--padding-calendar) / 2);
+  height: var(--size-calendar-button);
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  box-shadow: var(--shadow-highlight);
+
+  border-radius: calc(var(--radius-calendar) / 2);
+  overflow: hidden;
+}
+.calendar_actions > .calendar_action {
+  height: var(--size-calendar-button);
+  width: var(--size-calendar-button);
+  background-color: var(--color-calendar-button);
+  border: none;
+  padding: 0;
+}
+.calendar_actions > .calendar_action:hover {
+  background-color: var(--color-calendar-button-hover);
+}
+.calendar_actions > .calendar_action > div {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  filter: var(--filter-icon);
+  /* img */
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+.calendar_action .arrow-icon.left {
+  background-image: url(@/assets/img/general/portal/arrow-left.png);
+  background-image: url(@/assets/img/general/portal/arrow-left.svg);
+}
+
+.calendar_action .cal-icon {
+  background-image: url(@/assets/img/general/portal/cal-icon.png);
+  background-image: url(@/assets/img/general/portal/cal-icon.svg);
+}
+.calendar_actions .arrow-icon.right {
+  background-image: url(@/assets/img/general/portal/arrow-right.png);
+  background-image: url(@/assets/img/general/portal/arrow-right.svg);
 }
 </style>

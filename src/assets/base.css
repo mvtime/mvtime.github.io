@@ -29,12 +29,16 @@
   --color-secondary: #f2f2f2;
   --shadow-highlight: 0 0 10px #00000030;
   /* calendar */
-  --color-calendar-bg: #ffffff;
+  --color-calendar: #ffffff;
+  --color-on-calendar: #f0f0f0;
+  --color-calendar-button: #cccccc;
   /* general */
   --radius-sidebar: 20px;
-  --radius-calendar: 20px;
+  --radius-calendar: 15px;
   --padding-sidebar: 20px;
   --padding-portal: 60px;
+  --padding-calendar: 20px;
+  --size-calendar-button: 30px;
   /* 
 
 
@@ -77,7 +81,10 @@
     --color-secondary: #121212;
     --shadow-highlight: 0 0 10px #00000020;
     /* calendar */
-    --color-calendar-bg: #1c1c1c;
+    --color-calendar: #1c1c1c;
+    --color-on-calendar: #2b2b2b;
+    --color-calendar-button: #2b2b2b;
+    --color-calendar-button-hover: #333333;
     /* 
     
     
