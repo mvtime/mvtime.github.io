@@ -34,7 +34,7 @@ $(document.body).on("click", ".auth-action", function () {
         require("@svonk/util/assets/popup-out.svg"),
         [
           ["removePopup()", "Cancel", "secondary-action fullborder"],
-          ["removePopup()", "Log Out", "primary-action auth-action can-logout"],
+          ["removePopup()", "Confirm", "primary-action auth-action can-logout"],
         ]
       );
     } else {
