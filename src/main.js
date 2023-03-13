@@ -2,7 +2,7 @@ import { createApp } from "vue";
 import { createPinia } from "pinia";
 import App from "./App.vue";
 import router from "./router";
-import { placeholderToast } from "@svonk/util";
+import { placeholderToast, Popup } from "@svonk/util";
 // create instances of app requisites
 const pinia = createPinia();
 const app = createApp(App);
@@ -26,7 +26,20 @@ $(document.body).on("click", ".auth-action", function () {
   if (!store.user && $(this).hasClass("can-login")) {
     store.login();
   } else if ($(this).hasClass("can-logout")) {
-    store.logout();
+    if ($(this).hasClass("doprompt")) {
+      new Popup(
+        ["Log Out", "Are you sure you want to log out?"],
+        "default",
+        10000,
+        require("@svonk/util/assets/popup-out.svg"),
+        [
+          ["removePopup()", "Cancel", "secondary-action fullborder"],
+          ["removePopup()", "Log Out", "primary-action auth-action can-logout"],
+        ]
+      );
+    } else {
+      store.logout();
+    }
   }
 });
 $(document.body).on("click", ".gohome", function () {

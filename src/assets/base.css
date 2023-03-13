@@ -32,6 +32,21 @@
   --radius-sidebar: 20px;
   --padding-sidebar: 20px;
   --padding-portal: 60px;
+  /* for util.css */
+  /*toast*/
+  --toast-bg: hsl(42, 20%, 91%);
+  --toast-bg-transparent: hsla(42, 20%, 91%, 0.667);
+  --toast-text: hsl(42, 3%, 27%);
+  --toast-border: hsl(42, 0%, 78%);
+  --toast-secondary: hsl(0, 0%, 90%);
+  /*popup*/
+  --primary: #242325;
+  --primary-container: hsl(42, 0%, 83%);
+  --on-primary: #ffffff;
+  --on-primary-container: #001f26;
+  --popup-bg: hsl(42, 20%, 91%);
+  --on-popup-bg: hsl(42, 3%, 27%);
+  --popup-red: #93000a;
 }
 
 /* dark theme alternatives */
@@ -53,6 +68,21 @@
     --filter-icon: invert(1);
     --color-secondary: #121212;
     --shadow-highlight: 0 0 10px #00000020;
+    /* for util.css */
+    /*toast*/
+    --toast-bg: #191c1d;
+    --toast-bg-transparent: #303030aa;
+    --toast-text: #ffffff;
+    --toast-border: #242424;
+    --toast-secondary: #3b3b3b;
+    /*popup*/
+    --primary: #f5c14b;
+    --primary-container: hsl(36, 100%, 18%);
+    --on-primary: hsl(36, 100%, 13%);
+    --on-primary-container: hsl(36, 100%, 84%);
+    --popup-bg: #1c1c1c;
+    --on-popup-bg: hsl(36, 3%, 89%);
+    --popup-red: #de3730;
   }
 }
 

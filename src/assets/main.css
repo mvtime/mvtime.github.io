@@ -103,6 +103,10 @@ h4 {
     max-width: unset;
   }
 }
+/* fix popup icons on dark mode */
+.popup-icon {
+  filter: var(--filter-icon);
+}
 /* for page sizing */
 .center-1000 {
   max-width: 1000px;
