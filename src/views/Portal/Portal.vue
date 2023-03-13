@@ -25,6 +25,7 @@
         <div class="portal_info_welcome">Welcome Back {{ name }}</div>
       </header>
       <!-- calendar -->
+      <CalendarBlock />
     </div>
     <RightBar ref="RightBar" @close_left_bar="close_left_bar" />
   </main>
@@ -33,12 +34,14 @@
 <script>
 import LeftBar from "@/components/Portal/LeftBar.vue";
 import RightBar from "@/components/Portal/RightBar.vue";
+import CalendarBlock from "@/components/Portal/CalendarBlock.vue";
 import { useMainStore } from "@/store";
 export default {
   name: "AppPortal",
   components: {
     LeftBar,
     RightBar,
+    CalendarBlock,
   },
   computed: {
     store() {
@@ -113,6 +116,7 @@ main.portal .portal_sidebar {
 header.portal_info {
   max-width: 800px;
   margin: 0 auto;
+  margin-bottom: 20px;
 }
 .portal_info_usertype {
   font-size: 26px;
