@@ -37,11 +37,11 @@ main.calendar {
   border-radius: var(--radius-calendar);
   box-shadow: var(--shadow-highlight);
 }
-/* use a ::before or ::after to force it to a 4:3 ratio */
+/* use a ::before or ::after to force it to a 3:2 ratio */
 main.calendar::before {
   content: "";
   display: block;
-  padding-top: 75%;
+  padding-top: 66.66%;
 }
 .calendar_actions {
   position: absolute;
@@ -90,6 +90,10 @@ main.calendar::before {
 .calendar_action .cal-icon {
   background-image: url(@/assets/img/general/portal/cal-icon.png);
   background-image: url(@/assets/img/general/portal/cal-icon.svg);
+}
+.calendar_action .cal-icon.alt {
+  background-image: url(@/assets/img/general/portal/cal-icon-alt.png);
+  background-image: url(@/assets/img/general/portal/cal-icon-alt.svg);
 }
 .calendar_actions .arrow-icon.right {
   background-image: url(@/assets/img/general/portal/arrow-right.png);
