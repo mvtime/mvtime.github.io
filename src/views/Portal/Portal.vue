@@ -141,6 +141,10 @@ header.portal_info {
 .portal_content {
   flex-grow: 1;
   padding: var(--padding-portal);
+  overflow-y: auto;
+}
+.portal_content::-webkit-scrollbar {
+  display: none;
 }
 .portal_info,
 .portal_info > div {
