@@ -27,11 +27,11 @@
   --color-action: #242325;
   --filter-icon: none;
   --color-secondary: #f2f2f2;
-  --shadow-highlight: 0 0 10px #00000030;
+  --shadow-highlight: /* 0 0 1px 2px #ffffff,  */ 0 0 10px #00000030;
   /* calendar */
   --color-calendar: #ffffff;
   --color-on-calendar: #f0f0f0;
-  --color-calendar-button: #cccccc;
+  --color-calendar-button: #e8e8e8;
   /* general */
   --radius-sidebar: 20px;
   --radius-calendar: 15px;
@@ -79,7 +79,7 @@
     --color-on-action: #000;
     --filter-icon: invert(1);
     --color-secondary: #121212;
-    --shadow-highlight: 0 0 10px #00000020;
+    --shadow-highlight: 0 0 1px 2px #00000020, 0 0 10px #00000020;
     /* calendar */
     --color-calendar: #1c1c1c;
     --color-on-calendar: #2b2b2b;

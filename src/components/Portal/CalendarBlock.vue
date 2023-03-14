@@ -5,7 +5,7 @@
         <div class="action_icon arrow-icon left"></div>
       </button>
       <button class="calendar_action">
-        <div class="action_icon cal-icon"></div>
+        <div class="action_icon cal-icon" :class="{ alt: !!tests.length }"></div>
       </button>
       <button class="calendar_action">
         <div class="action_icon arrow-icon right"></div>
@@ -17,6 +17,12 @@
 <script>
 export default {
   name: "CalendarBlock",
+  props: {
+    tests: {
+      type: Array,
+      default: () => [],
+    },
+  },
   computed: {
     // get the tests from store
   },
@@ -53,8 +59,6 @@ main.calendar::before {
   justify-content: space-between;
   align-items: center;
   box-sizing: border-box;
-  box-shadow: var(--shadow-highlight);
-
   border-radius: calc(var(--radius-calendar) / 2);
   overflow: hidden;
 }
