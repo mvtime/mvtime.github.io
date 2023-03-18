@@ -5,7 +5,7 @@
     <!-- Class List -->
     <!-- Settings Button -->
     <button class="settings_button click-action" title="Open Settings">
-      <div class="settings-icon"></div>
+      <div class="settings_icon"></div>
       <div class="toggle_text">Settings</div>
     </button>
     <SidebarToggle class="right" @click="close_sidebar" />
@@ -91,6 +91,7 @@ export default {
 .settings_button > * {
   flex-shrink: 0;
 }
+
 .toggle_text {
   color: #aaa;
   filter: var(--filter-icon);
@@ -104,9 +105,10 @@ export default {
 .settings_button:hover {
   width: calc(var(--width-sidebar-button-showing));
 }
-.settings-icon {
+.settings_icon {
   height: 100%;
   width: var(--size-sidebar-button);
+  filter: var(--filter-icon);
   background-image: url(@/assets/img/general/portal/settings.png);
   background-image: url(@/assets/img/general/portal/settings.svg);
   background-repeat: no-repeat;
