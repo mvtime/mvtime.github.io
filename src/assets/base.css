@@ -69,6 +69,10 @@
   --color-test-card-icon: #f5f5f5;
   --filter-test-card-icon: none;
   --color-test-separator: #f2f2f2;
+  /* classes */
+  --spacing-classes: 10px;
+  --spacing-classes-alt: 5px;
+  --color-class: #f5c14b;
 }
 
 /* dark theme alternatives */

@@ -51,8 +51,6 @@ export default {
 <style scoped>
 .right-bar {
   border-radius: var(--radius-sidebar) 0 0 var(--radius-sidebar);
-  display: flex;
-  flex-flow: column nowrap;
 }
 .can-logout {
   height: 30px;

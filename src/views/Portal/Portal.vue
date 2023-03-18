@@ -92,6 +92,9 @@ main.portal .portal_sidebar {
   margin: auto 0;
   height: 100%;
   transition: transform 0.3s ease-out;
+  /* layout */
+  display: flex;
+  flex-flow: column nowrap;
 }
 @media (max-width: 1200px) {
   main.portal .portal_content {

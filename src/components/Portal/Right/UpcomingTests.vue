@@ -4,7 +4,12 @@
       <h5>Upcoming Tests</h5>
       <hr class="upcoming_tests_hr" />
       <div class="tests_container">
-        <ExamCard class="tests_container_test" v-for="test of tests" :test="test" :key="test.id" />
+        <ExamCard
+          class="tests_container_test"
+          v-for="test of tests"
+          :test="test"
+          :key="test.name"
+        />
       </div>
     </div>
     <div v-else class="upcoming_tests__empty">

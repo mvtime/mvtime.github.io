@@ -3,21 +3,26 @@
     <div class="branding-title gohome">MV Test Tracker</div>
     <!-- Actions Panel -->
     <!-- Class List -->
+    <ClassList />
+    <div class="flex-spacer"></div>
     <!-- Settings Button -->
     <button class="settings_button click-action" title="Open Settings">
       <div class="settings_icon"></div>
       <div class="toggle_text">Settings</div>
     </button>
+    <!-- Sidebar Toggle -->
     <SidebarToggle class="right" @click="close_sidebar" />
   </div>
 </template>
 
 <script>
 import SidebarToggle from "@/components/Portal/SidebarToggle.vue";
+import ClassList from "./Left/ClassList.vue";
 export default {
   name: "LeftBar",
   components: {
     SidebarToggle,
+    ClassList,
   },
   emits: ["close_right_bar"],
   data() {
@@ -102,7 +107,8 @@ export default {
   font-family: "Roboto", "Lato", "Inter", sans-serif;
   padding-right: 10px;
 }
-.settings_button:hover {
+.settings_button:hover,
+.settings_button:active {
   width: calc(var(--width-sidebar-button-showing));
 }
 .settings_icon {
