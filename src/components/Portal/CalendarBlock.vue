@@ -23,7 +23,7 @@
           class="calendar_day"
           :class="{
             calendar_day__placeholder: day.is_placeholder,
-            calendar_day__hastest: day.tests,
+            calendar_day__hastest: day.tests ? day.tests.length : false,
             calendar_day__today: day.is_today,
           }"
           v-for="day of days"
@@ -31,7 +31,16 @@
           @click="$emit('dayclick', day)"
         >
           <div class="calendar_day_date">
-            {{ new Date(day.date).getDate() }}
+            <span class="calendar_day_date__short"> {{ new Date(day.date).getDate() }}</span>
+            <span class="calendar_day_date__long" style="display: none">
+              {{
+                new Date(day.date).toLocaleDateString("en-US", {
+                  weekday: "long",
+                  month: "long",
+                  day: "numeric",
+                })
+              }}
+            </span>
           </div>
           <div class="calendar_day_tests">
             <div
@@ -44,6 +53,9 @@
               <span>{{ test.name }}</span>
             </div>
           </div>
+        </div>
+        <div v-if="!tests_loaded_month" class="calendar__no_tests" style="display: none">
+          Relax! No Tests.
         </div>
       </div>
     </div>
@@ -85,6 +97,15 @@ export default {
     },
   },
   computed: {
+    tests_loaded_month() {
+      return this.tests.some((test) => {
+        const test_date = new Date(test.date);
+        return (
+          test_date.getMonth() === this.loaded_month.getMonth() &&
+          test_date.getFullYear() === this.loaded_month.getFullYear()
+        );
+      });
+    },
     tests() {
       const store = useMainStore();
       return store.tests;
@@ -122,7 +143,6 @@ export default {
           is_placeholder: true,
         });
       }
-
       return days;
     },
   },
@@ -163,6 +183,7 @@ main.calendar {
   border-radius: calc(var(--radius-calendar) / 2);
   padding: 0 calc(var(--padding-calendar) / 2);
   display: flex;
+  flex-shrink: 0;
   justify-content: center;
   align-items: center;
   user-select: none;
@@ -301,6 +322,7 @@ main.calendar {
   align-items: center;
   font-weight: 700;
   /* style */
+  backdrop-filter: blur(5px);
   background-color: var(--color-calendar-date);
   font-size: 11px;
   color: var(--color-on-calendar-date);
@@ -329,7 +351,7 @@ main.calendar {
   /* layout */
   display: flex;
   flex-flow: column nowrap;
-  justify-content: flex-end;
+  justify-content: flex-start;
   align-items: stretch;
 }
 
@@ -344,6 +366,7 @@ main.calendar {
 /* test styling */
 .calendar_day_test {
   white-space: nowrap;
+  flex-shrink: 0;
   overflow: hidden;
   text-overflow: clip;
   position: relative;
@@ -352,7 +375,7 @@ main.calendar {
   color: var(--color-on-calendar-test);
   background-color: var(--color-calendar-test);
   /* styles */
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   border-radius: 5px;
   text-align: center;
   height: var(--height-calendar-test);
@@ -362,6 +385,9 @@ main.calendar {
   flex-flow: row nowrap;
   justify-content: flex-start;
   align-items: center;
+}
+.calendar_day_test:first-of-type {
+  margin-top: auto;
 }
 .calendar_day_test:not(:last-of-type) {
   margin-bottom: var(--spacing-calendar-day);
@@ -390,6 +416,9 @@ main.calendar {
   .calendar_days_container::before {
     display: none;
   }
+  .calendar_days_container {
+    padding: var(--spacing-calendar-day);
+  }
   .calendar_days {
     position: unset;
     top: unset;
@@ -401,8 +430,84 @@ main.calendar {
     align-items: stretch;
   }
   .calendar_day.calendar_day__placeholder,
-  .calendar_day:not([hasTests]) {
+  .calendar_day:not(.calendar_day__hastest) {
     display: none;
+  }
+  .calendar_day {
+    flex-shrink: 0;
+    margin-bottom: var(--spacing-calendar-day);
+    height: unset;
+    max-height: 100px;
+    align-items: flex-start;
+  }
+  .calendar_day_date {
+    width: unset;
+    padding: 0.25rem 0.5rem;
+  }
+  .calendar_date {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    text-align: center;
+    line-height: var(--size-calendar-header);
+    height: var(--size-calendar-header);
+  }
+  .calendar_day_date__short {
+    display: none;
+  }
+  .calendar_day_date__long,
+  .calendar__no_tests {
+    display: unset !important;
+  }
+  .calendar_day_date {
+    height: unset;
+  }
+  .calendar__no_tests {
+    color: var(--color-text-on-calendar);
+    font-weight: 500;
+    text-align: center;
+    margin: 10% 0;
+  }
+  .calendar_day_tests {
+    position: unset;
+    padding: 0;
+    padding-top: 10px;
+    flex-flow: row wrap;
+    flex-basis: calc(var(--height-calendar-test) + 2 * var(--spacing-calendar-day));
+    box-sizing: content-box;
+  }
+  .calendar_day_test {
+    margin: var(--spacing-calendar-day) !important;
+    max-width: 200px;
+    flex-grow: 1;
+    white-space: normal;
+    height: unset;
+    min-height: var(--height-calendar-test);
+    flex-basis: 70px;
+  }
+  /* header */
+  main.calendar {
+    padding: calc(var(--padding-calendar) - var(--spacing-calendar-day));
+  }
+  .calendar_header {
+    position: unset;
+    flex-flow: row wrap;
+    justify-content: stretch;
+    align-items: stretch;
+    height: unset;
+    margin: 0;
+    width: 100%;
+  }
+  .calendar_header > * {
+    flex-basis: 100px;
+    flex-shrink: 1;
+    flex-grow: 1;
+    width: 100%;
+    margin: var(--spacing-calendar-day);
+  }
+  .calendar_actions > .calendar_action {
+    flex-grow: 1;
   }
 }
 </style>

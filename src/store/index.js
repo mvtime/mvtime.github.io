@@ -61,6 +61,7 @@ export const useMainStore = defineStore({
           tests.push({
             ...class_tests[j],
             color: classes[i]?.color,
+            class_name: classes[i].name,
           });
         }
       }

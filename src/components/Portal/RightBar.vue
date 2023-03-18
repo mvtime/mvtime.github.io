@@ -1,19 +1,19 @@
 <template>
   <div class="right-bar portal_sidebar" :class="{ active: sidebar_open }" @click="show_if_inactive">
     <div class="auth-action can-logout doprompt">Log Out</div>
-    <!-- Upcoming exams 
-        use exam card component
-    -->
+    <UpcomingTests />
     <SidebarToggle @click="close_sidebar" />
   </div>
 </template>
 
 <script>
 import SidebarToggle from "@/components/Portal/SidebarToggle.vue";
+import UpcomingTests from "./Right/UpcomingTests.vue";
 export default {
   name: "RightBar",
   components: {
     SidebarToggle,
+    UpcomingTests,
   },
   emits: ["close_left_bar"],
   data() {
@@ -43,6 +43,8 @@ export default {
 <style scoped>
 .right-bar {
   border-radius: var(--radius-sidebar) 0 0 var(--radius-sidebar);
+  display: flex;
+  flex-flow: column nowrap;
 }
 .can-logout {
   height: 30px;
