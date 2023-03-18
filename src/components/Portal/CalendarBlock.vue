@@ -68,29 +68,29 @@ export default {
     days() {
       const days = [];
       const this_date = this.loaded_month.getTime();
-      function this_date_obj() {
+      function get_this_date() {
         return new Date(this_date);
       }
-      const first_day = new Date(this_date_obj().setDate(1));
-      const last_day = new Date(this_date_obj().setMonth(this_date_obj().getMonth() + 1, 0));
+      const first_day = new Date(get_this_date().setDate(1));
+      const last_day = new Date(get_this_date().setMonth(get_this_date().getMonth() + 1, 0));
 
       // add the placeholders for the first week
       for (let i = first_day.getDay(); i > 0; i--) {
         days.push({
-          date: new Date(this_date_obj().setDate(-i)),
+          date: new Date(get_this_date().setDate(-i)),
           is_placeholder: true,
         });
       }
       // do normal days
       for (let i = 1; i <= last_day.getDate(); i++) {
         days.push({
-          date: this_date_obj().setDate(i),
+          date: get_this_date().setDate(i),
           tests: this.tests.filter((test) => {
             const test_date = new Date(test.date);
             return (
               test_date.getDate() === i &&
-              test_date.getMonth() === this_date_obj().getMonth() &&
-              test_date.getFullYear() === this_date_obj().getFullYear()
+              test_date.getMonth() === get_this_date().getMonth() &&
+              test_date.getFullYear() === get_this_date().getFullYear()
             );
           }),
         });
@@ -99,7 +99,7 @@ export default {
       // add however many placeholders we need to get to a full 6 * 7 grid
       for (let i = 1; days.length < 6 * 7; i++) {
         days.push({
-          date: this_date_obj().setDate(last_day.getDate() + i),
+          date: get_this_date().setDate(last_day.getDate() + i),
           is_placeholder: true,
         });
       }
