@@ -1,13 +1,13 @@
 <template>
   <main class="calendar">
     <nav class="calendar_actions">
-      <button class="calendar_action">
+      <button class="calendar_action" @click="prev_month">
         <div class="action_icon arrow-icon left"></div>
       </button>
-      <button class="calendar_action">
+      <button class="calendar_action" @click="this_month">
         <div class="action_icon cal-icon" :class="{ alt: !!tests.length }"></div>
       </button>
-      <button class="calendar_action">
+      <button class="calendar_action" @click="next_month">
         <div class="action_icon arrow-icon right"></div>
       </button>
     </nav>
@@ -41,32 +41,52 @@ export default {
       default: () => [],
     },
   },
+  data() {
+    return {
+      loaded_month: new Date(new Date().setDate(1)),
+    };
+  },
+  methods: {
+    next_month() {
+      this.loaded_month = new Date(
+        new Date(this.loaded_month).setMonth(this.loaded_month.getMonth() + 1)
+      );
+    },
+    this_month() {
+      this.loaded_month = new Date(new Date().setDate(1));
+    },
+    prev_month() {
+      this.loaded_month = new Date(
+        new Date(this.loaded_month).setMonth(this.loaded_month.getMonth() - 1)
+      );
+    },
+  },
   computed: {
     // get the tests from store
 
     days() {
-      // setup the days array, including placeholders for days before and after from other months shown in the calendar
       const days = [];
-      const first_day = new Date(new Date().setDate(1));
-      const last_day = new Date(new Date().setMonth(new Date().getMonth() + 1, 0));
+      const this_date = this.loaded_month;
+      const first_day = new Date(this_date.setDate(1));
+      const last_day = new Date(this_date.setMonth(this_date.getMonth() + 1, 0));
 
       // add the placeholders for the first week
       for (let i = first_day.getDay(); i > 0; i--) {
         days.push({
-          date: new Date().setDate(-i),
+          date: this_date.setDate(-i),
           is_placeholder: true,
         });
       }
       // do normal days
       for (let i = 1; i <= last_day.getDate(); i++) {
         days.push({
-          date: new Date().setDate(i),
+          date: this_date.setDate(i),
           tests: this.tests.filter((test) => {
             const test_date = new Date(test.date);
             return (
               test_date.getDate() === i &&
-              test_date.getMonth() === new Date().getMonth() &&
-              test_date.getFullYear() === new Date().getFullYear()
+              test_date.getMonth() === this_date.getMonth() &&
+              test_date.getFullYear() === this_date.getFullYear()
             );
           }),
         });
@@ -75,7 +95,7 @@ export default {
       // add however many placeholders we need to get to a full 6 * 7 grid
       for (let i = 1; days.length < 6 * 7; i++) {
         days.push({
-          date: new Date().setDate(last_day.getDate() + i),
+          date: this_date.setDate(last_day.getDate() + i),
           is_placeholder: true,
         });
       }
