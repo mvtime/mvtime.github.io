@@ -3,12 +3,19 @@
 
 /* general vars */
 :root {
+  /* buttons */
+  --transition-click-action: transform 0.3s ease-out;
+  /* general homepage */
   --footer-height: 36px;
   --nav-spacing: 0.5rem;
-  --radius-sidebar: 20px;
+  /* portal */
   --radius-calendar: 15px;
-  --padding-sidebar: 20px;
   --padding-portal: 60px;
+  /* sidebar */
+  --radius-sidebar: 20px;
+  --padding-sidebar: 20px;
+  --size-sidebar-button: 35px;
+  --width-sidebar-button-showing: 100px;
   /* calendar page vars */
   --padding-calendar: 20px;
   --size-calendar-header: 30px;

@@ -4,6 +4,10 @@
     <!-- Actions Panel -->
     <!-- Class List -->
     <!-- Settings Button -->
+    <button class="settings_button click-action" title="Open Settings">
+      <div class="settings-icon"></div>
+      <div class="toggle_text">Settings</div>
+    </button>
     <SidebarToggle class="right" @click="close_sidebar" />
   </div>
 </template>
@@ -59,5 +63,52 @@ export default {
   line-height: 40px;
   text-align: center;
   user-select: none;
+}
+/* settings icon */
+.settings_button {
+  position: absolute;
+  display: block;
+  bottom: calc(var(--padding-sidebar) / 1.5);
+  left: calc(var(--padding-sidebar) / 1.5);
+  height: var(--size-sidebar-button);
+  width: var(--size-sidebar-button);
+  cursor: pointer;
+  z-index: 1;
+  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) / 3);
+  border: none;
+  background-color: var(--color-on-bg);
+  padding: 0;
+  /* animation */
+  transition: var(--transition-click-action), width 0.2s ease-in-out;
+  transform-origin: calc(var(--size-sidebar-button) / 2);
+  /* layout */
+  overflow: hidden;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: flex-start;
+}
+.settings_button > * {
+  flex-shrink: 0;
+}
+.toggle_text {
+  color: #aaa;
+  filter: var(--filter-icon);
+  width: calc(var(--width-sidebar-button-hidden) - var(--size-sidebar-button));
+  text-align: center;
+}
+.settings_button:hover {
+  width: calc(var(--width-sidebar-button-showing));
+}
+.settings-icon {
+  height: 100%;
+  width: var(--size-sidebar-button);
+  background-image: url(@/assets/img/general/portal/settings.png);
+  background-image: url(@/assets/img/general/portal/settings.svg);
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  user-select: none;
+  pointer-events: none;
 }
 </style>

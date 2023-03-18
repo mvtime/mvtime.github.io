@@ -1,5 +1,5 @@
 <template>
-  <button class="sidebar_toggle">
+  <button class="sidebar_toggle click-action" title="Close Sidebar">
     <div class="arrow-icon"></div>
   </button>
 </template>
@@ -16,8 +16,8 @@ export default {
   position: absolute;
   bottom: calc(var(--padding-sidebar) / 1.5);
   left: calc(var(--padding-sidebar) / 1.5);
-  height: var(--size-sidebar-toggle);
-  width: var(--size-sidebar-toggle);
+  height: var(--size-sidebar-button);
+  width: var(--size-sidebar-button);
   cursor: pointer;
   z-index: 1;
   border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) / 3);
@@ -25,6 +25,7 @@ export default {
   background-color: var(--color-on-bg);
   padding: 0;
 }
+
 .sidebar_toggle.right {
   left: unset;
   right: calc(var(--padding-sidebar) / 2);
