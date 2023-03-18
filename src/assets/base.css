@@ -31,8 +31,8 @@
   /* calendar */
   --color-calendar: #ffffff;
   --color-on-calendar: #b6b6b6;
-  --color-calendar-button: #e8e8e8;
-  --color-calendar-button-hover: #d9d9d9;
+  --color-calendar-header: #e8e8e8;
+  --color-calendar-header-hover: #d9d9d9;
   --color-calendar-day: #f0f0f0;
   --color-calendar-date: #dadada;
   --color-on-calendar-date: #969696;
@@ -42,7 +42,7 @@
   --padding-sidebar: 20px;
   --padding-portal: 60px;
   --padding-calendar: 20px;
-  --size-calendar-button: 30px;
+  --size-calendar-header: 30px;
   --gap-calendar-day: 5px;
   --radius-calendar-day: 5px;
   --spacing-calendar-day-date: 5px;
@@ -91,8 +91,8 @@
     /* calendar */
     --color-calendar: #1c1c1c;
     --color-on-calendar: #707070;
-    --color-calendar-button: #2b2b2b;
-    --color-calendar-button-hover: #333333;
+    --color-calendar-header: #2b2b2b;
+    --color-calendar-header-hover: #333333;
     --color-calendar-day: #2b2b2b;
     --color-calendar-date: #363636;
     --color-on-calendar-date: #1d1d1d;

@@ -1,16 +1,21 @@
 <template>
   <main class="calendar">
-    <nav class="calendar_actions">
-      <button class="calendar_action" @click="prev_month">
-        <div class="action_icon arrow-icon left"></div>
-      </button>
-      <button class="calendar_action" @click="this_month">
-        <div class="action_icon cal-icon" :class="{ alt: !!tests.length }"></div>
-      </button>
-      <button class="calendar_action" @click="next_month">
-        <div class="action_icon arrow-icon right"></div>
-      </button>
-    </nav>
+    <div class="calendar_header">
+      <div class="calendar_date">
+        {{ loaded_month.toLocaleDateString("en-US", { month: "long", year: "numeric" }) }}
+      </div>
+      <nav class="calendar_actions">
+        <button class="calendar_action" @click="prev_month">
+          <div class="action_icon arrow-icon left"></div>
+        </button>
+        <button class="calendar_action" @click="this_month">
+          <div class="action_icon cal-icon" :class="{ alt: !!tests.length }"></div>
+        </button>
+        <button class="calendar_action" @click="next_month">
+          <div class="action_icon arrow-icon right"></div>
+        </button>
+      </nav>
+    </div>
     <div class="calendar_days_container">
       <div class="calendar_days">
         <!-- v-for tests -->
@@ -48,17 +53,13 @@ export default {
   },
   methods: {
     next_month() {
-      this.loaded_month = new Date(
-        new Date(this.loaded_month).setMonth(this.loaded_month.getMonth() + 1)
-      );
+      this.loaded_month = new Date(this.loaded_month.setMonth(this.loaded_month.getMonth() + 1));
     },
     this_month() {
       this.loaded_month = new Date(new Date().setDate(1));
     },
     prev_month() {
-      this.loaded_month = new Date(
-        new Date(this.loaded_month).setMonth(this.loaded_month.getMonth() - 1)
-      );
+      this.loaded_month = new Date(this.loaded_month.setMonth(this.loaded_month.getMonth() - 1));
     },
   },
   computed: {
@@ -66,7 +67,7 @@ export default {
 
     days() {
       const days = [];
-      const this_date = this.loaded_month;
+      const this_date = new Date(this.loaded_month.getTime());
       const first_day = new Date(this_date.setDate(1));
       const last_day = new Date(this_date.setMonth(this_date.getMonth() + 1, 0));
 
@@ -113,7 +114,7 @@ main.calendar {
   margin: 0 auto;
   box-sizing: border-box;
   padding: var(--padding-calendar);
-  padding-top: calc(var(--padding-calendar) * 1.5 + var(--size-calendar-button));
+  padding-top: calc(var(--padding-calendar) * 1.5 + var(--size-calendar-header));
   position: relative;
   /* style */
   background-color: var(--color-calendar);
@@ -121,28 +122,51 @@ main.calendar {
   box-shadow: var(--shadow-highlight);
 }
 
-.calendar_actions {
+.calendar_header {
   position: absolute;
   top: calc(var(--padding-calendar) / 2);
   right: calc(var(--padding-calendar) / 2);
-  height: var(--size-calendar-button);
+  height: var(--size-calendar-header);
+  width: calc(100% - var(--padding-calendar));
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;
+  align-items: stretch;
+}
+.calendar_date {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-on-calendar);
+  background-color: var(--color-calendar-header);
+  border-radius: calc(var(--radius-calendar) / 2);
+  padding: 0 calc(var(--padding-calendar) / 2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.calendar_actions {
+  display: flex;
+  flex-flow: row nowrap;
+  flex-grow: 0;
+  flex-basis: calc(3 * var(--size-calendar-header));
+  flex-shrink: 0;
+  justify-content: center;
   align-items: center;
   box-sizing: border-box;
+  height: 100%;
   border-radius: calc(var(--radius-calendar) / 2);
   overflow: hidden;
 }
+
 .calendar_actions > .calendar_action {
-  height: var(--size-calendar-button);
-  width: var(--size-calendar-button);
-  background-color: var(--color-calendar-button);
+  height: var(--size-calendar-header);
+  width: var(--size-calendar-header);
+  background-color: var(--color-calendar-header);
   border: none;
   padding: 0;
 }
 .calendar_actions > .calendar_action:hover {
-  background-color: var(--color-calendar-button-hover);
+  background-color: var(--color-calendar-header-hover);
 }
 .calendar_actions > .calendar_action > div {
   width: 100%;
