@@ -77,10 +77,15 @@ export const useMainStore = defineStore({
         let class_id = this.doc.classes[i];
         const class_ref = doc(db, "classes", class_id);
         let class_doc = await getDoc(class_ref);
-        if (class_doc.exists) {
+        if (class_doc.exists()) {
           classes.push(class_doc.data());
         } else {
           console.warn("Class doesn't exist: " + class_id);
+          // remove class from user's doc
+          this.doc.classes = this.doc.classes.filter((c) => c != class_id);
+          await setDoc(this.docRef, this.doc, { merge: true });
+          console.log("Removed class from user's doc: " + class_id);
+          new WarningToast("Removed non-existent class with id " + class_id, 2000);
         }
       }
       this.classes = classes;
@@ -182,8 +187,8 @@ export const useMainStore = defineStore({
         classes: [],
       });
       console.log("Created user document");
-      new SuccessToast("Created user document", 2000);
-      // placeholder: do onboarding
+      new SuccessToast("Created user document; Let's get started", 2000);
+      // do onboarding
       router.push("/portal/onboarding");
     },
     async updateDoc() {
