@@ -46,7 +46,7 @@
   --color-calendar-header: #e8e8e8;
   --color-calendar-header-hover: #d9d9d9;
   /* calendar day */
-  --color-calendar-day: hsl(0, 0%, 94%);
+  --color-calendar-day: #00000010;
   --color-calendar-day-today: #ffe8b3;
   --color-calendar-date: #dadada;
   --color-on-calendar-date: #969696;
@@ -80,8 +80,8 @@
     --color-calendar-header: #2b2b2b;
     --color-calendar-header-hover: #333333;
     --color-calendar-day: #2b2b2b;
-    --color-calendar-day-today: hwb(42 18% 70%);
-    --color-calendar-date: #363636;
+    --color-calendar-day-today: #4d432e;
+    --color-calendar-date: #ffffff10;
     --color-on-calendar-date: #1d1d1d;
     /* calendar test */
     --color-calendar-test: #dfab34;

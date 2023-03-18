@@ -9,7 +9,7 @@
           <div class="action_icon arrow-icon left"></div>
         </button>
         <button class="calendar_action" @click="this_month" title="Current month">
-          <div class="action_icon cal-icon" :class="{ alt: !!tests.length }"></div>
+          <div class="action_icon cal-icon" :class="{ alt: tests.length }"></div>
         </button>
         <button class="calendar_action" @click="next_month" title="Next month">
           <div class="action_icon arrow-icon right"></div>
@@ -38,8 +38,8 @@
               class="calendar_day_test"
               v-for="test of day.tests"
               :key="test.name"
-              :title="test.student_class"
-              :style="{ '--color-calendar-test': get_color(test.student_class) }"
+              :title="test.classes_class"
+              :style="{ '--color-calendar-test': test.color }"
             >
               <span>{{ test.name }}</span>
             </div>
@@ -52,30 +52,9 @@
 
 <script>
 import { useMainStore } from "@/store";
-function get_color(student_class) {
-  const store = useMainStore();
-  const student_class_color = store.student_classs?.find((s) => s.name === student_class)?.color;
-  return student_class_color || "";
-}
+
 export default {
   name: "CalendarBlock",
-  props: {
-    tests: {
-      type: Array,
-      default: () => [
-        {
-          date: new Date(),
-          name: "Units 7-8 Midterm",
-          student_class: "Math",
-        },
-        {
-          date: new Date(),
-          name: "Quiz on Ch. 3",
-          student_class: "English",
-        },
-      ],
-    },
-  },
   data() {
     return {
       loaded_month: new Date(new Date().setDate(1)),
@@ -83,12 +62,7 @@ export default {
   },
   methods: {
     day_matches(day1, day2) {
-      console.log(day1, day2);
       return (
-        !isNaN(day1) &&
-        day1 &&
-        !isNaN(day2) &&
-        day2 &&
         day1.getDate() === day2.getDate() &&
         day1.getMonth() === day2.getMonth() &&
         day1.getFullYear() === day2.getFullYear()
@@ -100,7 +74,6 @@ export default {
         return this.day_matches(test_date, day);
       });
     },
-    get_color,
     next_month() {
       this.loaded_month = new Date(this.loaded_month.setMonth(this.loaded_month.getMonth() + 1));
     },
@@ -112,8 +85,9 @@ export default {
     },
   },
   computed: {
-    store() {
-      return useMainStore();
+    tests() {
+      const store = useMainStore();
+      return store.tests;
     },
     days() {
       const days = [];

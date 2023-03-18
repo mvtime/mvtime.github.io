@@ -2,9 +2,10 @@
 
 // setup Pinia store
 import { defineStore } from "pinia";
-import { Toast, ErrorToast, cleanError, WarningToast } from "@svonk/util";
+import { Toast, ErrorToast, cleanError, WarningToast, SuccessToast } from "@svonk/util";
 
 // get firebase requirements
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 const provider = new GoogleAuthProvider();
@@ -33,10 +34,56 @@ export const useMainStore = defineStore({
     user: null,
     // user data
     doc: null,
+    classes: [],
   }),
   // store getters
-  getters: {},
+  getters: {
+    docRef() {
+      if (!this.user) return null;
+      return doc(db, "users", this.user.uid);
+    },
+    tests() {
+      // get all the classes with this.classes(), then get all their tests and combine them into an array
+      let tests = [];
+      let classes = this.classes;
+      for (let i = 0; i < classes.length; i++) {
+        let class_tests = classes[i].tests;
+        // add class name and color to each test
+        for (let j = 0; j < class_tests.length; j++) {
+          classes[i].name = classes[i].name ? classes[i].name : "Unnamed Class";
+          // check test date type and convert to date object if necessary
+          if (typeof class_tests[j].date == "string") {
+            class_tests[j].date = new Date(class_tests[j].date);
+          }
+
+          // push test to array
+          tests.push({
+            ...class_tests[j],
+            color: classes[i]?.color,
+          });
+        }
+      }
+      console.log("tests", tests);
+      return tests;
+    },
+  },
   actions: {
+    async get_classes() {
+      // get all the classes from the user's doc, then get all their documents and combine them into an array
+      if (!this.doc) return [];
+      let classes = [];
+      for (let i = 0; i < this.doc.classes.length; i++) {
+        let class_id = this.doc.classes[i];
+        const class_ref = doc(db, "classes", class_id);
+        let class_doc = await getDoc(class_ref);
+        if (class_doc.exists) {
+          classes.push(class_doc.data());
+        } else {
+          console.warn("Class doesn't exist: " + class_id);
+        }
+      }
+      this.classes = classes;
+    },
     set_user(user) {
       if (!user.email || !validAccount(user.email)) {
         auth.signOut();
@@ -111,15 +158,37 @@ export const useMainStore = defineStore({
       new Toast("Logged Out", "default", 1500, require("@svonk/util/assets/info-locked-icon.svg"));
     },
     // set document data
-    setDoc(doc) {
-      this.doc = doc;
+    setDoc(new_doc) {
+      this.doc = new_doc;
     },
-    getDoc() {
+    async getDoc() {
       // get doc from firebase
-      db.collection("users").doc(this.user.id).get();
+      let doc = await getDoc(this.docRef);
+      if (doc.exists) {
+        this.doc = doc.data();
+      } else {
+        // if doc doesn't exist, create it
+        await this.createDoc();
+        this.getDoc;
+      }
     },
-    updateDoc(doc) {
-      this.doc = doc;
+    async createDoc() {
+      console.warn("Creating user document");
+      new WarningToast("User document doesn't exist, creating new one...", 2000);
+      await setDoc(this.docRef, {
+        name: this.user.displayName,
+        email: this.user.email,
+        classes: [],
+      });
+      console.log("Created user document");
+      new SuccessToast("Created user document", 2000);
+      // placeholder: do onboarding
+    },
+    async updateDoc() {
+      console.log("Updating user document");
+      await this.getDoc();
+      await this.get_classes();
+      console.log("Updated user document");
     },
   },
 });
