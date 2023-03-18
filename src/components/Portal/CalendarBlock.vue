@@ -1,17 +1,17 @@
 <template>
   <main class="calendar">
     <div class="calendar_header">
-      <div class="calendar_date">
+      <div class="calendar_date" :title="loaded_month.toDateString()">
         {{ loaded_month.toLocaleDateString("en-US", { month: "long", year: "numeric" }) }}
       </div>
       <nav class="calendar_actions">
-        <button class="calendar_action" @click="prev_month">
+        <button class="calendar_action" @click="prev_month" title="Previous month">
           <div class="action_icon arrow-icon left"></div>
         </button>
-        <button class="calendar_action" @click="this_month">
+        <button class="calendar_action" @click="this_month" title="Current month">
           <div class="action_icon cal-icon" :class="{ alt: !!tests.length }"></div>
         </button>
-        <button class="calendar_action" @click="next_month">
+        <button class="calendar_action" @click="next_month" title="Next month">
           <div class="action_icon arrow-icon right"></div>
         </button>
       </nav>
@@ -146,6 +146,7 @@ main.calendar {
   display: flex;
   justify-content: center;
   align-items: center;
+  user-select: none;
 }
 .calendar_actions {
   display: flex;
@@ -263,6 +264,7 @@ main.calendar {
   height: var(--size-calendar-day-date);
   width: var(--size-calendar-day-date);
   border-radius: calc(var(--radius-calendar-day) / 1.5);
+  user-select: none;
 }
 .calendar_day[isPlaceholder] .calendar_day_date {
   display: none;
