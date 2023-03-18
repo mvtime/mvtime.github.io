@@ -2,6 +2,7 @@
   <div class="right-bar portal_sidebar" :class="{ active: sidebar_open }" @click="show_if_inactive">
     <div class="auth-action can-logout doprompt">Log Out</div>
     <UpcomingTests />
+    <div class="flex-spacer"></div>
     <SidebarToggle @click="close_sidebar" />
   </div>
 </template>

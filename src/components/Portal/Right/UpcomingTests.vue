@@ -42,6 +42,7 @@ export default {
 <style scoped>
 .upcoming_tests {
   margin: auto 0;
+  width: 100%;
   flex-grow: 1;
   display: flex;
   flex-flow: column nowrap;
@@ -62,8 +63,8 @@ h5 {
   text-align: center;
 }
 .upcoming_tests_hr {
-  margin: 5px;
+  margin: 5px 0;
   border: none;
-  border-top: 2px solid var(--color-secondary);
+  border-top: 2px solid var(--color-test-separator);
 }
 </style>

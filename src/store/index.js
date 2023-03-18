@@ -65,7 +65,6 @@ export const useMainStore = defineStore({
           });
         }
       }
-      console.log("tests", tests);
       return tests;
     },
   },

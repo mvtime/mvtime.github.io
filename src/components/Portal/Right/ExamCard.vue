@@ -49,6 +49,7 @@ export default {
   box-sizing: border-box;
   filter: var(--filter-calendar-test);
   overflow: hidden;
+  flex-shrink: 0;
   /* box-shadow: 0px 4px 4px var(--color-calendar-test); */
   /* box-shadow: 0px 0px 4px var(--color-calendar-test); */
 }
@@ -76,9 +77,15 @@ export default {
   display: flex;
   flex-flow: column nowrap;
   align-items: stretch;
-  justify-content: center;
+  justify-content: space-evenly;
 }
 /* details */
+.test_card_details > * {
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+}
 .test_card_details__title {
   font-size: 14px;
   font-weight: 500;

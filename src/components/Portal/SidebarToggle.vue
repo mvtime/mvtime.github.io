@@ -16,8 +16,8 @@ export default {
   position: absolute;
   bottom: calc(var(--padding-sidebar) / 1.5);
   left: calc(var(--padding-sidebar) / 1.5);
-  height: 35px;
-  width: 35px;
+  height: var(--size-sidebar-toggle);
+  width: var(--size-sidebar-toggle);
   cursor: pointer;
   z-index: 1;
   border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) / 3);
