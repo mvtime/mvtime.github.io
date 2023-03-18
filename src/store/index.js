@@ -27,22 +27,20 @@ function validAccount(userEmail) {
 }
 // define store
 export const useMainStore = defineStore({
-  // store name
   id: "main",
   // store state
   state: () => ({
     user: null,
-    // user data
     doc: null,
     classes: [],
   }),
   // store getters
   getters: {
-    docRef() {
+    userdoc_ref() {
       if (!this.user) return null;
       return doc(db, "users", this.user.uid);
     },
-    tests() {
+    get_tests() {
       // get all the classes with this.classes(), then get all their tests and combine them into an array
       let tests = [];
       let classes = this.classes;
@@ -70,7 +68,16 @@ export const useMainStore = defineStore({
   },
   actions: {
     async get_classes() {
-      // get all the classes from the user's doc, then get all their documents and combine them into an array
+      // check for duplicates
+      if (this.doc.classes) {
+        let unique = [...new Set(this.doc.classes)];
+        if (unique.length != this.doc.classes.length) {
+          this.doc.classes = unique;
+          await this.update_remote();
+          new WarningToast("Removed duplicate classes", 2000);
+        }
+      }
+      // get all classes' data and combine into an array
       if (!this.doc) return [];
       let classes = [];
       for (let i = 0; i < this.doc.classes.length; i++) {
@@ -83,7 +90,7 @@ export const useMainStore = defineStore({
           console.warn("Class doesn't exist: " + class_id);
           // remove class from user's doc
           this.doc.classes = this.doc.classes.filter((c) => c != class_id);
-          await setDoc(this.docRef, this.doc, { merge: true });
+          await this.update_remote();
           console.log("Removed class from user's doc: " + class_id);
           new WarningToast("Removed non-existent class with id " + class_id, 2000);
         }
@@ -99,7 +106,6 @@ export const useMainStore = defineStore({
         return;
       }
       this.user = user;
-
       // if router has a redirect, go to it
       if (
         router.currentRoute.value &&
@@ -164,36 +170,33 @@ export const useMainStore = defineStore({
       new Toast("Logged Out", "default", 1500, require("@svonk/util/assets/info-locked-icon.svg"));
     },
     // set document data
-    setDoc(new_doc) {
-      this.doc = new_doc;
-    },
-    async getDoc() {
+    async get_remote() {
       // get doc from firebase
-      let doc = await getDoc(this.docRef);
+      let doc = await getDoc(this.userdoc_ref);
       if (doc.exists()) {
         this.doc = doc.data();
       } else {
         // if doc doesn't exist, create it
-        await this.createDoc();
-        await this.getDoc();
+        await this.create_doc();
+        await this.get_remote();
       }
     },
-    async createDoc() {
+    async create_doc() {
       console.warn("Creating user document");
       new WarningToast("User document doesn't exist, creating new one...", 2000);
-      await setDoc(this.docRef, {
+      this.doc = {
         name: this.user.displayName,
         email: this.user.email,
         classes: [],
-      });
+      };
+      await this.update_remote();
       new SuccessToast("Created user document; Let's get started", 2000);
       // do onboarding
       router.push("/portal/onboarding");
     },
-    async updateDoc() {
-      await this.getDoc();
-      await this.get_classes();
-      console.log("Updated user document");
+    async update_remote() {
+      // update remote doc
+      await setDoc(this.userdoc_ref, this.doc, { merge: true });
     },
   },
 });

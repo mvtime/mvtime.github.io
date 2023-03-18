@@ -115,7 +115,7 @@ export default {
     },
     tests() {
       const store = useMainStore();
-      return store.tests;
+      return store.get_tests;
     },
     days() {
       const days = [];

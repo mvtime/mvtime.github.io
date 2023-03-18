@@ -32,7 +32,7 @@ export default {
       return useMainStore();
     },
     tests() {
-      return this.store.tests
+      return this.store.get_tests
         .filter((test) => test.date - Date.now() < 30 * 24 * 60 * 60 * 1000)
         .sort((a, b) => {
           if (a.date < b.date) return -1;
