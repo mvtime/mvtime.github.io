@@ -356,6 +356,7 @@ main.calendar {
   border-radius: 5px;
   text-align: center;
   height: var(--height-calendar-test);
+  filter: var(--filter-calendar-test);
   /* center contents */
   display: flex;
   flex-flow: row nowrap;

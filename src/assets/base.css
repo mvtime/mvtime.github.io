@@ -53,6 +53,7 @@
   /* calendar test */
   --color-calendar-test: #f5c14b;
   --color-on-calendar-test: #fff;
+  --filter-calendar-test: none;
 }
 
 /* dark theme alternatives */
@@ -86,6 +87,7 @@
     /* calendar test */
     --color-calendar-test: #dfab34;
     --color-on-calendar-test: #000000;
+    --filter-calendar-test: brightness(0.7);
   }
 }
 
