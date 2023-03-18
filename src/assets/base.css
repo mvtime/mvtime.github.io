@@ -71,7 +71,7 @@
     --color-link: #178ca7;
     --color-action: #f5c14b;
     --color-on-action: #000;
-    --filter-icon: invert(1);
+    --filter-icon: invert(1) hue-rotate(180deg);
     --color-secondary: #121212;
     --shadow-highlight: 0 0 1px 2px #00000020, 0 0 10px #00000020;
     /* calendar */
