@@ -1,7 +1,13 @@
 <template>
   <main class="calendar">
     <div class="calendar_header">
-      <div class="calendar_date" :title="loaded_month.toDateString()">
+      <div
+        class="calendar_date"
+        :title="
+          'Currently viewing ' +
+          loaded_month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
+        "
+      >
         {{ loaded_month.toLocaleDateString("en-US", { month: "long", year: "numeric" }) }}
       </div>
       <nav class="calendar_actions">

@@ -184,6 +184,7 @@ export const useMainStore = defineStore({
       console.log("Created user document");
       new SuccessToast("Created user document", 2000);
       // placeholder: do onboarding
+      router.push("/portal/onboarding");
     },
     async updateDoc() {
       console.log("Updating user document");
