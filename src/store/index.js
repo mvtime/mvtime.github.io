@@ -54,6 +54,7 @@ export const useMainStore = defineStore({
           // check test date type and convert to date object if necessary
           if (typeof class_tests[j].date == "string") {
             class_tests[j].date = new Date(class_tests[j].date);
+            class_tests[j].date = isNaN(class_tests[j].date) ? null : class_tests[j].date;
           }
 
           // push test to array
