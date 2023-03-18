@@ -96,7 +96,14 @@ export const useMainStore = defineStore({
           }
         })
         .catch((error) => {
-          new ErrorToast("Couldn't log in", cleanError(error), 2000);
+          if (
+            error.code == "auth/cancelled-popup-request" ||
+            error.code == "auth/popup-closed-by-user"
+          ) {
+            new WarningToast(cleanError(error), 2000);
+          } else {
+            new ErrorToast("Couldn't log in", cleanError(error), 2000);
+          }
         });
     },
     logout() {

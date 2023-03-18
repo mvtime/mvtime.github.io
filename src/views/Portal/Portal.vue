@@ -25,7 +25,7 @@
         <div class="portal_info_welcome">Welcome Back {{ name }}</div>
       </header>
       <!-- calendar -->
-      <CalendarBlock />
+      <CalendarBlock @dayclick="placeholderToast" />
     </div>
     <RightBar ref="RightBar" @close_left_bar="close_left_bar" />
   </main>
@@ -36,6 +36,7 @@ import LeftBar from "@/components/Portal/LeftBar.vue";
 import RightBar from "@/components/Portal/RightBar.vue";
 import CalendarBlock from "@/components/Portal/CalendarBlock.vue";
 import { useMainStore } from "@/store";
+import { placeholderToast } from "@svonk/util";
 export default {
   name: "AppPortal",
   components: {
@@ -60,6 +61,7 @@ export default {
     close_right_bar() {
       this.$refs.RightBar.close_sidebar();
     },
+    placeholderToast,
   },
 };
 </script>
