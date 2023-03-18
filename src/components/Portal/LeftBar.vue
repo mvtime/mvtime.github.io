@@ -94,8 +94,12 @@ export default {
 .toggle_text {
   color: #aaa;
   filter: var(--filter-icon);
-  width: calc(var(--width-sidebar-button-hidden) - var(--size-sidebar-button));
-  text-align: center;
+  width: calc(var(--width-sidebar-button-showing) - var(--size-sidebar-button));
+  text-align: right;
+  font-weight: 500;
+  font-size: 14px;
+  font-family: "Roboto", "Lato", "Inter", sans-serif;
+  padding-right: 10px;
 }
 .settings_button:hover {
   width: calc(var(--width-sidebar-button-showing));
