@@ -25,7 +25,7 @@
         <div class="portal_info_welcome">Welcome Back {{ name }}</div>
       </header>
       <!-- calendar -->
-      <CalendarBlock @dayclick="placeholderToast" />
+      <CalendarBlock @testclick="placeholderToast" />
     </div>
     <RightBar ref="RightBar" @close_left_bar="close_left_bar" />
   </main>

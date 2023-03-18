@@ -28,7 +28,6 @@
           }"
           v-for="day of days"
           :key="day.date"
-          @click="$emit('dayclick', day)"
         >
           <div class="calendar_day_date">
             <span class="calendar_day_date__short"> {{ new Date(day.date).getDate() }}</span>
@@ -49,6 +48,7 @@
               :key="test.name"
               :title="test.classes_class"
               :style="{ '--color-calendar-test': test.color }"
+              @click="$emit('testclick', test)"
             >
               <span>{{ test.name }}</span>
             </div>
@@ -67,6 +67,7 @@ import { useMainStore } from "@/store";
 
 export default {
   name: "CalendarBlock",
+  emits: ["testclick"],
   data() {
     return {
       loaded_month: new Date(new Date().setDate(1)),
@@ -288,7 +289,8 @@ main.calendar {
   /* style */
   background-color: var(--color-calendar-day);
   border-radius: var(--radius-calendar-day);
-  cursor: pointer;
+  /* cursor: pointer; */
+  user-select: none;
   /* overflow */
   position: relative;
   overflow: hidden;
@@ -380,6 +382,7 @@ main.calendar {
   text-align: center;
   height: var(--height-calendar-test);
   filter: var(--filter-calendar-test);
+  cursor: pointer;
   /* center contents */
   display: flex;
   flex-flow: row nowrap;

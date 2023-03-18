@@ -88,6 +88,13 @@ h5 {
   border-radius: 10px;
   cursor: pointer;
 }
+.classes_container_class__add_class .class_name {
+  font-size: 0.8em;
+  opacity: 0.7;
+  text-align: center;
+  flex-grow: 1;
+  padding-right: calc(15px + 20px);
+}
 .classes_container_class > * {
   pointer-events: none;
 }
