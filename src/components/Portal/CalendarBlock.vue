@@ -21,16 +21,29 @@
         <!-- v-for tests -->
         <div
           class="calendar_day"
+          :class="{
+            calendar_day__placeholder: day.is_placeholder,
+            calendar_day__hastest: day.tests,
+            calendar_day__today: day.is_today,
+          }"
           v-for="day of days"
-          :hastest="!!day.tests"
-          :isplaceholder="day.is_placeholder"
           :key="day.date"
           @click="$emit('dayclick', day)"
         >
           <div class="calendar_day_date">
             {{ new Date(day.date).getDate() }}
           </div>
-          <div class=""></div>
+          <div class="calendar_day_tests">
+            <div
+              class="calendar_day_test"
+              v-for="test of day.tests"
+              :key="test.name"
+              :title="test.student_class"
+              :style="{ '--color-calendar-test': get_color(test.student_class) }"
+            >
+              <span>{{ test.name }}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -38,12 +51,29 @@
 </template>
 
 <script>
+import { useMainStore } from "@/store";
+function get_color(student_class) {
+  const store = useMainStore();
+  const student_class_color = store.student_classs?.find((s) => s.name === student_class)?.color;
+  return student_class_color || "";
+}
 export default {
   name: "CalendarBlock",
   props: {
     tests: {
       type: Array,
-      default: () => [],
+      default: () => [
+        {
+          date: new Date(),
+          name: "Units 7-8 Midterm",
+          student_class: "Math",
+        },
+        {
+          date: new Date(),
+          name: "Quiz on Ch. 3",
+          student_class: "English",
+        },
+      ],
     },
   },
   data() {
@@ -52,6 +82,25 @@ export default {
     };
   },
   methods: {
+    day_matches(day1, day2) {
+      console.log(day1, day2);
+      return (
+        !isNaN(day1) &&
+        day1 &&
+        !isNaN(day2) &&
+        day2 &&
+        day1.getDate() === day2.getDate() &&
+        day1.getMonth() === day2.getMonth() &&
+        day1.getFullYear() === day2.getFullYear()
+      );
+    },
+    get_day_tests(day) {
+      return this.tests.filter((test) => {
+        const test_date = new Date(test.date);
+        return this.day_matches(test_date, day);
+      });
+    },
+    get_color,
     next_month() {
       this.loaded_month = new Date(this.loaded_month.setMonth(this.loaded_month.getMonth() + 1));
     },
@@ -63,8 +112,9 @@ export default {
     },
   },
   computed: {
-    // get the tests from store
-
+    store() {
+      return useMainStore();
+    },
     days() {
       const days = [];
       const this_date = this.loaded_month.getTime();
@@ -83,16 +133,11 @@ export default {
       }
       // do normal days
       for (let i = 1; i <= last_day.getDate(); i++) {
+        const month_day = new Date(get_this_date().setDate(i));
         days.push({
-          date: get_this_date().setDate(i),
-          tests: this.tests.filter((test) => {
-            const test_date = new Date(test.date);
-            return (
-              test_date.getDate() === i &&
-              test_date.getMonth() === get_this_date().getMonth() &&
-              test_date.getFullYear() === get_this_date().getFullYear()
-            );
-          }),
+          date: month_day,
+          tests: this.get_day_tests(month_day),
+          is_today: this.day_matches(month_day, new Date()),
         });
       }
 
@@ -113,7 +158,7 @@ export default {
 <style scoped>
 main.calendar {
   width: 100%;
-  max-width: 700px;
+  max-width: 900px;
   margin: 0 auto;
   box-sizing: border-box;
   padding: var(--padding-calendar);
@@ -228,9 +273,17 @@ main.calendar {
   box-sizing: border-box;
   padding: 0;
 }
+.calendar_days:empty::after {
+  content: "No tests scheduled";
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-on-calendar);
+  text-align: center;
+  margin: 1.5rem 0;
+}
 /* days */
 .calendar_day {
-  width: 100%;
+  /* width: 100%; */
   height: 100%;
   /* layout */
   display: flex;
@@ -241,11 +294,28 @@ main.calendar {
   background-color: var(--color-calendar-day);
   border-radius: var(--radius-calendar-day);
   cursor: pointer;
+  /* overflow */
+  position: relative;
+  overflow: hidden;
 }
-.calendar_day > * {
+.calendar_day__today {
+  --color-calendar-day: var(--color-calendar-day-today);
+}
+.calendar_day::after {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: var(--spacing-calendar-day);
+  user-select: none;
   pointer-events: none;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, var(--color-calendar-day) 100%);
+  z-index: 5;
 }
-.calendar_day[isPlaceholder] {
+
+.calendar_day.calendar_day__placeholder {
   opacity: 0.5;
   /* pointer-events: none; */
 }
@@ -260,18 +330,86 @@ main.calendar {
   background-color: var(--color-calendar-date);
   font-size: 11px;
   color: var(--color-on-calendar-date);
-  margin: var(--spacing-calendar-day-date);
+  margin: var(--spacing-calendar-day);
   height: var(--size-calendar-day-date);
   width: var(--size-calendar-day-date);
   border-radius: calc(var(--radius-calendar-day) / 1.5);
   user-select: none;
+  z-index: 2;
 }
-.calendar_day[isPlaceholder] .calendar_day_date {
+.calendar_day.calendar_day__placeholder .calendar_day_date {
   display: none;
 }
-.calendar_day[isPlaceholder]:hover > .calendar_day_date {
+.calendar_day.calendar_day__placeholder:hover > .calendar_day_date {
   display: flex;
 }
+/* tests */
+.calendar_day_tests {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  padding: var(--spacing-calendar-day);
+  padding-top: calc(var(--size-calendar-day-date) + 2 * var(--spacing-calendar-day));
+  overflow-y: auto;
+  z-index: 1;
+  /* layout */
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-end;
+  align-items: stretch;
+}
+
+/* hide scrollbars on tests list */
+.calendar_day_tests::-webkit-scrollbar {
+  display: none;
+}
+.calendar_day_tests {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+/* test styling */
+.calendar_day_test {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  position: relative;
+  padding: var(--padding-calendar-test);
+  /* colors */
+  color: var(--color-on-calendar-test);
+  background-color: var(--color-calendar-test);
+  /* styles */
+  font-size: 0.9rem;
+  border-radius: 5px;
+  text-align: center;
+  height: var(--height-calendar-test);
+  /* center contents */
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+.calendar_day_test:not(:last-of-type) {
+  margin-bottom: var(--spacing-calendar-day);
+}
+.calendar_day_test > span {
+  text-align: center;
+  width: 100%;
+  user-select: none;
+  pointer-events: none;
+}
+.calendar_day_test::after {
+  content: "";
+  display: block;
+  width: calc(var(--padding-calendar-test) + 2px);
+  height: 100%;
+  right: 0;
+  top: 0;
+  position: absolute;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, var(--color-calendar-test) 100%);
+  margin-top: 5px;
+  z-index: 1;
+}
+
 /* on small devices, show as a list instead of a calendar */
 @media (max-width: 600px) {
   .calendar_days_container::before {
@@ -287,7 +425,7 @@ main.calendar {
     justify-content: stretch;
     align-items: stretch;
   }
-  .calendar_day[isPlaceholder],
+  .calendar_day.calendar_day__placeholder,
   .calendar_day:not([hasTests]) {
     display: none;
   }

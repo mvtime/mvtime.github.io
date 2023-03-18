@@ -5,8 +5,20 @@
 :root {
   --footer-height: 36px;
   --nav-spacing: 0.5rem;
+  /* calendar page vars */
+  --radius-sidebar: 20px;
+  --radius-calendar: 15px;
+  --padding-sidebar: 20px;
+  --padding-portal: 60px;
+  --padding-calendar: 20px;
+  --size-calendar-header: 30px;
+  --gap-calendar-day: 5px;
+  --radius-calendar-day: 5px;
+  --spacing-calendar-day: 5px;
+  --size-calendar-day-date: 20px;
+  --padding-calendar-test: 5px;
+  --height-calendar-test: 25px;
 }
-
 /* light theme colors for the project */
 :root {
   /* colors */
@@ -28,45 +40,19 @@
   --filter-icon: none;
   --color-secondary: #f2f2f2;
   --shadow-highlight: /* 0 0 1px 2px #ffffff,  */ 0 0 10px #00000030;
-  /* calendar */
+  /** calendar **/
   --color-calendar: #ffffff;
   --color-on-calendar: #b6b6b6;
   --color-calendar-header: #e8e8e8;
   --color-calendar-header-hover: #d9d9d9;
-  --color-calendar-day: #f0f0f0;
+  /* calendar day */
+  --color-calendar-day: hsl(0, 0%, 94%);
+  --color-calendar-day-today: #ffe8b3;
   --color-calendar-date: #dadada;
   --color-on-calendar-date: #969696;
-  /* general */
-  --radius-sidebar: 20px;
-  --radius-calendar: 15px;
-  --padding-sidebar: 20px;
-  --padding-portal: 60px;
-  --padding-calendar: 20px;
-  --size-calendar-header: 30px;
-  --gap-calendar-day: 5px;
-  --radius-calendar-day: 5px;
-  --spacing-calendar-day-date: 5px;
-  --size-calendar-day-date: 20px;
-  /* 
-
-
-
-  */
-  /* for util.css */
-  /*toast*/
-  --toast-bg: hsl(42, 20%, 91%);
-  --toast-bg-transparent: hsla(42, 20%, 91%, 0.667);
-  --toast-text: hsl(42, 3%, 27%);
-  --toast-border: hsl(42, 0%, 78%);
-  --toast-secondary: hsl(0, 0%, 90%);
-  /*popup*/
-  --primary: #242325;
-  --primary-container: hsl(42, 0%, 83%);
-  --on-primary: #ffffff;
-  --on-primary-container: #001f26;
-  --popup-bg: hsl(42, 20%, 91%);
-  --on-popup-bg: hsl(42, 3%, 27%);
-  --popup-red: #93000a;
+  /* calendar test */
+  --color-calendar-test: #f5c14b;
+  --color-on-calendar-test: #fff;
 }
 
 /* dark theme alternatives */
@@ -94,27 +80,12 @@
     --color-calendar-header: #2b2b2b;
     --color-calendar-header-hover: #333333;
     --color-calendar-day: #2b2b2b;
+    --color-calendar-day-today: hwb(42 18% 70%);
     --color-calendar-date: #363636;
     --color-on-calendar-date: #1d1d1d;
-    /* 
-    
-    
-    */
-    /* for util.css */
-    /*toast*/
-    --toast-bg: #191c1d;
-    --toast-bg-transparent: #303030aa;
-    --toast-text: #ffffff;
-    --toast-border: #242424;
-    --toast-secondary: #3b3b3b;
-    /*popup*/
-    --primary: #f5c14b;
-    --primary-container: hsl(36, 100%, 18%);
-    --on-primary: hsl(36, 100%, 13%);
-    --on-primary-container: hsl(36, 100%, 84%);
-    --popup-bg: #1c1c1c;
-    --on-popup-bg: hsl(36, 3%, 89%);
-    --popup-red: #de3730;
+    /* calendar test */
+    --color-calendar-test: #dfab34;
+    --color-on-calendar-test: #000000;
   }
 }
 
@@ -159,4 +130,40 @@ a[href],
   color: var(--color-link);
   text-decoration: none;
   font-weight: 600;
+}
+
+/* util.css colors */
+:root {
+  /*toast*/
+  --toast-bg: hsl(42, 20%, 91%);
+  --toast-bg-transparent: hsla(42, 20%, 91%, 0.667);
+  --toast-text: hsl(42, 3%, 27%);
+  --toast-border: hsl(42, 0%, 78%);
+  --toast-secondary: hsl(0, 0%, 90%);
+  /*popup*/
+  --primary: #242325;
+  --primary-container: hsl(42, 0%, 83%);
+  --on-primary: #ffffff;
+  --on-primary-container: #001f26;
+  --popup-bg: hsl(42, 20%, 91%);
+  --on-popup-bg: hsl(42, 3%, 27%);
+  --popup-red: #93000a;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    /*toast*/
+    --toast-bg: #191c1d;
+    --toast-bg-transparent: #303030aa;
+    --toast-text: #ffffff;
+    --toast-border: #242424;
+    --toast-secondary: #3b3b3b;
+    /*popup*/
+    --primary: #f5c14b;
+    --primary-container: hsl(36, 100%, 18%);
+    --on-primary: hsl(36, 100%, 13%);
+    --on-primary-container: hsl(36, 100%, 84%);
+    --popup-bg: #1c1c1c;
+    --on-popup-bg: hsl(36, 3%, 89%);
+    --popup-red: #de3730;
+  }
 }
