@@ -170,12 +170,12 @@ export const useMainStore = defineStore({
     async getDoc() {
       // get doc from firebase
       let doc = await getDoc(this.docRef);
-      if (doc.exists) {
+      if (doc.exists()) {
         this.doc = doc.data();
       } else {
         // if doc doesn't exist, create it
         await this.createDoc();
-        this.getDoc;
+        await this.getDoc();
       }
     },
     async createDoc() {
@@ -186,13 +186,11 @@ export const useMainStore = defineStore({
         email: this.user.email,
         classes: [],
       });
-      console.log("Created user document");
       new SuccessToast("Created user document; Let's get started", 2000);
       // do onboarding
       router.push("/portal/onboarding");
     },
     async updateDoc() {
-      console.log("Updating user document");
       await this.getDoc();
       await this.get_classes();
       console.log("Updated user document");
