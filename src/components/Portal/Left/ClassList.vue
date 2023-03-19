@@ -1,6 +1,6 @@
 <template>
   <div class="class_list">
-    <div v-if="classes" class="class_list__not_empty">
+    <div class="class_list__not_empty">
       <h5>Classes</h5>
       <hr class="class_list_hr" />
       <div class="classes_container">
@@ -25,12 +25,6 @@
           <span class="class_name">Add a Class</span>
         </div>
       </div>
-    </div>
-    <div v-else class="class_list__empty">
-      <h5>
-        No Classes Yet.
-        <router-link to="/portal/add">Add Some!</router-link>
-      </h5>
     </div>
   </div>
 </template>
@@ -119,7 +113,7 @@ h5 {
   visibility: hidden;
   width: 100%;
   height: 100%;
-  filter: var(--filter-icon);
+  filter: var(--filter-icon) var(--filter-test-calendar-icon);
   background-image: url(@/assets/img/general/portal/remove.png);
   background-image: url(@/assets/img/general/portal/remove.svg);
   background-size: contain;
