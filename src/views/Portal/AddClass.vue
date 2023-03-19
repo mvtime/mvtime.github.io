@@ -29,9 +29,7 @@
           </option>
         </select>
       </div>
-      <div class="overlay_contents_text">
-        Enter your teacher's email above, to see their classes
-      </div>
+      <div class="overlay_contents_text">Enter your teacher's email above to see their classes</div>
     </div>
     <div class="bottom_actions">
       <button class="close_action" @click="$router.push('/portal')">Close</button>

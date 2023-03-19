@@ -30,14 +30,14 @@
   --padding-test-card-icon: 5px;
   /* overlay */
   --radius-overlay: 7px;
-  --padding-overlay: 30px;
-  --height-overlay-action: 50px;
-  --padding-overlay-action: 40px;
+  --padding-overlay: 20px;
+  --height-overlay-action: 40px;
+  --padding-overlay-action: 30px;
   --thickness-overlay-border: 2px;
   /* overlay inputs */
   --radius-overlay-input: 5px;
-  --height-overlay-input: 50px;
-  --padding-overlay-input: 20px;
+  --height-overlay-input: 40px;
+  --padding-overlay-input: 15px;
 }
 /* light theme colors for the project */
 :root {
