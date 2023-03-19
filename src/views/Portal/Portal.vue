@@ -28,6 +28,10 @@
       <CalendarBlock @testclick="placeholderToast" />
     </div>
     <RightBar ref="RightBar" @close_left_bar="close_left_bar" />
+    <!-- show overlay only if router-view is active -->
+    <div class="overlay_center_view" v-if="$route.name !== 'portal'">
+      <router-view class="router_center_view" />
+    </div>
   </main>
 </template>
 
@@ -37,6 +41,8 @@ import RightBar from "@/components/Portal/RightBar.vue";
 import CalendarBlock from "@/components/Portal/CalendarBlock.vue";
 import { useMainStore } from "@/store";
 import { placeholderToast } from "@svonk/util";
+// import styles from "./portal-overlay.css";
+import "./portal-overlay.css";
 export default {
   name: "AppPortal",
   components: {
@@ -67,6 +73,7 @@ export default {
 </script>
 
 <style scoped>
+/* portal */
 main.portal {
   background-color: var(--color-secondary);
   /* sizing */

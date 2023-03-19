@@ -84,6 +84,35 @@ const router = createRouter({
         },
         requiresAuth: true,
       },
+      children: [
+        {
+          path: "/portal/onboarding",
+          name: "onboarding",
+          component: () => import("../views/Portal/Onboarding.vue"),
+          meta: {
+            page_title: "Onboarding",
+            theme_color: {
+              light: "#ffffff",
+              dark: "#121212",
+            },
+            requiresAuth: true,
+          },
+        },
+
+        {
+          path: "/portal/add",
+          name: "addclass",
+          component: () => import("../views/Portal/AddClass.vue"),
+          meta: {
+            page_title: "Join a Class",
+            theme_color: {
+              light: "#ffffff",
+              dark: "#121212",
+            },
+            requiresAuth: true,
+          },
+        },
+      ],
     },
     // redirect any /app routes to /portal
     {

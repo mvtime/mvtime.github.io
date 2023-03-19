@@ -10,7 +10,7 @@
         </div>
         <div
           class="classes_container_class classes_container_class__add_class"
-          @click="$router.push('/portal/classes')"
+          @click="$router.push('/portal/add')"
         >
           <div class="class_swatch">
             <div class="class_swatch__add_icon"></div>
@@ -22,7 +22,7 @@
     <div v-else class="class_list__empty">
       <h5>
         No Classes Yet.
-        <router-link to="/portal/classes">Add Some!</router-link>
+        <router-link to="/portal/add">Add Some!</router-link>
       </h5>
     </div>
   </div>

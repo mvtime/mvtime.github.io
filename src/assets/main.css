@@ -24,6 +24,8 @@
 }
 .flex-spacer {
   flex: 1;
+  user-select: none;
+  pointer-events: none;
 }
 
 /* headings */

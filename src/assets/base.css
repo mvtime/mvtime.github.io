@@ -28,6 +28,16 @@
   /* test card */
   --height-test-card: 40px;
   --padding-test-card-icon: 5px;
+  /* overlay */
+  --radius-overlay: 7px;
+  --padding-overlay: 30px;
+  --height-overlay-action: 50px;
+  --padding-overlay-action: 40px;
+  --thickness-overlay-border: 2px;
+  /* overlay inputs */
+  --radius-overlay-input: 5px;
+  --height-overlay-input: 50px;
+  --padding-overlay-input: 20px;
 }
 /* light theme colors for the project */
 :root {
@@ -73,6 +83,16 @@
   --spacing-classes: 10px;
   --spacing-classes-alt: 5px;
   --color-class: #f5c14b;
+  /* overlay */
+  --color-overlay: #00000040;
+  --color-overlay-action: #242325;
+  --color-on-overlay-action: #fff;
+  --color-overlay-action-disabled: #dedede;
+  --color-on-overlay-action-disabled: #aaa;
+  --color-overlay-border: #00000040;
+  /* overlay inputs */
+  --color-overlay-input: #dedede;
+  --color-on-overlay-input: #000;
 }
 
 /* dark theme alternatives */
@@ -111,6 +131,16 @@
     --color-test-card-icon: #2b2b2b;
     --filter-test-card-icon: brightness(1.54);
     --color-test-separator: #333;
+    /* overlay */
+    --color-overlay: #00000040;
+    --color-overlay-action: #433922;
+    --color-on-overlay-action: #fff;
+    --color-overlay-action-disabled: #2b2b2b;
+    --color-on-overlay-action-disabled: #555;
+    --color-overlay-border: #666562;
+    /* overlay inputs */
+    --color-overlay-input: #2b2b2b;
+    --color-on-overlay-input: #fff;
   }
 }
 

@@ -5,7 +5,7 @@ import { defineStore } from "pinia";
 import { Toast, ErrorToast, cleanError, WarningToast, SuccessToast } from "@svonk/util";
 
 // get firebase requirements
-import { collection, doc, setDoc, getDoc } from "firebase/firestore";
+import { collection, doc, setDoc, getDoc, getDocs, query } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 const provider = new GoogleAuthProvider();
@@ -33,6 +33,8 @@ export const useMainStore = defineStore({
     user: null,
     doc: null,
     classes: [],
+    loaded_email: null,
+    loaded_classes: null,
   }),
   // store getters
   getters: {
@@ -219,6 +221,45 @@ export const useMainStore = defineStore({
     async update_remote() {
       // update remote doc
       await setDoc(this.userdoc_ref, this.doc, { merge: true });
+    },
+    async get_classes_by_email(email) {
+      this.loaded_email = null;
+      if (!email || !validAccount(email)) {
+        this.loaded_classes = null;
+        this.loaded_email = email;
+        return;
+      }
+      let classes_maindoc = await getDoc(doc(db, "classes", email));
+      if (classes_maindoc.exists()) {
+        let classes = [];
+        let classes_subcollection = collection(doc(db, "classes", email), "classes");
+        let classes_subcollection_query_snapshot = await getDocs(query(classes_subcollection));
+        classes_subcollection_query_snapshot.forEach((doc) => {
+          let class_data = doc.data();
+          class_data.id = doc.id;
+          // if user already in class, change name to "[JOINED] name"
+          if (this.doc.classes.includes([email, doc.id].join("/"))) {
+            class_data.name = "[JOINED] " + class_data.name;
+            class_data.is_joined = true;
+          }
+          classes.push(class_data);
+        });
+        this.loaded_classes = classes;
+      } else {
+        this.loaded_classes = null;
+      }
+
+      this.loaded_email = email;
+    },
+    async add_class(teacher_email, class_id, class_name) {
+      if (!this.doc) return;
+      if (!class_id) return;
+      if (this.doc.classes.includes(class_id)) return;
+      this.doc.classes.push([teacher_email, class_id].join("/"));
+      await this.update_remote();
+      new SuccessToast(`Added "${class_name}" to your classes`, 2000);
+      // redirect to /portal
+      router.push("/portal");
     },
   },
 });
