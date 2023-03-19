@@ -5,7 +5,7 @@ import { defineStore } from "pinia";
 import { Toast, ErrorToast, cleanError, WarningToast, SuccessToast } from "@svonk/util";
 
 // get firebase requirements
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { collection, doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 const provider = new GoogleAuthProvider();
@@ -80,22 +80,44 @@ export const useMainStore = defineStore({
       // get all classes' data and combine into an array
       if (!this.doc) return [];
       let classes = [];
-      for (let i = 0; i < this.doc.classes.length; i++) {
-        let class_id = this.doc.classes[i];
-        const class_ref = doc(db, "classes", class_id);
-        let class_doc = await getDoc(class_ref);
-        if (class_doc.exists()) {
-          classes.push(class_doc.data());
-        } else {
-          console.warn("Class doesn't exist: " + class_id);
-          // remove class from user's doc
-          this.doc.classes = this.doc.classes.filter((c) => c != class_id);
-          await this.update_remote();
-          console.log("Removed class from user's doc: " + class_id);
-          new WarningToast("Removed non-existent class with id " + class_id, 2000);
+      for (let class_path of this.doc.classes) {
+        // split class path into teacher/uid
+        let [teacher, class_id] = class_path.split("/");
+        if (!teacher || !class_id) {
+          await this.remove_class(class_path);
+          continue;
         }
+        // get document for teacher email (first part of path)
+        let teacher_ref = doc(db, "classes", teacher);
+        let teacher_doc = await getDoc(teacher_ref);
+        if (!teacher_doc.exists()) {
+          await this.remove_class(class_path);
+          continue;
+        }
+        // get classes sub-collection from teacher's doc
+        let teacher_classes = collection(teacher_ref, "classes");
+        if (!teacher_classes) {
+          await this.remove_class(class_path);
+          continue;
+        }
+        // get class doc from classes sub-collection
+        let subclass_ref = doc(teacher_classes, class_id);
+        let subclass_doc = await getDoc(subclass_ref);
+        if (!subclass_doc.exists()) {
+          await this.remove_class(class_path);
+          continue;
+        }
+        // push class to array
+        classes.push(subclass_doc.data());
       }
       this.classes = classes;
+    },
+    async remove_class(class_id) {
+      console.warn("Class doesn't exist: " + class_id);
+      this.doc.classes = this.doc.classes.filter((c) => c != class_id);
+      await this.update_remote();
+      console.log("Removed class from user's doc: " + class_id);
+      new WarningToast("Removed non-existent class with id " + class_id, 2000);
     },
     set_user(user) {
       if (!user.email || !validAccount(user.email)) {
