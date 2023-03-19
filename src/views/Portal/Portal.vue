@@ -30,6 +30,7 @@
     <RightBar ref="RightBar" @close_left_bar="close_left_bar" />
     <!-- show overlay only if router-view is active -->
     <div class="overlay_center_view" v-if="$route.name !== 'portal'">
+      <div class="overlay_close" @click="$router.push('/portal')"></div>
       <router-view class="router_center_view" />
     </div>
   </main>

@@ -13,6 +13,15 @@
   align-items: center;
   backdrop-filter: blur(5px);
 }
+.overlay_center_view > .overlay_close {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  z-index: 1;
+}
 .overlay_center_view > .router_center_view {
   width: 100%;
   height: 100%;
@@ -26,6 +35,7 @@
   /* layout */
   display: flex;
   flex-flow: column nowrap;
+  z-index: 2;
 }
 .overlay_center_view > .router_center_view > * {
   padding: var(--padding-overlay);

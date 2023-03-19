@@ -86,40 +86,48 @@ export const useMainStore = defineStore({
         // split class path into teacher/uid
         let [teacher, class_id] = class_path.split("/");
         if (!teacher || !class_id) {
-          await this.remove_class(class_path);
+          await this.remove_invalid(class_path);
           continue;
         }
         // get document for teacher email (first part of path)
         let teacher_ref = doc(db, "classes", teacher);
         let teacher_doc = await getDoc(teacher_ref);
         if (!teacher_doc.exists()) {
-          await this.remove_class(class_path);
+          await this.remove_invalid(class_path);
           continue;
         }
         // get classes sub-collection from teacher's doc
         let teacher_classes = collection(teacher_ref, "classes");
         if (!teacher_classes) {
-          await this.remove_class(class_path);
+          await this.remove_invalid(class_path);
           continue;
         }
         // get class doc from classes sub-collection
         let subclass_ref = doc(teacher_classes, class_id);
         let subclass_doc = await getDoc(subclass_ref);
         if (!subclass_doc.exists()) {
-          await this.remove_class(class_path);
+          await this.remove_invalid(class_path);
           continue;
         }
         // push class to array
-        classes.push(subclass_doc.data());
+        let doc_data = subclass_doc.data();
+        doc_data.id = class_path;
+        classes.push(doc_data);
       }
       this.classes = classes;
     },
-    async remove_class(class_id) {
+    async remove_invalid(class_id) {
       console.warn("Class doesn't exist: " + class_id);
       this.doc.classes = this.doc.classes.filter((c) => c != class_id);
       await this.update_remote();
       console.log("Removed class from user's doc: " + class_id);
       new WarningToast("Removed non-existent class with id " + class_id, 2000);
+    },
+    async remove_class(class_id) {
+      this.doc.classes = this.doc.classes.filter((c) => c != class_id);
+      await this.update_remote();
+      console.warn("Removed class from user's doc: " + class_id);
+      new SuccessToast("Removed class", 2000);
     },
     set_user(user) {
       if (!user.email || !validAccount(user.email)) {

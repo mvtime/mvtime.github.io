@@ -5,7 +5,14 @@
       <hr class="class_list_hr" />
       <div class="classes_container">
         <div class="classes_container_class" v-for="class_obj of classes" :key="class_obj.name">
-          <span class="class_swatch" :style="{ '--color-class': class_obj.color }"></span>
+          <div
+            class="class_swatch"
+            :style="{ '--color-class': class_obj.color }"
+            title="Remove Class"
+            @click="store.remove_class(class_obj.id)"
+          >
+            <div class="class_swatch__icon"></div>
+          </div>
           <span class="class_name">{{ class_obj.name }}</span>
         </div>
         <div
@@ -96,7 +103,7 @@ h5 {
   padding-right: calc(15px + 20px);
 }
 .classes_container_class > * {
-  pointer-events: none;
+  user-select: none;
 }
 .class_swatch__add_icon {
   width: 100%;
@@ -107,6 +114,20 @@ h5 {
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
+}
+.class_swatch__icon {
+  visibility: hidden;
+  width: 100%;
+  height: 100%;
+  filter: var(--filter-icon);
+  background-image: url(@/assets/img/general/portal/remove.png);
+  background-image: url(@/assets/img/general/portal/remove.svg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.class_swatch:hover .class_swatch__icon {
+  visibility: visible;
 }
 .class_swatch {
   display: inline-block;
