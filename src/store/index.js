@@ -68,9 +68,14 @@ export const useMainStore = defineStore({
           classes[i].name = classes[i].name ? classes[i].name : "Unnamed Class";
           // check test date type and convert to date object if necessary
           if (typeof class_tests[j].date == "string") {
+            // convert to mm-dd-yyyy from yyyy-mm-dd
+            let [year, month, day] = class_tests[j].date.split("-");
+            class_tests[j].date = `${month}-${day}-${year}`;
             class_tests[j].date = new Date(class_tests[j].date);
             class_tests[j].date = isNaN(class_tests[j].date) ? null : class_tests[j].date;
           }
+          // set color from parent class color
+          class_tests[j].color = classes[i].color;
           tests.push({
             ...class_tests[j],
             class_name: classes[i].name,
@@ -359,6 +364,14 @@ export const useMainStore = defineStore({
         batch.update(class_ref, {
           tests: arrayUnion(test_obj),
         });
+        // update this.classes where classes[index].id == teacheremail/id
+        let class_index = this.classes.findIndex((c) => c.id == class_id);
+        if (class_index != -1) {
+          // create tests array if it doesn't exist
+          if (!this.classes[class_index].tests) this.classes[class_index].tests = [];
+          // add test to local classes array
+          this.classes[class_index].tests.push(test_obj);
+        }
       });
       await batch.commit();
       new SuccessToast(
