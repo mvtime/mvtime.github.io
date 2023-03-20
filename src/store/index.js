@@ -162,7 +162,7 @@ export const useMainStore = defineStore({
       this.user = user;
       // if teacher, setup this.teacher refs
       if (this.is_teacher) {
-        console.log("teacher mode");
+        console.warn("teacher mode");
         this.teacher.doc_ref = doc(db, "classes", this.user.email);
         this.teacher.collection_ref = collection(this.teacher.doc_ref, "classes");
       }
@@ -358,7 +358,6 @@ export const useMainStore = defineStore({
       let teacher_doc_ref = doc(collection_ref, this.user.email);
       let teacher_classes_ref = collection(teacher_doc_ref, "classes");
       test_classes.forEach((class_id) => {
-        console.log("class_id", class_id);
         // use this.teacher.collection_ref to get class collection ref, then update the class documents within
         let class_ref = doc(teacher_classes_ref, class_id);
         batch.update(class_ref, {

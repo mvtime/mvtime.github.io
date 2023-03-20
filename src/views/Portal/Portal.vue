@@ -70,11 +70,11 @@ export default {
     },
     placeholderToast,
     show_test(test) {
-      console.log(test);
       let testJSON = JSON.stringify({
         name: test.name,
         group: test.class_name,
-        date: test.date.toLocaleDateString(),
+        date: test.date.toLocaleDateString("en-US").replace("/", "-"),
+        description: test.description,
       });
       this.$router.push({
         name: "test",

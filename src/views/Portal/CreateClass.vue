@@ -15,14 +15,6 @@
             placeholder="Class Color"
           />
         </div>
-        <div class="flex-break"></div>
-        <textarea
-          v-model="class_obj.description"
-          class="styled_input class_description"
-          type="text"
-          placeholder="Class Description"
-        >
-        </textarea>
       </div>
     </div>
     <div class="bottom_actions">
@@ -65,11 +57,7 @@ export default {
   flex-flow: row wrap;
   margin-bottom: 0;
 }
-.flex-break {
-  flex-basis: 100%;
-  flex-shrink: 0;
-  height: 0;
-}
+
 .color_input_container {
   margin-right: 0;
   padding: 0;
@@ -90,12 +78,8 @@ export default {
   transform: scale(2);
 }
 .class_description {
-  flex-grow: 1;
-  width: 100%;
-  min-height: calc(var(--height-overlay-input) * 2);
   margin-right: 0;
   margin-top: calc(var(--padding-overlay) / 2);
-  line-height: calc(var(--height-overlay-input) - 2 * 10px);
   padding-top: 10px;
   padding-bottom: 10px;
 }

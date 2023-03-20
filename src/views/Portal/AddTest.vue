@@ -10,6 +10,14 @@
       <div class="inputs_row">
         <input v-model="test.name" class="styled_input" type="text" placeholder="Test Name" />
         <input type="date" class="styled_input input_test__date" v-model="test.date" />
+        <div class="flex-break"></div>
+        <textarea
+          v-model="test.description"
+          class="styled_input styled_textarea test_description"
+          type="text"
+          placeholder="Test Description (Optional)"
+        >
+        </textarea>
       </div>
       <div class="overlay_contents_text">Choose which classes this test will be added to</div>
       <!-- checkboxes for classes -->
@@ -43,6 +51,7 @@ export default {
       test: {
         name: "",
         date: "",
+        description: "",
       },
       test_classes: [],
     };
@@ -95,5 +104,16 @@ export default {
 }
 .input_test__date {
   max-width: 150px;
+}
+.inputs_row {
+  flex-flow: row wrap;
+}
+.input_test__date {
+  margin-right: 0;
+}
+.test_description {
+  margin-top: calc(var(--padding-overlay) / 2);
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 </style>
