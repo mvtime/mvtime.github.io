@@ -158,6 +158,7 @@ h2.modal_header_title {
 }
 .styled_line__separator {
   height: calc(100% + 5px);
+  min-height: 18px;
   border-left: solid var(--thickness-overlay-border) var(--color-overlay-border);
   margin: 0 calc(var(--padding-overlay) / 2);
   width: 0px;

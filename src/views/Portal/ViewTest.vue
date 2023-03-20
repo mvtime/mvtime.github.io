@@ -6,6 +6,11 @@
     <div class="overlay_contents">
       <div class="spaced_contents">
         <div class="styled_obj">
+          <span class="styled_line__label">Class:</span>
+          <span class="styled_line__separator"></span>
+          <span class="styled_line__value">{{ test.group || test.class_name }}</span>
+        </div>
+        <div class="styled_obj">
           <span class="styled_line__label">Name:</span>
           <span class="styled_line__separator"></span>
           <span class="styled_line__value">{{ test.name }}</span>

@@ -71,8 +71,17 @@ export default {
     placeholderToast,
     show_test(test) {
       console.log(test);
-      // fix the above
-      this.$router.push({ name: "test", query: { test: test } });
+      let testJSON = JSON.stringify({
+        name: test.name,
+        group: test.class_name,
+        date: test.date.toLocaleDateString(),
+      });
+      this.$router.push({
+        name: "test",
+        query: {
+          test: testJSON,
+        },
+      });
     },
   },
 };
