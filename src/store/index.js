@@ -256,7 +256,7 @@ export const useMainStore = defineStore({
         doc_ref: teacher_ref,
         collection_ref: collection(teacher_ref, "classes"),
       };
-      router.push("/portal/teacher-onboarding");
+      router.push("/portal/create");
     },
     async update_remote() {
       // update remote doc
