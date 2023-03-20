@@ -2,7 +2,9 @@
   <main class="home center-1000">
     <div id="home-main">
       <h2>Organize. Plan. Study.</h2>
-      <h4 class="middle-text">Test tracker provides an effective way to manage upcoming exams.</h4>
+      <h3 class="middle-text secondary_home_text">
+        Test tracker provides an effective way to manage upcoming exams.
+      </h3>
       <button class="action-btn auth-action can-login click-action" @click="tomain">
         {{ logged_in ? "Open App" : "Get Started" }}
       </button>

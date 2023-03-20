@@ -132,7 +132,7 @@ header nav a {
     border-radius: 10px;
     padding: 10px;
     z-index: 1;
-    box-shadow: var(--shadow-highlight);
+    box-shadow: var(--shadow-highlight), 0px 0px 3px #fff;
     width: 200px;
     height: 300px;
   }

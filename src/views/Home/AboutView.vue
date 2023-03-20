@@ -3,9 +3,9 @@
     <div class="about_header">
       <h2>Our Mission;</h2>
       <br />
-      <h4>
+      <h3 class="secondary_home_text">
         A better way to organize our cluttered lifes. By students, for the wellbeing of students.
-      </h4>
+      </h3>
     </div>
     <hr />
     <p class="about_body">
