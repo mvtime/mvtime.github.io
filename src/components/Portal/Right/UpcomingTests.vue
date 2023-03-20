@@ -1,6 +1,6 @@
 <template>
   <div class="upcoming_tests">
-    <div v-if="tests" class="upcoming_tests__not_empty">
+    <div v-if="tests && tests.length" class="upcoming_tests__not_empty">
       <h5>Upcoming Tests</h5>
       <hr class="upcoming_tests_hr" />
       <div class="tests_container">

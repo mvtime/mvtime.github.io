@@ -5,16 +5,7 @@ import { defineStore } from "pinia";
 import { Toast, ErrorToast, cleanError, WarningToast, SuccessToast } from "@svonk/util";
 
 // get firebase requirements
-import {
-  collection,
-  doc,
-  setDoc,
-  getDoc,
-  getDocs,
-  query,
-  // createCollection,
-  addDoc,
-} from "firebase/firestore";
+import { collection, doc, setDoc, getDoc, getDocs, query, addDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 const provider = new GoogleAuthProvider();

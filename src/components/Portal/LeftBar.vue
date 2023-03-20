@@ -2,11 +2,12 @@
   <div class="left-bar portal_sidebar" :class="{ active: sidebar_open }" @click="show_if_inactive">
     <div class="branding-title gohome">MV Test Tracker</div>
     <!-- Actions Panel -->
+    <ActionsPanel v-if="store && store.is_teacher" />
     <!-- Class List -->
     <ClassList />
     <div class="flex-spacer"></div>
     <!-- Settings Button -->
-    <button class="settings_button click-action" title="Open Settings">
+    <button class="settings_button click-action" title="Open Settings" @click="placeholderToast">
       <div class="settings_icon"></div>
       <div class="toggle_text">Settings</div>
     </button>
@@ -18,17 +19,26 @@
 <script>
 import SidebarToggle from "@/components/Portal/SidebarToggle.vue";
 import ClassList from "./Left/ClassList.vue";
+import ActionsPanel from "./Left/ActionsPanel.vue";
+import { useMainStore } from "@/store";
+import { placeholderToast } from "@svonk/util";
 export default {
   name: "LeftBar",
   components: {
     SidebarToggle,
     ClassList,
+    ActionsPanel,
   },
   emits: ["close_right_bar"],
   data() {
     return {
       sidebar_open: false,
     };
+  },
+  computed: {
+    store() {
+      return useMainStore();
+    },
   },
   mounted() {
     window.addEventListener("resize", this.close_sidebar);
@@ -37,6 +47,7 @@ export default {
     window.removeEventListener("resize", this.close_sidebar);
   },
   methods: {
+    placeholderToast,
     show_if_inactive() {
       if (!this.sidebar_open) this.sidebar_open = true;
 

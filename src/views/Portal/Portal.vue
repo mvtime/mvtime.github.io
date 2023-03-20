@@ -94,6 +94,7 @@ main.portal .portal_sidebar {
   position: relative;
   box-sizing: border-box;
   padding: var(--padding-sidebar);
+  padding-bottom: calc(var(--padding-sidebar) + var(--height-sidebar-action));
 }
 main.portal .portal_sidebar {
   max-height: 800px;

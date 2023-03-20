@@ -38,6 +38,8 @@
   --radius-overlay-input: 5px;
   --height-overlay-input: 40px;
   --padding-overlay-input: 15px;
+  /* sidebar actions */
+  --height-sidebar-action: 40px;
 }
 /* light theme colors for the project */
 :root {

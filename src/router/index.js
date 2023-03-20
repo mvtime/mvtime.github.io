@@ -126,6 +126,20 @@ const router = createRouter({
             requiresTeacher: true,
           },
         },
+        {
+          path: "/portal/newtest",
+          name: "newtest",
+          component: () => import("../views/Portal/AddTest.vue"),
+          meta: {
+            page_title: "Teacher | Add Test",
+            theme_color: {
+              light: "#ffffff",
+              dark: "#121212",
+            },
+            requiresAuth: true,
+            requiresTeacher: true,
+          },
+        },
       ],
     },
     // redirect any /app routes to /portal
