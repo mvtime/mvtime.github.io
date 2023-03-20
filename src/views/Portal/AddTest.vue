@@ -9,13 +9,13 @@
       </div>
       <div class="inputs_row">
         <input v-model="test.name" class="styled_input" type="text" placeholder="Test Name" />
-        <input type="date" class="styled-input" v-model="test.date" />
+        <input type="date" class="styled_input input_test__date" v-model="test.date" />
       </div>
       <div class="overlay_contents_text">Choose which classes this test will be added to</div>
       <!-- checkboxes for classes -->
       <div class="checkboxes">
         <div class="checkbox" v-for="class_obj in classes" :key="class_obj.id">
-          <input type="checkbox" :id="class_obj.id" :value="class_obj.id" v-model="test.classes" />
+          <input type="checkbox" :id="class_obj.id" :value="class_obj.id" v-model="test_classes" />
           <label :for="class_obj.id">{{ class_obj.name.replace("[JOINED] ", "") }}</label>
         </div>
       </div>
@@ -25,8 +25,8 @@
       <div class="flex-spacer"></div>
       <button
         class="continue_action"
-        @click="store.add_test(test.name, test.classes)"
-        :disabled="!test.name || !test.date || !test.classes.length"
+        @click="store.add_test(test, test_classes)"
+        :disabled="!test.name || !test.date || !test_classes.length"
       >
         Add Test
       </button>
@@ -42,9 +42,9 @@ export default {
     return {
       test: {
         name: "",
-        classes: [],
         date: "",
       },
+      test_classes: [],
     };
   },
   computed: {
@@ -92,5 +92,8 @@ export default {
   padding-left: 0.5rem;
   user-select: none;
   cursor: pointer;
+}
+.input_test__date {
+  max-width: 150px;
 }
 </style>

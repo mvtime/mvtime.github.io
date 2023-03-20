@@ -5,7 +5,17 @@ import { defineStore } from "pinia";
 import { Toast, ErrorToast, cleanError, WarningToast, SuccessToast } from "@svonk/util";
 
 // get firebase requirements
-import { collection, doc, setDoc, getDoc, getDocs, query, addDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  setDoc,
+  getDoc,
+  getDocs,
+  query,
+  addDoc,
+  writeBatch,
+  arrayUnion,
+} from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 const provider = new GoogleAuthProvider();
@@ -50,6 +60,7 @@ export const useMainStore = defineStore({
       // get all the classes with this.classes(), then get all their tests and combine them into an array
       let tests = [];
       let classes = this.classes;
+      if (!classes?.length) return [];
       for (let i = 0; i < classes.length; i++) {
         let class_tests = classes[i].tests;
         // add class name and color to each test
@@ -144,6 +155,12 @@ export const useMainStore = defineStore({
         return;
       }
       this.user = user;
+      // if teacher, setup this.teacher refs
+      if (this.is_teacher) {
+        console.log("teacher mode");
+        this.teacher.doc_ref = doc(db, "classes", this.user.email);
+        this.teacher.collection_ref = collection(this.teacher.doc_ref, "classes");
+      }
       // if router has a redirect, go to it
       if (router.currentRoute?.value?.query?.redirect) {
         router.push(router.currentRoute?.value?.query?.redirect);
@@ -242,7 +259,6 @@ export const useMainStore = defineStore({
         name: this.user.displayName,
         email: this.user.email,
       });
-      // await createCollection(teacher_ref, "classes");
       this.teacher = {
         doc_ref: teacher_ref,
         collection_ref: collection(teacher_ref, "classes"),
@@ -321,6 +337,37 @@ export const useMainStore = defineStore({
         console.error(e);
         new ErrorToast("Couldn't create class", cleanError(e), 2000);
       }
+    },
+    async add_test(test_obj, test_classes) {
+      if (!test_obj.name) {
+        new ErrorToast("Please enter a test name", 2000);
+        return;
+      } else if (!test_classes || test_classes.length == 0) {
+        new ErrorToast("Please select at least one class", 2000);
+        return;
+      }
+      // use firebase arrayadd to add test to each class
+      let batch = writeBatch(db);
+      let collection_ref = collection(db, "classes");
+      // get doc ref for user email
+      let teacher_doc_ref = doc(collection_ref, this.user.email);
+      let teacher_classes_ref = collection(teacher_doc_ref, "classes");
+      test_classes.forEach((class_id) => {
+        console.log("class_id", class_id);
+        // use this.teacher.collection_ref to get class collection ref, then update the class documents within
+        let class_ref = doc(teacher_classes_ref, class_id);
+        batch.update(class_ref, {
+          tests: arrayUnion(test_obj),
+        });
+      });
+      await batch.commit();
+      new SuccessToast(
+        `Added test "${test_obj.name}" to ${test_classes.length} class${
+          test_classes.length == 1 ? "" : "es"
+        }`,
+        2000
+      );
+      router.push("/portal");
     },
   },
 });

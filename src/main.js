@@ -85,7 +85,7 @@ router.beforeEach((to) => {
       path: "/",
       query: { redirect: to.fullPath },
     };
-  } else if (to.meta && to.meta.requiresTeacher && store && !store.is_teacher) {
+  } else if (to.meta && to.meta.requiresTeacher && store.user && !store.is_teacher) {
     // launch auth popup through store action
     new Toast(
       "You must be a teacher to access this page",

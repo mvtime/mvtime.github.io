@@ -24,16 +24,6 @@
           </div>
           <span class="class_name">{{ !store.is_teacher ? "Add" : "Join" }} a Class</span>
         </div>
-        <div
-          v-if="store.is_teacher"
-          class="classes_container_class classes_container_class__create_class"
-          @click="$router.push('/portal/create')"
-        >
-          <div class="class_swatch">
-            <div class="class_swatch__add_icon"></div>
-          </div>
-          <span class="class_name">Create a Class</span>
-        </div>
       </div>
     </div>
   </div>
