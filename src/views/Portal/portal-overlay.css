@@ -166,3 +166,28 @@ h2.modal_header_title {
 .styled_line__value {
   font-weight: 500;
 }
+/* modal sizing and overflow */
+@media (max-width: 490px) {
+  .overlay_center_view > .router_center_view {
+    max-width: calc(100% - 40px);
+  }
+}
+@media (max-height: 540px) {
+  .overlay_center_view > .router_center_view {
+    max-height: calc(100% - 40px);
+  }
+}
+.overlay_contents::-webkit-scrollbar {
+  width: 14px;
+  cursor: pointer;
+}
+.overlay_contents::-webkit-scrollbar-track {
+  background-color: var(--color-bg);
+}
+
+.overlay_contents::-webkit-scrollbar-thumb {
+  background-color: var(--color-overlay-input);
+  border-radius: 1000px;
+  border: solid 4px var(--color-bg);
+  cursor: pointer;
+}
