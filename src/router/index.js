@@ -112,6 +112,20 @@ const router = createRouter({
             requiresAuth: true,
           },
         },
+        {
+          path: "/portal/create",
+          name: "createclass",
+          component: () => import("../views/Portal/CreateClass.vue"),
+          meta: {
+            page_title: "Teacher | Create Class",
+            theme_color: {
+              light: "#ffffff",
+              dark: "#121212",
+            },
+            requiresAuth: true,
+            requiresTeacher: true,
+          },
+        },
       ],
     },
     // redirect any /app routes to /portal

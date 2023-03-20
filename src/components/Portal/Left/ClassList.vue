@@ -22,7 +22,17 @@
           <div class="class_swatch">
             <div class="class_swatch__add_icon"></div>
           </div>
-          <span class="class_name">Add a Class</span>
+          <span class="class_name">{{ !store.is_teacher ? "Add" : "Join" }} a Class</span>
+        </div>
+        <div
+          v-if="store.is_teacher"
+          class="classes_container_class classes_container_class__create_class"
+          @click="$router.push('/portal/create')"
+        >
+          <div class="class_swatch">
+            <div class="class_swatch__add_icon"></div>
+          </div>
+          <span class="class_name">Create a Class</span>
         </div>
       </div>
     </div>
@@ -83,13 +93,15 @@ h5 {
   /* temp */
   padding: 0 var(--spacing-classes-alt);
 }
-.classes_container_class__add_class {
+.classes_container_class__add_class,
+.classes_container_class__create_class {
   background-color: var(--color-on-bg);
   padding: var(--spacing-classes-alt);
   border-radius: 10px;
   cursor: pointer;
 }
-.classes_container_class__add_class .class_name {
+.classes_container_class__add_class .class_name,
+.classes_container_class__create_class .class_name {
   font-size: 0.8em;
   opacity: 0.7;
   text-align: center;
@@ -132,7 +144,8 @@ h5 {
   background-color: var(--color-class);
   filter: var(--filter-calendar-test);
 }
-.classes_container_class__add_class .class_swatch {
+.classes_container_class__add_class .class_swatch,
+.classes_container_class__create_class .class_swatch {
   background-color: var(--color-bg);
   filter: none;
 }

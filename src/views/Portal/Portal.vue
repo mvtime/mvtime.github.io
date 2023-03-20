@@ -11,7 +11,7 @@
       <header class="portal_info">
         <div class="portal_info_title">
           <span class="portal_info_usertype"
-            >{{ store.doc && store.doc.is_teacher ? "Teacher" : "Student" }} Dashboard</span
+            >{{ store.is_teacher ? "Teacher" : "Student" }} Dashboard</span
           >
           <span class="portal_info_date">{{
             new Date().toLocaleDateString("en-US", {

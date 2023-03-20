@@ -5,7 +5,16 @@ import { defineStore } from "pinia";
 import { Toast, ErrorToast, cleanError, WarningToast, SuccessToast } from "@svonk/util";
 
 // get firebase requirements
-import { collection, doc, setDoc, getDoc, getDocs, query } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  setDoc,
+  getDoc,
+  getDocs,
+  query,
+  // createCollection,
+  addDoc,
+} from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 const provider = new GoogleAuthProvider();
@@ -35,6 +44,10 @@ export const useMainStore = defineStore({
     classes: [],
     loaded_email: null,
     loaded_classes: null,
+    teacher: {
+      doc_ref: null,
+      collection_ref: null,
+    },
   }),
   // store getters
   getters: {
@@ -56,16 +69,21 @@ export const useMainStore = defineStore({
             class_tests[j].date = new Date(class_tests[j].date);
             class_tests[j].date = isNaN(class_tests[j].date) ? null : class_tests[j].date;
           }
-
-          // push test to array
           tests.push({
             ...class_tests[j],
-            color: classes[i]?.color,
             class_name: classes[i].name,
           });
         }
       }
       return tests;
+    },
+    is_teacher() {
+      // check if email is a teacher email (ends in @mvla.net) && has letters in the first part
+      if (!this.user) return false;
+      if (this.doc && this.doc.teacher_mode) return true;
+      let email = this.user.email;
+      let [first, last] = email.split("@");
+      return last == "mvla.net" && !/\d/.test(first);
     },
   },
   actions: {
@@ -117,10 +135,8 @@ export const useMainStore = defineStore({
       this.classes = classes;
     },
     async remove_invalid(class_id) {
-      console.warn("Class doesn't exist: " + class_id);
       this.doc.classes = this.doc.classes.filter((c) => c != class_id);
       await this.update_remote();
-      console.log("Removed class from user's doc: " + class_id);
       new WarningToast("Removed non-existent class with id " + class_id, 2000);
     },
     async remove_class(class_id) {
@@ -132,30 +148,28 @@ export const useMainStore = defineStore({
     set_user(user) {
       if (!user.email || !validAccount(user.email)) {
         auth.signOut();
-        console.warn("Invalid account: " + user.email);
         new WarningToast("Please use your MVLA email to log in", 2000);
         this.clear();
         return;
       }
       this.user = user;
       // if router has a redirect, go to it
-      if (
-        router.currentRoute.value &&
-        router.currentRoute.value.query &&
-        router.currentRoute.value.query.redirect
-      ) {
-        router.push(router.currentRoute.value.query.redirect);
+      if (router.currentRoute?.value?.query?.redirect) {
+        router.push(router.currentRoute?.value?.query?.redirect);
       }
     },
     clear() {
       this.user = null;
       this.doc = null;
+      this.classes = [];
+      this.loaded_email = null;
+      this.loaded_classes = null;
+      this.teacher = {
+        doc_ref: null,
+        collection_ref: null,
+      };
       // if page requires auth, redirect to home
-      if (
-        router.currentRoute.value &&
-        router.currentRoute.value.meta &&
-        router.currentRoute.value.meta.requiresAuth
-      ) {
+      if (router.currentRoute?.value?.meta?.requiresAuth) {
         router.push("/");
       }
     },
@@ -214,17 +228,35 @@ export const useMainStore = defineStore({
       }
     },
     async create_doc() {
-      console.warn("Creating user document");
       new WarningToast("User document doesn't exist, creating new one...", 2000);
       this.doc = {
         name: this.user.displayName,
         email: this.user.email,
         classes: [],
       };
-      await this.update_remote();
-      new SuccessToast("Created user document; Let's get started", 2000);
+      if (this.is_teacher) {
+        await this.create_teacher_doc();
+        new SuccessToast("Created user & teacher documents; Let's get started", 2000);
+      } else {
+        await this.update_remote();
+        new SuccessToast("Created user document; Let's get started", 2000);
+        router.push("/portal/onboarding");
+      }
       // do onboarding
-      router.push("/portal/onboarding");
+    },
+    async create_teacher_doc() {
+      // create teacher doc under (classes/teacher_email@mvla.net) with sub-collection (classes)
+      let teacher_ref = doc(db, "classes", this.user.email);
+      await setDoc(teacher_ref, {
+        name: this.user.displayName,
+        email: this.user.email,
+      });
+      // await createCollection(teacher_ref, "classes");
+      this.teacher = {
+        doc_ref: teacher_ref,
+        collection_ref: collection(teacher_ref, "classes"),
+      };
+      router.push("/portal/teacher-onboarding");
     },
     async update_remote() {
       // update remote doc
@@ -268,6 +300,36 @@ export const useMainStore = defineStore({
       new SuccessToast(`Added "${class_name}" to your classes`, 2000);
       // redirect to /portal
       router.push("/portal");
+    },
+    async create_class(class_obj) {
+      console.warn("create_class", class_obj);
+      if (!this.is_teacher) {
+        new ErrorToast("You need to be a teacher to create a class", 2000);
+        return;
+      }
+      if (!class_obj.name) {
+        new ErrorToast("Please enter a class name", 2000);
+        return;
+      }
+      try {
+        // check if there is a teacher doc and collection
+        if (!this.teacher.doc_ref || !this.teacher.collection_ref) {
+          // create teacher doc
+          await this.create_teacher_doc();
+          // call this again
+          await this.create_class(class_obj);
+          return;
+        }
+        // create class doc under teacher.collection_ref
+        let class_doc_ref = await addDoc(this.teacher.collection_ref, class_obj);
+        // add class to user doc;
+        new SuccessToast(`Created class "${class_obj.name}"`, 2000);
+        console.log("class_doc_ref", class_doc_ref);
+        await this.add_class(this.user.email, class_doc_ref.id, class_obj.name);
+      } catch (e) {
+        console.error(e);
+        new ErrorToast("Couldn't create class", cleanError(e), 2000);
+      }
     },
   },
 });

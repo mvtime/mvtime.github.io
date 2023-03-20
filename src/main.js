@@ -72,7 +72,7 @@ import { Toast } from "@svonk/util";
 router.beforeEach((to) => {
   const store = useMainStore();
 
-  if (to.meta && to.meta.requiresAuth && !store.user) {
+  if (to.meta && to.meta.requiresAuth && store && !store.user) {
     // launch auth popup through store action
     new Toast(
       "Please log in to access this page",
@@ -85,5 +85,14 @@ router.beforeEach((to) => {
       path: "/",
       query: { redirect: to.fullPath },
     };
+  } else if (to.meta && to.meta.requiresTeacher && store && !store.is_teacher) {
+    // launch auth popup through store action
+    new Toast(
+      "You must be a teacher to access this page",
+      "default",
+      1500,
+      require("@svonk/util/assets/info-locked-icon.svg")
+    );
+    return { path: "/portal" };
   }
 });

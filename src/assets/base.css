@@ -151,6 +151,7 @@
   margin: 0;
   position: unset;
   /* font-weight: normal; */
+  font-family: "Inter", "Poppins", "Open Sans", sans-serif;
 }
 html,
 body {
@@ -161,7 +162,6 @@ body {
   overflow: hidden;
 }
 body {
-  font-family: "Inter", "Poppins", "Open Sans", sans-serif;
   min-height: 100vh;
   color: var(--color-text);
   background: var(--color-bg);
