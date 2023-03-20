@@ -25,7 +25,7 @@
         <div class="portal_info_welcome">Welcome Back {{ name }}</div>
       </header>
       <!-- calendar -->
-      <CalendarBlock @testclick="placeholderToast" />
+      <CalendarBlock @testclick="show_test($event)" />
     </div>
     <RightBar ref="RightBar" @close_left_bar="close_left_bar" />
     <!-- show overlay only if router-view is active -->
@@ -69,6 +69,11 @@ export default {
       this.$refs.RightBar.close_sidebar();
     },
     placeholderToast,
+    show_test(test) {
+      console.log(test);
+      // fix the above
+      this.$router.push({ name: "test", query: { test: test } });
+    },
   },
 };
 </script>

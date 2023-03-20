@@ -140,6 +140,24 @@ const router = createRouter({
             requiresTeacher: true,
           },
         },
+
+        {
+          // specify param "test" in the route
+          path: "/portal/test",
+          name: "test",
+          component: () => import("../views/Portal/ViewTest.vue"),
+          meta: {
+            page_title: "View Test",
+            theme_color: {
+              light: "#ffffff",
+              dark: "#121212",
+            },
+            requiresAuth: false,
+            props: (route) => ({
+              test: route.query.test,
+            }),
+          },
+        },
       ],
     },
     // redirect any /app routes to /portal
