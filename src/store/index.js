@@ -364,16 +364,11 @@ export const useMainStore = defineStore({
         batch.update(class_ref, {
           tests: arrayUnion(test_obj),
         });
-        // update this.classes where classes[index].id == teacheremail/id
-        let class_index = this.classes.findIndex((c) => c.id == class_id);
-        if (class_index != -1) {
-          // create tests array if it doesn't exist
-          if (!this.classes[class_index].tests) this.classes[class_index].tests = [];
-          // add test to local classes array
-          this.classes[class_index].tests.push(test_obj);
-        }
       });
       await batch.commit();
+      // rerun get_tests to update local data, discard result
+      await this.get_classes();
+
       new SuccessToast(
         `Added test "${test_obj.name}" to ${test_classes.length} class${
           test_classes.length == 1 ? "" : "es"
