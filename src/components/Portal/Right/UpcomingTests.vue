@@ -9,6 +9,7 @@
           v-for="test of tests"
           :test="test"
           :key="test.name"
+          @click="show_test(test)"
         />
       </div>
     </div>
@@ -42,9 +43,29 @@ export default {
         .slice(0, 4);
     },
   },
+  methods: {
+    show_test(test) {
+      let testJSON = JSON.stringify({
+        name: test.name,
+        group: test.class_name,
+        date: test.date.toLocaleDateString("en-US").replace("/", "-"),
+        description: test.description,
+      });
+      this.$router.push({
+        name: "test",
+        query: {
+          test: testJSON,
+        },
+      });
+    },
+  },
 };
 </script>
 <style scoped>
+.tests_container_test {
+  cursor: pointer;
+  user-select: none;
+}
 .upcoming_tests {
   margin: auto 0;
   width: 100%;
