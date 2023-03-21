@@ -63,6 +63,7 @@ export const useMainStore = defineStore({
       if (!classes?.length) return [];
       for (let i = 0; i < classes.length; i++) {
         let class_tests = classes[i].tests;
+        class_tests = class_tests ? class_tests : [];
         // add class name and color to each test
         for (let j = 0; j < class_tests.length; j++) {
           classes[i].name = classes[i].name ? classes[i].name : "Unnamed Class";
