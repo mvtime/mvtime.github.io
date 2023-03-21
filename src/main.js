@@ -69,6 +69,8 @@ window.$ = $;
 
 // router guard
 import { Toast } from "@svonk/util";
+
+import './registerServiceWorker'
 router.beforeEach((to) => {
   const store = useMainStore();
 
