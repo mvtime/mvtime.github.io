@@ -79,10 +79,10 @@ export default {
 
 @media (max-width: 1200px) {
   main.portal .portal_sidebar {
-    transform: translate(calc(100% - 10px));
+    transform: translate(calc(100% - 15px));
   }
   main.portal .portal_sidebar:hover {
-    transform: translate(calc(100% - 20px));
+    transform: translate(calc(100% - 25px));
   }
 }
 /* info icon */

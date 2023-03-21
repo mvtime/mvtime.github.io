@@ -187,4 +187,25 @@ header.portal_info {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+@media (max-width: 400px) {
+  main.portal .portal_sidebar {
+    min-width: 300px;
+    position: absolute;
+    top: 0;
+  }
+  .portal_sidebar.left-bar {
+    left: 0;
+  }
+  .portal_sidebar.right-bar {
+    right: 0;
+  }
+  .portal_content {
+    --padding-portal: 20px 30px;
+  }
+}
+@media (max-width: 340px) {
+  main.portal .portal_sidebar {
+    min-width: calc(100% - 40px);
+  }
+}
 </style>

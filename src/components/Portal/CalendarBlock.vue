@@ -446,7 +446,7 @@ main.calendar {
     flex-shrink: 0;
     margin-bottom: var(--spacing-calendar-day);
     height: unset;
-    max-height: 100px;
+    max-height: unset;
     align-items: flex-start;
   }
   .calendar_day_date {
@@ -485,10 +485,15 @@ main.calendar {
     flex-flow: row wrap;
     flex-basis: calc(var(--height-calendar-test) + 2 * var(--spacing-calendar-day));
     box-sizing: content-box;
+    overflow-y: unset;
+  }
+  .calendar_day_tests::after,
+  .calendar_day::after {
+    display: none;
   }
   .calendar_day_test {
     margin: var(--spacing-calendar-day) !important;
-    max-width: 200px;
+
     flex-grow: 1;
     white-space: normal;
     height: unset;
