@@ -16,7 +16,22 @@ module.exports = defineConfig({
       description:
         "MV Test tracker provides an effective way to manage your upcoming tests and exams.",
       screenshots: [
-        // add screenshots
+        // in ./img/ss/
+        // narrow
+        {
+          src: "./img/ss/portal-narrow.jpeg",
+          sizes: "360x844",
+          type: "image/jpeg",
+          label: "Portal (narrow)",
+          discription: "The portal page on a narrow screen",
+        },
+        {
+          src: "./img/ss/login-narrow.jpeg",
+          sizes: "360x844",
+          type: "image/jpeg",
+          label: "Login (narrow)",
+          discription: "The login page on a narrow screen",
+        },
       ],
       shortcuts: [
         {
