@@ -17,28 +17,61 @@ module.exports = defineConfig({
         "MV Test tracker provides an effective way to manage your upcoming tests and exams.",
       screenshots: [
         // in ./img/ss/
-        // narrow
         {
-          src: "./img/ss/portal-narrow.jpeg",
-          sizes: "360x844",
-          type: "image/jpeg",
+          src: "./img/ss/portal-wide.png",
+          sizes: "1280x720",
+          type: "image/png",
+          label: "Portal (wide)",
+          discription: "The portal page on a wide screen",
+        },
+        {
+          src: "./img/ss/portal-narrow.png",
+          sizes: "360x694",
+          type: "image/png",
           label: "Portal (narrow)",
           discription: "The portal page on a narrow screen",
         },
         {
-          src: "./img/ss/login-narrow.jpeg",
-          sizes: "360x844",
-          type: "image/jpeg",
+          src: "./img/ss/portal-wide-light.png",
+          sizes: "1280x720",
+          type: "image/png",
+          label: "Portal (wide & light theme)",
+          discription: "The portal page on a wide screen",
+        },
+        {
+          src: "./img/ss/login-narrow.png",
+          sizes: "360x694",
+          type: "image/png",
           label: "Login (narrow)",
           discription: "The login page on a narrow screen",
         },
-
         {
-          src: "./img/ss/portal-wide.jpeg",
+          src: "./img/ss/login-wide.png",
           sizes: "360x844",
-          type: "image/jpeg",
-          label: "Portal (wide)",
-          discription: "The portal page on a wide screen",
+          type: "image/png",
+          label: "Login (wide)",
+          discription: "The login page on a wide screen",
+        },
+        {
+          src: "./img/ss/test-wide.png",
+          sizes: "360x844",
+          type: "image/png",
+          label: "Test (narrow)",
+          discription: "Viewing a test on a narrow screen",
+        },
+        {
+          src: "./img/ss/test-wide.png",
+          sizes: "1280x720",
+          type: "image/png",
+          label: "Test (wide)",
+          discription: "Viewing a test on a wide screen",
+        },
+        {
+          src: "./img/ss/test-wide-light.png",
+          sizes: "1280x720",
+          type: "image/png",
+          label: "Test (wide & light theme)",
+          discription: "Viewing a test on a wide screen",
         },
       ],
       shortcuts: [
