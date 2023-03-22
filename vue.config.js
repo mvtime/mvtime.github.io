@@ -32,6 +32,14 @@ module.exports = defineConfig({
           label: "Login (narrow)",
           discription: "The login page on a narrow screen",
         },
+
+        {
+          src: "./img/ss/portal-wide.jpeg",
+          sizes: "360x844",
+          type: "image/jpeg",
+          label: "Portal (wide)",
+          discription: "The portal page on a wide screen",
+        },
       ],
       shortcuts: [
         {
