@@ -16,13 +16,6 @@
           <span class="styled_line__value">{{ test.name }}</span>
         </div>
         <div class="styled_obj">
-          <span class="styled_line__label">Description:</span>
-          <span class="styled_line__separator"></span>
-          <span class="styled_line__value">{{
-            test.description ? test.description : "No Description Provided"
-          }}</span>
-        </div>
-        <div class="styled_obj">
           <span class="styled_line__label">Date:</span>
           <span class="styled_line__separator"></span>
           <span class="styled_line__value">{{
@@ -32,6 +25,27 @@
               day: "numeric",
             })
           }}</span>
+        </div>
+        <div class="styled_obj">
+          <span class="styled_line__label">Description:</span>
+          <span class="styled_line__separator"></span>
+          <span
+            class="styled_line__value"
+            v-html="test.description ? test.description : 'Not Provided'"
+          ></span>
+        </div>
+        <div class="styled_obj" v-if="test.links">
+          <span class="styled_line__label">Links:</span>
+          <span class="styled_line__separator"></span>
+          <span class="styled_line__value">
+            <a
+              class="styled_line__value__link"
+              v-for="test_link in test.links"
+              :key="test_link.path"
+              :href="test_link.path"
+              >{{ test_link.text }}</a
+            >
+          </span>
         </div>
       </div>
       <div class="overlay_contents_text">
@@ -55,7 +69,14 @@ export default {
   computed: {
     test() {
       let test = this.$route?.query?.test;
-      return test ? JSON.parse(test) : {};
+      test = test ? JSON.parse(test) : {};
+      if (test && test.length && test.links) {
+        // filter any links without text or path
+        test.links = test.links.filter((link) => link.text && link.path);
+      } else {
+        test.links = null;
+      }
+      return test;
     },
   },
   created() {
