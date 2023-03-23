@@ -41,7 +41,7 @@ auth.onAuthStateChanged((user) => {
       console.warn("remote data updated");
       // check if doc exists
       if (!doc.exists()) {
-        store.createDoc();
+        store.create_doc();
         return;
       }
       store.doc = doc.data();
