@@ -4,6 +4,10 @@
       <div class="teacher_action__icon icon__add"></div>
       <div class="teacher_action__text">Schedule a Test</div>
     </div>
+    <div class="teacher_action" @click="$router.push('/portal/newassignment')">
+      <div class="teacher_action__icon icon__add"></div>
+      <div class="teacher_action__text">Add a Major Assignment</div>
+    </div>
     <div class="teacher_action" @click="$router.push('/portal/create')">
       <div class="teacher_action__icon icon__create"></div>
       <div class="teacher_action__text">Create a Class</div>

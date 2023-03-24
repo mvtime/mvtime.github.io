@@ -194,7 +194,8 @@ h2.modal_header_title {
     max-height: calc(100% - 40px);
   }
 }
-.overlay_contents::-webkit-scrollbar {
+.overlay_contents::-webkit-scrollbar,
+textarea::-webkit-scrollbar {
   width: 14px;
   cursor: pointer;
 }
@@ -202,9 +203,26 @@ h2.modal_header_title {
   background-color: var(--color-bg);
 }
 
+textarea::-webkit-scrollbar-track {
+  background-color: var(--color-overlay-input);
+}
+
 .overlay_contents::-webkit-scrollbar-thumb {
   background-color: var(--color-overlay-input);
   border-radius: 1000px;
   border: solid 4px var(--color-bg);
   cursor: pointer;
+}
+
+textarea::-webkit-scrollbar-thumb {
+  background-color: var(--color-overlay-input-scrollbar);
+  border-radius: 1000px;
+  border: solid 4px var(--color-overlay-input);
+  cursor: pointer;
+}
+
+/* hide scrollbar corners */
+textarea::-webkit-scrollbar-corner {
+  background-color: transparent;
+  display: none;
 }

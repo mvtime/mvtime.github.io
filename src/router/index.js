@@ -140,6 +140,20 @@ const router = createRouter({
             requiresTeacher: true,
           },
         },
+        {
+          path: "/portal/newassignment",
+          name: "newassignment",
+          component: () => import("../views/Portal/AddAssignment.vue"),
+          meta: {
+            page_title: "Teacher | Add Major Assignment",
+            theme_color: {
+              light: "#ffffff",
+              dark: "#121212",
+            },
+            requiresAuth: true,
+            requiresTeacher: true,
+          },
+        },
 
         {
           // specify param "test" in the route

@@ -95,6 +95,7 @@
   /* overlay inputs */
   --color-overlay-input: #dedede;
   --color-on-overlay-input: #000;
+  --color-overlay-input-scrollbar: #00000040;
 }
 
 /* dark theme alternatives */
@@ -143,6 +144,7 @@
     /* overlay inputs */
     --color-overlay-input: #2b2b2b;
     --color-on-overlay-input: #fff;
+    --color-overlay-input-scrollbar: #ffffff40;
   }
 }
 

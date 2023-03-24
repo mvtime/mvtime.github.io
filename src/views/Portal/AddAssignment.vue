@@ -1,11 +1,11 @@
 <template>
-  <main class="addtest">
+  <main class="addassignment">
     <header class="modal_header">
-      <h2 class="modal_header_title">Add a Test</h2>
+      <h2 class="modal_header_title">Add a Major Assignment</h2>
     </header>
     <div class="overlay_contents">
       <div class="overlay_contents_text">
-        Schedule a new test for your class{{ classes && classes.length == 1 ? "" : "es" }}
+        Schedule a new assignment for your class{{ classes && classes.length == 1 ? "" : "es" }}
       </div>
       <div class="inputs_row">
         <input v-model="test.name" class="styled_input" type="text" placeholder="Test Name" />
@@ -52,16 +52,22 @@ export default {
         name: "",
         date: "",
         description: "",
+        is_assignment: true,
       },
       test_classes: [],
     };
   },
   computed: {
-    class_name() {
-      if (!this.classes) return null;
-      let class_obj = this.classes.find((class_obj) => class_obj.id === this.class_id);
-      if (!class_obj) return null;
-      return class_obj.name;
+    classes() {
+      if (!this?.store?.user?.email) {
+        return null;
+      } else if (this.store?.user?.email === this.store.loaded_email) {
+        return this.store.loaded_classes;
+      }
+      // commit store get_classes_by_email with teacher_email
+      this.store.get_classes_by_email(this.store?.user?.email);
+
+      return null;
     },
     store() {
       return useMainStore();

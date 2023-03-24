@@ -88,6 +88,12 @@ export const useMainStore = defineStore({
     is_teacher() {
       // check if email is a teacher email (ends in @mvla.net) && has letters in the first part
       if (!this.user) return false;
+      if (window?.MVTT_teacher_mode || (localStorage && localStorage.MVTT_teacher_mode)) {
+        console.warn(
+          "Teacher mode enabled (localStorage or window MVTT_teacher_mode value is true)\nFOR TESTING ONLY, does not enable nessesary server permission"
+        );
+        return true;
+      }
       if (this.doc && this.doc.teacher_mode) return true;
       let email = this.user.email;
       let [first, last] = email.split("@");

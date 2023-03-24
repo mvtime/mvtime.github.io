@@ -70,7 +70,7 @@ window.$ = $;
 // router guard
 import { Toast } from "@svonk/util";
 
-import './registerServiceWorker'
+import "./registerServiceWorker";
 router.beforeEach((to) => {
   const store = useMainStore();
 
@@ -98,3 +98,6 @@ router.beforeEach((to) => {
     return { path: "/portal" };
   }
 });
+
+// Allow teacher mode to be set with window.MVTT_TEACHER_MODE = true
+// (for testing purposes)
