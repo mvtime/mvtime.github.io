@@ -154,7 +154,6 @@ const router = createRouter({
             requiresTeacher: true,
           },
         },
-
         {
           // specify param "test" in the route
           path: "/portal/test",
@@ -170,6 +169,21 @@ const router = createRouter({
             props: (route) => ({
               test: route.query.test,
             }),
+          },
+        },
+
+        {
+          // specify param "assignment" in the route
+          path: "/portal/assignment",
+          name: "assignment",
+          component: () => import("../views/Portal/ViewAssignment.vue"),
+          meta: {
+            page_title: "View Major Assignment",
+            theme_color: {
+              light: "#ffffff",
+              dark: "#121212",
+            },
+            requiresAuth: false,
           },
         },
       ],

@@ -50,9 +50,10 @@ export default {
         group: test.class_name,
         date: test.date.toLocaleDateString("en-US").replace("/", "-"),
         description: test.description,
+        links: test.links,
       });
       this.$router.push({
-        name: "test",
+        name: test.is_assignment ? "assignment" : "test",
         query: {
           test: testJSON,
         },
