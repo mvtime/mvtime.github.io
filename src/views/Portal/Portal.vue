@@ -209,4 +209,13 @@ header.portal_info {
     min-width: calc(100% - 40px);
   }
 }
+/* print media */
+@media print {
+  main.portal .portal_sidebar {
+    display: none;
+  }
+  main.portal .portal_content {
+    padding: 0;
+  }
+}
 </style>

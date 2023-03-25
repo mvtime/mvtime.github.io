@@ -16,6 +16,23 @@
     <div v-else class="upcoming_tests__empty">
       <h5>No Upcoming Tests!</h5>
     </div>
+    <br />
+    <div v-if="assignments && assignments.length" class="upcoming_tests__not_empty">
+      <h5>Upcoming Assignments</h5>
+      <hr class="upcoming_tests_hr" />
+      <div class="tests_container">
+        <ExamCard
+          class="tests_container_test"
+          v-for="test of assignments"
+          :test="test"
+          :key="test.name"
+          @click="show_test(test)"
+        />
+      </div>
+    </div>
+    <div v-else class="upcoming_tests__empty">
+      <h5>No Upcoming Assignments!</h5>
+    </div>
   </div>
 </template>
 
@@ -34,7 +51,21 @@ export default {
     },
     tests() {
       return this.store.get_tests
-        .filter((test) => test.date - Date.now() < 30 * 24 * 60 * 60 * 1000)
+        .filter((test) => {
+          return test.date?.getTime() - Date.now() > 24 * 60 * 60 * 1000 && !test.is_assignment;
+        })
+        .sort((a, b) => {
+          if (a.date < b.date) return -1;
+          if (a.date > b.date) return 1;
+          return 0;
+        })
+        .slice(0, 4);
+    },
+    assignments() {
+      return this.store.get_tests
+        .filter((test) => {
+          return test.date?.getTime() - Date.now() > 24 * 60 * 60 * 1000 && test.is_assignment;
+        })
         .sort((a, b) => {
           if (a.date < b.date) return -1;
           if (a.date > b.date) return 1;
