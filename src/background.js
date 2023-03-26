@@ -39,20 +39,33 @@ async function createWindow() {
     win.loadURL("app://./index.html" + `?platform=${platform}`);
   }
   // when ready, set event listeners for window controls (minimize_button, maximize_button, close_button)
-  win.once("ready-to-show", () => {
-    document.getElementById("minimize_button").addEventListener("click", () => {
-      win.minimize();
-    });
-    document.getElementById("maximize_button").addEventListener("click", () => {
-      if (win.isMaximized()) {
-        win.unmaximize();
-      } else {
-        win.maximize();
-      }
-    });
-    document.getElementById("close_button").addEventListener("click", () => {
-      win.close();
-    });
+  win.webContents.on("did-finish-load", () => {
+    win.webContents.executeJavaScript(`
+      const { remote } = require('electron');
+      const { BrowserWindow } = remote;
+
+      // Get the current window
+      const win = BrowserWindow.getFocusedWindow();
+
+      // Minimize button
+      document.getElementById('minimize_button').addEventListener('click', () => {
+        win.minimize();
+      });
+
+      // Maximize button
+      document.getElementById('maximize_button').addEventListener('click', () => {
+        if (win.isMaximized()) {
+          win.unmaximize();
+        } else {
+          win.maximize();
+        }
+      });
+
+      // Close button
+      document.getElementById('close_button').addEventListener('click', () => {
+        win.close();
+      });
+    `);
   });
 }
 

@@ -70,7 +70,7 @@ export default {
 .buttons button:hover {
   background-color: var(--theme-color-hover);
 }
-.buttons button.close:hover {
+.buttons button#close_button:hover {
   /* use windows close button color */
   background-color: #e81123;
 }
