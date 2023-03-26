@@ -28,6 +28,9 @@ export default {
 <style scoped>
 .title {
   padding-left: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .drag_region {
   flex-grow: 1;
