@@ -197,6 +197,7 @@ const router = createRouter({
       },
     },
   ],
+  parseQuery: (query) => require("qs").parse(query),
 });
 
 export default router;

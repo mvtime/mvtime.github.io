@@ -2,6 +2,18 @@ const { defineConfig } = require("@vue/cli-service");
 
 module.exports = defineConfig({
   configureWebpack: {},
+  pluginOptions: {
+    electronBuilder: {
+      builderOptions: {
+        appId: "app.mvtt",
+        productName: "MV Test Tracker",
+        artifactName: "${productName}.${ext}",
+        win: {
+          icon: "public/img/icons/app.ico",
+        },
+      },
+    },
+  },
   transpileDependencies: true,
   pwa: {
     themeColor: "",

@@ -54,14 +54,26 @@ router.afterEach((to) => {
   } else {
     document.title = "MV Test Tracker";
   }
-  if (to.meta && to.meta.theme_color && to.meta.theme_color.light && to.meta.theme_color.dark) {
-    $("meta.theme-color").attr("content", to.meta.theme_color.light);
-    $("meta.theme-color-dark").attr("content", to.meta.theme_color.dark);
-  } else {
-    $("meta.theme-color").attr("content", "#f5c14b");
-    $("meta.theme-color-dark").attr("content", "#f5c14b");
-  }
+  let theme_light = to.meta?.theme_color?.light || "#f5c14b";
+  let theme_dark = to.meta?.theme_color?.dark || "#f5c14b";
+
+  $("meta.theme-color").attr("content", theme_light);
+  $("meta.theme-color-dark").attr("content", theme_dark);
+
+  // remove popup
   removePopup();
+
+  // setup color variables for css
+  const style = document.documentElement.style;
+  style.setProperty("--theme-color", theme_light);
+  style.setProperty("--theme-color-dark", theme_dark);
+  // colors on theme color
+  let text_light = to.meta?.theme_color?.text_light || "#000000";
+  let text_dark = to.meta?.theme_color?.text_dark || "#ffffff";
+  style.setProperty("--theme-color-text", text_light);
+  style.setProperty("--theme-color-text-dark", text_dark);
+  style.setProperty("--theme-color-hover", text_light + "33");
+  style.setProperty("--theme-color-hover-dark", text_dark + "33");
 });
 
 window.toast = placeholderToast;

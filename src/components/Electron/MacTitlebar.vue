@@ -12,6 +12,7 @@
 </template>
 
 <script>
+import "./titlebar.css";
 export default {
   name: "MacTitleBar",
   props: {

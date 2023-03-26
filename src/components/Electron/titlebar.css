@@ -1,0 +1,43 @@
+.titlebar {
+  /* sizing */
+  height: 32px;
+  width: 100%;
+  position: relative;
+  /* actions */
+  display: flex;
+  flex-flow: row nowrap;
+  /* colors */
+  background-color: var(--theme-color);
+  color: var(--theme-color-text);
+  /* text */
+  font-family: "Inter", "Lato", sans-serif;
+  user-select: none;
+}
+.titlebar .drag_region {
+  -webkit-app-region: drag;
+}
+@media (prefers-color-scheme: dark) {
+  .titlebar {
+    --theme-color: var(--theme-color-dark);
+    --theme-color-text: var(--theme-color-text-dark);
+    --theme-color-hover: var(--theme-color-hover-dark);
+  }
+}
+.titlebar > div {
+  display: flex;
+  flex-flow: row nowrap;
+  width: 100%;
+}
+.titlebar::after {
+  position: absolute;
+  content: "";
+  width: 100%;
+  display: block;
+  height: 100%;
+  background-color: var(--theme-color-hover);
+  top: 0;
+  left: 0;
+  opacity: 0.1;
+  z-index: 0;
+  pointer-events: none;
+}

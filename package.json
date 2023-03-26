@@ -7,16 +7,22 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "deploy": "echo mvtt.app > ./dist/CNAME && npm run publish",
+    "electron:build": "vue-cli-service electron:build",
+    "electron:serve": "vue-cli-service electron:serve",
     "postbuild": "copy /Y dist\\index.html dist\\404.html && echo 'Copied index.html to 404.html'",
+    "postinstall": "electron-builder install-app-deps",
+    "postuninstall": "electron-builder install-app-deps",
     "predeploy": "npm run build",
     "publish": "gh-pages -d dist"
   },
+  "main": "background.js",
   "dependencies": {
     "@svonk/util": "^1.0.3",
     "core-js": "^3.8.3",
     "firebase": "^9.17.2",
     "jquery": "^3.6.4",
     "pinia": "^2.0.33",
+    "qs": "^6.11.1",
     "register-service-worker": "^1.7.2",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3"
@@ -29,9 +35,12 @@
     "@vue/cli-plugin-pwa": "~5.0.0",
     "@vue/cli-plugin-router": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
+    "electron": "^13.0.0",
+    "electron-devtools-installer": "^3.1.0",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
-    "gh-pages": "^5.0.0"
+    "gh-pages": "^5.0.0",
+    "vue-cli-plugin-electron-builder": "~2.1.1"
   },
   "homepage": "http://mvtt.app"
 }
