@@ -1,19 +1,24 @@
 {
   "name": "mvtime",
   "version": "0.1.0",
+  "author": "Sander Vonk",
+  "description": "Test tracker provides an effective way to manage upcoming exams.",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "deploy": "echo mvtt.app > ./dist/CNAME && npm run publish",
+    "compile": "npm run electron:build",
+    "postcompile": "mkdir dist\\download & move dist_electron\\MV-Test-Tracker.exe dist\\download && echo 'Moved builds to download folder'",
     "electron:build": "vue-cli-service electron:build",
     "electron:serve": "vue-cli-service electron:serve",
     "postbuild": "copy /Y dist\\index.html dist\\404.html && echo 'Copied index.html to 404.html'",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",
     "predeploy": "npm run build",
-    "publish": "gh-pages -d dist"
+    "publish": "gh-pages -d dist",
+    "release": "npm run build && npm run compile && npm run deploy --ignore-scripts"
   },
   "main": "background.js",
   "dependencies": {

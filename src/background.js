@@ -16,7 +16,8 @@ async function createWindow() {
     width: 800,
     height: 600,
     // set buttons to be inset on macOS
-    titleBarStyle: "hidden",
+    titleBarStyle: "inset",
+    nativeWindowOpen: true,
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
@@ -36,37 +37,8 @@ async function createWindow() {
   } else {
     createProtocol("app");
     // Load the index.html when not in development
-    win.loadURL("app://./index.html" + `?platform=${platform}`);
+    win.loadURL("app://index.html" + `?platform=${platform}`);
   }
-  // when ready, set event listeners for window controls (minimize_button, maximize_button, close_button)
-  win.webContents.on("did-finish-load", () => {
-    win.webContents.executeJavaScript(`
-      const { remote } = require('electron');
-      const { BrowserWindow } = remote;
-
-      // Get the current window
-      const win = BrowserWindow.getFocusedWindow();
-
-      // Minimize button
-      document.getElementById('minimize_button').addEventListener('click', () => {
-        win.minimize();
-      });
-
-      // Maximize button
-      document.getElementById('maximize_button').addEventListener('click', () => {
-        if (win.isMaximized()) {
-          win.unmaximize();
-        } else {
-          win.maximize();
-        }
-      });
-
-      // Close button
-      document.getElementById('close_button').addEventListener('click', () => {
-        win.close();
-      });
-    `);
-  });
 }
 
 // Quit when all windows are closed.

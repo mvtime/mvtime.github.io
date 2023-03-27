@@ -1,6 +1,6 @@
 <template>
   <main class="parent">
-    <div class="titlebar" v-if="isElectron">
+    <div class="titlebar" v-if="isElectron && false">
       <MacTitleBar v-if="platform === 'darwin'" :title="pageTitle"></MacTitleBar>
       <WindowsTitleBar v-if="platform === 'win32'" :title="pageTitle"></WindowsTitleBar>
       <span v-else>

@@ -17,7 +17,7 @@ import {
   arrayUnion,
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { signInWithPopup, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
 const provider = new GoogleAuthProvider();
 
 // add email and name to provider
@@ -201,7 +201,9 @@ export const useMainStore = defineStore({
         require("@svonk/util/assets/info-locked-icon.svg")
       );
       // sign in with google, then set user data
-      await signInWithPopup(auth, provider)
+      let isElectron = navigator?.userAgent?.toLowerCase()?.indexOf(" electron/") > -1;
+      // if electron, use redirect, otherwise, use popup
+      await (isElectron ? signInWithRedirect(auth, provider) : signInWithPopup(auth, provider))
         .then(() => {
           if (!this.user || !this.user.email || !validAccount(this.user.email)) return;
           new Toast(

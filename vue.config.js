@@ -6,11 +6,11 @@ module.exports = defineConfig({
     electronBuilder: {
       builderOptions: {
         appId: "app.mvtt",
-        productName: "MV Test Tracker",
-        artifactName: "${productName}.${ext}",
+        productName: "MV-Test-Tracker",
         win: {
           icon: "public/img/icons/app.ico",
         },
+        artifactName: "${productName}.${ext}",
       },
     },
   },
