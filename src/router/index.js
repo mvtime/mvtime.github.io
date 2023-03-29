@@ -59,6 +59,19 @@ const router = createRouter({
         //   },
         // },
         {
+          path: "download",
+          name: "download",
+          component: () => import("../views/Home/DownloadView.vue"),
+          meta: {
+            page_title: "Download [BETA]",
+            theme_color: {
+              light: "#ffffff",
+              dark: "#16130e",
+            },
+            requiresAuth: false,
+          },
+        },
+        {
           path: "/:pathMatch(.*)*",
           name: "404",
           component: NotFound,

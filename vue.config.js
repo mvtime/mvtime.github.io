@@ -7,8 +7,18 @@ module.exports = defineConfig({
       builderOptions: {
         appId: "app.mvtt",
         productName: "MV-Test-Tracker",
+        copyright: "MV Test Tracker",
         win: {
           icon: "public/img/icons/app.ico",
+          target: "nsis",
+        },
+        mac: {
+          icon: "public/img/icons/app.icns",
+          target: "dmg",
+        },
+        linux: {
+          icon: "public/img/icons/app.png",
+          target: "AppImage",
         },
         artifactName: "${productName}.${ext}",
       },
