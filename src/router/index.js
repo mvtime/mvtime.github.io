@@ -140,39 +140,11 @@ const router = createRouter({
           },
         },
         {
-          path: "/portal/addtask/:taskid",
+          path: "/portal/new/:tasktype",
           name: "newtask",
           component: () => import("../views/Portal/AddTask.vue"),
           meta: {
-            page_title: "Teacher | Add Test",
-            theme_color: {
-              light: "#ffffff",
-              dark: "#121212",
-            },
-            requiresAuth: true,
-            requiresTeacher: true,
-          },
-        },
-        {
-          path: "/portal/newtest",
-          name: "newtest",
-          component: () => import("../views/Portal/AddTest.vue"),
-          meta: {
-            page_title: "Teacher | Add Test",
-            theme_color: {
-              light: "#ffffff",
-              dark: "#121212",
-            },
-            requiresAuth: true,
-            requiresTeacher: true,
-          },
-        },
-        {
-          path: "/portal/newassignment",
-          name: "newassignment",
-          component: () => import("../views/Portal/AddAssignment.vue"),
-          meta: {
-            page_title: "Teacher | Add Major Assignment",
+            page_title: "Teacher | Add Task",
             theme_color: {
               light: "#ffffff",
               dark: "#121212",

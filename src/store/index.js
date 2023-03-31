@@ -353,7 +353,7 @@ export const useMainStore = defineStore({
         new ErrorToast("Couldn't create class", cleanError(e), 2000);
       }
     },
-    async add_test(test_obj, test_classes) {
+    async add_task(test_obj, test_classes) {
       if (!test_obj.name) {
         new ErrorToast("Please enter a test name", 2000);
         return;

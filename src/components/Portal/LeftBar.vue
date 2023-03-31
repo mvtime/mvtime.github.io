@@ -1,12 +1,14 @@
 <template>
   <div class="left-bar portal_sidebar" :class="{ active: sidebar_open }" @click="show_if_inactive">
-    <div class="branding-title gohome">MV Test Tracker</div>
-    <div class="flex-spacer"></div>
-    <!-- Actions Panel -->
-    <ActionsPanel v-if="store && store.is_teacher" />
-    <!-- Class List -->
-    <ClassList />
-    <div class="flex-spacer"></div>
+    <div class="sidebar_overflow">
+      <div class="branding-title gohome">MV Test Tracker</div>
+      <div class="flex-spacer"></div>
+      <!-- Actions Panel -->
+      <ActionsPanel v-if="store && store.is_teacher" />
+      <!-- Class List -->
+      <ClassList />
+      <div class="flex-spacer"></div>
+    </div>
     <!-- Settings Button -->
     <button class="settings_button click-action" title="Open Settings" @click="placeholderToast">
       <div class="settings_icon"></div>
@@ -134,5 +136,18 @@ export default {
   background-position: center;
   user-select: none;
   pointer-events: none;
+}
+.sidebar_overflow::-webkit-scrollbar {
+  display: none;
+}
+.sidebar_overflow {
+  overflow-y: auto;
+  /* layout */
+  display: flex;
+  flex-flow: column nowrap;
+  width: 100%;
+  height: 100%;
+  padding: var(--padding-sidebar);
+  padding-bottom: calc(var(--padding-sidebar) + var(--height-sidebar-action));
 }
 </style>

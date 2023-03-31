@@ -108,9 +108,9 @@ main.portal .portal_sidebar {
   background-color: var(--color-bg);
   position: relative;
   box-sizing: border-box;
-  padding: var(--padding-sidebar);
-  padding-bottom: calc(var(--padding-sidebar) + var(--height-sidebar-action));
+  padding: 0;
 }
+
 main.portal .portal_sidebar {
   max-height: 800px;
   margin: auto 0;
