@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import MacTitleBar from "@/components/Electron/MacTitleBar.vue";
-import WindowsTitleBar from "@/components/Electron/WindowsTitleBar.vue";
+import MacTitleBar from "@/components/Electron/MacTitlebar.vue"
+import WindowsTitleBar from "@/components/Electron/WindowsTitlebar.vue";
 export default {
   name: "App",
   components: {

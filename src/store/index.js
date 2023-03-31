@@ -97,6 +97,7 @@ export const useMainStore = defineStore({
       if (this.doc && this.doc.teacher_mode) return true;
       let email = this.user.email;
       let [first, last] = email.split("@");
+      // return last == "mvla.net" && !/\d/.test(first);
       return last == "mvla.net" && !/\d/.test(first);
     },
   },

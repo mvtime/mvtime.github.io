@@ -1,5 +1,10 @@
 <template>
   <div class="teacher_actions">
+      <div v-for="test_type of test_types" :key="test_type" class="teacher_action" @click="$router.push('/portal/addtask/test_type')">
+        <div class="teacher_action__icon icon__add"></div>
+        <div class="teacher_action__text">Schedule a {{ test_type }}</div>
+      </div>
+<!--     
     <div class="teacher_action" @click="$router.push('/portal/newtest')">
       <div class="teacher_action__icon icon__add"></div>
       <div class="teacher_action__text">Schedule a Test</div>
@@ -11,12 +16,18 @@
     <div class="teacher_action" @click="$router.push('/portal/create')">
       <div class="teacher_action__icon icon__create"></div>
       <div class="teacher_action__text">Create a Class</div>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
-export default {};
+  export default {
+    data() {
+      return {
+        test_types: ['Socratic Seminar', 'Test', 'Summative Assignment', 'Midterm', 'Project'],
+      };
+   }
+  };
 </script>
 
 <style>
