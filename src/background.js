@@ -38,7 +38,6 @@ async function createWindow() {
     createProtocol("app");
     // Load the index.html when not in development
     win.loadURL("app://./index.html" + `?platform=${platform}`);
-    console.log("app://./index.html" + `?platform=${platform}`);
   }
 }
 
