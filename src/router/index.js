@@ -155,9 +155,9 @@ const router = createRouter({
         },
         {
           // specify param "test" in the route
-          path: "/portal/test",
-          name: "test",
-          component: () => import("../views/Portal/ViewTest.vue"),
+          path: "/portal/task",
+          name: "task",
+          component: () => import("../views/Portal/ViewTask.vue"),
           meta: {
             page_title: "View Test",
             theme_color: {
@@ -166,23 +166,8 @@ const router = createRouter({
             },
             requiresAuth: false,
             props: (route) => ({
-              test: route.query.test,
+              task: route.query.task,
             }),
-          },
-        },
-
-        {
-          // specify param "assignment" in the route
-          path: "/portal/assignment",
-          name: "assignment",
-          component: () => import("../views/Portal/ViewAssignment.vue"),
-          meta: {
-            page_title: "View Major Assignment",
-            theme_color: {
-              light: "#ffffff",
-              dark: "#121212",
-            },
-            requiresAuth: false,
           },
         },
       ],

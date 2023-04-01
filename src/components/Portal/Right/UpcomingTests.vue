@@ -9,7 +9,7 @@
           v-for="test of tests"
           :test="test"
           :key="test.name"
-          @click="show_test(test)"
+          @click="show_task(test)"
         />
       </div>
     </div>
@@ -26,7 +26,7 @@
           v-for="test of assignments"
           :test="test"
           :key="test.name"
-          @click="show_test(test)"
+          @click="show_task(test)"
         />
       </div>
     </div>
@@ -75,7 +75,7 @@ export default {
     },
   },
   methods: {
-    show_test(test) {
+    show_task(test) {
       let testJSON = JSON.stringify({
         name: test.name,
         group: test.class_name,
@@ -86,7 +86,7 @@ export default {
       this.$router.push({
         name: test.is_assignment ? "assignment" : "test",
         query: {
-          test: testJSON,
+          task: testJSON,
         },
       });
     },

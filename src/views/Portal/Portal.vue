@@ -25,7 +25,7 @@
         <div class="portal_info_welcome">Welcome Back {{ name }}</div>
       </header>
       <!-- calendar -->
-      <CalendarBlock @testclick="show_test($event)" />
+      <CalendarBlock @testclick="show_task($event)" />
     </div>
     <RightBar ref="RightBar" @close_left_bar="close_left_bar" />
     <!-- show overlay only if router-view is active -->
@@ -69,7 +69,7 @@ export default {
       this.$refs.RightBar.close_sidebar();
     },
     placeholderToast,
-    show_test(test) {
+    show_task(test) {
       let testJSON = JSON.stringify({
         name: test.name,
         group: test.class_name,
@@ -78,9 +78,9 @@ export default {
         links: test.links,
       });
       this.$router.push({
-        name: test.is_assignment ? "assignment" : "test",
+        name: "task",
         query: {
-          test: testJSON,
+          task: testJSON,
         },
       });
     },

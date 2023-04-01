@@ -1,25 +1,25 @@
 <template>
-  <main class="viewtest">
+  <main class="viewtask">
     <header class="modal_header">
-      <h2 class="modal_header_title">View test details</h2>
+      <h2 class="modal_header_title">View {{ task.type ? task.type : "task" }} details</h2>
     </header>
     <div class="overlay_contents">
       <div class="spaced_contents">
         <div class="styled_obj">
           <span class="styled_line__label">Class:</span>
           <span class="styled_line__separator"></span>
-          <span class="styled_line__value">{{ test.group || test.class_name }}</span>
+          <span class="styled_line__value">{{ task.group || task.class_name }}</span>
         </div>
         <div class="styled_obj">
           <span class="styled_line__label">Name:</span>
           <span class="styled_line__separator"></span>
-          <span class="styled_line__value">{{ test.name }}</span>
+          <span class="styled_line__value">{{ task.name }}</span>
         </div>
         <div class="styled_obj">
           <span class="styled_line__label">Date:</span>
           <span class="styled_line__separator"></span>
           <span class="styled_line__value">{{
-            new Date(test.date).toLocaleDateString(undefined, {
+            new Date(task.date).toLocaleDateString(undefined, {
               weekday: "long",
               month: "long",
               day: "numeric",
@@ -31,19 +31,19 @@
           <span class="styled_line__separator"></span>
           <span
             class="styled_line__value"
-            v-html="test.description ? test.description : 'Not Provided'"
+            v-html="task.description ? task.description : 'Not Provided'"
           ></span>
         </div>
-        <div class="styled_obj" v-if="test.links">
+        <div class="styled_obj" v-if="task.links">
           <span class="styled_line__label">Links:</span>
           <span class="styled_line__separator"></span>
           <span class="styled_line__value">
             <a
               class="styled_line__value__link"
-              v-for="test_link in test.links"
-              :key="test_link.path"
-              :href="test_link.path"
-              >{{ test_link.text }}</a
+              v-for="task_link in task.links"
+              :key="task_link.path"
+              :href="task_link.path"
+              >{{ task_link.text }}</a
             >
           </span>
         </div>
@@ -53,7 +53,7 @@
       </div>
     </div>
     <div class="bottom_actions">
-      <button class="share_action" @click="share_test">Share</button>
+      <button class="share_action" @click="share_task">Share</button>
       <div class="flex-spacer"></div>
       <button class="continue_action" @click="$router.push('/portal')">Close</button>
     </div>
@@ -67,32 +67,32 @@ export default {
     return {};
   },
   computed: {
-    test() {
-      let test = this.$route?.query?.test;
-      test = test ? JSON.parse(test) : {};
-      if (test && test.length && test.links) {
+    task() {
+      let task = this.$route?.query?.task;
+      task = task ? JSON.parse(task) : {};
+      if (task && task.length && task.links) {
         // filter any links without text or path
-        test.links = test.links.filter((link) => link.text && link.path);
+        task.links = task.links.filter((link) => link.text && link.path);
       } else {
-        test.links = null;
+        task.links = null;
       }
-      return test;
+      return task;
     },
   },
   created() {
     // do route checking
-    if (!this.test) {
-      new WarningToast("No test specified", 1000);
+    if (!this.task) {
+      new WarningToast("No task specified", 1000);
       this.$router.push("/portal");
     }
   },
   methods: {
-    share_test() {
+    share_task() {
       if (navigator.share) {
         navigator
           .share({
-            title: this.test.name,
-            text: this.test.description,
+            title: this.task.name,
+            text: this.task.description,
             url: window.location.href,
           })
           .then(() => new SuccessToast("Opened share dialog", 1000))
