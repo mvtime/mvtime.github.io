@@ -16,13 +16,14 @@
           <span class="class_name">{{ class_obj.name }}</span>
         </div>
         <div
+          v-if="!store.is_teacher"
           class="classes_container_class classes_container_class__add_class"
           @click="$router.push('/portal/add')"
         >
           <div class="class_swatch">
             <div class="class_swatch__add_icon"></div>
           </div>
-          <span class="class_name">{{ !store.is_teacher ? "Add" : "Join" }} a Class</span>
+          <span class="class_name">Join a Class</span>
         </div>
       </div>
     </div>

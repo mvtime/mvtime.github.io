@@ -361,7 +361,7 @@ export const useMainStore = defineStore({
         new ErrorToast("Please select at least one class", 2000);
         return;
       }
-      // use firebase arrayadd to add test to each class
+      // use firebase array add to add test to each class
       let batch = writeBatch(db);
       let collection_ref = collection(db, "classes");
       // get doc ref for user email
