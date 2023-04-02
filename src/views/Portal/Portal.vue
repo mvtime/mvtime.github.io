@@ -25,7 +25,7 @@
         <div class="portal_info_welcome">Welcome Back {{ name }}</div>
       </header>
       <!-- calendar -->
-      <CalendarBlock @testclick="show_task($event)" />
+      <CalendarBlock @taskclick="show_task($event)" />
     </div>
     <RightBar ref="RightBar" @close_left_bar="close_left_bar" />
     <!-- show overlay only if router-view is active -->
