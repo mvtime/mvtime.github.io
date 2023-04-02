@@ -1,37 +1,20 @@
 <template>
-  <div class="upcoming_tests">
-    <div v-if="tests && tests.length" class="upcoming_tests__not_empty">
-      <h5>Upcoming Tests</h5>
-      <hr class="upcoming_tests_hr" />
-      <div class="tests_container">
+  <div class="upcoming_tasks">
+    <div v-if="tasks && tasks.length" class="upcoming_tasks__not_empty">
+      <h5>Upcoming Tasks</h5>
+      <hr class="upcoming_tasks_hr" />
+      <div class="tasks_container">
         <ExamCard
-          class="tests_container_test"
-          v-for="test of tests"
-          :test="test"
-          :key="test.name"
-          @click="show_task(test)"
+          class="tasks_container_task"
+          v-for="task of tasks"
+          :task="task"
+          :key="task.name"
+          @click="show_task(task)"
         />
       </div>
     </div>
-    <div v-else class="upcoming_tests__empty">
-      <h5>No Upcoming Tests!</h5>
-    </div>
-    <br />
-    <div v-if="assignments && assignments.length" class="upcoming_tests__not_empty">
-      <h5>Upcoming Assignments</h5>
-      <hr class="upcoming_tests_hr" />
-      <div class="tests_container">
-        <ExamCard
-          class="tests_container_test"
-          v-for="test of assignments"
-          :test="test"
-          :key="test.name"
-          @click="show_task(test)"
-        />
-      </div>
-    </div>
-    <div v-else class="upcoming_tests__empty">
-      <h5>No Upcoming Assignments!</h5>
+    <div v-else class="upcoming_tasks__empty">
+      <h5>No Upcoming Tasks!</h5>
     </div>
   </div>
 </template>
@@ -41,7 +24,7 @@ import ExamCard from "./ExamCard.vue";
 import { useMainStore } from "@/store";
 
 export default {
-  name: "UpcomingTests",
+  name: "UpcomingTasks",
   components: {
     ExamCard,
   },
@@ -49,10 +32,10 @@ export default {
     store() {
       return useMainStore();
     },
-    tests() {
-      return this.store.get_tests
-        .filter((test) => {
-          return test.date?.getTime() - Date.now() > 24 * 60 * 60 * 1000 && !test.is_assignment;
+    tasks() {
+      return this.store.get_tasks
+        .filter((task) => {
+          return task.date?.getTime() - Date.now() > 24 * 60 * 60 * 1000 && !task.is_assignment;
         })
         .sort((a, b) => {
           if (a.date < b.date) return -1;
@@ -62,9 +45,9 @@ export default {
         .slice(0, 4);
     },
     assignments() {
-      return this.store.get_tests
-        .filter((test) => {
-          return test.date?.getTime() - Date.now() > 24 * 60 * 60 * 1000 && test.is_assignment;
+      return this.store.get_tasks
+        .filter((task) => {
+          return task.date?.getTime() - Date.now() > 24 * 60 * 60 * 1000 && task.is_assignment;
         })
         .sort((a, b) => {
           if (a.date < b.date) return -1;
@@ -75,18 +58,18 @@ export default {
     },
   },
   methods: {
-    show_task(test) {
-      let testJSON = JSON.stringify({
-        name: test.name,
-        group: test.class_name,
-        date: test.date.toLocaleDateString("en-US").replace("/", "-"),
-        description: test.description,
-        links: test.links,
+    show_task(task) {
+      let taskJSON = JSON.stringify({
+        name: task.name,
+        group: task.class_name,
+        date: task.date.toLocaleDateString("en-US").replace("/", "-"),
+        description: task.description,
+        links: task.links,
       });
       this.$router.push({
-        name: test.is_assignment ? "assignment" : "test",
+        name: task.is_assignment ? "assignment" : "task",
         query: {
-          task: testJSON,
+          task: taskJSON,
         },
       });
     },
@@ -94,11 +77,11 @@ export default {
 };
 </script>
 <style scoped>
-.tests_container_test {
+.tasks_container_task {
   cursor: pointer;
   user-select: none;
 }
-.upcoming_tests {
+.upcoming_tasks {
   margin: auto 0;
   width: 100%;
   flex-grow: 1;
@@ -109,7 +92,7 @@ export default {
   flex-basis: 200px;
   flex-shrink: 1;
 }
-.upcoming_tests__not_empty {
+.upcoming_tasks__not_empty {
   flex-shrink: 1;
   padding-bottom: 40px;
 }
@@ -120,9 +103,9 @@ h5 {
   line-height: 27px;
   text-align: center;
 }
-.upcoming_tests_hr {
+.upcoming_tasks_hr {
   margin: 5px 0;
   border: none;
-  border-top: 2px solid var(--color-test-separator);
+  border-top: 2px solid var(--color-task-separator);
 }
 </style>

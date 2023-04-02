@@ -56,7 +56,7 @@ export const useMainStore = defineStore({
       if (!this.user) return null;
       return doc(db, "users", this.user.uid);
     },
-    get_tests() {
+    get_tasks() {
       // get all the classes with this.classes(), then get all their tests and combine them into an array
       let tests = [];
       let classes = this.classes;
@@ -76,7 +76,7 @@ export const useMainStore = defineStore({
             class_tests[j].date = isNaN(class_tests[j].date) ? null : class_tests[j].date;
           }
           // set color from parent class color
-          class_tests[j].color = classes[i].color;
+          class_tests[j].color = classes[i].color ? classes[i].color : "#f5c14b";
           tests.push({
             ...class_tests[j],
             class_name: classes[i].name,
@@ -368,6 +368,8 @@ export const useMainStore = defineStore({
       let teacher_doc_ref = doc(collection_ref, this.user.email);
       let teacher_classes_ref = collection(teacher_doc_ref, "classes");
       test_classes.forEach((class_id) => {
+        // fix any class_id that has the teacher email in it
+        class_id = class_id.split("/")[class_id.split("/").length - 1];
         // use this.teacher.collection_ref to get class collection ref, then update the class documents within
         let class_ref = doc(teacher_classes_ref, class_id);
         batch.update(class_ref, {
@@ -375,7 +377,7 @@ export const useMainStore = defineStore({
         });
       });
       await batch.commit();
-      // rerun get_tests to update local data, discard result
+      // rerun get_tasks to update local data, discard result
       await this.get_classes();
 
       new SuccessToast(

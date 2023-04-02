@@ -23,11 +23,11 @@
   --radius-calendar-day: 5px;
   --spacing-calendar-day: 5px;
   --size-calendar-day-date: 20px;
-  --padding-calendar-test: 5px;
-  --height-calendar-test: 25px;
-  /* test card */
-  --height-test-card: 40px;
-  --padding-test-card-icon: 5px;
+  --padding-calendar-task: 5px;
+  --height-calendar-task: 25px;
+  /* task card */
+  --height-task-card: 40px;
+  --padding-task-card-icon: 5px;
   /* overlay */
   --radius-overlay: 7px;
   --padding-overlay: 20px;
@@ -72,15 +72,15 @@
   --color-calendar-day-today: #ffe8b3;
   --color-calendar-date: #cccccc80;
   --color-on-calendar-date: #969696;
-  /* calendar test */
-  --color-calendar-test: #f5c14b;
-  --color-on-calendar-test: #fff;
-  --filter-calendar-test: none;
+  /* calendar task */
+  --color-calendar-task: #f5c14b;
+  --color-on-calendar-task: #fff;
+  --filter-calendar-task: none;
   --color-text-on-calendar: #333;
-  /* test card */
-  --color-test-card-icon: #f5f5f5;
-  --filter-test-card-icon: none;
-  --color-test-separator: #f2f2f2;
+  /* task card */
+  --color-task-card-icon: #f5f5f5;
+  --filter-task-card-icon: none;
+  --color-task-separator: #f2f2f2;
   /* classes */
   --spacing-classes: 10px;
   --spacing-classes-alt: 5px;
@@ -126,14 +126,14 @@
     --color-calendar-day-today: #3d3a33;
     --color-calendar-date: #55555560;
     --color-on-calendar-date: #1d1d1d;
-    /* calendar test */
-    --color-on-calendar-test: #000000;
-    --filter-calendar-test: brightness(0.65) saturate(1.6);
+    /* calendar task */
+    --color-on-calendar-task: #000000;
+    --filter-calendar-task: brightness(0.65) saturate(1.6);
     --color-text-on-calendar: #888;
-    /* test card */
-    --color-test-card-icon: #2b2b2b;
-    --filter-test-card-icon: brightness(1.54);
-    --color-test-separator: #333;
+    /* task card */
+    --color-task-card-icon: #2b2b2b;
+    --filter-task-card-icon: brightness(1.54);
+    --color-task-separator: #333;
     /* overlay */
     --color-overlay: #00000040;
     --color-overlay-action: #433922;

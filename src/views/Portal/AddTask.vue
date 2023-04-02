@@ -10,14 +10,19 @@
         }}
       </div>
       <div class="inputs_row">
-        <input v-model="task.name" class="styled_input" type="text" placeholder="Task Name" />
+        <input
+          v-model="task.name"
+          class="styled_input"
+          type="text"
+          :placeholder="type_full + ' Name'"
+        />
         <input type="date" class="styled_input input_task__date" v-model="task.date" />
         <div class="flex-break"></div>
         <textarea
           v-model="task.description"
           class="styled_input styled_textarea task_description"
           type="text"
-          placeholder="task Description (Optional)"
+          :placeholder="type_full + ' Description (Optional)'"
         >
         </textarea>
       </div>

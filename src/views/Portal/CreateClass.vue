@@ -66,7 +66,7 @@ export default {
   flex-grow: 0;
   flex-shrink: 0;
   overflow: hidden;
-  filter: var(--filter-calendar-test);
+  filter: var(--filter-calendar-task);
 }
 .color_input_container .color_input {
   width: 100%;

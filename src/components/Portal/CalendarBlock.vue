@@ -15,7 +15,7 @@
           <div class="action_icon arrow-icon left"></div>
         </button>
         <button class="calendar_action" @click="this_month" title="Current month">
-          <div class="action_icon cal-icon" :class="{ alt: tests.length }"></div>
+          <div class="action_icon cal-icon" :class="{ alt: tasks.length }"></div>
         </button>
         <button class="calendar_action" @click="next_month" title="Next month">
           <div class="action_icon arrow-icon right"></div>
@@ -24,12 +24,12 @@
     </div>
     <div class="calendar_days_container">
       <div class="calendar_days">
-        <!-- v-for tests -->
+        <!-- v-for tasks -->
         <div
           class="calendar_day"
           :class="{
             calendar_day__placeholder: day.is_placeholder,
-            calendar_day__hastest: day.tests ? day.tests.length : false,
+            calendar_day__hastask: day.tasks ? day.tasks.length : false,
             calendar_day__today: day.is_today,
           }"
           v-for="day of days"
@@ -47,21 +47,21 @@
               }}
             </span>
           </div>
-          <div class="calendar_day_tests">
+          <div class="calendar_day_tasks">
             <div
-              class="calendar_day_test"
-              v-for="test of day.tests"
-              :key="test.name"
-              :title="test.classes_class"
-              :style="{ '--color-calendar-test': test.color }"
-              @click="$emit('testclick', test)"
+              class="calendar_day_task"
+              v-for="task of day.tasks"
+              :key="task.name"
+              :title="task.classes_class"
+              :style="{ '--color-calendar-task': task.color }"
+              @click="$emit('taskclick', task)"
             >
-              <span>{{ test.name }}</span>
+              <span>{{ task.name }}</span>
             </div>
           </div>
         </div>
-        <div v-if="!tests_loaded_month" class="calendar__no_tests" style="display: none">
-          Relax! No Tests.
+        <div v-if="!tasks_loaded_month" class="calendar__no_tasks" style="display: none">
+          Relax! No Tasks.
         </div>
       </div>
     </div>
@@ -73,7 +73,7 @@ import { useMainStore } from "@/store";
 
 export default {
   name: "CalendarBlock",
-  emits: ["testclick"],
+  emits: ["taskclick"],
   data() {
     return {
       loaded_month: new Date(new Date().setDate(1)),
@@ -87,10 +87,10 @@ export default {
         day1.getFullYear() === day2.getFullYear()
       );
     },
-    get_day_tests(day) {
-      return this.tests.filter((test) => {
-        const test_date = new Date(test.date);
-        return this.day_matches(test_date, day);
+    get_day_tasks(day) {
+      return this.tasks.filter((task) => {
+        const task_date = new Date(task.date);
+        return this.day_matches(task_date, day);
       });
     },
     next_month() {
@@ -104,18 +104,18 @@ export default {
     },
   },
   computed: {
-    tests_loaded_month() {
-      return this.tests.some((test) => {
-        const test_date = new Date(test.date);
+    tasks_loaded_month() {
+      return this.tasks.some((task) => {
+        const task_date = new Date(task.date);
         return (
-          test_date.getMonth() === this.loaded_month.getMonth() &&
-          test_date.getFullYear() === this.loaded_month.getFullYear()
+          task_date.getMonth() === this.loaded_month.getMonth() &&
+          task_date.getFullYear() === this.loaded_month.getFullYear()
         );
       });
     },
-    tests() {
+    tasks() {
       const store = useMainStore();
-      return store.get_tests;
+      return store.get_tasks;
     },
     days() {
       const days = [];
@@ -138,7 +138,7 @@ export default {
         const month_day = new Date(get_this_date().setDate(i));
         days.push({
           date: month_day,
-          tests: this.get_day_tests(month_day),
+          tasks: this.get_day_tasks(month_day),
           is_today: this.day_matches(month_day, new Date()),
         });
       }
@@ -276,7 +276,7 @@ main.calendar {
   padding: 0;
 }
 .calendar_days:empty::after {
-  content: "No tests scheduled";
+  content: "No tasks scheduled";
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--color-on-calendar);
@@ -347,8 +347,8 @@ main.calendar {
 .calendar_day.calendar_day__placeholder:hover > .calendar_day_date {
   display: flex;
 }
-/* tests */
-.calendar_day_tests {
+/* tasks */
+.calendar_day_tasks {
   height: 100%;
   width: 100%;
   position: absolute;
@@ -363,31 +363,31 @@ main.calendar {
   align-items: stretch;
 }
 
-/* hide scrollbars on tests list */
-.calendar_day_tests::-webkit-scrollbar {
+/* hide scrollbars on tasks list */
+.calendar_day_tasks::-webkit-scrollbar {
   display: none;
 }
-.calendar_day_tests {
+.calendar_day_tasks {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-/* test styling */
-.calendar_day_test {
+/* task styling */
+.calendar_day_task {
   white-space: nowrap;
   flex-shrink: 0;
   overflow: hidden;
   text-overflow: clip;
   position: relative;
-  padding: var(--padding-calendar-test);
+  padding: var(--padding-calendar-task);
   /* colors */
-  color: var(--color-on-calendar-test);
-  background-color: var(--color-calendar-test);
+  color: var(--color-on-calendar-task);
+  background-color: var(--color-calendar-task);
   /* styles */
   font-size: 0.8rem;
   border-radius: 5px;
   text-align: center;
-  height: var(--height-calendar-test);
-  filter: var(--filter-calendar-test);
+  height: var(--height-calendar-task);
+  filter: var(--filter-calendar-task);
   cursor: pointer;
   /* center contents */
   display: flex;
@@ -395,27 +395,27 @@ main.calendar {
   justify-content: flex-start;
   align-items: center;
 }
-.calendar_day_test:first-of-type {
+.calendar_day_task:first-of-type {
   margin-top: auto;
 }
-.calendar_day_test:not(:last-of-type) {
+.calendar_day_task:not(:last-of-type) {
   margin-bottom: var(--spacing-calendar-day);
 }
-.calendar_day_test > span {
+.calendar_day_task > span {
   text-align: center;
   width: 100%;
   user-select: none;
   pointer-events: none;
 }
-.calendar_day_test::after {
+.calendar_day_task::after {
   content: "";
   display: block;
-  width: calc(var(--padding-calendar-test) + 2px);
+  width: calc(var(--padding-calendar-task) + 2px);
   height: 100%;
   right: 0;
   top: 0;
   position: absolute;
-  background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, var(--color-calendar-test) 100%);
+  background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, var(--color-calendar-task) 100%);
   margin-top: 5px;
   z-index: 1;
 }
@@ -439,7 +439,7 @@ main.calendar {
     align-items: stretch;
   }
   .calendar_day.calendar_day__placeholder,
-  .calendar_day:not(.calendar_day__hastest) {
+  .calendar_day:not(.calendar_day__hastask) {
     display: none;
   }
   .calendar_day {
@@ -466,38 +466,38 @@ main.calendar {
     display: none;
   }
   .calendar_day_date__long,
-  .calendar__no_tests {
+  .calendar__no_tasks {
     display: unset !important;
   }
   .calendar_day_date {
     height: unset;
   }
-  .calendar__no_tests {
+  .calendar__no_tasks {
     color: var(--color-text-on-calendar);
     font-weight: 500;
     text-align: center;
     margin: 10% 0;
   }
-  .calendar_day_tests {
+  .calendar_day_tasks {
     position: unset;
     padding: 0;
     padding-top: 10px;
     flex-flow: row wrap;
-    flex-basis: calc(var(--height-calendar-test) + 2 * var(--spacing-calendar-day));
+    flex-basis: calc(var(--height-calendar-task) + 2 * var(--spacing-calendar-day));
     box-sizing: content-box;
     overflow-y: unset;
   }
-  .calendar_day_tests::after,
+  .calendar_day_tasks::after,
   .calendar_day::after {
     display: none;
   }
-  .calendar_day_test {
+  .calendar_day_task {
     margin: var(--spacing-calendar-day) !important;
 
     flex-grow: 1;
     white-space: normal;
     height: unset;
-    min-height: var(--height-calendar-test);
+    min-height: var(--height-calendar-task);
     flex-basis: 70px;
   }
   /* header */
