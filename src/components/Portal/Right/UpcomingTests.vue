@@ -65,6 +65,7 @@ export default {
         date: task.date.toLocaleDateString("en-US").replace("/", "-"),
         description: task.description,
         links: task.links,
+        type: task.type,
       });
       this.$router.push({
         name: task.is_assignment ? "assignment" : "task",

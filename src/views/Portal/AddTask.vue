@@ -5,7 +5,7 @@
     </header>
     <div class="overlay_contents">
       <div class="overlay_contents_text">
-        Schedule a new {{ type_full }} for your class{{
+        Schedule a new {{ task.type }} for your class{{
           classes && classes.length == 1 ? "" : "es"
         }}
       </div>

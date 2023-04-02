@@ -71,18 +71,19 @@ export default {
       this.$refs.RightBar.close_sidebar();
     },
     placeholderToast,
-    show_task(test) {
-      let testJSON = JSON.stringify({
-        name: test.name,
-        group: test.class_name,
-        date: test.date.toLocaleDateString("en-US").replace("/", "-"),
-        description: test.description,
-        links: test.links,
+    show_task(task) {
+      let taskJSON = JSON.stringify({
+        name: task.name,
+        group: task.class_name,
+        date: task.date.toLocaleDateString("en-US").replace("/", "-"),
+        description: task.description,
+        links: task.links,
+        type: task.type,
       });
       this.$router.push({
         name: "task",
         query: {
-          task: testJSON,
+          task: taskJSON,
         },
       });
     },
