@@ -16,13 +16,11 @@
 .titlebar .drag_region {
   -webkit-app-region: drag;
 }
-
 #themed_body[_theme="dark"] .titlebar {
   --theme-color: var(--theme-color-dark);
   --theme-color-text: var(--theme-color-text-dark);
   --theme-color-hover: var(--theme-color-hover-dark);
 }
-
 .titlebar > div {
   display: flex;
   flex-flow: row nowrap;
