@@ -1,0 +1,1 @@
+.home{display:flex;flex-flow:row wrap;justify-content:stretch;align-items:center;height:100%}#home-main>*{max-width:600px}.home .middle-text{margin:25px 0}@media (max-width:450px) and (max-height:900px){.home .action-btn{position:absolute;bottom:40px;right:40px;width:calc(100% - 80px)}}
