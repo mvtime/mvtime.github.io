@@ -58,7 +58,6 @@ export default {
   height: var(--height-sidebar-action);
   width: 100%;
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
   background-color: var(--color-bg);
   border-radius: 10px;
   padding: 10px;

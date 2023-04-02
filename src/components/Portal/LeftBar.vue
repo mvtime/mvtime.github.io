@@ -9,10 +9,15 @@
       <ClassList />
       <div class="flex-spacer"></div>
     </div>
-    <!-- Settings Button -->
-    <button class="settings_button click-action" title="Open Settings" @click="placeholderToast">
-      <div class="settings_icon"></div>
-      <div class="toggle_text">Settings</div>
+    <!-- Theme Button -->
+    <button
+      :_theme="store.theme"
+      class="theme_button click-action"
+      title="Switch Theme"
+      @click="store.toggle_theme"
+    >
+      <div class="theme_icon"></div>
+      <div class="toggle_text">Switch Theme</div>
     </button>
     <!-- Sidebar Toggle -->
     <SidebarToggle class="right" @click="close_sidebar" />
@@ -83,8 +88,8 @@ export default {
   text-align: center;
   user-select: none;
 }
-/* settings icon */
-.settings_button {
+/* theme icon */
+.theme_button {
   position: absolute;
   display: block;
   bottom: calc(var(--padding-sidebar) / 1.5);
@@ -107,7 +112,14 @@ export default {
   align-items: center;
   justify-content: flex-start;
 }
-.settings_button > * {
+/* little animation on theme change */
+.theme_icon {
+  transition: transform 0.5s cubic-bezier(0.49, -0.02, 0, 1.38);
+}
+[_theme="dark"].theme_button .theme_icon {
+  transform: rotate(360deg);
+}
+.theme_button > * {
   flex-shrink: 0;
 }
 
@@ -121,21 +133,26 @@ export default {
   font-family: "Roboto", "Lato", "Inter", sans-serif;
   padding-right: 10px;
 }
-.settings_button:hover,
-.settings_button:active {
+.theme_button:hover,
+.theme_button:active {
   width: calc(var(--width-sidebar-button-showing));
 }
-.settings_icon {
+.theme_icon {
   height: 100%;
   width: var(--size-sidebar-button);
   filter: var(--filter-icon);
-  background-image: url(@/assets/img/general/portal/settings.png);
-  background-image: url(@/assets/img/general/portal/settings.svg);
+  /*! Update to match theme icons */
+  background-image: url(@/assets/img/general/portal/theme/light.png);
+  background-image: url(@/assets/img/general/portal/theme/light.svg);
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
   user-select: none;
   pointer-events: none;
+}
+[_theme="dark"] .theme_icon {
+  background-image: url(@/assets/img/general/portal/theme/dark.png);
+  background-image: url(@/assets/img/general/portal/theme/dark.svg);
 }
 .sidebar_overflow::-webkit-scrollbar {
   display: none;

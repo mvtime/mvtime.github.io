@@ -134,6 +134,7 @@ h5 {
   margin-right: 15px;
   background-color: var(--color-class);
   filter: var(--filter-calendar-task);
+  flex: 0 0 auto;
 }
 .classes_container_class__add_class .class_swatch,
 .classes_container_class__create_class .class_swatch {

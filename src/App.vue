@@ -1,5 +1,5 @@
 <template>
-  <main class="parent">
+  <main id="themed_body" class="parent" :_theme="theme">
     <!-- <div class="titlebar" v-if="isElectron && false">
       <MacTitleBar v-if="platform === 'darwin'" :title="pageTitle"></MacTitleBar>
       <WindowsTitleBar v-if="platform === 'win32'" :title="pageTitle"></WindowsTitleBar>
@@ -14,6 +14,7 @@
 <script>
 // import MacTitleBar from "@/components/Electron/MacTitleBar.vue";
 // import WindowsTitleBar from "@/components/Electron/WindowsTitleBar.vue";
+import { useMainStore } from "@/store";
 export default {
   name: "App",
   components: {
@@ -30,6 +31,12 @@ export default {
     pageTitle() {
       return document.title;
     },
+    store() {
+      return useMainStore();
+    },
+    theme() {
+      return this.store.theme;
+    },
   },
   mounted() {
     this.isElectron = navigator.userAgent.toLowerCase().indexOf(" electron/") > -1;
@@ -40,6 +47,14 @@ export default {
       }
       console.log("Electron Platform: " + this.platform);
     }
+  },
+  created() {
+    // do dark mode from local storage, then from store (if logged in)
+    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+    const storedTheme = localStorage.getItem("theme");
+    this.isDarkMode = storedTheme === "dark" || (storedTheme === null && systemTheme === "dark");
   },
 };
 </script>

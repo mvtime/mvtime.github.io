@@ -52,6 +52,36 @@ export const useMainStore = defineStore({
   }),
   // store getters
   getters: {
+    theme() {
+      // get local
+      let local_theme = localStorage.getItem("theme");
+      // get userdoc theme
+      let userdoc_theme = this.doc?.theme;
+      // set new to system by default
+      let new_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      // if not userdoc theme, use local theme, and set userdoc theme to local theme
+      if (!userdoc_theme) {
+        if (local_theme) {
+          // set to local if local exists
+          new_theme = local_theme;
+        } else {
+          // set to system if local doesn't exist, and set update local
+          localStorage.setItem("theme", new_theme);
+        }
+        if (this.doc) {
+          this.doc.theme = new_theme;
+          this.update_remote();
+        }
+        return local_theme || "light";
+      }
+      // if userdoc theme, use userdoc theme, and set local theme to userdoc theme
+      else {
+        if (local_theme != userdoc_theme) {
+          localStorage.setItem("theme", userdoc_theme);
+        }
+        return userdoc_theme;
+      }
+    },
     userdoc_ref() {
       if (!this.user) return null;
       return doc(db, "users", this.user.uid);
@@ -102,6 +132,11 @@ export const useMainStore = defineStore({
     },
   },
   actions: {
+    async toggle_theme() {
+      this.doc.theme = this.theme == "light" ? "dark" : "light";
+      await this.update_remote();
+      new SuccessToast(`Switched to ${this.doc.theme} theme`, 2000);
+    },
     async get_classes() {
       // check for duplicates
       if (this.doc.classes) {
