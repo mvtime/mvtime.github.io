@@ -25,6 +25,42 @@
           :placeholder="type_full + ' Description (Optional)'"
         >
         </textarea>
+        <div class="flex-break"></div>
+        <div class="styled_input styled_links_box">
+          <div class="styled_links_display">
+            <span v-if="!task.links || !task.links.length" class="placeholder"
+              >{{ type_full }} Links (Optional)</span
+            >
+            <div v-else class="styled_line_links">
+              <a
+                class="styled_line_links__link"
+                target="_blank"
+                v-for="link in task.links"
+                :href="link.path"
+                :key="link.path"
+                >{{ link.text }}</a
+              >
+            </div>
+          </div>
+          <hr class="styled_links_separator" />
+          <div class="styled_links_add">
+            <input
+              class="styled_links_add__path"
+              type="url"
+              v-model="newlink.path"
+              placeholder="Link URL (http://example.com)"
+            />
+            <input
+              class="styled_links_add__text"
+              type="text"
+              v-model="newlink.text"
+              placeholder="Link Text (what students see)"
+            />
+            <button class="styled_links_add__action" @click="add_newlink" :disabled="newlink_ready">
+              Add
+            </button>
+          </div>
+        </div>
       </div>
       <div class="overlay_contents_text">
         Choose which classes this {{ task.type }} will be added to
@@ -64,6 +100,10 @@ export default {
         type: this.$route.params.tasktype ? this.$route.params.tasktype : "task",
       },
       task_classes: [],
+      newlink: {
+        text: "",
+        path: "",
+      },
     };
   },
   computed: {
@@ -77,6 +117,10 @@ export default {
         task: "Task",
       }[this.task.type];
     },
+    newlink_ready() {
+      // check if path and text, and also that path is a valid url
+      return !this.newlink.path || !this.newlink.text || !this.newlink.path.startsWith("http");
+    },
     class_name() {
       if (!this.classes) return null;
       let class_obj = this.classes.find((class_obj) => class_obj.id === this.class_id);
@@ -88,6 +132,16 @@ export default {
     },
     classes() {
       return this.store.classes;
+    },
+  },
+  methods: {
+    add_newlink() {
+      if (!this.task.links) this.task.links = [];
+      this.task.links.push(this.newlink);
+      this.newlink = {
+        text: "",
+        path: "",
+      };
     },
   },
 };
@@ -121,7 +175,7 @@ export default {
   margin-right: 0;
 }
 .styled_input.task_description {
-  margin-top: calc(var(--padding-overlay) / 2);
+  margin: calc(var(--padding-overlay) / 2) 0;
   padding-top: 10px;
   padding-bottom: 10px;
 }

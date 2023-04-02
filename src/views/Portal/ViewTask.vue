@@ -41,6 +41,7 @@
             <a
               class="styled_line_links__link"
               v-for="task_link in task.links"
+              target="_blank"
               :key="task_link.path"
               :href="task_link.path"
               >{{ task_link.text }}</a
@@ -110,36 +111,5 @@ export default {
 <style scoped>
 .spaced_contents {
   margin-top: 0;
-}
-.links_obj {
-  padding: calc(((var(--height-overlay-input) - 18px) / 2) - var(--margin-overlay-link));
-  padding-left: var(--padding-overlay-input);
-}
-.styled_line_links {
-  display: flex;
-  flex-flow: row wrap;
-  flex-grow: 1;
-  overflow: hidden;
-}
-.styled_line_links__link {
-  display: block;
-  padding: 0 var(--padding-overlay-link);
-  height: var(--height-overlay-link);
-  line-height: var(--height-overlay-link);
-  background-color: var(--color-overlay-link);
-  margin: var(--margin-overlay-link);
-  border-radius: var(--radius-overlay-link);
-  /* overflow */
-  text-align: center;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  /* layout */
-  flex-basis: auto;
-  flex-grow: 1;
-  flex-shrink: 1;
-}
-.styled_line_links__link:hover {
-  background-color: var(--color-overlay-link-hover);
 }
 </style>

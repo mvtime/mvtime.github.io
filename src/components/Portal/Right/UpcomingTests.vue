@@ -35,19 +35,7 @@ export default {
     tasks() {
       return this.store.get_tasks
         .filter((task) => {
-          return task.date?.getTime() - Date.now() > 24 * 60 * 60 * 1000 && !task.is_assignment;
-        })
-        .sort((a, b) => {
-          if (a.date < b.date) return -1;
-          if (a.date > b.date) return 1;
-          return 0;
-        })
-        .slice(0, 4);
-    },
-    assignments() {
-      return this.store.get_tasks
-        .filter((task) => {
-          return task.date?.getTime() - Date.now() > 24 * 60 * 60 * 1000 && task.is_assignment;
+          return task.date?.getTime() >= Date.now() && !task.is_assignment;
         })
         .sort((a, b) => {
           if (a.date < b.date) return -1;
