@@ -34,12 +34,12 @@
             v-html="task.description ? task.description : 'Not Provided'"
           ></span>
         </div>
-        <div class="styled_obj" v-if="task.links">
+        <div class="styled_obj links_obj" v-if="task.links">
           <span class="styled_line__label">Links:</span>
           <span class="styled_line__separator"></span>
-          <span class="styled_line__value">
+          <span class="styled_line__value styled_line_links">
             <a
-              class="styled_line__value__link"
+              class="styled_line_links__link"
               v-for="task_link in task.links"
               :key="task_link.path"
               :href="task_link.path"
@@ -70,7 +70,7 @@ export default {
     task() {
       let task = this.$route?.query?.task;
       task = task ? JSON.parse(task) : {};
-      if (task && task.length && task.links) {
+      if (task?.links) {
         // filter any links without text or path
         task.links = task.links.filter((link) => link.text && link.path);
       } else {
@@ -110,5 +110,36 @@ export default {
 <style scoped>
 .spaced_contents {
   margin-top: 0;
+}
+.links_obj {
+  padding: calc(((var(--height-overlay-input) - 18px) / 2) - var(--margin-overlay-link));
+  padding-left: var(--padding-overlay-input);
+}
+.styled_line_links {
+  display: flex;
+  flex-flow: row wrap;
+  flex-grow: 1;
+  overflow: hidden;
+}
+.styled_line_links__link {
+  display: block;
+  padding: 0 var(--padding-overlay-link);
+  height: var(--height-overlay-link);
+  line-height: var(--height-overlay-link);
+  background-color: var(--color-overlay-link);
+  margin: var(--margin-overlay-link);
+  border-radius: var(--radius-overlay-link);
+  /* overflow */
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  /* layout */
+  flex-basis: auto;
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+.styled_line_links__link:hover {
+  background-color: var(--color-overlay-link-hover);
 }
 </style>

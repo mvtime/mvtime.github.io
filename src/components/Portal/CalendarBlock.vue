@@ -108,8 +108,13 @@ export default {
       return this.tasks.some((task) => {
         const task_date = new Date(task.date);
         return (
-          task_date.getMonth() === this.loaded_month.getMonth() &&
-          task_date.getFullYear() === this.loaded_month.getFullYear()
+          // get tasks from the current month, and the two months before and after
+          (task_date.getMonth() === this.loaded_month.getMonth() &&
+            task_date.getFullYear() === this.loaded_month.getFullYear()) ||
+          (task_date.getMonth() === this.loaded_month.getMonth() - 1 &&
+            task_date.getFullYear() === this.loaded_month.getFullYear()) ||
+          (task_date.getMonth() === this.loaded_month.getMonth() + 1 &&
+            task_date.getFullYear() === this.loaded_month.getFullYear())
         );
       });
     },
