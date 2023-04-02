@@ -8,24 +8,26 @@
         close_left_bar();
       "
     >
-      <header class="portal_info">
-        <div class="portal_info_title">
-          <span class="portal_info_usertype"
-            >{{ store.is_teacher ? "Teacher" : "Student" }} Dashboard</span
-          >
-          <span class="portal_info_date">{{
-            new Date().toLocaleDateString("en-US", {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })
-          }}</span>
-        </div>
-        <div class="portal_info_welcome">Welcome Back {{ name }}</div>
-      </header>
-      <!-- calendar -->
-      <CalendarBlock @taskclick="show_task($event)" />
+      <div class="portal_content__spaced">
+        <header class="portal_info">
+          <div class="portal_info_title">
+            <span class="portal_info_usertype"
+              >{{ store.is_teacher ? "Teacher" : "Student" }} Dashboard</span
+            >
+            <span class="portal_info_date">{{
+              new Date().toLocaleDateString("en-US", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })
+            }}</span>
+          </div>
+          <div class="portal_info_welcome">Welcome Back {{ name }}</div>
+        </header>
+        <!-- calendar -->
+        <CalendarBlock @taskclick="show_task($event)" />
+      </div>
     </div>
     <RightBar ref="RightBar" @close_left_bar="close_left_bar" />
     <!-- show overlay only if router-view is active -->
@@ -174,6 +176,13 @@ header.portal_info {
 }
 .portal_content::-webkit-scrollbar {
   display: none;
+}
+.portal_content__spaced {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: stretch;
+  min-height: 100%;
 }
 .portal_info,
 .portal_info > div {
