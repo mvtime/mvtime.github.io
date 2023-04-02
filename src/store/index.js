@@ -76,7 +76,7 @@ export const useMainStore = defineStore({
             class_tests[j].date = isNaN(class_tests[j].date) ? null : class_tests[j].date;
           }
           // set color from parent class color
-          class_tests[j].color = classes[i].color ? classes[i].color : "#f5c14b";
+          class_tests[j].color = classes[i].color;
           tests.push({
             ...class_tests[j],
             class_name: classes[i].name,
