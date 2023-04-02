@@ -108,13 +108,8 @@ export default {
       return this.tasks.some((task) => {
         const task_date = new Date(task.date);
         return (
-          // get tasks from the current month, and the two months before and after
-          (task_date.getMonth() === this.loaded_month.getMonth() &&
-            task_date.getFullYear() === this.loaded_month.getFullYear()) ||
-          (task_date.getMonth() === this.loaded_month.getMonth() - 1 &&
-            task_date.getFullYear() === this.loaded_month.getFullYear()) ||
-          (task_date.getMonth() === this.loaded_month.getMonth() + 1 &&
-            task_date.getFullYear() === this.loaded_month.getFullYear())
+          // get tasks from the current month and next month
+          true || task_date
         );
       });
     },
@@ -133,8 +128,10 @@ export default {
 
       // add the placeholders for the first week
       for (let i = first_day.getDay(); i > 0; i--) {
+        const preflow_day = new Date(get_this_date().setDate(-i));
         days.push({
-          date: new Date(get_this_date().setDate(-i)),
+          date: preflow_day,
+          tasks: this.get_day_tasks(preflow_day),
           is_placeholder: true,
         });
       }
@@ -150,8 +147,10 @@ export default {
 
       // add however many placeholders we need to get to a full 6 * 7 grid
       for (let i = 1; days.length < 6 * 7; i++) {
+        const overflow_day = new Date(get_this_date().setDate(last_day.getDate() + i));
         days.push({
-          date: get_this_date().setDate(last_day.getDate() + i),
+          date: overflow_day,
+          tasks: this.get_day_tasks(overflow_day),
           is_placeholder: true,
         });
       }
@@ -351,6 +350,16 @@ main.calendar {
 }
 .calendar_day.calendar_day__placeholder:hover > .calendar_day_date {
   display: flex;
+}
+/* hide paceholder tasks until hover */
+.calendar_day.calendar_day__placeholder > .calendar_day_tasks {
+  visibility: hidden;
+}
+.calendar_day.calendar_day__placeholder:hover > .calendar_day_tasks {
+  visibility: visible;
+}
+.calendar_day.calendar_day__placeholder:hover {
+  opacity: 0.75;
 }
 /* tasks */
 .calendar_day_tasks {
