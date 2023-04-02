@@ -20,11 +20,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Deploy to gh-pages
-        env:
-          NODE_ENV: production
-          GITHUB_TOKEN: ${{ secrets.GH_PAGES_TOKEN }}
-        run: |
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          npm run build && npx gh-pages -d dist -t true -b gh-pages --dotfiles --message "Deploy to gh-pages [skip ci]"
+      - name: Build Vue.js to static
+        run: npm run build
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
