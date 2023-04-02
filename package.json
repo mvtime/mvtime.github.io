@@ -18,6 +18,7 @@
     "postuninstall": "electron-builder install-app-deps",
     "predeploy": "npm run build",
     "publish": "gh-pages -d dist",
+    "push": "git add . && git commit -m \"${npm_config_m:-Publish local changes}\" && git push && npm run deploy",
     "release": "npm run build && npm run compile && npm run deploy --ignore-scripts"
   },
   "main": "background.js",
