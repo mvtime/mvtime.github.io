@@ -245,7 +245,7 @@ hr.styled_links_separator {
 .styled_links_add input,
 .styled_links_add button {
   flex-grow: 1;
-  flex-basis: 0;
+  flex-basis: 51%;
   border-radius: 5px;
   border: none;
   padding: var(--padding-overlay-secondary-input);
