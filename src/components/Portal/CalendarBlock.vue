@@ -420,6 +420,9 @@ main.calendar {
   width: 100%;
   user-select: none;
   pointer-events: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .calendar_day_task::after {
   content: "";
