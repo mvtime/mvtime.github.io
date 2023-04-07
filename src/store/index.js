@@ -336,7 +336,7 @@ export const useMainStore = defineStore({
           class_data.id = doc.id;
           // if user already in class, change name to "[JOINED] name"
           if (this.doc.classes.includes([email, doc.id].join("/"))) {
-            class_data.name = "[JOINED] " + class_data.name;
+            class_data.name = "[JOINED] " + "P" + class_data.period + " - " + class_data.name;
             class_data.is_joined = true;
           }
           classes.push(class_data);
@@ -348,13 +348,13 @@ export const useMainStore = defineStore({
 
       this.loaded_email = email;
     },
-    async add_class(teacher_email, class_id, class_name) {
+    async add_class(teacher_email, class_id, class_name, class_period) {
       if (!this.doc) return;
       if (!class_id) return;
       if (this.doc.classes.includes(class_id)) return;
       this.doc.classes.push([teacher_email, class_id].join("/"));
       await this.update_remote();
-      new SuccessToast(`Added "${class_name}" to your classes`, 2000);
+      new SuccessToast(`Added P${class_period} - ${class_name} to your classes`, 2000);
       // redirect to /portal
       router.push("/portal");
     },
@@ -366,6 +366,9 @@ export const useMainStore = defineStore({
       }
       if (!class_obj.name) {
         new ErrorToast("Please enter a class name", 2000);
+        return;
+      } else if (!class_obj.period) {
+        new ErrorToast("Please entire a class period", 2000);
         return;
       }
       try {
@@ -382,7 +385,7 @@ export const useMainStore = defineStore({
         // add class to user doc;
         new SuccessToast(`Created class "${class_obj.name}"`, 2000);
         console.log("class_doc_ref", class_doc_ref);
-        await this.add_class(this.user.email, class_doc_ref.id, class_obj.name);
+        await this.add_class(this.user.email, class_doc_ref.id, class_obj.name, class_obj.period);
       } catch (e) {
         console.error(e);
         new ErrorToast("Couldn't create class", cleanError(e), 2000);

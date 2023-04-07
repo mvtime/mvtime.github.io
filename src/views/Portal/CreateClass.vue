@@ -6,7 +6,8 @@
     <div class="overlay_contents">
       <div class="overlay_contents_text">Let's create a new class</div>
       <div class="inputs_row">
-        <input v-model="class_obj.name" class="styled_input" type="text" placeholder="Class Name" />
+        <input v-model="class_obj.period" class="styled_input class_period" type="text" placeholder="Period" />
+        <input v-model="class_obj.name" class="styled_input class_name" type="text" placeholder="Name" />
         <div class="color_input_container styled_input" title="Class Theme Color">
           <input
             v-model="class_obj.color"
@@ -39,6 +40,7 @@ export default {
     return {
       class_obj: {
         name: "",
+        period: "",
         description: "",
         color: "#f5c14b",
       },
@@ -83,4 +85,13 @@ export default {
   padding-top: 10px;
   padding-bottom: 10px;
 }
+
+.class_period {
+  flex-grow: 1;
+}
+
+.class_name {
+  flex-grow: 4;
+}
+
 </style>
