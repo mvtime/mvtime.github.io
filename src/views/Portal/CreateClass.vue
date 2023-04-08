@@ -104,11 +104,12 @@ export default {
 
 .inputs_row .class_period_container {
   flex-grow: 0;
-  flex-basis: calc(var(--height-overlay-input) * 2);
+  flex-basis: calc(var(--height-overlay-input) * 1.5);
   background: var(--color-overlay-input);
   padding-right: 0;
 }
 .inputs_row .class_period_container .class_period {
+  padding: 0;
   padding-right: calc(var(--padding-overlay-input) / 2);
 }
 .inputs_row .class_period_container::before {

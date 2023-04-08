@@ -338,7 +338,7 @@ export const useMainStore = defineStore({
           if (this.doc.classes.includes([email, doc.id].join("/"))) {
             class_data.name =
               "[JOINED] " +
-              (class_data.period ? "P" + class_data.period + " - " : "") +
+              (class_data.period ? "P" + class_data.period + " - " : "") + // support for legacy names
               class_data.name;
             class_data.is_joined = true;
           }
