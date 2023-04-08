@@ -2,6 +2,7 @@
 
 // setup Pinia store
 import { defineStore } from "pinia";
+import { _debuglog } from "@/common";
 import { Toast, ErrorToast, cleanError, WarningToast, SuccessToast } from "@svonk/util";
 
 // get firebase requirements
@@ -47,7 +48,7 @@ export const useMainStore = defineStore({
       localStorage.getItem("MVTT_app_state") != "undefined"
     ) {
       try {
-        console.warn("loading from local storage");
+        _debuglog("loading from local storage");
         state = JSON.parse(localStorage.getItem("MVTT_app_state"));
         return state;
       } catch (err) {
@@ -55,7 +56,7 @@ export const useMainStore = defineStore({
       }
     }
     // if no local storage, set up store
-    console.warn("setting up store from scratch");
+    _debuglog("setting up store from scratch");
     state = {
       user: null,
       doc: null,
@@ -108,7 +109,6 @@ export const useMainStore = defineStore({
       // get all the classes with this.classes(), then get all their tasks and combine them into an array
       let tasks = [];
       let classes = this.classes;
-      console.log("ran get_tasks");
       if (!classes?.length) {
         return [];
       }
@@ -134,14 +134,13 @@ export const useMainStore = defineStore({
           });
         }
       }
-      console.log("tasks", tasks);
       return tasks;
     },
     is_teacher() {
       // check if email is a teacher email (ends in @mvla.net) && has letters in the first part
       if (!this.user) return false;
-      if (localStorage && localStorage.MVTT_teacher_mode) {
-        console.warn("Teacher mode enabled locally");
+      if (window?.localStorage?.MVTT_teacher_mode == "true") {
+        _debuglog("teacher mode enabled locally");
         return true;
       }
       let email = this.user.email;
@@ -219,7 +218,7 @@ export const useMainStore = defineStore({
     async remove_class(class_id) {
       this.doc.classes = this.doc.classes.filter((c) => c != class_id);
       await this.update_remote();
-      console.warn("Removed class from user's doc: " + class_id);
+      _debuglog("Removed class from user's doc: " + class_id);
       new SuccessToast("Removed class", 2000);
     },
     set_user(user) {
@@ -232,7 +231,7 @@ export const useMainStore = defineStore({
       this.user = user;
       // if teacher, setup this.teacher refs
       if (this.is_teacher) {
-        console.warn("teacher mode");
+        _debuglog("teacher mode");
         this.teacher.doc_ref = doc(db, "classes", this.user.email);
         this.teacher.collection_ref = collection(this.teacher.doc_ref, "classes");
       }
@@ -389,7 +388,7 @@ export const useMainStore = defineStore({
       router.push("/portal");
     },
     async create_class(class_obj) {
-      console.warn("create_class", class_obj);
+      _debuglog("create_class", class_obj);
       if (!this.is_teacher) {
         new ErrorToast("You need to be a teacher to create a class", 2000);
         return;
