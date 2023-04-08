@@ -38,7 +38,6 @@ auth.onAuthStateChanged((user) => {
         console.warn("local data updated");
         return;
       }
-      console.warn("remote data updated");
       // check if doc exists
       if (!doc.exists()) {
         store.create_doc();

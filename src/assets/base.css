@@ -47,6 +47,8 @@ body,
   --radius-overlay-link: 5px;
   /* sidebar actions */
   --height-sidebar-action: 40px;
+  /* loading screen */
+  --bg-filter-loading: blur(5px);
 }
 /* light theme colors for the project */
 body,
@@ -108,6 +110,8 @@ body,
   --color-overlay-link-hover: #b1c3d8;
   --color-overlay-secondary-input: #cccccc;
   --color-overlay-secondary-action: #adadad;
+  /* loading screen */
+  --color-loading-dot: #d4d4d4;
 }
 
 /* dark theme alternatives */
@@ -160,6 +164,8 @@ body:has(#themed_body[_theme="dark"]) {
   --color-overlay-link-hover: #414d5f;
   --color-overlay-secondary-input: #383838;
   --color-overlay-secondary-action: #555555;
+  /* loading screen */
+  --color-loading-dot: #383838;
 }
 
 *,

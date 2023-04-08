@@ -19,6 +19,13 @@ watch(
   },
   { deep: true }
 );
+// when localStorage.MVTT_teacher_mode changes, reload
+window.addEventListener("storage", (e) => {
+  if (e.key === "MVTT_teacher_mode") {
+    console.warn("teacher mode changed from another page, reloading");
+    window.location.reload();
+  }
+});
 
 // styles
 import "./assets/main.css";
@@ -121,3 +128,7 @@ router.beforeEach((to) => {
 
 // Allow teacher mode to be set with window.MVTT_TEACHER_MODE = true
 // (for testing purposes)
+window.toggle_teacher_mode = function () {
+  localStorage.setItem("MVTT_teacher_mode", !localStorage.getItem("MVTT_teacher_mode"));
+  window.location.reload();
+};

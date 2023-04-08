@@ -40,12 +40,23 @@ export const useMainStore = defineStore({
   id: "main",
   // store state
   state: () => {
+    let state = {};
+    // setting up store
     if (
       localStorage.getItem("MVTT_app_state") &&
       localStorage.getItem("MVTT_app_state") != "undefined"
-    )
-      return JSON.parse(localStorage.getItem("MVTT_app_state"));
-    return {
+    ) {
+      try {
+        console.warn("loading from local storage");
+        state = JSON.parse(localStorage.getItem("MVTT_app_state"));
+        return state;
+      } catch (err) {
+        console.error("Error parsing local storage state", err);
+      }
+    }
+    // if no local storage, set up store
+    console.warn("setting up store from scratch");
+    state = {
       user: null,
       doc: null,
       classes: [],
@@ -94,44 +105,45 @@ export const useMainStore = defineStore({
       return doc(db, "users", this.user.uid);
     },
     get_tasks() {
-      // get all the classes with this.classes(), then get all their tests and combine them into an array
-      let tests = [];
+      // get all the classes with this.classes(), then get all their tasks and combine them into an array
+      let tasks = [];
       let classes = this.classes;
-      if (!classes?.length) return [];
+      console.log("ran get_tasks");
+      if (!classes?.length) {
+        return [];
+      }
       for (let i = 0; i < classes.length; i++) {
-        let class_tests = classes[i].tests;
-        class_tests = class_tests ? class_tests : [];
-        // add class name and color to each test
-        for (let j = 0; j < class_tests.length; j++) {
+        let class_tasks = classes[i].tests; //! still uses legacy tests array
+        class_tasks = class_tasks ? class_tasks : [];
+        // add class name and color to each task
+        for (let j = 0; j < class_tasks.length; j++) {
           classes[i].name = classes[i].name ? classes[i].name : "Unnamed Class";
-          // check test date type and convert to date object if necessary
-          if (typeof class_tests[j].date == "string") {
+          // check task date type and convert to date object if necessary
+          if (typeof class_tasks[j].date == "string") {
             // convert to mm-dd-yyyy from yyyy-mm-dd
-            let [year, month, day] = class_tests[j].date.split("-");
-            class_tests[j].date = `${month}-${day}-${year}`;
-            class_tests[j].date = new Date(class_tests[j].date);
-            class_tests[j].date = isNaN(class_tests[j].date) ? null : class_tests[j].date;
+            let [year, month, day] = class_tasks[j].date.split("-");
+            class_tasks[j].date = `${month}-${day}-${year}`;
+            class_tasks[j].date = new Date(class_tasks[j].date);
+            class_tasks[j].date = isNaN(class_tasks[j].date) ? null : class_tasks[j].date;
           }
           // set color from parent class color
-          class_tests[j].color = classes[i].color;
-          tests.push({
-            ...class_tests[j],
+          class_tasks[j].color = classes[i].color;
+          tasks.push({
+            ...class_tasks[j],
             class_name: classes[i].name,
           });
         }
       }
-      return tests;
+      console.log("tasks", tasks);
+      return tasks;
     },
     is_teacher() {
       // check if email is a teacher email (ends in @mvla.net) && has letters in the first part
       if (!this.user) return false;
-      if (window?.MVTT_teacher_mode || (localStorage && localStorage.MVTT_teacher_mode)) {
-        console.warn(
-          "Teacher mode enabled (localStorage or window MVTT_teacher_mode value is true)\nFOR TESTING ONLY, does not enable nessesary server permission"
-        );
+      if (localStorage && localStorage.MVTT_teacher_mode) {
+        console.warn("Teacher mode enabled locally");
         return true;
       }
-      if (this.doc && this.doc.teacher_mode) return true;
       let email = this.user.email;
       let [first, last] = email.split("@");
       // return last == "mvla.net" && !/\d/.test(first);

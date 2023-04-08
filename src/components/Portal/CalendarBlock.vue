@@ -1,5 +1,8 @@
 <template>
   <main class="calendar">
+    <!-- use LoadingCover component when is_ready -->
+    <LoadingCover v-if="!is_ready" class="calendar_loading" covering="Calendar Tasks" />
+    <!-- calendar content -->
     <div class="calendar_header">
       <div
         class="calendar_date"
@@ -70,13 +73,17 @@
 
 <script>
 import { useMainStore } from "@/store";
-
+import LoadingCover from "@/components/LoadingCover.vue";
 export default {
   name: "CalendarBlock",
+  components: {
+    LoadingCover,
+  },
   emits: ["taskclick"],
   data() {
     return {
       loaded_month: new Date(new Date().setDate(1)),
+      is_ready: false,
     };
   },
   methods: {
@@ -114,8 +121,10 @@ export default {
       });
     },
     tasks() {
-      const store = useMainStore();
-      return store.get_tasks;
+      return this.store.get_tasks;
+    },
+    store() {
+      return useMainStore();
     },
     days() {
       const days = [];
@@ -157,6 +166,11 @@ export default {
       return days;
     },
   },
+  watch: {
+    tasks() {
+      this.is_ready = true;
+    },
+  },
 };
 </script>
 
@@ -173,6 +187,8 @@ main.calendar {
   background-color: var(--color-calendar);
   border-radius: var(--radius-calendar);
   box-shadow: var(--shadow-highlight);
+  /* overflow for loading */
+  overflow: hidden;
 }
 
 .calendar_header {
