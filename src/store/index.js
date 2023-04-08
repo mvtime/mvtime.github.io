@@ -336,7 +336,10 @@ export const useMainStore = defineStore({
           class_data.id = doc.id;
           // if user already in class, change name to "[JOINED] name"
           if (this.doc.classes.includes([email, doc.id].join("/"))) {
-            class_data.name = "[JOINED] " + "P" + class_data.period + " - " + class_data.name;
+            class_data.name =
+              "[JOINED] " +
+              (class_data.period ? "P" + class_data.period + " - " : "") +
+              class_data.name;
             class_data.is_joined = true;
           }
           classes.push(class_data);
@@ -354,7 +357,7 @@ export const useMainStore = defineStore({
       if (this.doc.classes.includes(class_id)) return;
       this.doc.classes.push([teacher_email, class_id].join("/"));
       await this.update_remote();
-      new SuccessToast(`Added P${class_period} - ${class_name} to your classes`, 2000);
+      new SuccessToast(`Added "P${class_period} - ${class_name}" to your classes`, 2000);
       // redirect to /portal
       router.push("/portal");
     },
@@ -364,13 +367,7 @@ export const useMainStore = defineStore({
         new ErrorToast("You need to be a teacher to create a class", 2000);
         return;
       }
-      if (!class_obj.name) {
-        new ErrorToast("Please enter a class name", 2000);
-        return;
-      } else if (!class_obj.period) {
-        new ErrorToast("Please entire a class period", 2000);
-        return;
-      }
+      if (!class_obj.name || !class_obj.period) return; // handled in disabled attr of button, failsafe for db
       try {
         // check if there is a teacher doc and collection
         if (!this.teacher.doc_ref || !this.teacher.collection_ref) {

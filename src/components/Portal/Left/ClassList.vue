@@ -10,10 +10,14 @@
             :style="{ '--color-class': class_obj.color }"
             title="Remove Class"
             @click="store.remove_class(class_obj.id)"
-            >
+          >
             <div class="class_swatch__icon"></div>
           </div>
-          <span class="class_name">P{{ class_obj.period }} - {{ class_obj.name }}</span>
+
+          <span v-if="class_obj.period" class="class_name"
+            >P{{ class_obj.period }} - {{ class_obj.name }}</span
+          >
+          <span v-else class="class_name">{{ class_obj.name }}</span>
         </div>
         <div
           v-if="!store.is_teacher"

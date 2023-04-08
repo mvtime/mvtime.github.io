@@ -69,7 +69,10 @@
       <div class="checkboxes">
         <div class="checkbox" v-for="class_obj in classes" :key="class_obj.id">
           <input type="checkbox" :id="class_obj.id" :value="class_obj.id" v-model="task_classes" />
-          <label :for="class_obj.id">P{{  class_obj.period }} - {{ class_obj.name }}</label>
+          <label v-if="class_obj.period" :for="class_obj.id">
+            P{{ class_obj.period }} - {{ class_obj.name }}
+          </label>
+          <label v-else :for="class_obj.id">{{ class_obj.name }}</label>
         </div>
       </div>
     </div>
