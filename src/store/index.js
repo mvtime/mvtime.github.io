@@ -39,17 +39,24 @@ function validAccount(userEmail) {
 export const useMainStore = defineStore({
   id: "main",
   // store state
-  state: () => ({
-    user: null,
-    doc: null,
-    classes: [],
-    loaded_email: null,
-    loaded_classes: null,
-    teacher: {
-      doc_ref: null,
-      collection_ref: null,
-    },
-  }),
+  state: () => {
+    if (
+      localStorage.getItem("MVTT_app_state") &&
+      localStorage.getItem("MVTT_app_state") != "undefined"
+    )
+      return JSON.parse(localStorage.getItem("MVTT_app_state"));
+    return {
+      user: null,
+      doc: null,
+      classes: [],
+      loaded_email: null,
+      loaded_classes: null,
+      teacher: {
+        doc_ref: null,
+        collection_ref: null,
+      },
+    };
+  },
   // store getters
   getters: {
     theme() {
@@ -182,12 +189,20 @@ export const useMainStore = defineStore({
         doc_data.id = class_path;
         classes.push(doc_data);
       }
+      // sort classes by period number, then by name
+      classes.sort((a, b) => {
+        if (a.period == b.period) {
+          return a.name.localeCompare(b.name);
+        }
+        return a.period - b.period;
+      });
+
       this.classes = classes;
     },
     async remove_invalid(class_id) {
       this.doc.classes = this.doc.classes.filter((c) => c != class_id);
       await this.update_remote();
-      new WarningToast("Removed non-existent class with id " + class_id, 2000);
+      new WarningToast(`Removed non-existent class "${class_id}"`, 2000);
     },
     async remove_class(class_id) {
       this.doc.classes = this.doc.classes.filter((c) => c != class_id);

@@ -1,3 +1,12 @@
 {
-  "recommendations": ["Vue.volar", "Vue.vscode-typescript-vue-plugin"]
+  "recommendations": [
+    "vue.vscode-typescript-vue-plugin",
+    "formulahendry.auto-rename-tag",
+    "aaron-bond.better-comments",
+    "chamboug.js-auto-backticks",
+    "esbenp.prettier-vscode",
+    "matijao.vue-nuxt-snippets",
+    "yoyo930021.vuter",
+    "dariofuzinato.vue-peek"
+  ]
 }

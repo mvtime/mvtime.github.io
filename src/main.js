@@ -1,4 +1,4 @@
-import { createApp } from "vue";
+import { createApp, watch } from "vue";
 import { createPinia } from "pinia";
 import App from "./App.vue";
 import router from "./router";
@@ -11,6 +11,14 @@ app.use(router);
 app.use(pinia);
 // mount app
 app.mount("#app");
+// setup store persistence using watcher
+watch(
+  pinia.state,
+  (state) => {
+    localStorage.setItem("MVTT_app_state", JSON.stringify(state.main));
+  },
+  { deep: true }
+);
 
 // styles
 import "./assets/main.css";
