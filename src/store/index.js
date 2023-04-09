@@ -231,7 +231,7 @@ export const useMainStore = defineStore({
       this.user = user;
       // if teacher, setup this.teacher refs
       if (this.is_teacher) {
-        _debuglog("teacher mode");
+        _debuglog("running in teacher mode");
         this.teacher.doc_ref = doc(db, "classes", this.user.email);
         this.teacher.collection_ref = collection(this.teacher.doc_ref, "classes");
       }
