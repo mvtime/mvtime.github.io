@@ -28,7 +28,7 @@ export { app, auth, db, analytics };
 
 // handle auth updates (user login/logout) and set user data in store
 import { useMainStore } from "../store";
-import { _debuglog } from "@/common";
+import { _statuslog } from "@/common";
 auth.onAuthStateChanged((user) => {
   const store = useMainStore();
   if (user) {
@@ -36,7 +36,7 @@ auth.onAuthStateChanged((user) => {
     // setup onSnapshot listener for user data
     onSnapshot(doc(db, "users", user.uid), { includeMetadataChanges: true }, (doc) => {
       if (doc.metadata.hasPendingWrites) {
-        _debuglog("local data updated");
+        _statuslog("local data updated");
         return;
       }
       // check if doc exists

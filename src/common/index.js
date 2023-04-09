@@ -1,5 +1,5 @@
-function _debuglog() {
+function _statuslog() {
   console.log("📚 " + Array.from(arguments).join(" \n"));
 }
 
-export { _debuglog };
+export { _statuslog };
