@@ -11,9 +11,9 @@
           <div class="char_option__img_container fancy_corners alt_corners">
             <div class="char_option__img">
               <img
-                v-for="img in team_member.avatar.srcset"
-                :key="img.src"
-                :src="img.src"
+                v-for="src in team_member.avatar.srcset"
+                :key="src"
+                :src="src"
                 class="char_option__img_src"
               />
             </div>
@@ -53,7 +53,12 @@ export default {
           nick: "Dr. Hashmap",
           ability: "rain",
           avatar: {
-            srcset: ["", "", "", ""],
+            srcset: [
+              require("@/assets/img/art/char/aarush/1.png"),
+              require("@/assets/img/art/char/aarush/2.png"),
+              require("@/assets/img/art/char/aarush/3.png"),
+              require("@/assets/img/art/char/aarush/4.png"),
+            ],
           },
           lines: ["Line 1", "Line 2"],
         },
@@ -90,7 +95,10 @@ export default {
       this.path = "character";
     },
     next_line() {
-      if (this.line_index && this.line_index <= this.current_path.lines.length - 1) {
+      if (
+        (this.line_index || this.line_index == 0) &&
+        this.line_index <= this.current_path.lines.length - 2
+      ) {
         this.line_index++;
       } else {
         this.line_index = 0;
@@ -276,6 +284,8 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
+  /* scaling */
+  image-rendering: pixelated;
   /* animation */
   visibility: hidden;
   animation: blink_quarter calc(var(--time-char-animation) * 4) infinite;
