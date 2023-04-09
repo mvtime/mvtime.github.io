@@ -6,6 +6,19 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes: [
     {
+      path: "/contact/play",
+      name: "contactgame",
+      component: () => import("../components/Home/ContactGame.vue"),
+      meta: {
+        page_title: "Contact - Play",
+        theme_color: {
+          light: "#ffffff",
+          dark: "#16130e",
+        },
+        requiresAuth: false,
+      },
+    },
+    {
       path: "/",
       name: "home",
       component: Home,
@@ -45,25 +58,26 @@ const router = createRouter({
             requiresAuth: false,
           },
         },
-        // {
-        //   path: "contact",
-        //   name: "contact",
-        //   component: () => import("../views/Home/ContactView.vue"),
-        //   meta: {
-        //     page_title: "Contact",
-        //     theme_color: {
-        //       light: "#ffffff",
-        //       dark: "#16130e",
-        //     },
-        //     requiresAuth: false,
-        //   },
-        // },
+
         {
           path: "download",
           name: "download",
           component: () => import("../views/Home/DownloadView.vue"),
           meta: {
             page_title: "Download [BETA]",
+            theme_color: {
+              light: "#ffffff",
+              dark: "#16130e",
+            },
+            requiresAuth: false,
+          },
+        },
+        {
+          path: "contact",
+          name: "contact",
+          component: () => import("../views/Home/ContactView.vue"),
+          meta: {
+            page_title: "Contact",
             theme_color: {
               light: "#ffffff",
               dark: "#16130e",
