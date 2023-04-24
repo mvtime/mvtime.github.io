@@ -57,7 +57,7 @@ export const useMainStore = defineStore({
     }
     // if no local storage, set up store
     _statuslog("setting up store from scratch");
-    state = {
+    return state = {
       user: null,
       doc: null,
       classes: [],

@@ -83,7 +83,7 @@ export default {
   data() {
     return {
       loaded_month: new Date(new Date().setDate(1)),
-      is_ready: false,
+      is_ready: true,
     };
   },
   methods: {
