@@ -1,0 +1,2 @@
+"use strict";(self["webpackChunkmvtime"]=self["webpackChunkmvtime"]||[]).push([[775],{4775:function(t,n,e){e.r(n),e.d(n,{default:function(){return s}});var a=e(3396);const c={class:"contact"};function r(t,n,e,r,u,i){const o=(0,a.up)("router-link");return(0,a.wg)(),(0,a.iD)("main",c,[(0,a.Wm)(o,{to:"/contact/play"},{default:(0,a.w5)((()=>[(0,a.Uk)("Play Minigame")])),_:1})])}var u={},i=e(89);const o=(0,i.Z)(u,[["render",r]]);var s=o}}]);
+//# sourceMappingURL=775.c48d3fb9.js.map
