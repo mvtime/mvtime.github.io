@@ -1,6 +1,6 @@
 <template>
   <main class="portal">
-    <LeftBar ref="LeftBar" @close_right_bar="close_right_bar" />
+    <LeftBar ref="LeftBar" @set_class="set_class" @close_right_bar="close_right_bar" />
     <div
       class="portal_content"
       @click="
@@ -26,7 +26,7 @@
           <div class="portal_info_welcome">Welcome Back {{ name }}</div>
         </header>
         <!-- calendar -->
-        <CalendarBlock @taskclick="show_task($event)" />
+        <CalendarBlock :displayed_class="displayed_class" @taskclick="show_task($event)" />
       </div>
     </div>
     <RightBar ref="RightBar" @close_left_bar="close_left_bar" />
@@ -52,6 +52,10 @@ export default {
     LeftBar,
     RightBar,
     CalendarBlock,
+  }, data() {
+    return {
+      displayed_class: null,
+    };
   },
   computed: {
     store() {
@@ -86,6 +90,9 @@ export default {
           task: taskJSON,
         },
       });
+    },
+    set_class(c) {
+      this.displayed_class = c;
     },
   },
 };

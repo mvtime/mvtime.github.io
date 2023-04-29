@@ -6,7 +6,7 @@
       <!-- Actions Panel -->
       <ActionsPanel v-if="store && store.is_teacher" />
       <!-- Class List -->
-      <ClassList />
+      <ClassList @set_class="set_class"/>
       <div class="flex-spacer"></div>
     </div>
     <!-- Theme Button -->
@@ -37,7 +37,7 @@ export default {
     ClassList,
     ActionsPanel,
   },
-  emits: ["close_right_bar"],
+  emits: ["close_right_bar", "set_class"],
   data() {
     return {
       sidebar_open: false,
@@ -58,12 +58,14 @@ export default {
     placeholderToast,
     show_if_inactive() {
       if (!this.sidebar_open) this.sidebar_open = true;
-
       this.$emit("close_right_bar");
     },
     close_sidebar() {
       if (this.sidebar_open) setTimeout(() => (this.sidebar_open = false), 10);
     },
+    set_class(c) {
+      this.$emit('set_class', c);
+    }
   },
 };
 </script>

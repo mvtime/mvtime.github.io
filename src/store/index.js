@@ -127,6 +127,7 @@ export const useMainStore = defineStore({
             class_tasks[j].date = isNaN(class_tasks[j].date) ? null : class_tasks[j].date;
           }
           // set color from parent class color
+
           class_tasks[j].color = classes[i].color;
           tasks.push({
             ...class_tasks[j],
@@ -430,9 +431,11 @@ export const useMainStore = defineStore({
       let teacher_classes_ref = collection(teacher_doc_ref, "classes");
       test_classes.forEach((class_id) => {
         // fix any class_id that has the teacher email in it
+        let displayed_class_id = class_id;
         class_id = class_id.split("/")[class_id.split("/").length - 1];
         // use this.teacher.collection_ref to get class collection ref, then update the class documents within
         let class_ref = doc(teacher_classes_ref, class_id);
+        test_obj.class_id = displayed_class_id;
         batch.update(class_ref, {
           tests: arrayUnion(test_obj),
         });

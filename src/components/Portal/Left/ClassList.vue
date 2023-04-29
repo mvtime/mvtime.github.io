@@ -1,7 +1,7 @@
 <template>
   <div class="class_list">
     <div class="class_list__not_empty">
-      <h5>Classes</h5>
+      <h5 @click="$emit('set_class', null)">Classes</h5>
       <hr class="class_list_hr" />
       <div class="classes_container">
         <div class="classes_container_class" v-for="class_obj of classes" :key="class_obj.name">
@@ -14,7 +14,7 @@
             <div class="class_swatch__icon"></div>
           </div>
 
-          <span v-if="class_obj.period" class="class_name"
+          <span @click="$emit('set_class', class_obj.id)" v-if="class_obj.period" class="class_name"
             >P{{ class_obj.period }} - {{ class_obj.name }}</span
           >
           <span v-else class="class_name">{{ class_obj.name }}</span>
@@ -46,6 +46,7 @@ export default {
       return this.store.classes;
     },
   },
+  emits: ['set_class'],
 };
 </script>
 
@@ -71,6 +72,11 @@ h5 {
   letter-spacing: 0.015rem;
   line-height: 27px;
   text-align: center;
+  border-radius: 8px;
+  user-select: none;
+}
+h5:hover {
+  background-color: var(--color-on-bg);
 }
 .class_list_hr {
   margin: 5px 0;
@@ -85,8 +91,12 @@ h5 {
   justify-content: stretch;
   margin: var(--spacing-classes) 0;
   user-select: none;
+  border-radius: 5px;
   /* temp */
   padding: 0 var(--spacing-classes-alt);
+}
+.classes_container_class:hover {
+  background-color: var(--color-on-bg);
 }
 .classes_container_class__add_class,
 .classes_container_class__create_class {

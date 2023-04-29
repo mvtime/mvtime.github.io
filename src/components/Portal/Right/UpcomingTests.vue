@@ -1,7 +1,7 @@
 <template>
   <div class="upcoming_tasks">
     <div v-if="tasks && tasks.length" class="upcoming_tasks__not_empty">
-      <h5>Upcoming Tasks</h5>
+      <h5>Upcoming</h5>
       <hr class="upcoming_tasks_hr" />
       <div class="tasks_container">
         <ExamCard
