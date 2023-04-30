@@ -16,6 +16,7 @@ import {
   addDoc,
   writeBatch,
   arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { signInWithPopup, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
@@ -127,7 +128,6 @@ export const useMainStore = defineStore({
             class_tasks[j].date = isNaN(class_tasks[j].date) ? null : class_tasks[j].date;
           }
           // set color from parent class color
-
           class_tasks[j].color = classes[i].color;
           tasks.push({
             ...class_tasks[j],
@@ -450,6 +450,58 @@ export const useMainStore = defineStore({
         }`,
         2000
       );
+      router.push("/portal");
+    },
+    async delete_task(test_obj) {
+      // use firebase array to delete the task
+      let batch = writeBatch(db);
+      let collection_ref = collection(db, "classes");
+      
+      // get doc ref for teacher email
+      let teacher_doc_ref = doc(collection_ref, this.user.email);
+      let teacher_classes_ref = collection(teacher_doc_ref, "classes");
+      
+      // retrieve class reference
+      let initial_class_id = test_obj.class_id;
+      let class_id = initial_class_id.split("/")[initial_class_id.split("/").length - 1];
+      let class_ref = doc(teacher_classes_ref, class_id);
+      
+      // create removable object and customize date string
+      let true_date = test_obj.date.replace("/", "-");
+      true_date = true_date.substr(true_date.length - 4).concat("-",true_date.substr(0, true_date.length - 5));
+      let i = true_date.indexOf("-");
+      let j = true_date.indexOf("-", i + 1);
+      if (j - i == 2) {
+        true_date = true_date.substr(0, i + 1).concat("0", true_date.substr(i + 1));
+        j++;
+      }
+      let len = true_date.length;
+      if (len - j == 2) {
+        true_date = true_date.substr(0, j + 1).concat("0", true_date.substr(j + 1));
+      }
+      
+      let removed_object = {
+        class_id: test_obj.class_id,
+        date: true_date,
+        description: test_obj.description,
+        name: test_obj.name,
+        type: test_obj.type,
+      }
+
+      // update class documents within
+      batch.update(class_ref, {
+        tests: arrayRemove(removed_object),
+      });
+      await batch.commit();
+      
+      // rerun get_tasks to update local data
+      await this.get_classes();
+      new SuccessToast(
+        `Removed task "${test_obj.name}"`,
+        200
+      );
+      
+      // return user to portal screen
       router.push("/portal");
     },
   },

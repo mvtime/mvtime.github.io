@@ -83,6 +83,7 @@ export default {
         description: task.description,
         links: task.links,
         type: task.type,
+        class_id: task.class_id,
       });
       this.$router.push({
         name: "task",
