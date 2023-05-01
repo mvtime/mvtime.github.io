@@ -15,6 +15,7 @@ import {
   query,
   addDoc,
   writeBatch,
+  updateDoc,
   arrayUnion,
   arrayRemove,
 } from "firebase/firestore";
@@ -58,7 +59,7 @@ export const useMainStore = defineStore({
     }
     // if no local storage, set up store
     _statuslog("setting up store from scratch");
-    return state = {
+    return (state = {
       user: null,
       doc: null,
       classes: [],
@@ -68,7 +69,7 @@ export const useMainStore = defineStore({
         doc_ref: null,
         collection_ref: null,
       },
-    };
+    });
   },
   // store getters
   getters: {
@@ -114,7 +115,7 @@ export const useMainStore = defineStore({
         return [];
       }
       for (let i = 0; i < classes.length; i++) {
-        let class_tasks = classes[i].tests; //! still uses legacy tests array
+        let class_tasks = classes[i].tasks;
         class_tasks = class_tasks ? class_tasks : [];
         // add class name and color to each task
         for (let j = 0; j < class_tasks.length; j++) {
@@ -437,7 +438,7 @@ export const useMainStore = defineStore({
         let class_ref = doc(teacher_classes_ref, class_id);
         test_obj.class_id = displayed_class_id;
         batch.update(class_ref, {
-          tests: arrayUnion(test_obj),
+          tasks: arrayUnion(test_obj),
         });
       });
       await batch.commit();
@@ -453,54 +454,29 @@ export const useMainStore = defineStore({
       router.push("/portal");
     },
     async delete_task(test_obj) {
-      // use firebase array to delete the task
-      let batch = writeBatch(db);
-      let collection_ref = collection(db, "classes");
-      
-      // get doc ref for teacher email
-      let teacher_doc_ref = doc(collection_ref, this.user.email);
-      let teacher_classes_ref = collection(teacher_doc_ref, "classes");
-      
       // retrieve class reference
       let initial_class_id = test_obj.class_id;
       let class_id = initial_class_id.split("/")[initial_class_id.split("/").length - 1];
-      let class_ref = doc(teacher_classes_ref, class_id);
-      
+      let class_ref = doc(this.teacher.collection_ref, class_id);
+
       // create removable object and customize date string
-      let true_date = test_obj.date.replace("/", "-");
-      true_date = true_date.substr(true_date.length - 4).concat("-",true_date.substr(0, true_date.length - 5));
-      let i = true_date.indexOf("-");
-      let j = true_date.indexOf("-", i + 1);
-      if (j - i == 2) {
-        true_date = true_date.substr(0, i + 1).concat("0", true_date.substr(i + 1));
-        j++;
-      }
-      let len = true_date.length;
-      if (len - j == 2) {
-        true_date = true_date.substr(0, j + 1).concat("0", true_date.substr(j + 1));
-      }
-      
+
       let removed_object = {
         class_id: test_obj.class_id,
-        date: true_date,
+        date: new Date(test_obj.date).toISOString().split("T")[0],
         description: test_obj.description,
         name: test_obj.name,
         type: test_obj.type,
-      }
+      };
 
-      // update class documents within
-      batch.update(class_ref, {
-        tests: arrayRemove(removed_object),
+      // remove task
+      await updateDoc(class_ref, {
+        tasks: arrayRemove(removed_object),
       });
-      await batch.commit();
-      
       // rerun get_tasks to update local data
       await this.get_classes();
-      new SuccessToast(
-        `Removed task "${test_obj.name}"`,
-        200
-      );
-      
+      new SuccessToast(`Removed task "${test_obj.name}"`, 200);
+
       // return user to portal screen
       router.push("/portal");
     },

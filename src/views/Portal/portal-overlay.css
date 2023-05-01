@@ -65,11 +65,13 @@
 .bottom_actions > *:first-child:hover {
   text-decoration: underline;
 }
-.bottom_actions > *:last-child {
+.bottom_actions > *:last-child,
+.bottom_actions > .primary_styled {
   background-color: var(--color-overlay-action);
   color: var(--color-on-overlay-action);
 }
-.bottom_actions > *:last-child[disabled] {
+.bottom_actions > *:last-child[disabled],
+.bottom_actions > .primary_styled[disabled] {
   cursor: not-allowed;
   background-color: var(--color-overlay-action-disabled);
   color: var(--color-on-overlay-action-disabled);

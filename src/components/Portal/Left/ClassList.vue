@@ -46,7 +46,7 @@ export default {
       return this.store.classes;
     },
   },
-  emits: ['set_class'],
+  emits: ["set_class"],
 };
 </script>
 
@@ -92,8 +92,6 @@ h5:hover {
   margin: var(--spacing-classes) 0;
   user-select: none;
   border-radius: 5px;
-  /* temp */
-  padding: 0 var(--spacing-classes-alt);
 }
 .classes_container_class:hover {
   background-color: var(--color-on-bg);

@@ -55,8 +55,14 @@
     </div>
     <div class="bottom_actions">
       <button class="share_action" @click="share_task">Share</button>
-      <button class="delete_button" @click="store.delete_task(task)">Delete</button>
       <div class="flex-spacer"></div>
+      <button
+        class="delete_action primary_styled"
+        v-if="store.is_teacher && store.user && task.class_id.split('/')[0] == store.user.email"
+        @click="store.delete_task(task)"
+      >
+        Delete
+      </button>
       <button class="continue_action" @click="$router.push('/portal')">Close</button>
     </div>
   </main>
@@ -82,7 +88,7 @@ export default {
     },
     store() {
       return useMainStore();
-    }
+    },
   },
   created() {
     // do route checking
@@ -115,8 +121,5 @@ export default {
 <style scoped>
 .spaced_contents {
   margin-top: 0;
-}
-.delete_button {
-  background-color: rgb(241, 129, 129);
 }
 </style>

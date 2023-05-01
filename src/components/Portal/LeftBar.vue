@@ -6,7 +6,7 @@
       <!-- Actions Panel -->
       <ActionsPanel v-if="store && store.is_teacher" />
       <!-- Class List -->
-      <ClassList @set_class="set_class"/>
+      <ClassList @set_class="set_class" />
       <div class="flex-spacer"></div>
     </div>
     <!-- Theme Button -->
@@ -64,8 +64,8 @@ export default {
       if (this.sidebar_open) setTimeout(() => (this.sidebar_open = false), 10);
     },
     set_class(c) {
-      this.$emit('set_class', c);
-    }
+      this.$emit("set_class", c);
+    },
   },
 };
 </script>
