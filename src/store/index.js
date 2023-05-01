@@ -475,7 +475,7 @@ export const useMainStore = defineStore({
       });
       // rerun get_tasks to update local data
       await this.get_classes();
-      new SuccessToast(`Removed task "${test_obj.name}"`, 200);
+      new SuccessToast(`Removed task "${test_obj.name}"`, 2000);
 
       // return user to portal screen
       router.push("/portal");
