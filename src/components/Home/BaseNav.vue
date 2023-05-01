@@ -1,7 +1,7 @@
 <template>
   <header>
     <h1 class="gohome hideoverflow">MV Test Tracker</h1>
-    <span class="flex-spacer"></span>
+    <span class="flex_spacer"></span>
     <button
       class="nav-mobile-btn"
       v-if="mobile && !mobile_menu_open"
@@ -21,7 +21,7 @@
           >Contact</router-link
         >
       </nav>
-      <span class="flex-spacer"></span>
+      <span class="flex_spacer"></span>
       <button
         id="nav-auth-btn"
         class="small-action-btn auth-action can-logout can-login click-action"
@@ -140,7 +140,7 @@ header nav a {
     flex-flow: row nowrap;
     position: relative;
   }
-  header .flex-spacer {
+  header .flex_spacer {
     flex-grow: 0;
     flex-shrink: 1;
     flex-basis: 0;

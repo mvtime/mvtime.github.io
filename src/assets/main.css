@@ -22,7 +22,7 @@
 .hidescroll::-webkit-scrollbar {
   display: none;
 }
-.flex-spacer {
+.flex_spacer {
   flex: 1;
   user-select: none;
   pointer-events: none;

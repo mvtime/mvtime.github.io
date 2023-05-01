@@ -2,9 +2,9 @@
   <div class="right-bar portal_sidebar" :class="{ active: sidebar_open }" @click="show_if_inactive">
     <div class="sidebar_overflow">
       <div class="auth-action can-logout doprompt">Log Out</div>
-      <div class="flex-spacer"></div>
+      <div class="flex_spacer"></div>
       <UpcomingTests />
-      <div class="flex-spacer"></div>
+      <div class="flex_spacer"></div>
     </div>
     <button
       class="info_button click-action"

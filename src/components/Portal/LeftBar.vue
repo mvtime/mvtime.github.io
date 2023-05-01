@@ -2,12 +2,12 @@
   <div class="left-bar portal_sidebar" :class="{ active: sidebar_open }" @click="show_if_inactive">
     <div class="sidebar_overflow">
       <div class="branding-title gohome">MV Test Tracker</div>
-      <div class="flex-spacer"></div>
+      <div class="flex_spacer"></div>
       <!-- Actions Panel -->
       <ActionsPanel v-if="store && store.is_teacher" />
       <!-- Class List -->
       <ClassList @set_class="set_class" />
-      <div class="flex-spacer"></div>
+      <div class="flex_spacer"></div>
     </div>
     <!-- Theme Button -->
     <button

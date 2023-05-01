@@ -33,7 +33,7 @@
     </div>
     <div class="bottom_actions">
       <button class="close_action" @click="$router.push('/portal')">Close</button>
-      <div class="flex-spacer"></div>
+      <div class="flex_spacer"></div>
       <button
         class="continue_action"
         @click="store.add_class(teacher_email, class_id, class_name)"
