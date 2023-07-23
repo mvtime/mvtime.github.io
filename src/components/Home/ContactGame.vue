@@ -84,7 +84,7 @@ export default {
               require("@/assets/img/art/char/aarush/4.png"),
             ],
             still: require("@/assets/img/art/char/aarush/still.png"),
-            background: "#0D0D0D",
+            background: "#1C1C1C",
           },
           lines: [
             `Hi I'm Aarush! Add me on <a href="https://www.linkedin.com/in/aarush-agarwal-2751a61b1/" target="_blank">LinkedIn</a>!`,
