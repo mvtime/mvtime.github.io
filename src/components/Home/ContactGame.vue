@@ -22,7 +22,7 @@
             </div>
           </div>
           <div class="char_option_text">
-            <div class="char_option_text__name">{{ team_member.name }}</div>
+            <div class="char_option_text__name">{{ team_member.fullname }}</div>
             <div class="char_option_text__nick">{{ team_member.nick }}</div>
           </div>
         </div>
@@ -55,6 +55,7 @@ export default {
       team_members: [
         {
           name: "Sander",
+          fullname: "Sander Vonk",
           nick: "Framework Boy",
           ability: "inception",
           avatar: {
@@ -65,7 +66,7 @@ export default {
               require("@/assets/img/art/char/sander/4.png"),
             ],
             still: require("@/assets/img/art/char/sander/still.png"),
-            background: "#ffffff",
+            background: "#EDEDED",
           },
           lines: [
             `Hi there! You can find me on <a href="https://linkedin.com/in/sandercvonk/" target="_blank">LinkedIn</a>, email me at <a href="mailto:sander@svonk.me" target="_blank">sander@svonk.me</a> or just <a href="https://svonk.me/ecard" download target="_blank">add me to your contacts!<a>`,
@@ -74,6 +75,7 @@ export default {
         },
         {
           name: "Aarush",
+          fullname: "Aarush Agarwal",
           nick: "Dr. Hashmap",
           ability: "rain",
           avatar: {
