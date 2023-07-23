@@ -1,6 +1,6 @@
 <template>
   <main class="contactgame">
-    <div class="chose_char" v-if="path == 'chosing'">
+    <div class="choose_char" v-if="path == 'chosing'">
       <div
         class="char_option"
         v-for="team_member in team_members"
@@ -8,7 +8,10 @@
         @click="do_path(team_member)"
       >
         <div class="char_option__content fancy_corners">
-          <div class="char_option__img_container fancy_corners alt_corners">
+          <div
+            class="char_option__img_container fancy_corners alt_corners"
+            :style="{ background: team_member.avatar.background }"
+          >
             <div class="char_option__img">
               <img
                 v-for="src in team_member.avatar.srcset"
@@ -25,15 +28,17 @@
         </div>
       </div>
     </div>
-    <div class="char_path" v-if="path == 'character'">
-      <div class="char_path_frame"></div>
-      <div class="char_path_box_container" @click="next_line">
+    <div class="char_path" v-if="path == 'character'" @click="next_line">
+      <div class="char_path_frame">
+        <img class="char_path_frame__img" :src="current_path.avatar.still" />
+      </div>
+      <div class="char_path_box_container">
         <div class="char_path_box fancy_corners">
           <span class="char_path_box__speaker"
             >{{ current_path.name }} - {{ current_path.nick }}</span
           >
           <hr />
-          <span class="char_path_box__line">{{ current_line }}</span>
+          <span v-html="current_line" class="char_path_box__line"></span>
         </div>
       </div>
     </div>
@@ -49,6 +54,25 @@ export default {
       path: "chosing",
       team_members: [
         {
+          name: "Sander",
+          nick: "Framework Boy",
+          ability: "inception",
+          avatar: {
+            srcset: [
+              require("@/assets/img/art/char/sander/1.png"),
+              require("@/assets/img/art/char/sander/2.png"),
+              require("@/assets/img/art/char/sander/3.png"),
+              require("@/assets/img/art/char/sander/4.png"),
+            ],
+            still: require("@/assets/img/art/char/sander/still.png"),
+            background: "#ffffff",
+          },
+          lines: [
+            `Hi there! You can find me on <a href="https://linkedin.com/in/sandercvonk/">LinkedIn</a>, email me at <a href="mailto:sander@svonk.me">sander@svonk.me</a> or just <a href="https://svonk.me/ecard" download>add me to your contacts!<a>`,
+            `Thanks for using MVTT! We really hope you find it useful, and if you have any feedback, please reach out!`,
+          ],
+        },
+        {
           name: "Aarush",
           nick: "Dr. Hashmap",
           ability: "rain",
@@ -59,26 +83,12 @@ export default {
               require("@/assets/img/art/char/aarush/3.png"),
               require("@/assets/img/art/char/aarush/4.png"),
             ],
+            still: require("@/assets/img/art/char/aarush/still.png"),
+            background: "#0D0D0D",
           },
-          lines: ["Line 1", "Line 2"],
-        },
-        {
-          name: "Sander",
-          nick: "Framework Boy",
-          ability: "inception",
-          avatar: {
-            srcset: ["", "", "", ""],
-          },
-          lines: ["Line 1", "Line 2"],
-        },
-        {
-          name: "Akshay",
-          nick: "Border Radiiser",
-          ability: "build",
-          avatar: {
-            srcset: ["", "", "", ""],
-          },
-          lines: ["Line 1", "Line 2"],
+          lines: [
+            `Hi I'm Aarush! Add me on <a href="https://www.linkedin.com/in/aarush-agarwal-2751a61b1/">LinkedIn</a>!`,
+          ],
         },
       ],
     };
@@ -101,7 +111,8 @@ export default {
       ) {
         this.line_index++;
       } else {
-        this.line_index = 0;
+        // exit back to previous screen
+        this.path = "chosing";
       }
     },
   },
@@ -149,10 +160,11 @@ export default {
 /* contact game page */
 .contactgame {
   --thickness-fancy-border: 4px;
-  --margin-char: 20px;
+  --margin-char: calc(5px + 2vw);
   --padding-char: 20px;
   --time-char-animation: 0.3s;
-  --color-minigame-bg: #108910;
+  /* --color-minigame-bg: #108910; */
+  --color-minigame-bg: var(--color-home);
   --color-minigame-card: #ffffff;
   --color-char-text: #000000;
   --color-minigame-accent: #000000;
@@ -161,11 +173,16 @@ export default {
   height: 100%;
   /* styles */
   background-color: var(--color-minigame-bg);
+  /* layout */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 /* character selection */
-.chose_char {
+.choose_char {
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: row wrap;
   overflow: hidden;
   /* sizing */
   width: 100%;
@@ -173,15 +190,16 @@ export default {
   /* position */
   align-items: center;
   margin: 0 auto;
-  max-width: 700px;
+  max-width: 800px;
 }
 .char_option {
   /* interaction */
   cursor: pointer;
   /* sizing */
-  flex-basis: 30%;
+  flex-basis: 200px;
   flex-shrink: 1;
   flex-grow: 1;
+  min-width: 120px;
   /* for children */
   position: relative;
   /* style */
@@ -189,15 +207,51 @@ export default {
   /* options for border style */
   --corner-color-bg: var(--color-minigame-bg);
   --corner-color-border: var(--color-minigame-accent);
+  /* animation */
+  transform: scale(1);
+  transition: transform 1s ease-out;
 }
+
+.char_option:hover {
+  transform: scale(1.05);
+  transition-timing-function: ease-in-out;
+  transition-duration: 0.25s;
+}
+
 .char_path_box_container {
   /* positioning */
-  position: fixed;
+  /* position: fixed; */
   bottom: 0;
   left: 0;
   width: 100%;
-  padding: var(--padding-char);
+  /* padding: var(--padding-char); */
   box-sizing: border-box;
+}
+.char_path_frame {
+  flex-grow: 1;
+  flex-basis: 100%;
+  /* sizing */
+  max-width: 350px;
+  min-width: 150px;
+}
+.char_path_frame .char_path_frame__img {
+  object-position: center;
+  object-fit: contain;
+  image-rendering: pixelated;
+  width: 100%;
+  height: 100%;
+  padding-bottom: var(--padding-char);
+}
+.char_path {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: stretch;
+  height: 100%;
+  width: 100%;
+  flex-grow: 1;
+  flex-basis: 100px;
+  /* max-width: 500px; */
 }
 .char_path_box {
   /* style */
@@ -210,7 +264,10 @@ export default {
   --corner-color-border: var(--color-minigame-accent);
   /* sizing */
   width: 100%;
-  min-height: 100px;
+  min-height: 115px;
+  /* sizing */
+  max-width: 900px;
+  margin-right: auto;
 }
 .char_path_box__speaker {
   font-weight: bold;
@@ -242,8 +299,8 @@ export default {
   justify-content: stretch;
   align-items: stretch;
 }
-.char_option:nth-of-type(2) {
-  margin: 0 var(--margin-char);
+.char_option {
+  margin: var(--margin-char);
 }
 /* images */
 .char_option__img_container {
@@ -292,19 +349,15 @@ export default {
 }
 .char_option__img_src:nth-of-type(1) {
   animation-delay: calc(var(--time-char-animation) * 0);
-  background-color: #111;
 }
 .char_option__img_src:nth-of-type(2) {
   animation-delay: calc(var(--time-char-animation) * 1);
-  background-color: #222;
 }
 .char_option__img_src:nth-of-type(3) {
   animation-delay: calc(var(--time-char-animation) * 2);
-  background-color: #333;
 }
 .char_option__img_src:nth-of-type(4) {
   animation-delay: calc(var(--time-char-animation) * 3);
-  background-color: #444;
 }
 /* text */
 .char_option_text {

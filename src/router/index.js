@@ -5,19 +5,19 @@ import NotFound from "../views/Home/NotFound.vue";
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes: [
-    {
-      path: "/contact/play",
-      name: "contactgame",
-      component: () => import("../components/Home/ContactGame.vue"),
-      meta: {
-        page_title: "Contact - Play",
-        theme_color: {
-          light: "#ffffff",
-          dark: "#16130e",
-        },
-        requiresAuth: false,
-      },
-    },
+    // {
+    //   path: "/contact/play",
+    //   name: "contactgame",
+    //   component: () => import("../components/Home/ContactGame.vue"),
+    //   meta: {
+    //     page_title: "Contact - Play",
+    //     theme_color: {
+    //       light: "#ffffff",
+    //       dark: "#16130e",
+    //     },
+    //     requiresAuth: false,
+    //   },
+    // },
     {
       path: "/",
       name: "home",
