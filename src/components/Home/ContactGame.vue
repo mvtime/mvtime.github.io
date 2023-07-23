@@ -68,7 +68,7 @@ export default {
             background: "#ffffff",
           },
           lines: [
-            `Hi there! You can find me on <a href="https://linkedin.com/in/sandercvonk/">LinkedIn</a>, email me at <a href="mailto:sander@svonk.me">sander@svonk.me</a> or just <a href="https://svonk.me/ecard" download>add me to your contacts!<a>`,
+            `Hi there! You can find me on <a href="https://linkedin.com/in/sandercvonk/" target="_blank">LinkedIn</a>, email me at <a href="mailto:sander@svonk.me" target="_blank">sander@svonk.me</a> or just <a href="https://svonk.me/ecard" download target="_blank">add me to your contacts!<a>`,
             `Thanks for using MVTT! We really hope you find it useful, and if you have any feedback, please reach out!`,
           ],
         },
@@ -87,7 +87,7 @@ export default {
             background: "#0D0D0D",
           },
           lines: [
-            `Hi I'm Aarush! Add me on <a href="https://www.linkedin.com/in/aarush-agarwal-2751a61b1/">LinkedIn</a>!`,
+            `Hi I'm Aarush! Add me on <a href="https://www.linkedin.com/in/aarush-agarwal-2751a61b1/" target="_blank">LinkedIn</a>!`,
           ],
         },
       ],
