@@ -29,7 +29,7 @@ export default {
   },
   data() {
     return {
-      sentiment: "",
+      sentiment: this.load?.sentiment || "",
       sentiments: ["negative", "neutral", "positive"],
     };
   },
@@ -43,13 +43,7 @@ export default {
       };
     },
   },
-  mounted() {
-    // try loading from data
-    console.log(this.load);
-    if (this.load?.sentiment) {
-      this.sentiment = this.load.sentiment;
-    }
-  },
+
   watch: {
     sentiment() {
       this.$emit("update", this.getData);

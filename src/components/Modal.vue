@@ -1,6 +1,6 @@
 <template>
   <main class="modal" ref="modal">
-    <header class="modal_header" v-if="title">
+    <header class="modal_header" v-if="title" ref="title">
       <h2 class="modal_header_title">{{ title }}</h2>
     </header>
     <div ref="contents" class="overlay_contents" v-if="content || html">
@@ -60,6 +60,10 @@ export default {
       el: this.$refs.contents,
       hideOverflow: true,
       childTransitions: true,
+    });
+    this.$smoothElement({
+      el: this.$refs.title,
+      hideOverflow: true,
     });
   },
   emits: ["open", "update", "status"],
