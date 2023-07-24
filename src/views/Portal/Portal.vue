@@ -32,7 +32,13 @@
     <RightBar ref="RightBar" @close_left_bar="close_left_bar" />
     <!-- show overlay only if router-view is active -->
     <div class="overlay_center_view" v-if="$route.name !== 'portal'">
-      <div class="overlay_close" @click="$router.push('/portal')"></div>
+      <!-- only allow close action if current page does not have block_close meta tag -->
+
+      <div
+        class="overlay_close"
+        @click="can_close ? $router.push('/portal') : null"
+        :closable="can_close"
+      ></div>
       <router-view class="router_center_view" />
     </div>
   </main>
@@ -52,12 +58,16 @@ export default {
     LeftBar,
     RightBar,
     CalendarBlock,
-  }, data() {
+  },
+  data() {
     return {
       displayed_class: null,
     };
   },
   computed: {
+    can_close() {
+      return this.$route?.meta?.block_close !== true;
+    },
     store() {
       return useMainStore();
     },

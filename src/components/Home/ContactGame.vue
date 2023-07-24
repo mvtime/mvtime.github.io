@@ -180,6 +180,8 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  /* interaction */
+  user-select: none;
 }
 /* character selection */
 .choose_char {
