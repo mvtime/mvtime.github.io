@@ -34,14 +34,14 @@ export default {
           submit_text: "Next",
         },
         {
-          title: "Are you feeling stressed?",
+          title: "How stressed are you?",
           content: shallowRef(ScaleSentiment),
           submit_text: "Next",
         },
         {
           title: "Uh oh!",
           html: `<p>This feature is still being implemented, thanks for checking it out!</p>`,
-          submit_text: "Will do!",
+          submit_text: "No problem!",
         },
       ],
     };

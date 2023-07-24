@@ -78,11 +78,11 @@ export default {
   cursor: pointer;
   user-select: none;
   /* sizing */
-  width: var(--sentiment-option-size);
-  height: var(--sentiment-option-size);
+  width: var(--size-sentiment-option);
+  height: var(--size-sentiment-option);
   border-radius: 50%;
   /* transition */
-  transition: scale 0.24s ease-out, opacity 0.2s ease-out;
+  transition: scale 0.4s ease-out, opacity 0.2s ease-out;
 }
 .sentiment_option:not(.active),
 .sentiments_container:has(:hover:not(.active)) > .sentiment_option.active {

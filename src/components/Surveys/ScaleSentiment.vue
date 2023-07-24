@@ -3,12 +3,15 @@
     <div class="sentiments_container">
       <div
         class="sentiment_option"
-        :class="{ active: sentiment == type }"
-        v-for="type in sentiments"
-        :key="type"
-        @click="sentiment = type"
-      ></div>
+        :class="{ active: sentiment == num }"
+        v-for="num in sentiments"
+        :key="num"
+        @click="sentiment = num"
+      >
+        {{ num }}
+      </div>
     </div>
+    <div class="overlay_contents_text sentiments_text">Where 1 is the least and 5 is the most</div>
   </div>
 </template>
 
@@ -23,22 +26,19 @@ export default {
   },
   data() {
     return {
-      sentiment: this.load?.sentiment || "",
+      sentiment: this.load?.sentiment || 0,
       sentiments: [1, 2, 3, 4, 5],
     };
   },
   computed: {
     can_continue() {
-      return this.sentiment != "";
+      return this.sentiment != 0;
     },
     getData() {
       return {
-        sentiment: this.sentiment,
+        sentiment: (100 * this.sentiment) / 5,
       };
     },
-  },
-  mounted() {
-    // this.$emit("status", this.can_continue);
   },
   watch: {
     getData() {
@@ -51,4 +51,50 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.sentiments_container {
+  display: flex;
+  justify-content: stretch;
+  align-items: stretch;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: var(--padding-overlay) 0;
+  overflow: hidden;
+}
+.sentiment_option {
+  /* interaction */
+  cursor: pointer;
+  user-select: none;
+  /* sizing */
+  flex-grow: 1;
+  flex-shrink: 0;
+  font-size: 1.2em;
+  padding: var(--padding-sentiment-option);
+  border-radius: var(--radius-sentiment-option);
+  /* layout */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: var(--margin-sentiment-option);
+  /* color */
+  background-color: var(--color-overlay-input);
+  color: var(--color-on-overlay-input);
+  /* transition */
+  transition: scale 0.4s ease-out, opacity 0.2s ease-out;
+}
+.sentiment_option:not(.active),
+.sentiments_container:has(:hover:not(.active)) > .sentiment_option.active {
+  scale: 0.8;
+}
+.sentiment_option:not(.active) {
+  opacity: 0.6;
+}
+.sentiments_container:has(.active) > .sentiment_option:not(.active) {
+  opacity: 0.4;
+}
+.sentiments_container > .sentiment_option:not(.active):hover {
+  opacity: 1;
+  scale: 0.95;
+}
+</style>
