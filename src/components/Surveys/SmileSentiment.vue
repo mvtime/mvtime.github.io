@@ -43,9 +43,11 @@ export default {
       };
     },
   },
-
+  mounted() {
+    this.$emit("status", this.can_continue);
+  },
   watch: {
-    sentiment() {
+    getData() {
       this.$emit("update", this.getData);
     },
     can_continue() {
