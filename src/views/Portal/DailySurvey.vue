@@ -35,7 +35,7 @@ export default {
   methods: {
     saveResponses(responses) {
       // save responses to database
-      _statuslog("Survey responses:", "meep", responses);
+      _statuslog("Survey responses:", responses);
       // finish
       this.$router.push("/portal");
     },
