@@ -6,7 +6,8 @@
 /* eslint-disable vue/no-unused-components */
 import ModalFromPages from "@/components/ModalFromPages.vue";
 import SmileSentiment from "@/components/Surveys/SmileSentiment.vue";
-import { _statuslog } from "../../common";
+import ScaleSentiment from "@/components/Surveys/ScaleSentiment.vue";
+import { _statuslog } from "@/common";
 // Mark all components passed into page.content with shallowRef(Component)
 import { shallowRef } from "vue";
 export default {
@@ -15,6 +16,7 @@ export default {
     ModalFromPages,
     // import page components below
     SmileSentiment,
+    ScaleSentiment,
   },
   data: () => {
     return {
@@ -29,6 +31,11 @@ export default {
         {
           title: "How are you feeling today?",
           content: shallowRef(SmileSentiment),
+          submit_text: "Next",
+        },
+        {
+          title: "Are you feeling stressed?",
+          content: shallowRef(ScaleSentiment),
           submit_text: "Next",
         },
         {

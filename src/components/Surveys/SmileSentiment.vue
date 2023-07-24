@@ -15,6 +15,14 @@
         />
       </div>
     </div>
+    <div class="overlay_contents_text sentiments_text">
+      <!-- extended prompt for "How are you feeling", extension of the question -->
+      <p v-if="sentiment == 'negative'">
+        <strong>Sorry to hear that!</strong> We hope you feel better soon.
+      </p>
+      <p v-if="sentiment == 'neutral'"><strong>Okay!</strong> We hope you have a good day.</p>
+      <p v-if="sentiment == 'positive'"><strong>Great!</strong> Keep up the energy!</p>
+    </div>
   </div>
 </template>
 
@@ -42,9 +50,6 @@ export default {
         sentiment: this.sentiment,
       };
     },
-  },
-  mounted() {
-    this.$emit("status", this.can_continue);
   },
   watch: {
     getData() {

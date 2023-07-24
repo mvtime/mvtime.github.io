@@ -16,7 +16,7 @@
     ref="modal"
     @update="curr_data = $event"
     @status="curr_done = $event"
-    :load="loadData"
+    :load="load_data"
   ></Modal>
 </template>
 
@@ -57,8 +57,9 @@ export default {
     };
   },
   computed: {
-    loadData() {
+    load_data() {
       // return saved data, or empty object
+      this.set_done();
       return this.responses[this.page_index]?.data || {};
     },
     page() {
@@ -79,6 +80,9 @@ export default {
     },
   },
   methods: {
+    set_done() {
+      this.curr_done = this.responses[this.page_index]?.done || false;
+    },
     switch_to(page_index) {
       // switch to page at index, as long as it is before the current, or already completed
       if (
@@ -96,6 +100,7 @@ export default {
       // get responses from current component and add to responses array
       this.responses[this.page_index] = {
         data: this.curr_data,
+        done: this.curr_done || !this.page.content || this.page.is_notification,
         time: {
           start: this.page_start,
           duration: Date.now() - this.page_start,
@@ -115,8 +120,8 @@ export default {
     page_index() {
       // reset page details when changing pages
       this.page_start = Date.now();
-      this.curr_data = this.loadData;
-      this.curr_done = false;
+      this.curr_data = this.load_data;
+      this.set_done();
     },
   },
 };
