@@ -1,5 +1,5 @@
 <template>
-  <main class="modal">
+  <main class="modal" ref="modal">
     <header class="modal_header" v-if="title">
       <h2 class="modal_header_title">{{ title }}</h2>
     </header>
@@ -13,7 +13,7 @@
           class="progress_display__dot"
           v-for="i in progress.total"
           :key="i"
-          :class="{ dot_active: i == progress.current }"
+          :class="{ dot_active: i == progress.current, dot_finished: i < progress.current }"
         ></span>
       </div>
       <div class="flex_spacer"></div>
@@ -39,9 +39,16 @@
  * @property {String} submit_text - The text to display on the continue button.
  *  */
 import { _statuslog } from "../common";
+import smoothHeight from "vue-smooth-height";
 import router from "../router";
 export default {
   name: "ModalVue",
+  mixins: [smoothHeight],
+  mounted() {
+    this.$smoothElement({
+      el: this.$refs.modal,
+    });
+  },
   props: {
     title: {
       type: String,
@@ -130,5 +137,9 @@ export default {
 }
 .progress_display__dot.dot_active {
   background-color: var(--color-modal-progress-dot-active);
+}
+.progress_display__dot.dot_finished {
+  transform: scale(0.75);
+  opacity: 0.6;
 }
 </style>
