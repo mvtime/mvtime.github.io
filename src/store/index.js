@@ -150,8 +150,28 @@ export const useMainStore = defineStore({
       // return last == "mvla.net" && !/\d/.test(first);
       return last == "mvla.net" && !/\d/.test(first);
     },
+    done_daily_survey() {
+      if (!this.doc) return false;
+      let date = new Date().toISOString().split("T")[0];
+      return this.doc.done_surveys?.includes(date);
+    },
   },
   actions: {
+    async save_daily_survey(responses) {
+      // save responses in /survey/daily/{date}/{uid}
+      let date = new Date().toISOString().split("T")[0];
+      let survey_ref = doc(db, "survey", "daily", date, this.user.uid);
+      let response_obj = {
+        time: new Date().getTime(),
+        responses: responses,
+      };
+      await setDoc(survey_ref, response_obj);
+      // update user doc to have date in "done_surveys"
+      this.doc.done_surveys = this.doc.done_surveys ? this.doc.done_surveys : [];
+      this.doc.done_surveys.push(date);
+      await this.update_remote();
+      new SuccessToast("Saved daily survey", 2000);
+    },
     async toggle_theme() {
       this.doc.theme = this.theme == "light" ? "dark" : "light";
       await this.update_remote();

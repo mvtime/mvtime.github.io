@@ -106,6 +106,12 @@ export default {
       this.displayed_class = c;
     },
   },
+  mounted() {
+    // check that done_daily_survey is true, if not open "/survey/daily"
+    if (!this.store.done_daily_survey) {
+      this.$router.push("/survey/daily");
+    }
+  },
 };
 </script>
 

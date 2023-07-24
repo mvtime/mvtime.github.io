@@ -10,6 +10,8 @@ import ScaleSentiment from "@/components/Surveys/ScaleSentiment.vue";
 import { _statuslog } from "@/common";
 // Mark all components passed into page.content with shallowRef(Component)
 import { shallowRef } from "vue";
+import { useMainStore } from "@/store";
+import { WarningToast } from "@svonk/util";
 export default {
   name: "DailySurvey",
   components: {
@@ -39,9 +41,8 @@ export default {
           submit_text: "Next",
         },
         {
-          title: "Uh oh!",
-          html: `<p>This feature is still being implemented, thanks for checking it out!</p>`,
-          submit_text: "No problem!",
+          title: "Thank you!",
+          html: `<p>Thank you for your input, you shouldn't have to answer any other questions until tomorrow!</p>`,
         },
       ],
     };
@@ -50,11 +51,21 @@ export default {
     saveResponses(responses) {
       // save responses to database
       _statuslog("Survey responses:", responses);
+      // save to store
+      useMainStore().save_daily_survey(responses);
       // remove onbeforeunload listener
       window.onbeforeunload = null;
       // finish
       this.$router.push("/portal");
     },
+  },
+  mounted() {
+    // if done_daily_survey is true, redirect to portal and toast
+    if (useMainStore().done_daily_survey) {
+      window.onbeforeunload = null;
+      this.$router.push("/portal");
+      new WarningToast("You already completed the daily survey today!", 200);
+    }
   },
 };
 </script>
