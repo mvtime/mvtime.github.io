@@ -1,5 +1,6 @@
 <template>
   <Modal
+    @open="switch_to"
     :title="page.title"
     :content="page.content"
     :html="page.content ? null : page.html"
@@ -70,13 +71,29 @@ export default {
     },
   },
   methods: {
+    switch_to(page_index) {
+      _statuslog(`ModalFromPages: switching to page ${page_index}`);
+      // switch to page at index, as long as it is before the current, or already completed
+      if (page_index <= this.page_index) {
+        this.page_index = page_index;
+      } else if (
+        // check that the previous response is not empty, can be null
+        Object.prototype.hasOwnProperty.call(this.responses, Math.max(page_index - 1, 0))
+      ) {
+        this.page_index = page_index;
+      } else {
+        _statuslog(
+          `ModalFromPages: page index ${page_index} invalid, must be before current page index ${this.page_index} or the first incomplete page`
+        );
+      }
+    },
     next_page() {
       // get responses from current component and add to responses array
       if (this.can_continue && this.page) {
         if (this.page.content && this.page.content.getData) {
-          this.responses.push(this.page.content.getData());
+          this.responses[this.page_index] = this.page.content.getData();
         } else {
-          this.responses.push(null);
+          this.responses[this.page_index] = null;
           _statuslog(
             `ModalFromPages: page "${this.page.title}" content does not have getData() method`
           );
@@ -88,8 +105,6 @@ export default {
       } else if (this.can_continue) {
         // emit responses
         this.$emit("finish", this.responses);
-        // remove onbeforeunload listener
-        window.onbeforeunload = null;
         // leave the rest up to the parent component
       }
     },

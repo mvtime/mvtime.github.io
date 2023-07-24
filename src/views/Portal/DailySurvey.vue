@@ -36,6 +36,8 @@ export default {
     saveResponses(responses) {
       // save responses to database
       _statuslog("Survey responses:", responses);
+      // remove onbeforeunload listener
+      window.onbeforeunload = null;
       // finish
       this.$router.push("/portal");
     },

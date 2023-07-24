@@ -10,11 +10,16 @@
     <div class="bottom_actions">
       <div class="progress_display" v-if="progress && progress.total > 1">
         <span
-          class="progress_display__dot"
+          class="progress_display__dot_container"
           v-for="i in progress.total"
           :key="i"
-          :class="{ dot_active: i == progress.current, dot_finished: i < progress.current }"
-        ></span>
+          @click="$emit('open', i - 1)"
+        >
+          <span
+            class="progress_display__dot"
+            :class="{ dot_active: i == progress.current, dot_finished: i < progress.current }"
+          ></span>
+        </span>
       </div>
       <div class="flex_spacer"></div>
       <button class="continue_action" @click="continue_action" :disabled="!can_continue">
@@ -49,6 +54,7 @@ export default {
       el: this.$refs.modal,
     });
   },
+  emits: ["open"],
   props: {
     title: {
       type: String,
@@ -122,15 +128,19 @@ export default {
   justify-content: center;
   /* interaction */
   user-select: none;
-  pointer-events: none;
   /* sizing */
   height: var(--size-modal-progress);
+}
+.progress_display span {
+  display: block;
+}
+.progress_display__dot_container {
+  padding: var(--margin-modal-progress-dot);
 }
 .progress_display__dot {
   /* sizing */
   width: var(--size-modal-progress-dot);
   height: var(--size-modal-progress-dot);
-  margin: var(--margin-modal-progress-dot);
   border-radius: 50%;
   /* appearance */
   background-color: var(--color-modal-progress-dot);
