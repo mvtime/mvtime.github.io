@@ -115,7 +115,7 @@ export default {
     page_index() {
       // reset page details when changing pages
       this.page_start = Date.now();
-      this.curr_data = null;
+      this.curr_data = this.loadData;
       this.curr_done = false;
     },
   },
