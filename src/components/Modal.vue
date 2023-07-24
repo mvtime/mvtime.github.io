@@ -3,8 +3,14 @@
     <header class="modal_header" v-if="title">
       <h2 class="modal_header_title">{{ title }}</h2>
     </header>
-    <div class="overlay_contents" v-if="content || html">
-      <component :is="content" />
+    <div ref="contents" class="overlay_contents" v-if="content || html">
+      <component
+        :is="content"
+        ref="container"
+        @update="$emit('update', $event)"
+        @status="$emit('status', $event)"
+        :load="load"
+      />
       <div class="overlay_contents__html" v-if="html" v-html="html"></div>
     </div>
     <div class="bottom_actions">
@@ -51,11 +57,20 @@ export default {
   mixins: [smoothHeight],
   mounted() {
     this.$smoothElement({
-      el: this.$refs.modal,
+      el: this.$refs.contents,
+      hideOverflow: true,
+      childTransitions: true,
     });
   },
-  emits: ["open"],
+  emits: ["open", "update", "status"],
+  data() {
+    return {};
+  },
   props: {
+    load: {
+      type: Object,
+      default: () => ({}),
+    },
     title: {
       type: String,
       default: "",
@@ -119,6 +134,10 @@ export default {
 <style scoped>
 .modal:first-child.overlay_contents {
   border-top: none;
+}
+/* for animating height */
+.modal {
+  transition: height 0.5s ease-in-out;
 }
 .progress_display {
   /* layout */

@@ -52,6 +52,8 @@ body,
   /* modal (derived from overlay) */
   --size-modal-progress-dot: 10px;
   --margin-modal-progress-dot: 5px;
+  /* survey */
+  --sentiment-option-size: 80px;
 }
 /* light theme colors for the project */
 body,
@@ -175,6 +177,7 @@ body:has(#themed_body[_theme="dark"]) {
   /* modal (extends overlay) */
   --color-modal-progress-dot: #383838;
   --color-modal-progress-dot-active: var(--color-theme);
+  /* survey elements */
 }
 
 *,

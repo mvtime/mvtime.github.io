@@ -13,6 +13,10 @@
     :can_continue="can_continue"
     :continue_action="next_page"
     :show_progress="true"
+    ref="modal"
+    @update="curr_data = $event"
+    @status="curr_done = $event"
+    :load="loadData"
   ></Modal>
 </template>
 
@@ -21,7 +25,7 @@
  * @file ModalFromPages.vue
  * @displayName Modal from Pages
  * @description A modal view that displays a series of pages as a modal with progression.
- * @property {Array} pages - An array of page objects, each with a title (String) and content (Component) or html (String), and most importantly a getData() method.
+ * @property {Array} pages - An array of page objects, each with a title (String) and content (Component) or html (String), and most importantly a @update and @status emit.
  * @emits {Array} finish - Emitted when the user has finished all pages, with an array of responses from each page.
  */
 window.onbeforeunload = confirm_unfinished;
@@ -47,9 +51,16 @@ export default {
     return {
       page_index: 0,
       responses: [],
+      curr_data: null,
+      curr_done: false,
+      page_start: Date.now(),
     };
   },
   computed: {
+    loadData() {
+      // return saved data, or empty object
+      return this.responses[this.page_index]?.data || {};
+    },
     page() {
       if (this.pages.length == 0) {
         return {
@@ -57,27 +68,21 @@ export default {
           content: null,
           html: null,
           is_notification: true,
+          submit_text: "Oops!",
         };
       }
       return this.pages[this.page_index];
     },
     can_continue() {
-      // check if content component has a can_continue method
-      if (this.page.content && this.page.content.can_continue) {
-        return this.page.content.can_continue();
-      } else {
-        return true;
-      }
+      // either no content or has updated with @status of true
+      return !this.page.content || this.page.is_notification || this.curr_done;
     },
   },
   methods: {
     switch_to(page_index) {
-      _statuslog(`ModalFromPages: switching to page ${page_index}`);
       // switch to page at index, as long as it is before the current, or already completed
-      if (page_index <= this.page_index) {
-        this.page_index = page_index;
-      } else if (
-        // check that the previous response is not empty, can be null
+      if (
+        page_index <= this.page_index ||
         Object.prototype.hasOwnProperty.call(this.responses, Math.max(page_index - 1, 0))
       ) {
         this.page_index = page_index;
@@ -89,16 +94,13 @@ export default {
     },
     next_page() {
       // get responses from current component and add to responses array
-      if (this.can_continue && this.page) {
-        if (this.page.content && this.page.content.getData) {
-          this.responses[this.page_index] = this.page.content.getData();
-        } else {
-          this.responses[this.page_index] = null;
-          _statuslog(
-            `ModalFromPages: page "${this.page.title}" content does not have getData() method`
-          );
-        }
-      }
+      this.responses[this.page_index] = {
+        data: this.curr_data,
+        time: {
+          start: this.page_start,
+          duration: Date.now() - this.page_start,
+        },
+      };
       if (this.can_continue && this.page_index < this.pages.length - 1) {
         // switch to next page
         this.page_index++;
@@ -107,6 +109,14 @@ export default {
         this.$emit("finish", this.responses);
         // leave the rest up to the parent component
       }
+    },
+  },
+  watch: {
+    page_index() {
+      // reset page details when changing pages
+      this.page_start = Date.now();
+      this.curr_data = null;
+      this.curr_done = false;
     },
   },
 };

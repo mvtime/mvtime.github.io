@@ -5,14 +5,16 @@
 <script>
 /* eslint-disable vue/no-unused-components */
 import ModalFromPages from "@/components/ModalFromPages.vue";
+import SmileSentiment from "@/components/Surveys/SmileSentiment.vue";
 import { _statuslog } from "../../common";
 // Mark all components passed into page.content with shallowRef(Component)
-// import { shallowRef } from "vue";
+import { shallowRef } from "vue";
 export default {
   name: "DailySurvey",
   components: {
     ModalFromPages,
     // import page components below
+    SmileSentiment,
   },
   data: () => {
     return {
@@ -23,6 +25,11 @@ export default {
                  <br />
                  <p>For each question, please select the answer that best describes your situation.</p>`,
           submit_text: "Okay",
+        },
+        {
+          title: "How are you feeling today?",
+          content: shallowRef(SmileSentiment),
+          submit_text: "Next",
         },
         {
           title: "Uh oh!",
