@@ -10,7 +10,7 @@
       </button>
     </div>
     <div class="home_art">
-      <img v-lazy="'@/assets/img/art/homepage_art.png'" />
+      <img v-lazy="source" />
     </div>
   </main>
 </template>
@@ -22,11 +22,27 @@ import { useMainStore } from "@/store";
 export default {
   name: "HomeView",
   computed: {
+    combo() {
+      // return a random combo, with h0-h2 and s0-s6 (ex: h1s3)
+      let h = Math.floor(Math.random() * 3);
+      let s = Math.floor(Math.random() * 7);
+      return `h${h}s${s}`;
+    },
     store() {
       return useMainStore();
     },
     logged_in() {
       return this.store.user;
+    },
+    source() {
+      try {
+        // Dynamically generate the image source based on the variable 'picture'
+        return require(`@/assets/img/art/splash/${this.combo}.png`);
+      } catch (error) {
+        // If the image doesn't exist, return a fallback image source or an empty string
+        // You can modify this to suit your specific use case
+        return "err";
+      }
     },
   },
   methods: {
@@ -57,9 +73,9 @@ export default {
   flex-grow: 1;
   /* layout */
 }
-.home_art__placehold {
+/* .home_art__placehold:not([lazy="error"]):not([lazy="loaded"]) {
   background: url(@/assets/img/art/homepage_art_small.png) no-repeat cover;
-}
+} */
 /* hide on small screens */
 @media (max-width: 1200px) {
   .home_art {

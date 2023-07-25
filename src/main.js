@@ -10,13 +10,13 @@ const app = createApp(App);
 // setup app requisites
 app.use(router);
 app.use(pinia);
-// setup image loading
-const loadimage = require("@/assets/img/placeholder/load_dark.gif");
-const errorimage = require("@/assets/img/placeholder/error_dark.png");
+//* setup image loading
+// const loadimage = require("@/assets/img/placeholder/load_dark.gif");
+// const errorimage = require("@/assets/img/placeholder/error_dark.png");
 app.use(VueLazyload, {
-  preLoad: 1.3,
-  error: errorimage,
-  loading: loadimage,
+  preLoad: 2,
+  // error: errorimage,
+  // loading: loadimage,
   attempt: 1,
 });
 
