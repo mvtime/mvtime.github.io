@@ -22,6 +22,7 @@
   },
   "main": "background.js",
   "dependencies": {
+    "@lottiefiles/vue-lottie-player": "^1.1.0",
     "@svonk/util": "^1.0.3",
     "core-js": "^3.8.3",
     "electron-build": "^0.0.3",
@@ -32,6 +33,7 @@
     "qs": "^6.11.1",
     "register-service-worker": "^1.7.2",
     "vue": "^3.2.13",
+    "vue-lazyload": "^3.0.0",
     "vue-router": "^4.0.3",
     "vue-smooth-height": "^1.6.4"
   },

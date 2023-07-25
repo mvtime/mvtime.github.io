@@ -1,6 +1,6 @@
 <template>
-  <main class="home center-1000">
-    <div id="home-main">
+  <main class="home">
+    <div id="home_main">
       <h2>Organize. Plan. Study.</h2>
       <h3 class="middle-text secondary_home_text">
         Test tracker provides an effective way to manage upcoming exams.
@@ -9,7 +9,9 @@
         {{ logged_in ? "Open App" : "Get Started" }}
       </button>
     </div>
-    <div id="home-art" style="display: none"></div>
+    <div class="home_art">
+      <img v-lazy="require('@/assets/img/art/homepage_art.png')" />
+    </div>
   </main>
 </template>
 
@@ -30,7 +32,7 @@ export default {
   methods: {
     tomain() {
       if (this.store.user) {
-        this.$router.push("/portal");
+        this.$router.push(this.$route.query.redirect || "/portal");
       }
     },
   },
@@ -44,8 +46,31 @@ export default {
   justify-content: stretch;
   align-items: center;
   height: 100%;
+  /* sizing */
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
 }
-#home-main > * {
+.home_art {
+  display: flex;
+  flex-basis: 200px;
+  flex-grow: 1;
+  /* layout */
+}
+.home_art__placehold {
+  background: url(@/assets/img/art/homepage_art_small.png) no-repeat cover;
+}
+/* hide on small screens */
+@media (max-width: 1200px) {
+  .home_art {
+    display: none;
+  }
+}
+.home_art * {
+  width: 100%;
+  height: 100%;
+}
+#home_main > * {
   max-width: 600px;
 }
 .home .middle-text {

@@ -236,6 +236,8 @@ a[href],
 
 /* util.css colors */
 :root {
+  /* placeholder */
+  --placehold-bg: #ffffff;
   /*toast*/
   --toast-bg: hsl(42, 20%, 91%);
   --toast-bg-transparent: hsla(42, 20%, 91%, 0.667);
@@ -252,6 +254,8 @@ a[href],
   --popup-red: #93000a;
 }
 body:has(#themed_body[_theme="dark"]) {
+  /* placeholder */
+  --placehold-bg: #1e1c17;
   /*toast*/
   --toast-bg: #191c1d;
   --toast-bg-transparent: #303030aa;
@@ -266,4 +270,30 @@ body:has(#themed_body[_theme="dark"]) {
   --popup-bg: #1c1c1c;
   --on-popup-bg: hsl(36, 3%, 89%);
   --popup-red: #de3730;
+}
+
+/* lazy loading imgs w/ [v-lazy] */
+img[lazy="error"],
+img[lazy="loading"] {
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: var(--placehold-bg);
+}
+
+img[lazy="error"] {
+  background-image: url(@/assets/img/placeholder/error_dark.png);
+}
+img[lazy="loading"] {
+  background-image: url(@/assets/img/placeholder/load_dark.gif);
+}
+
+#themed_body[_theme="dark"] img[lazy="error"] {
+  background-image: url(@/assets/img/placeholder/error_light.png);
+}
+#themed_body[_theme="dark"] img[lazy="loading"] {
+  background-image: url(@/assets/img/placeholder/load_light.gif);
+}
+
+img[lazy="loaded"] {
 }

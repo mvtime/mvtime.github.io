@@ -10,6 +10,21 @@ const app = createApp(App);
 // setup app requisites
 app.use(router);
 app.use(pinia);
+// setup image loading
+app.use(VueLazyload);
+const loadimage = require("@/assets/img/placeholder/load_dark.gif");
+const errorimage = require("@/assets/img/placeholder/error_dark.png");
+app.use(VueLazyload, {
+  preLoad: 1.3,
+  error: errorimage,
+  loading: loadimage,
+  attempt: 1,
+});
+
+//* lottie animations
+// import LottieVuePlayer from "@lottiefiles/vue-lottie-player";
+// app.use(LottieVuePlayer);
+
 // mount app
 app.mount("#app");
 // setup store persistence using watcher
@@ -99,6 +114,7 @@ window.$ = $;
 import { Toast } from "@svonk/util";
 
 import "./registerServiceWorker";
+import VueLazyload from "vue-lazyload";
 router.beforeEach((to) => {
   const store = useMainStore();
 
