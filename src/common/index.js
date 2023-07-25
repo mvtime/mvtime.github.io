@@ -12,14 +12,14 @@ function _statuslog() {
   let args = Array.from(arguments);
   let extras = [
     `%cMVTT`,
-    "background:#272727;color:#C9B092;padding:10px 20px;font-family:Lato,sans-serif;font-weight:bold;font-size:1.5em",
+    "background:#272727;color:#C9B092;padding:7px 12px;font-family:Lato,sans-serif;font-weight:bold;font-size:1.3em",
   ];
   // check if first character is emoji, followed by space
   if (getFirstNonStandardCharacter(args[0]) != null) {
     // remove the first two characters from the first argument
     extras[0] += " %c" + getFirstNonStandardCharacter(args[0]);
     extras[2] =
-      "background:#C9B092aa;background:#ffffffaa;color:#272727;padding:5px 7px;margin-left:5px;border-radius:5px;font-family:monospace !important;font-weight:bold;font-size:1.25em";
+      "background:#C9B092aa;background:#ffffffaa;color:#272727;padding:3px 5px;margin-left:5px;border-radius:5px;font-family:monospace !important;font-weight:bold;font-size:1.25em";
     args[0] = args[0].substring(2).trimStart();
   }
   try {
