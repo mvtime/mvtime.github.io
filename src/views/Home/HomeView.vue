@@ -24,9 +24,24 @@ export default {
   computed: {
     combo() {
       // return a random combo, with h0-h2 and s0-s6 (ex: h1s3)
-      let h = Math.floor(Math.random() * 3);
-      let s = Math.floor(Math.random() * 7);
-      return `h${h}s${s}`;
+      // try getting from local storage
+      let stored = localStorage.getItem("home_art");
+      let stored_first = stored ? stored.split("h")[1][0] : null,
+        stored_second = stored ? stored.split("s")[1][0] : null;
+      // convert to int
+      stored_first = stored_first ? parseInt(stored_first) : null;
+      stored_second = stored_second ? parseInt(stored_second) : null;
+      // generate a new combo
+      let combo, first, second;
+      // if existing, don't reuse either of the two
+      while (!combo || second == stored_second || first == stored_first) {
+        first = Math.floor(Math.random() * 3);
+        second = Math.floor(Math.random() * 7);
+        combo = `h${first}s${second}`;
+      }
+      // save to local storage to prevent repeats
+      localStorage.setItem("home_art", combo);
+      return combo;
     },
     store() {
       return useMainStore();
