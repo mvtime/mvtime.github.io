@@ -89,7 +89,7 @@ export default {
           redirect: this.$route.fullPath,
         },
       });
-      new WarningToast("Please complete the daily survey to use MVTT today!", 5000);
+      new WarningToast("Please complete the daily survey to use MVTT today!", 3000);
     },
     close_left_bar() {
       this.$refs.LeftBar.close_sidebar();

@@ -8,7 +8,7 @@
     @skip="someFunction"
 */
 /* eslint-disable vue/no-unused-components */
-import ModalFromPages from "@/components/ModalFromPages.vue";
+import ModalFromPages from "@/components/Modal/ModalFromPages.vue";
 import SmileSentiment from "@/components/Surveys/SmileSentiment.vue";
 import ScaleSentiment from "@/components/Surveys/ScaleSentiment.vue";
 import LongResponse from "@/components/Surveys/LongResponse.vue";

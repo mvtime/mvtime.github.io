@@ -32,7 +32,7 @@ function confirm_unfinished() {
   // message irrelevant for most browsers, but nice to have
   return "You haven't finished the task yet, and might lose progress. Are you sure you want to close the tab?";
 }
-import ModalVue from "@/components/Modal.vue";
+import ModalVue from "./Modal.vue";
 import { _statuslog } from "@/common";
 export default {
   name: "ModalFromPages",
