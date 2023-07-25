@@ -1,7 +1,7 @@
 <template>
   <div class="survey_long survey_part">
     <textarea
-      class="survey_long__textarea styled_input"
+      class="survey_long__textarea styled_input styled_textarea styled_obj"
       placeholder="Type your response here..."
       v-model="response"
     ></textarea>
@@ -43,4 +43,10 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.survey_long {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: stretch;
+}
+</style>

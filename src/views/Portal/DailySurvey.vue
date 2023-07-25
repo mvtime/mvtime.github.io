@@ -8,7 +8,6 @@ import ModalFromPages from "@/components/ModalFromPages.vue";
 import SmileSentiment from "@/components/Surveys/SmileSentiment.vue";
 import ScaleSentiment from "@/components/Surveys/ScaleSentiment.vue";
 import LongResponse from "@/components/Surveys/LongResponse.vue";
-import { _statuslog } from "@/common";
 // Mark all components passed into page.content with shallowRef(Component)
 import { shallowRef } from "vue";
 import { useMainStore } from "@/store";
@@ -66,20 +65,19 @@ export default {
   methods: {
     saveResponses(responses) {
       // save responses to database
-      _statuslog("Survey responses:", responses);
-      // save to store
-      useMainStore().save_daily_survey(responses);
+      this.store.save_daily_survey(responses);
       // remove onbeforeunload listener
       window.onbeforeunload = null;
       // finish
-      this.$router.push("/portal");
+      this.$router.push(this.$route.query.redirect || "/portal");
     },
   },
   mounted() {
     // if done_daily_survey is true, redirect to portal and toast
     if (this.did_survey) {
       window.onbeforeunload = null;
-      this.$router.push("/portal");
+      // redirect to query redirect page (route.query.redirect) or portal if unspecified
+      this.$router.push(this.$route.query.redirect || "/portal");
       new WarningToast("You already completed the daily survey today!", 2000);
     }
   },
@@ -87,7 +85,7 @@ export default {
     did_survey() {
       if (this.did_survey) {
         window.onbeforeunload = null;
-        this.$router.push("/portal");
+        this.$router.push(this.$route.query.redirect || "/portal");
         new SuccessToast("Looks like you completed the survey somewhere else!", 2000);
       }
     },

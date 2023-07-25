@@ -91,9 +91,7 @@ export default {
       ) {
         this.page_index = page_index;
       } else {
-        _statuslog(
-          `ModalFromPages: page index ${page_index} invalid, must be before current page index ${this.page_index} or the first incomplete page`
-        );
+        _statuslog(`⏵ ModalFromPages: page index ${page_index} invalid`);
       }
     },
     next_page() {

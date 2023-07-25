@@ -54,15 +54,15 @@ export const useMainStore = defineStore({
       localStorage.getItem("MVTT_app_state") != "undefined"
     ) {
       try {
-        _statuslog("loading from local storage");
+        _statuslog("↻ Loading state from local storage");
         state = JSON.parse(localStorage.getItem("MVTT_app_state"));
         return state;
       } catch (err) {
-        console.error("Error parsing local storage state", err);
+        console.error("⟳ Error parsing local storage state", err);
       }
     }
     // if no local storage, set up store
-    _statuslog("setting up store from scratch");
+    _statuslog("🔨 Setting up store from scratch");
     return (state = {
       user: null,
       doc: null,
@@ -146,7 +146,7 @@ export const useMainStore = defineStore({
       // check if email is a teacher email (ends in @mvla.net) && has letters in the first part
       if (!this.user) return false;
       if (window?.localStorage?.MVTT_teacher_mode == "true") {
-        _statuslog("teacher mode enabled locally");
+        _statuslog("🏫 Teacher mode enabled locally");
         return true;
       }
       let email = this.user.email;
@@ -156,6 +156,7 @@ export const useMainStore = defineStore({
     },
     done_daily_survey() {
       if (!this.doc) return false;
+      if (this.is_teacher) return true;
       return this.doc.done_surveys?.includes(today);
     },
   },
@@ -242,7 +243,7 @@ export const useMainStore = defineStore({
     async remove_class(class_id) {
       this.doc.classes = this.doc.classes.filter((c) => c != class_id);
       await this.update_remote();
-      _statuslog("Removed class from user's doc: " + class_id);
+      _statuslog("🗑️ Removed class from user's doc: " + class_id);
       new SuccessToast("Removed class", 2000);
     },
     set_user(user) {
@@ -255,7 +256,7 @@ export const useMainStore = defineStore({
       this.user = user;
       // if teacher, setup this.teacher refs
       if (this.is_teacher) {
-        _statuslog("running in teacher mode");
+        _statuslog("🏫 Running in teacher mode");
         this.teacher.doc_ref = doc(db, "classes", this.user.email);
         this.teacher.collection_ref = collection(this.teacher.doc_ref, "classes");
       }
@@ -368,6 +369,7 @@ export const useMainStore = defineStore({
     async update_remote() {
       // update remote doc
       await setDoc(this.userdoc_ref, this.doc, { merge: true });
+      _statuslog("⏶ Pushed changes to remote");
     },
     async get_classes_by_email(email) {
       this.loaded_email = null;
@@ -412,7 +414,7 @@ export const useMainStore = defineStore({
       router.push("/portal");
     },
     async create_class(class_obj) {
-      _statuslog("create_class", class_obj);
+      _statuslog("🔨 Creating class", class_obj);
       if (!this.is_teacher) {
         new ErrorToast("You need to be a teacher to create a class", 2000);
         return;

@@ -23,7 +23,7 @@ watch(
 // when localStorage.MVTT_teacher_mode changes, reload
 window.addEventListener("storage", (e) => {
   if (e.key === "MVTT_teacher_mode") {
-    _statuslog("teacher mode changed from another page, reloading");
+    _statuslog("🏫 Detected teacher mode change, reloading");
     window.location.reload();
   }
 });

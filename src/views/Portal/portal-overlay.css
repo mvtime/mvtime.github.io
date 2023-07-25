@@ -181,6 +181,11 @@ h2.modal_header_title {
   padding-top: 10px;
   padding-bottom: 10px;
 }
+.styled_obj.styled_textarea {
+  margin: calc(var(--padding-overlay) / 2) 0;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
 .inputs_row .flex-break {
   flex-basis: 100%;
   flex-shrink: 0;

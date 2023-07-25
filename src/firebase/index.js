@@ -35,8 +35,9 @@ auth.onAuthStateChanged((user) => {
     store.set_user(user);
     // setup onSnapshot listener for user data
     onSnapshot(doc(db, "users", user.uid), { includeMetadataChanges: true }, (doc) => {
+      _statuslog("⬥ Got snapshot from remote");
       if (doc.metadata.hasPendingWrites) {
-        _statuslog("local data updated");
+        _statuslog("⏷ Got changes from remote");
         return;
       }
       // check if doc exists

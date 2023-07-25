@@ -49,9 +49,8 @@
  * @property {Boolean} is_notification - Whether the modal is a notification, and should not be closed.
  * @property {String} submit_text - The text to display on the continue button.
  *  */
-import { _statuslog } from "../common";
+import { _statuslog } from "@/common";
 import smoothHeight from "vue-smooth-height";
-import router from "../router";
 export default {
   name: "ModalVue",
   mixins: [smoothHeight],
@@ -97,10 +96,10 @@ export default {
     continue_action: {
       type: Function,
       default: () => {
-        _statuslog("ModalVue: continue_action not provided");
+        _statuslog("⏵ ModalVue: continue_action not provided");
         // close this modal view
         window.onbeforeunload = null;
-        router.push("/portal");
+        this.$router.push(this.$route.query.redirect || "/portal");
       },
       required: false,
     },
