@@ -3,6 +3,10 @@
 </template>
 
 <script>
+/*
+    :skippable="true"
+    @skip="someFunction"
+*/
 /* eslint-disable vue/no-unused-components */
 import ModalFromPages from "@/components/ModalFromPages.vue";
 import SmileSentiment from "@/components/Surveys/SmileSentiment.vue";

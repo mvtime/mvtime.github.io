@@ -229,6 +229,12 @@ header.portal_info {
   align-items: stretch;
   min-height: 100%;
 }
+/* on small devices, align task list to top */
+@media (max-width: 600px) {
+  .portal_content__spaced {
+    justify-content: start;
+  }
+}
 .portal_info,
 .portal_info > div {
   width: 100%;

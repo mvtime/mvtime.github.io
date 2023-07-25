@@ -1,22 +1,21 @@
 <template>
   <Modal
-    @open="switch_to"
+    ref="modal"
     :title="page.title"
     :content="page.content"
     :html="page.content ? null : page.html"
     :is_notification="page.is_notification"
     :submit_text="page.submit_text"
-    :progress="{
-      current: page_index + 1,
-      total: pages.length,
-    }"
+    :progress="{ current: page_index + 1, total: pages.length }"
+    :show_progress="true"
     :can_continue="can_continue"
     :continue_action="next_page"
-    :show_progress="true"
-    ref="modal"
+    :load="load_data"
+    :skippable="skippable"
+    @open="switch_to"
     @update="curr_data = $event"
     @status="curr_done = $event"
-    :load="load_data"
+    @skip="$emit('skip')"
   ></Modal>
 </template>
 
@@ -37,7 +36,7 @@ import ModalVue from "@/components/Modal.vue";
 import { _statuslog } from "@/common";
 export default {
   name: "ModalFromPages",
-  emits: ["finish"],
+  emits: ["finish", "skip"],
   components: {
     Modal: ModalVue,
   },
@@ -45,6 +44,11 @@ export default {
     pages: {
       type: Array,
       required: true,
+    },
+    skippable: {
+      type: Boolean,
+      default: false,
+      required: false,
     },
   },
   data() {

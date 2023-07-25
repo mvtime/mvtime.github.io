@@ -9,11 +9,15 @@
         ref="container"
         @update="$emit('update', $event)"
         @status="$emit('status', $event)"
+        @skip="$emit('skip')"
         :load="load"
       />
       <div class="overlay_contents__html" v-if="html" v-html="html"></div>
     </div>
     <div class="bottom_actions">
+      <button class="close_action" v-if="skippable" @click="$emit('skip')">
+        {{ progress && progress.current > 1 ? "Abandon" : "Close" }}
+      </button>
       <div class="progress_display" v-if="progress && progress.total > 1">
         <span
           class="progress_display__dot_container"
@@ -65,7 +69,7 @@ export default {
       hideOverflow: true,
     });
   },
-  emits: ["open", "update", "status"],
+  emits: ["open", "update", "status", "skip"],
   data() {
     return {};
   },
@@ -73,6 +77,11 @@ export default {
     load: {
       type: Object,
       default: () => ({}),
+    },
+    skippable: {
+      type: Boolean,
+      default: false,
+      required: false,
     },
     title: {
       type: String,
@@ -148,6 +157,7 @@ export default {
   flex-flow: row nowrap;
   align-items: center;
   justify-content: center;
+  margin-left: 0;
   /* interaction */
   user-select: none;
   /* sizing */
