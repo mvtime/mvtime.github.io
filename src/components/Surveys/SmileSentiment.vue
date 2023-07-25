@@ -11,7 +11,7 @@
       >
         <img
           class="sentiment_option__img"
-          :src="require('@/assets/img/general/survey/sentiment-' + type + '.png')"
+          v-lazy="require('@/assets/img/general/survey/sentiment-' + type + '.png')"
         />
       </div>
     </div>

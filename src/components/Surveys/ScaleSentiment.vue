@@ -26,7 +26,7 @@ export default {
   },
   data() {
     return {
-      sentiment: this.load?.sentiment || 0,
+      sentiment: this.load?.sentiment ? this.load.sentiment * (5 / 100) : 0,
       sentiments: [1, 2, 3, 4, 5],
     };
   },

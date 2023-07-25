@@ -16,7 +16,7 @@
               <img
                 v-for="src in team_member.avatar.srcset"
                 :key="src"
-                :src="src"
+                v-lazy="src"
                 class="char_option__img_src"
               />
             </div>
@@ -30,7 +30,7 @@
     </div>
     <div class="char_path" v-if="path == 'character'" @click="next_line">
       <div class="char_path_frame">
-        <img class="char_path_frame__img" :src="current_path.avatar.still" />
+        <img class="char_path_frame__img" v-lazy="current_path.avatar.still" />
       </div>
       <div class="char_path_box_container">
         <div class="char_path_box fancy_corners">
