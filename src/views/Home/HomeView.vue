@@ -10,7 +10,7 @@
       </button>
     </div>
     <div class="home_art">
-      <img v-lazy="require('@/assets/img/art/homepage_art.png')" />
+      <img v-lazy="'@/assets/img/art/homepage_art.png'" />
     </div>
   </main>
 </template>
@@ -47,7 +47,7 @@ export default {
   align-items: center;
   height: 100%;
   /* sizing */
-  max-width: 1400px;
+  max-width: 1200px;
   width: 100%;
   margin: 0 auto;
 }

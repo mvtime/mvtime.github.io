@@ -279,20 +279,23 @@ img[lazy="loading"] {
   background-repeat: no-repeat;
   background-position: center;
   background-color: var(--placehold-bg);
+  user-select: none;
 }
 
 img[lazy="error"] {
-  background-image: url(@/assets/img/placeholder/error_dark.png);
+  background-image: url(@/assets/img/placeholder/error_light.png);
+  background-image: url(@/assets/img/placeholder/error_light.svg);
 }
 img[lazy="loading"] {
-  background-image: url(@/assets/img/placeholder/load_dark.gif);
+  background-image: url(@/assets/img/placeholder/load_light.gif);
 }
 
 #themed_body[_theme="dark"] img[lazy="error"] {
-  background-image: url(@/assets/img/placeholder/error_light.png);
+  background-image: url(@/assets/img/placeholder/error_dark.png);
+  background-image: url(@/assets/img/placeholder/error_dark.svg);
 }
 #themed_body[_theme="dark"] img[lazy="loading"] {
-  background-image: url(@/assets/img/placeholder/load_light.gif);
+  background-image: url(@/assets/img/placeholder/load_dark.gif);
 }
 
 img[lazy="loaded"] {
