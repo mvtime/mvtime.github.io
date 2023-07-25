@@ -299,3 +299,6 @@ img[lazy="loading"] {
 
 img[lazy="loaded"] {
 }
+#themed_body[_theme="dark"] .home_art > img {
+  filter: brightness(0.75) drop-shadow(0px 0px 6px #000000aa);
+}
