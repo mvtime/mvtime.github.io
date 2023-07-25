@@ -7,11 +7,12 @@
 import ModalFromPages from "@/components/ModalFromPages.vue";
 import SmileSentiment from "@/components/Surveys/SmileSentiment.vue";
 import ScaleSentiment from "@/components/Surveys/ScaleSentiment.vue";
+import LongResponse from "@/components/Surveys/LongResponse.vue";
 import { _statuslog } from "@/common";
 // Mark all components passed into page.content with shallowRef(Component)
 import { shallowRef } from "vue";
 import { useMainStore } from "@/store";
-import { WarningToast } from "@svonk/util";
+import { WarningToast, SuccessToast } from "@svonk/util";
 export default {
   name: "DailySurvey",
   components: {
@@ -19,6 +20,7 @@ export default {
     // import page components below
     SmileSentiment,
     ScaleSentiment,
+    LongResponse,
   },
   data: () => {
     return {
@@ -41,11 +43,25 @@ export default {
           submit_text: "Next",
         },
         {
+          title: "Anything Else?",
+          content: shallowRef(LongResponse),
+          submit_text: "Done",
+          is_notification: true,
+        },
+        {
           title: "Thank you!",
           html: `<p>Thank you for your input, you shouldn't have to answer any other questions until tomorrow!</p>`,
         },
       ],
     };
+  },
+  computed: {
+    store() {
+      return useMainStore();
+    },
+    did_survey() {
+      return this.store.done_daily_survey;
+    },
   },
   methods: {
     saveResponses(responses) {
@@ -61,11 +77,20 @@ export default {
   },
   mounted() {
     // if done_daily_survey is true, redirect to portal and toast
-    if (useMainStore().done_daily_survey) {
+    if (this.did_survey) {
       window.onbeforeunload = null;
       this.$router.push("/portal");
-      new WarningToast("You already completed the daily survey today!", 200);
+      new WarningToast("You already completed the daily survey today!", 2000);
     }
+  },
+  watch: {
+    did_survey() {
+      if (this.did_survey) {
+        window.onbeforeunload = null;
+        this.$router.push("/portal");
+        new SuccessToast("Looks like you completed the survey somewhere else!", 2000);
+      }
+    },
   },
 };
 </script>

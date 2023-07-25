@@ -49,7 +49,7 @@ import LeftBar from "@/components/Portal/LeftBar.vue";
 import RightBar from "@/components/Portal/RightBar.vue";
 import CalendarBlock from "@/components/Portal/CalendarBlock.vue";
 import { useMainStore } from "@/store";
-import { placeholderToast } from "@svonk/util";
+import { placeholderToast, WarningToast } from "@svonk/util";
 // import styles from "./portal-overlay.css";
 import "./portal-overlay.css";
 export default {
@@ -76,8 +76,15 @@ export default {
       if (store.user && store.user.displayName) return store.user.displayName.split(" ")[0];
       return "User";
     },
+    did_survey() {
+      return this.store.done_daily_survey;
+    },
   },
   methods: {
+    do_survey() {
+      this.$router.push("/survey/daily");
+      new WarningToast("Please complete the daily survey to use MVTT today!", 5000);
+    },
     close_left_bar() {
       this.$refs.LeftBar.close_sidebar();
     },
@@ -108,9 +115,16 @@ export default {
   },
   mounted() {
     // check that done_daily_survey is true, if not open "/survey/daily"
-    if (!this.store.done_daily_survey) {
-      this.$router.push("/survey/daily");
+    if (!this.did_survey) {
+      this.do_survey();
     }
+  },
+  watch: {
+    did_survey() {
+      if (!this.did_survey) {
+        this.do_survey();
+      }
+    },
   },
 };
 </script>

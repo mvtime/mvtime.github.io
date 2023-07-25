@@ -38,6 +38,10 @@ import router from "../router";
 function validAccount(userEmail) {
   return userEmail.split("@")[1] == "mvla.net";
 }
+// get date in local time but with ISO format
+let today = new Date();
+today = new Date(today.getTime() - today.getTimezoneOffset() * 60 * 1000);
+today = today.toISOString().split("T")[0];
 // define store
 export const useMainStore = defineStore({
   id: "main",
@@ -152,15 +156,13 @@ export const useMainStore = defineStore({
     },
     done_daily_survey() {
       if (!this.doc) return false;
-      let date = new Date().toISOString().split("T")[0];
-      return this.doc.done_surveys?.includes(date);
+      return this.doc.done_surveys?.includes(today);
     },
   },
   actions: {
     async save_daily_survey(responses) {
       // save responses in /survey/daily/{date}/{uid}
-      let date = new Date().toISOString().split("T")[0];
-      let survey_ref = doc(db, "survey", "daily", date, this.user.uid);
+      let survey_ref = doc(db, "survey", "daily", today, this.user.uid);
       let response_obj = {
         time: new Date().getTime(),
         responses: responses,
@@ -168,7 +170,7 @@ export const useMainStore = defineStore({
       await setDoc(survey_ref, response_obj);
       // update user doc to have date in "done_surveys"
       this.doc.done_surveys = this.doc.done_surveys ? this.doc.done_surveys : [];
-      this.doc.done_surveys.push(date);
+      this.doc.done_surveys.push(today);
       await this.update_remote();
       new SuccessToast("Saved daily survey", 2000);
     },
