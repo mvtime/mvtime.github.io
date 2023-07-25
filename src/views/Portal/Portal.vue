@@ -82,7 +82,13 @@ export default {
   },
   methods: {
     do_survey() {
-      this.$router.push("/survey/daily");
+      // change to survey page, with query redirect to current page
+      this.$router.push({
+        name: "daily",
+        query: {
+          redirect: this.$route.fullPath,
+        },
+      });
       new WarningToast("Please complete the daily survey to use MVTT today!", 5000);
     },
     close_left_bar() {

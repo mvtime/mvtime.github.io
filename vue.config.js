@@ -70,18 +70,18 @@ module.exports = defineConfig({
         },
         {
           src: "./img/ss/login-wide.png",
-          sizes: "390x844",
+          sizes: "1280x720",
           type: "image/png",
           label: "Login (wide)",
           discription: "The login page on a wide screen",
         },
-        {
-          src: "./img/ss/test-wide.png",
-          sizes: "390x844",
-          type: "image/png",
-          label: "Test (narrow)",
-          discription: "Viewing a test on a narrow screen",
-        },
+        // {
+        //   src: "./img/ss/test-wide.png",
+        //   sizes: "390x844",
+        //   type: "image/png",
+        //   label: "Test (narrow)",
+        //   discription: "Viewing a test on a narrow screen",
+        // },
         // {
         //   src: "./img/ss/test-wide.png",
         //   sizes: "1280x720",
