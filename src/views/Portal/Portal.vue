@@ -36,10 +36,10 @@
 
       <div
         class="overlay_close"
-        @click="can_close ? $router.push('/portal') : null"
+        @click="can_close ? $router.push(close_path || '/portal') : null"
         :closable="can_close"
       ></div>
-      <router-view class="router_center_view" />
+      <router-view class="router_center_view scale_in_view" />
     </div>
   </main>
 </template>
@@ -50,8 +50,7 @@ import RightBar from "@/components/Portal/RightBar.vue";
 import CalendarBlock from "@/components/Portal/CalendarBlock.vue";
 import { useMainStore } from "@/store";
 import { placeholderToast, WarningToast } from "@svonk/util";
-// import styles from "./portal-overlay.css";
-import "./portal-overlay.css";
+import "@/views/Portal/overlay.css";
 export default {
   name: "AppPortal",
   components: {
@@ -67,6 +66,9 @@ export default {
   computed: {
     can_close() {
       return this.$route?.meta?.block_close !== true;
+    },
+    close_path() {
+      return this.$route?.meta?.close_path;
     },
     store() {
       return useMainStore();

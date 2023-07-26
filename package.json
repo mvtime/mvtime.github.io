@@ -35,7 +35,7 @@
     "vue": "^3.2.13",
     "vue-lazyload": "^3.0.0",
     "vue-router": "^4.0.3",
-    "vue-smooth-height": "^1.6.4"
+    "vue-smooth-reflow": "^0.1.12"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

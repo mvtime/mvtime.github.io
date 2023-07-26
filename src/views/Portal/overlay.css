@@ -319,3 +319,60 @@ textarea::-webkit-scrollbar-corner {
   background-color: transparent;
   display: none;
 }
+
+/* animate in overlay */
+.scale_in_view {
+  opacity: 0;
+  transform: scale(0.9);
+  animation: scale_in 0.25s ease forwards;
+}
+.overlay_center_view {
+  background: none;
+  backdrop-filter: none;
+  animation: show_blur_bg 0.25s ease forwards;
+}
+
+/* scale and fade in with slight bounce */
+@keyframes scale_in {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes scale_out {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+}
+@keyframes show_blur_bg {
+  0% {
+    background: #00000000;
+    backdrop-filter: none;
+  }
+
+  100% {
+    background: var(--color-overlay);
+    backdrop-filter: blur(5px);
+  }
+}

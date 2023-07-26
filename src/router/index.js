@@ -31,6 +31,23 @@ const router = createRouter({
             },
             requiresAuth: false,
           },
+          children: [
+            {
+              path: "register",
+              name: "signup",
+              component: () => import("@/components/Modal/OnboardingModal.vue"),
+              meta: {
+                page_title: "Join the MVTT Beta",
+                theme_color: {
+                  light: "#ffffff",
+                  dark: "#16130e",
+                },
+                requiresAuth: false,
+                // change later to instead have custom action
+                block_close: true,
+              },
+            },
+          ],
         },
         {
           path: "about",

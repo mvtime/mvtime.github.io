@@ -1,4 +1,4 @@
-@import "./base.css";
+@import "@/assets/style/base.css";
 
 #app {
   /*! set max width */

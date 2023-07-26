@@ -54,10 +54,10 @@
  * @property {String} submit_text - The text to display on the continue button.
  *  */
 import { _statuslog } from "@/common";
-import smoothHeight from "vue-smooth-height";
+import smoothReflow from "vue-smooth-reflow";
 export default {
   name: "ModalVue",
-  mixins: [smoothHeight],
+  mixins: [smoothReflow],
   mounted() {
     this.$smoothElement({
       el: this.$refs.contents,

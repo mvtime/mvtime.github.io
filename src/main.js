@@ -43,7 +43,7 @@ window.addEventListener("storage", (e) => {
 });
 
 // styles
-import "./assets/main.css";
+import "@/assets/style/main.css";
 
 // import jquery and store
 import $ from "jquery";
