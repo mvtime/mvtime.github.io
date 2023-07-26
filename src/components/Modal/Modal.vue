@@ -59,12 +59,12 @@ export default {
   name: "ModalVue",
   mixins: [smoothReflow],
   mounted() {
-    this.$smoothElement({
+    this.$smoothReflow({
       el: this.$refs.contents,
       hideOverflow: true,
       childTransitions: true,
     });
-    this.$smoothElement({
+    this.$smoothReflow({
       el: this.$refs.title,
       hideOverflow: true,
     });
