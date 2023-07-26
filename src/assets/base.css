@@ -255,7 +255,7 @@ a[href],
 }
 body:has(#themed_body[_theme="dark"]) {
   /* placeholder */
-  --placehold-bg: #1e1c17;
+  --placehold-bg: #121212;
   /*toast*/
   --toast-bg: #191c1d;
   --toast-bg-transparent: #303030aa;
@@ -299,6 +299,6 @@ img[lazy="loading"] {
 
 img[lazy="loaded"] {
 }
-#themed_body[_theme="dark"] .home_art > img {
+#themed_body[_theme="dark"] .home_art > img[lazy="loaded"] {
   filter: brightness(0.75) drop-shadow(0px 0px 6px #000000aa);
 }
