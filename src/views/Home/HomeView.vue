@@ -3,7 +3,7 @@
     <div id="home_main">
       <h2>Organize. Plan. Study.</h2>
       <h3 class="middle-text secondary_home_text">
-        Test tracker provides an effective way to manage upcoming exams.
+        An effective way to manage test schedules, long-term assignments, and exam stress.
       </h3>
       <button class="action-btn auth-action can-login click-action" @click="tomain">
         {{ logged_in ? "Open App" : "Get Started" }}
