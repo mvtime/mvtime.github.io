@@ -23,7 +23,16 @@
               })
             }}</span>
           </div>
-          <div class="portal_info_welcome">Welcome Back {{ name }}</div>
+          <div class="portal_info_welcome">
+            {{
+              store.recently_joined
+                ? "Welcome to MVTT"
+                : store.non_recent_signin
+                ? "Welcome Back"
+                : random_welcome
+            }}
+            {{ name }}!
+          </div>
         </header>
         <!-- calendar -->
         <CalendarBlock :displayed_class="displayed_class" @taskclick="show_task($event)" />
@@ -31,16 +40,13 @@
     </div>
     <RightBar ref="RightBar" @close_left_bar="close_left_bar" />
     <!-- show overlay only if router-view is active -->
-    <div class="overlay_center_view" v-if="$route.name !== 'portal'">
-      <!-- only allow close action if current page does not have block_close meta tag -->
-
-      <div
-        class="overlay_close"
-        @click="can_close ? $router.push(close_path || '/portal') : null"
-        :closable="can_close"
-      ></div>
-      <router-view class="router_center_view scale_in_view" />
-    </div>
+    <OverlayWrapper
+      v-if="$route.name !== 'portal'"
+      @close="$router.push(close_path || '/portal')"
+      v-slot="scope"
+    >
+      <router-view class="router_center_view" @close="scope.close" />
+    </OverlayWrapper>
   </main>
 </template>
 
@@ -48,6 +54,7 @@
 import LeftBar from "@/components/Portal/LeftBar.vue";
 import RightBar from "@/components/Portal/RightBar.vue";
 import CalendarBlock from "@/components/Portal/CalendarBlock.vue";
+import OverlayWrapper from "@/components/Modal/OverlayWrapper.vue";
 import { useMainStore } from "@/store";
 import { placeholderToast, WarningToast } from "@svonk/util";
 import "@/views/Portal/overlay.css";
@@ -57,16 +64,15 @@ export default {
     LeftBar,
     RightBar,
     CalendarBlock,
+    OverlayWrapper,
   },
   data() {
     return {
       displayed_class: null,
+      welcomes: ["Welcome", "Hi", "Hello", "Hey", "Howdy"],
     };
   },
   computed: {
-    can_close() {
-      return this.$route?.meta?.block_close !== true;
-    },
     close_path() {
       return this.$route?.meta?.close_path;
     },
@@ -80,6 +86,9 @@ export default {
     },
     did_survey() {
       return this.store.done_daily_survey;
+    },
+    random_welcome() {
+      return this.welcomes[Math.floor(Math.random() * this.welcomes.length)];
     },
   },
   methods: {

@@ -33,8 +33,8 @@ const router = createRouter({
           },
           children: [
             {
-              path: "register",
-              name: "signup",
+              path: "join",
+              name: "join",
               component: () => import("@/components/Modal/OnboardingModal.vue"),
               meta: {
                 page_title: "Join the MVTT Beta",
@@ -45,6 +45,7 @@ const router = createRouter({
                 requiresAuth: false,
                 // change later to instead have custom action
                 block_close: true,
+                close_path: "",
               },
             },
           ],

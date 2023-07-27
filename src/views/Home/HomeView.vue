@@ -10,17 +10,24 @@
       </button>
     </div>
     <div class="home_art">
-      <img v-lazy="source" />
+      <img v-lazy="source" class="contrast_dark" />
     </div>
+    <OverlayWrapper v-if="$route.name !== 'home'" @close="close" v-slot="scope">
+      <router-view class="router_center_view scale_in_view" @close="scope.close" />
+    </OverlayWrapper>
   </main>
 </template>
 
 <script>
 // import store
 import { useMainStore } from "@/store";
+import OverlayWrapper from "@/components/Modal/OverlayWrapper.vue";
 
 export default {
   name: "HomeView",
+  components: {
+    OverlayWrapper,
+  },
   computed: {
     combo() {
       // return a random combo, with h0-h2 and s0-s6 (ex: h1s3)
@@ -59,8 +66,14 @@ export default {
         return "err";
       }
     },
+    close_path() {
+      return this.$route?.meta?.close_path;
+    },
   },
   methods: {
+    close() {
+      this.$router.push(this.close_path || "./");
+    },
     tomain() {
       if (this.store.user) {
         this.$router.push(this.$route.query.redirect || "/portal");

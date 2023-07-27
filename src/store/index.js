@@ -107,6 +107,25 @@ export const useMainStore = defineStore({
         return userdoc_theme;
       }
     },
+    non_recent_signin() {
+      // return true if user signed in within the last 24 hours
+      if (!this.user) return false;
+      let last_signin = this.user?.metadata?.lastSignInTime;
+      if (!last_signin) return false;
+      last_signin = new Date(last_signin);
+      _statuslog("⏲️ Last signed-in: " + last_signin.toLocaleString());
+      let diff = new Date().getTime() - last_signin.getTime();
+      return diff > 24 * 60 * 60 * 1000;
+    },
+    recently_joined() {
+      // return true if user joined within the last 12 hours
+      if (!this.user) return false;
+      let creation_time = this.user?.metadata?.creationTime;
+      if (!creation_time) return false;
+      creation_time = new Date(creation_time);
+      let diff = new Date().getTime() - creation_time.getTime();
+      return diff < 12 * 60 * 60 * 1000;
+    },
     userdoc_ref() {
       if (!this.user) return null;
       return doc(db, "users", this.user.uid);
