@@ -46,6 +46,7 @@ const router = createRouter({
                 // change later to instead have custom action
                 block_close: true,
                 close_path: "/",
+                blockStandardRedirect: true,
               },
             },
           ],
@@ -129,6 +130,7 @@ const router = createRouter({
             },
             requiresAuth: true,
             block_close: true,
+            blockStandardRedirect: true,
             noSurvey: true,
           },
         },

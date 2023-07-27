@@ -46,7 +46,11 @@
     </div>
     <RightBar ref="RightBar" @close_left_bar="close_left_bar" />
     <!-- show overlay only if router-view is active -->
-    <OverlayWrapper v-if="$route.name !== 'portal'" v-slot="scope">
+    <OverlayWrapper
+      v-if="$route.name !== 'portal'"
+      v-slot="scope"
+      @close="close_path ? $router.push(close_path) : $router.push('/portal')"
+    >
       <router-view class="router_center_view" @close="scope.close" />
     </OverlayWrapper>
   </main>
@@ -76,7 +80,7 @@ export default {
   },
   computed: {
     close_path() {
-      return this.$route?.meta?.close_path;
+      return this.$route?.query?.redirect || this.$route?.meta?.close_path;
     },
     store() {
       return useMainStore();
@@ -87,7 +91,7 @@ export default {
       return "User";
     },
     did_survey() {
-      return this.store.done_daily_survey;
+      return this.store?.done_daily_survey;
     },
     random_welcome() {
       return this.welcomes[Math.floor(Math.random() * this.welcomes.length)];
@@ -140,13 +144,13 @@ export default {
     },
     check_and_do_survey() {
       // check that done_daily_survey is true, if not open "/survey/daily"
-      if (this.store?.user && !this.did_survey && this.$route?.meta?.noSurvey !== true) {
+      if (this?.store?.user && !this?.did_survey && this.$route?.meta?.noSurvey !== true) {
         this.do_survey();
       }
     },
     check_and_do_join() {
       // if logged in and not store.doc.join_form, redirect to join form
-      if (this.store?.user && !this.store?.doc && !this.store?.doc?.join_form) {
+      if (this.store?.user && this.store?.doc && !this.store?.doc?.join_form) {
         this.$router.push({
           name: "join",
           query: {

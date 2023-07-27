@@ -286,7 +286,10 @@ export const useMainStore = defineStore({
         this.teacher.collection_ref = collection(this.teacher.doc_ref, "classes");
       }
       // if router has a redirect, go to it
-      if (router.currentRoute?.value?.query?.redirect) {
+      if (
+        router.currentRoute?.value?.query?.redirect &&
+        !router.currentRoute?.value?.meta?.blockStandardRedirect
+      ) {
         router.push(router.currentRoute?.value?.query?.redirect);
       }
     },
