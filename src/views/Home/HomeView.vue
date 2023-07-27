@@ -77,7 +77,11 @@ export default {
   },
   methods: {
     close() {
-      this.$router.push(this.close_path || "./");
+      this.$router.push(
+        this.store?.user && this.store?.doc?.join_form && this.$route?.query?.redirect
+          ? this.$route.query.redirect
+          : "/"
+      );
     },
     tomain() {
       if (this.logged_in) {

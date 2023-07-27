@@ -181,8 +181,7 @@ export const useMainStore = defineStore({
   },
   actions: {
     async save_join_form(responses) {
-      // await userdoc ready then save responses in userdoc.join_form
-      await this.userdoc_ref;
+      // wait for user doc to be created / exist then save responses to doc.join_form
       this.doc.join_form = responses;
       await this.update_remote();
     },
@@ -327,16 +326,19 @@ export const useMainStore = defineStore({
           if (!router.currentRoute?.value?.query?.redirect) {
             router.push("/portal");
           }
+          return Promise.resolve();
         })
         .catch((error) => {
+          let err = cleanError(error);
           if (
             error.code == "auth/cancelled-popup-request" ||
             error.code == "auth/popup-closed-by-user"
           ) {
-            new WarningToast(cleanError(error), 2000);
+            new WarningToast(err, 2000);
           } else {
-            new ErrorToast("Couldn't log in", cleanError(error), 2000);
+            new ErrorToast("Couldn't log in", err, 2000);
           }
+          return Promise.reject(err);
         });
     },
     logout() {

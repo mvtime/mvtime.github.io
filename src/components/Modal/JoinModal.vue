@@ -74,9 +74,9 @@ export default {
     },
     continue_text() {
       if (this.page == "form") {
-        return ["Continue", " to Sign-Up"];
+        return !this.store?.user ? ["Continue", " to Sign-Up"] : ["Save"];
       } else {
-        return ["Authenticating", "..."];
+        return !this.store?.user ? ["Authenticating", "..."] : ["Saving...", ""];
       }
     },
     store() {
@@ -98,53 +98,63 @@ export default {
   },
   mounted() {
     // if user is logged in and has completed, close
-    if (this.store.user && this.store?.doc?.join_form) {
-      // set current page query redirect to home
-      this.$router.push({
-        name: "join",
-        query: {
-          redirect: "/",
-        },
-      });
+    if (this.store?.user && this.store?.doc?.join_form) {
+      // exit
       this.$emit("close");
       new WarningToast("You've already joined!", 2000);
     }
     // if user is logged in, use their name to prefill
-    if (this.store.user) {
-      this.form.name = this.store.user.displayName;
+    if (this.store?.user) {
+      this.form.name = this.store.user?.displayName || "";
     }
   },
   methods: {
     action() {
       if (this.page == "form") {
         // move to auth page
+        // update router so that this page will redirect to /portal/onboarding
+        // if no redirect, make it onboarding
+        if (!this.$route?.query?.redirect) {
+          this.$router.replace({ name: "join", query: { redirect: "/portal/onboarding" } });
+        }
         this.page = "auth";
-        // set current route query redirect to onboarding
-        this.$router.push({
-          name: "join",
-          query: {
-            redirect: "/portal/onboarding",
-          },
-        });
-        // trigger auth, and once done, save form data and close
-        this.store
-          .login()
-          .then(() => {
-            this.store.save_join_form(this.form);
-          })
-          .catch((e) => {
-            _statuslog("💾 Error logging in", e);
-            this.page = "form";
-          });
+        _statuslog("📝 Saving join form:", this.form);
+        // trigger auth if needed
+        if (!this.store?.user) {
+          _statuslog("🔑 Triggering auth");
+          // trigger auth, and once done, save form data and close
+          this.store
+            .login()
+            .then(() => {
+              this.store.save_join_form(this.form);
+              this.check_store_and_close();
+            })
+            .catch((err) => {
+              _statuslog("💾 Error logging in:", err);
+              new WarningToast("Couldn't complete authentication; " + err, 2000);
+              this.page = "form";
+            });
+        } else {
+          // save form data and close
+          this.store.save_join_form(this.form);
+          this.check_store_and_close();
+        }
       }
     },
-  },
-  watch: {
-    store() {
+    check_store_and_close() {
       // close if join_form is set
       if (this.store?.user && this.store?.doc?.join_form) {
         this.$emit("close");
       }
+    },
+  },
+  watch: {
+    // listen for any changes to store
+    store: {
+      handler() {
+        this.check_store_and_close();
+      },
+      deep: true,
     },
   },
 };
@@ -213,8 +223,9 @@ h2.overlay_title {
 .auth_load_icon {
   width: 100%;
   height: 0;
-  flex-basis: 0;
+  flex-basis: 240px;
   flex-grow: 1;
+  flex-shrink: 1;
 }
 select:has(.placeholder_text[selected]) {
   color: var(--color-placeholder);

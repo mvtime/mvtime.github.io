@@ -149,7 +149,7 @@ export default {
     },
     check_and_do_join() {
       // if logged in and not store.doc.join_form, redirect to join form
-      if (this.store.user && !this.store.doc.join_form) {
+      if (this.store?.user && !this.store?.doc?.join_form) {
         this.$router.push({
           name: "join",
           query: {
