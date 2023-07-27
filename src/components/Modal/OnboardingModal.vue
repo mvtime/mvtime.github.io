@@ -52,8 +52,8 @@ export default {
     contents_ready() {
       // filled out name and email ending in @mvla.net
       return (
-        this.form.name.length > 0 &&
-        this.form.email.length > 0 &&
+        this.form.name.length >= 2 &&
+        this.form.email.length >= 10 &&
         this.form.email.endsWith("@mvla.net")
       );
     },
