@@ -121,3 +121,11 @@ h3,
   user-select: none;
   cursor: pointer;
 }
+.button_pointer_text {
+  background-color: var(--color-button-display);
+  padding: var(--padding-button-display);
+  display: inline-block;
+  border-radius: var(--radius-button-display);
+  font-size: 0.8em;
+  opacity: 0.8;
+}

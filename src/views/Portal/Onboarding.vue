@@ -30,7 +30,8 @@
         </select>
       </div>
       <div class="overlay_contents_text">
-        Type your teacher's email above, and you'll see a list of their classes
+        You can add more classes later from the
+        <span class="button_pointer_text">Join a Class</span> button on the left sidebar
       </div>
     </div>
     <div class="bottom_actions">
