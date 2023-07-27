@@ -39,10 +39,15 @@
   flex-flow: column nowrap;
   z-index: 7;
 }
-.overlay_center_view > .router_center_view > *:not(.nopad) {
+.overlay_center_view > .router_center_view > *:not(.nopad),
+.overlay_center_view > .router_center_view .pad_overlay {
   padding: var(--padding-overlay);
 }
-.router_center_view .bottom_actions {
+.overlay_center_view > .router_center_view .overlay_more_pad_horizontal {
+  padding-left: calc(var(--padding-overlay) * 3);
+  padding-right: calc(var(--padding-overlay) * 3);
+}
+.overlay_center_view > .router_center_view .bottom_actions {
   display: flex;
   flex-flow: row nowrap;
   justify-content: flex-end;
@@ -135,6 +140,11 @@ h2.modal_header_title {
 .styled_obj,
 .overlay_contents_text {
   font-size: 14px;
+}
+.overlay_title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 0;
 }
 .styled_obj {
   display: flex;
