@@ -1,6 +1,12 @@
 <template>
   <main class="portal">
-    <LeftBar ref="LeftBar" @set_class="set_class" @close_right_bar="close_right_bar" />
+    <LeftBar
+      ref="LeftBar"
+      @toggle_filtered_class="toggle_filtered_class"
+      @clear_filters="filtered_classes = []"
+      @close_right_bar="close_right_bar"
+      :filtered_classes="filtered_classes"
+    />
     <div
       class="portal_content"
       @click="
@@ -35,7 +41,7 @@
           </div>
         </header>
         <!-- calendar -->
-        <CalendarBlock :displayed_class="displayed_class" @taskclick="show_task($event)" />
+        <CalendarBlock :filtered_classes="filtered_classes" @taskclick="show_task($event)" />
       </div>
     </div>
     <RightBar ref="RightBar" @close_left_bar="close_left_bar" />
@@ -68,7 +74,7 @@ export default {
   },
   data() {
     return {
-      displayed_class: null,
+      filtered_classes: [],
       welcomes: ["Welcome", "Hi", "Hello", "Hey", "Howdy"],
     };
   },
@@ -126,8 +132,14 @@ export default {
         },
       });
     },
-    set_class(c) {
-      this.displayed_class = c;
+    toggle_filtered_class(c) {
+      // if c is in filtered_class, remove it
+      if (this.filtered_classes.includes(c)) {
+        this.filtered_classes = this.filtered_classes.filter((class_id) => class_id !== c);
+      } else {
+        // else add it
+        this.filtered_classes.push(c);
+      }
     },
     check_and_do_survey() {
       // check that done_daily_survey is true, if not open "/survey/daily"

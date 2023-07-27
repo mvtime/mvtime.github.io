@@ -78,9 +78,10 @@ export default {
   name: "CalendarBlock",
   components: {
     LoadingCover,
-  }, 
+  },
   props: {
-    displayed_class: String
+    filtered_classes: Array,
+    default: () => [],
   },
   emits: ["taskclick"],
   data() {
@@ -100,7 +101,10 @@ export default {
     get_day_tasks(day) {
       return this.tasks.filter((task) => {
         const task_date = new Date(task.date);
-        return this.day_matches(task_date, day) && (this.displayed_class == undefined || task.class_id == this.displayed_class);
+        return (
+          this.day_matches(task_date, day) &&
+          (!this.filtered_classes.length || this.filtered_classes.includes(task.class_id))
+        );
       });
     },
     next_month() {

@@ -42,7 +42,7 @@
         @click="store.add_class(teacher_email, class_id, class_name)"
         :disabled="!teacher_email || !class_id"
       >
-        Continue
+        Add Class
       </button>
     </div>
   </main>

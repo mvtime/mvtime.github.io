@@ -1,20 +1,22 @@
 <template>
   <div class="class_list">
     <div class="class_list__not_empty">
-      <h5 @click="$emit('set_class', null)">Classes</h5>
+      <h5 @click="$emit('clear_filters')" title="Click to clear filters">Classes</h5>
       <hr class="class_list_hr" />
-      <div class="classes_container">
-        <div class="classes_container_class" v-for="class_obj of classes" :key="class_obj.name">
-          <div
-            class="class_swatch"
-            :style="{ '--color-class': class_obj.color }"
-            title="Remove Class"
-            @click="store.remove_class(class_obj.id)"
-          >
+      <div class="classes_container" :class="{ filtering: !!filtered_classes.length }">
+        <div
+          class="classes_container_class"
+          v-for="class_obj of classes"
+          :key="class_obj.name"
+          @click="$emit('toggle_filtered_class', class_obj.id)"
+          :style="{ '--color-class': class_obj.color, '--color-class-alt': class_obj.color + '40' }"
+          :class="{ filter_active: filtered_classes.includes(class_obj.id) }"
+        >
+          <div class="class_swatch" title="Remove Class" @click="store.remove_class(class_obj.id)">
             <div class="class_swatch__icon"></div>
           </div>
 
-          <span @click="$emit('set_class', class_obj.id)" v-if="class_obj.period" class="class_name"
+          <span v-if="class_obj.period" class="class_name"
             >P{{ class_obj.period }} - {{ class_obj.name }}</span
           >
           <span v-else class="class_name">{{ class_obj.name }}</span>
@@ -37,6 +39,12 @@
 <script>
 import { useMainStore } from "@/store";
 export default {
+  props: {
+    filtered_classes: {
+      type: Array,
+      default: () => [],
+    },
+  },
   name: "ClassList",
   computed: {
     store() {
@@ -46,7 +54,7 @@ export default {
       return this.store.classes;
     },
   },
-  emits: ["set_class"],
+  emits: ["toggle_filtered_class", "clear_filters"],
 };
 </script>
 
@@ -92,9 +100,18 @@ h5:hover {
   margin: var(--spacing-classes) 0;
   user-select: none;
   border-radius: 5px;
+  padding: var(--spacing-classes-alt);
 }
 .classes_container_class:hover {
   background-color: var(--color-on-bg);
+}
+/* class filtering */
+.filtering .classes_container_class:not(.classes_container_class__add_class) {
+  opacity: 0.7;
+}
+.filtering .classes_container_class.filter_active {
+  background-color: var(--color-class-alt);
+  opacity: 1;
 }
 .classes_container_class__add_class,
 .classes_container_class__create_class {

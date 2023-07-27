@@ -6,7 +6,7 @@
       <!-- Actions Panel -->
       <ActionsPanel v-if="store && store.is_teacher" />
       <!-- Class List -->
-      <ClassList @set_class="set_class" />
+      <ClassList v-bind="$attrs" />
       <div class="flex_spacer"></div>
     </div>
     <!-- Theme Button -->

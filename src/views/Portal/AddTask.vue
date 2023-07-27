@@ -84,7 +84,7 @@
         @click="store.add_task(task, task_classes)"
         :disabled="!task.name || !task.date || !task_classes.length"
       >
-        Add task
+        Add {{ task.type }}
       </button>
     </div>
   </main>

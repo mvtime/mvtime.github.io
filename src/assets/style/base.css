@@ -106,9 +106,10 @@ body,
   --filter-task-card-icon: none;
   --color-task-separator: #f2f2f2;
   /* classes */
-  --spacing-classes: 10px;
+  --spacing-classes: 7px;
   --spacing-classes-alt: 5px;
   --color-class: #f5c14b;
+  --color-class-alt: #f5c14b40;
   /* overlay */
   --shadow-overlay-highlight: 0 0 20px #00000030;
   --color-overlay: #00000040;
