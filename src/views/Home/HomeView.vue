@@ -5,9 +5,14 @@
       <h3 class="middle-text secondary_home_text">
         An effective way to manage test schedules, long-term assignments, and exam stress.
       </h3>
-      <button class="action-btn auth-action can-login click-action" @click="tomain">
-        {{ logged_in ? "Open App" : "Get Started" }}
-      </button>
+      <div class="homepage_actions">
+        <button class="action-btn click-action" @click="tomain">
+          {{ logged_in ? "Open App" : "Get Started" }}
+        </button>
+        <button v-if="!logged_in" class="secondary_action auth-action can-login">
+          I already have an account
+        </button>
+      </div>
     </div>
     <div class="home_art">
       <img v-lazy="source" class="contrast_dark" />
@@ -75,15 +80,17 @@ export default {
       this.$router.push(this.close_path || "./");
     },
     tomain() {
-      if (this.store.user) {
-        this.$router.push(this.$route.query.redirect || "/portal");
+      if (this.logged_in) {
+        this.$router.push("/portal");
+      } else {
+        this.$router.push("/join");
       }
     },
   },
 };
 </script>
 
-<style>
+<style scoped>
 .home {
   display: flex;
   flex-flow: row wrap;
@@ -120,12 +127,35 @@ export default {
 .home .middle-text {
   margin: 25px 0;
 }
+.secondary_action {
+  margin: var(--margin-home-action);
+  margin-right: 0;
+  background: none;
+  color: var(--color-text);
+  border: none;
+  padding: 5px 20px;
+  font-size: 17px;
+  font-weight: 500;
+}
+.secondary_action:hover {
+  text-decoration: underline;
+}
 @media (max-width: 450px) and (max-height: 900px) {
   .home .action-btn {
     position: absolute;
     bottom: 40px;
     right: 40px;
     width: calc(100% - 80px);
+  }
+  .home .secondary_action {
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
+    border-top: 1px solid var(--color-border);
+    text-shadow: 0px 0px 3px var(--color-home);
   }
 }
 </style>

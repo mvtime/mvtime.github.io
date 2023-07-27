@@ -180,6 +180,11 @@ export const useMainStore = defineStore({
     },
   },
   actions: {
+    async save_join_form(responses) {
+      // save responses in userdoc.join_form
+      this.doc.join_form = responses;
+      await this.update_remote();
+    },
     async save_daily_survey(responses) {
       // save responses in /survey/daily/{date}/{uid}
       let survey_ref = doc(db, "survey", "daily", today, this.user.uid);
@@ -318,13 +323,7 @@ export const useMainStore = defineStore({
             2000,
             require("@svonk/util/assets/info-unlocked-icon.svg")
           );
-          if (
-            !(
-              router.currentRoute.value &&
-              router.currentRoute.value.query &&
-              router.currentRoute.value.query.redirect
-            )
-          ) {
+          if (!router.currentRoute?.value?.query?.redirect) {
             router.push("/portal");
           }
         })

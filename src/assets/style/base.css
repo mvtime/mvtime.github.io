@@ -6,6 +6,7 @@ body,
 #themed_body {
   /* buttons */
   --transition-click-action: transform 0.3s ease-out;
+  --margin-home-action: 10px;
   /* general homepage */
   --footer-height: 36px;
   --nav-spacing: 0.5rem;
@@ -276,26 +277,31 @@ body:has(#themed_body[_theme="dark"]) {
 
 /* lazy loading imgs w/ [v-lazy] */
 img[lazy="error"],
-img[lazy="loading"] {
+img[lazy="loading"],
+img.loading_icon {
   object-fit: scale-down;
   object-position: center center;
   background-color: var(--placehold-bg);
   user-select: none;
 }
 
-img[lazy="error"] {
+img[lazy="error"],
+img.error_icon {
   content: url(@/assets/img/placeholder/error_light.png);
   /* content: url(@/assets/img/placeholder/error_light.svg); */
 }
-img[lazy="loading"] {
+img[lazy="loading"],
+img.loading_icon {
   content: url(@/assets/img/placeholder/load_light.gif);
 }
 
-#themed_body[_theme="dark"] img[lazy="error"] {
+#themed_body[_theme="dark"] img[lazy="error"],
+#themed_body[_theme="dark"] img.error_icon {
   content: url(@/assets/img/placeholder/error_dark.png);
   /* content: url(@/assets/img/placeholder/error_dark.svg); */
 }
-#themed_body[_theme="dark"] img[lazy="loading"] {
+#themed_body[_theme="dark"] img[lazy="loading"],
+#themed_body[_theme="dark"] img.loading_icon {
   content: url(@/assets/img/placeholder/load_dark.gif);
 }
 

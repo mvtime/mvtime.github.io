@@ -32,6 +32,7 @@ export default {
       // animate out with scale for 0.25s, then emit close
       this.animating_out = true;
       setTimeout(() => {
+        window.onbeforeunload = null;
         this.$emit("close");
       }, 250);
     },

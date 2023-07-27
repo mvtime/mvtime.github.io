@@ -129,6 +129,7 @@ const router = createRouter({
             },
             requiresAuth: true,
             block_close: true,
+            noSurvey: true,
           },
         },
         {
@@ -142,6 +143,7 @@ const router = createRouter({
               dark: "#121212",
             },
             requiresAuth: true,
+            noSurvey: true,
           },
         },
 

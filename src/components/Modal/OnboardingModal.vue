@@ -2,21 +2,26 @@
   <main class="onboardng" ref="modal" id="join_modal">
     <div class="overlay_contents_wrapper nopad">
       <img class="modal_art_part contrast_small_dark" v-lazy="source" />
-      <div class="overlay_contents pad_overlay overlay_more_pad_horizontal">
+      <div
+        v-if="page == 'form'"
+        class="overlay_contents pad_overlay overlay_more_pad_horizontal overlay_contents__page"
+      >
         <h2 class="modal_header_title overlay_title">Join the MVTT Beta</h2>
         <div class="overlay_inputs inputs_column">
           <input
             class="styled_input styled_obj"
-            type="name"
+            type="text"
             v-model="form.name"
             placeholder="Your Name"
           />
-          <input
-            class="styled_input styled_obj"
-            type="email"
-            v-model="form.email"
-            placeholder="Your @mvla.net Email"
-          />
+          <select class="styled_input styled_obj" v-model="form.grade">
+            <option value="" hidden disabled selected>Grade Level</option>
+            <option value="9">9th</option>
+            <option value="10">10th</option>
+            <option value="11">11th</option>
+            <option value="12">12th</option>
+            <option value="teacher">Teacher</option>
+          </select>
           <textarea
             v-model="form.usage"
             class="styled_input styled_textarea styled_obj"
@@ -25,11 +30,18 @@
           />
         </div>
       </div>
+      <div v-else class="overlay_contents pad_overlay overlay_contents__page img_container__page">
+        <img class="auth_load_icon loading_icon" alt="Loading Icon" />
+      </div>
     </div>
     <div class="bottom_actions">
-      <button class="close_action" @click="$emit('close')">Close</button>
+      <button v-if="page == 'form'" class="close_action" @click="$emit('close')">
+        {{ page == "form" && !contents_ready ? "Close" : "Cancel" }}
+      </button>
       <div class="flex_spacer"></div>
-      <button class="continue_action" :disabled="!contents_ready">Continue to Sign-Up</button>
+      <button class="continue_action" :disabled="!contents_ready" @click="action">
+        {{ page == "form" ? "Continue to Sign-Up" : "Authenticating..." }}
+      </button>
     </div>
   </main>
 </template>
@@ -37,13 +49,15 @@
 <script>
 import { useMainStore } from "@/store";
 import "@/views/Portal/overlay.css";
+import { WarningToast } from "@svonk/util";
 export default {
   emits: ["close"],
   data() {
     return {
+      page: "form",
       form: {
         name: "",
-        email: "",
+        grade: "",
         usage: "",
       },
     };
@@ -51,11 +65,11 @@ export default {
   computed: {
     contents_ready() {
       // filled out name and email ending in @mvla.net
-      return (
-        this.form.name.length >= 2 &&
-        this.form.email.length >= 10 &&
-        this.form.email.endsWith("@mvla.net")
-      );
+      if (this.page == "form") {
+        return this.form.name.length >= 2 && this.form.grade != "";
+      } else {
+        return false;
+      }
     },
     store() {
       return useMainStore();
@@ -74,12 +88,53 @@ export default {
       return "ls" + stored_variant;
     },
   },
+  mounted() {
+    // if user is logged in, close
+    if (this.store.user) {
+      // set current page query redirect to home
+      this.$router.push({
+        name: "join",
+        query: {
+          redirect: "/",
+        },
+      });
+      this.$emit("close");
+      new WarningToast("You've already joined!", 2000);
+    }
+  },
+  methods: {
+    action() {
+      if (this.page == "form") {
+        // move to auth page
+        this.page = "auth";
+        // set current route query redirect to onboarding
+        this.$router.push({
+          name: "join",
+          query: {
+            redirect: "/portal/onboarding",
+          },
+        });
+        // trigger auth, and once done, save form data and close
+        this.store
+          .login()
+          .then(() => {
+            this.store.save_join_form(this.form);
+            this.$emit("close");
+          })
+          .catch((e) => {
+            console.error(e);
+            this.page = "form";
+          });
+      }
+    },
+  },
 };
 </script>
 
 <style scoped>
 main#join_modal {
   max-width: 700px;
+  max-height: 470px;
 }
 .overlay_contents {
   border: none;
@@ -120,5 +175,16 @@ h2.overlay_title {
   width: 100%;
   margin: 0;
   margin-bottom: calc(var(--padding-overlay) / 2);
+}
+.img_container__page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.auth_load_icon {
+  width: 100%;
+  height: 0;
+  flex-basis: 0;
+  flex-grow: 1;
 }
 </style>

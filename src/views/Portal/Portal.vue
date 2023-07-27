@@ -129,18 +129,23 @@ export default {
     set_class(c) {
       this.displayed_class = c;
     },
+    check_and_do_survey() {
+      // check that done_daily_survey is true, if not open "/survey/daily"
+      if (!this.did_survey && this.$route?.meta?.noSurvey !== true) {
+        this.do_survey();
+      }
+    },
   },
   mounted() {
-    // check that done_daily_survey is true, if not open "/survey/daily"
-    if (!this.did_survey) {
-      this.do_survey();
-    }
+    this.check_and_do_survey();
   },
   watch: {
     did_survey() {
-      if (!this.did_survey) {
-        this.do_survey();
-      }
+      this.check_and_do_survey();
+    },
+    // watch for route changes
+    $route() {
+      this.check_and_do_survey();
     },
   },
 };
