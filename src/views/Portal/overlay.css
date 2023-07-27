@@ -43,9 +43,16 @@
 .overlay_center_view > .router_center_view .pad_overlay {
   padding: var(--padding-overlay);
 }
-.overlay_center_view > .router_center_view .overlay_more_pad_horizontal {
-  padding-left: calc(var(--padding-overlay) * 3);
-  padding-right: calc(var(--padding-overlay) * 3);
+@media (max-width: 500px) {
+  .desktop_only_text {
+    display: none;
+  }
+}
+@media (min-width: 500px) {
+  .overlay_center_view > .router_center_view .overlay_more_pad_horizontal {
+    padding-left: calc(var(--padding-overlay) * 3);
+    padding-right: calc(var(--padding-overlay) * 3);
+  }
 }
 .overlay_center_view > .router_center_view .bottom_actions {
   display: flex;
@@ -151,6 +158,9 @@ h2.modal_header_title {
   flex-flow: row nowrap;
   justify-content: flex-start;
   align-items: center;
+}
+select.styled_obj {
+  padding-left: calc(var(--padding-overlay-input) - 4px);
 }
 .spaced_contents {
   flex-flow: column nowrap;

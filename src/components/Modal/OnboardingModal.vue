@@ -4,7 +4,7 @@
       <img class="modal_art_part contrast_small_dark" v-lazy="source" />
       <div
         v-if="page == 'form'"
-        class="overlay_contents pad_overlay overlay_more_pad_horizontal overlay_contents__page"
+        class="overlay_contents overlay_contents__page overlay_more_pad_horizontal pad_overlay"
       >
         <h2 class="modal_header_title overlay_title">Join the MVTT Beta</h2>
         <div class="overlay_inputs inputs_column">
@@ -40,7 +40,7 @@
       </button>
       <div class="flex_spacer"></div>
       <button class="continue_action" :disabled="!contents_ready" @click="action">
-        {{ page == "form" ? "Continue to Sign-Up" : "Authenticating..." }}
+        {{ continue_text[0] }}<span class="desktop_only_text">{{ continue_text[1] }}</span>
       </button>
     </div>
   </main>
@@ -70,6 +70,13 @@ export default {
         return this.form.name.length >= 2 && this.form.grade != "";
       } else {
         return false;
+      }
+    },
+    continue_text() {
+      if (this.page == "form") {
+        return ["Continue", " to Sign-Up"];
+      } else {
+        return ["Authenticating", "..."];
       }
     },
     store() {
@@ -144,9 +151,17 @@ export default {
 </script>
 
 <style scoped>
-main#join_modal {
-  max-width: 700px;
-  max-height: 470px;
+img.modal_art_part {
+  display: none;
+}
+@media (min-width: 800px) {
+  main#join_modal {
+    max-width: 700px;
+    max-height: 470px;
+  }
+  img.modal_art_part {
+    display: block;
+  }
 }
 .overlay_contents {
   border: none;
