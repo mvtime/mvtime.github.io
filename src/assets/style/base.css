@@ -291,7 +291,8 @@ img[lazy="loading"],
 img.loading_icon {
   object-fit: scale-down;
   object-position: center center;
-  background-color: var(--placehold-bg);
+  /* background-color: var(--placehold-bg); */
+  background-color: #00000000;
   user-select: none;
 }
 
@@ -302,7 +303,7 @@ img.error_icon {
 }
 img[lazy="loading"],
 img.loading_icon {
-  content: url(@/assets/img/placeholder/load_light.gif);
+  content: url(@/assets/img/placeholder/load_light.png);
 }
 
 #themed_body[_theme="dark"] img[lazy="error"],
@@ -312,7 +313,7 @@ img.loading_icon {
 }
 #themed_body[_theme="dark"] img[lazy="loading"],
 #themed_body[_theme="dark"] img.loading_icon {
-  content: url(@/assets/img/placeholder/load_dark.gif);
+  content: url(@/assets/img/placeholder/load_dark.png);
 }
 
 img[lazy="loaded"] {
