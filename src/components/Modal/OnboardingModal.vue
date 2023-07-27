@@ -50,6 +50,7 @@
 import { useMainStore } from "@/store";
 import "@/views/Portal/overlay.css";
 import { WarningToast } from "@svonk/util";
+import { _statuslog } from "@/common";
 export default {
   emits: ["close"],
   data() {
@@ -90,7 +91,7 @@ export default {
   },
   mounted() {
     // if user is logged in, close
-    if (this.store.user) {
+    if (this.store.user && this.store?.doc?.join_form) {
       // set current page query redirect to home
       this.$router.push({
         name: "join",
@@ -119,12 +120,19 @@ export default {
           .login()
           .then(() => {
             this.store.save_join_form(this.form);
-            this.$emit("close");
           })
           .catch((e) => {
-            console.error(e);
+            _statuslog("💾 Error logging in", e);
             this.page = "form";
           });
+      }
+    },
+  },
+  watch: {
+    store() {
+      // close if join_form is set
+      if (this.store?.user && this.store?.doc?.join_form) {
+        this.$emit("close");
       }
     },
   },
@@ -161,6 +169,8 @@ h2.overlay_title {
 .modal_art_part {
   height: 400px;
   width: 270px;
+}
+.modal_art_part[lazy="loaded"] {
   object-fit: scale-down;
   object-position: bottom left;
 }

@@ -135,8 +135,21 @@ export default {
         this.do_survey();
       }
     },
+    check_and_do_join() {
+      // if logged in and not store.doc.join_form, redirect to join form
+      if (this.store.user && !this.store.doc.join_form) {
+        this.$router.push({
+          name: "join",
+          query: {
+            redirect: this.$route.fullPath,
+          },
+        });
+        new WarningToast("Please fill out the join form to use MVTT!", 3000);
+      }
+    },
   },
   mounted() {
+    this.check_and_do_join();
     this.check_and_do_survey();
   },
   watch: {
@@ -146,6 +159,9 @@ export default {
     // watch for route changes
     $route() {
       this.check_and_do_survey();
+    },
+    store() {
+      this.check_and_do_join();
     },
   },
 };
