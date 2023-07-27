@@ -2,7 +2,7 @@
 
 ## General Purpose / Goal
 
-- Collect student wellness data
+- ~~Collect student wellness data~~
   - will allow us to show its usefulness
 - Crowdsource data from students
   - lower teacher inclusion / necessary involvement
@@ -18,6 +18,7 @@
 - Create onboarding
   - setup from pre-defined classes, add your own
   - where to find everything
+  - ~~join form -> add classes~~
 - Make art assets
   - focus on clean transitions, animations
   - looking good in a proto doesn't mean it'll feel nice to use
