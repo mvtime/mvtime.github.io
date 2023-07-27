@@ -120,7 +120,7 @@ router.beforeEach((to) => {
   if (to.meta && to.meta.requiresAuth && store && !store.user) {
     // launch auth popup through store action
     new Toast(
-      "Please log in to access this page",
+      "Please log in or join to access this page",
       "default",
       1500,
       require("@svonk/util/assets/info-locked-icon.svg")

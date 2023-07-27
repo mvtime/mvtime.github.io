@@ -176,7 +176,8 @@ export const useMainStore = defineStore({
     done_daily_survey() {
       if (!this.doc) return false;
       if (this.is_teacher) return true;
-      return this.doc.done_surveys?.includes(today);
+      let isDone = this.doc.done_surveys?.includes(today);
+      return isDone;
     },
   },
   actions: {

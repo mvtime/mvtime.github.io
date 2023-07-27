@@ -8,6 +8,7 @@
       <div class="inputs_row">
         <input
           v-model="teacher_email"
+          ref="teacher_email"
           class="styled_input"
           type="text"
           placeholder="Teacher's Email"
@@ -88,6 +89,10 @@ export default {
         return "Hi " + store.user.displayName.split(" ")[0] + ", ";
       return "";
     },
+  },
+  mounted() {
+    // focus
+    this.$refs.teacher_email.focus();
   },
 };
 </script>

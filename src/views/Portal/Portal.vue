@@ -46,11 +46,7 @@
     </div>
     <RightBar ref="RightBar" @close_left_bar="close_left_bar" />
     <!-- show overlay only if router-view is active -->
-    <OverlayWrapper
-      v-if="$route.name !== 'portal'"
-      @close="$router.push(close_path || '/portal')"
-      v-slot="scope"
-    >
+    <OverlayWrapper v-if="$route.name !== 'portal'" v-slot="scope">
       <router-view class="router_center_view" @close="scope.close" />
     </OverlayWrapper>
   </main>
@@ -100,6 +96,7 @@ export default {
   methods: {
     do_survey() {
       // change to survey page, with query redirect to current page
+      console.log("pushing to survey path");
       this.$router.push({
         name: "daily",
         query: {
@@ -143,13 +140,13 @@ export default {
     },
     check_and_do_survey() {
       // check that done_daily_survey is true, if not open "/survey/daily"
-      if (!this.did_survey && this.$route?.meta?.noSurvey !== true) {
+      if (this.store?.user && !this.did_survey && this.$route?.meta?.noSurvey !== true) {
         this.do_survey();
       }
     },
     check_and_do_join() {
       // if logged in and not store.doc.join_form, redirect to join form
-      if (this.store?.user && !this.store?.doc?.join_form) {
+      if (this.store?.user && !this.store?.doc && !this.store?.doc?.join_form) {
         this.$router.push({
           name: "join",
           query: {
@@ -172,8 +169,12 @@ export default {
     $route() {
       this.check_and_do_survey();
     },
-    store() {
-      this.check_and_do_join();
+    // deep listener for store
+    store: {
+      handler() {
+        this.check_and_do_join();
+      },
+      deep: true,
     },
   },
 };

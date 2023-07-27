@@ -1,5 +1,5 @@
 <template>
-  <ModalFromPages :pages="pages" @finish="saveResponses"></ModalFromPages>
+  <ModalFromPages :pages="pages" @finish="saveResponses" ref="survey_modal"></ModalFromPages>
 </template>
 
 <script>
@@ -18,6 +18,7 @@ import { useMainStore } from "@/store";
 import { WarningToast, SuccessToast } from "@svonk/util";
 export default {
   name: "DailySurvey",
+  emits: ["close"],
   components: {
     ModalFromPages,
     // import page components below
@@ -73,7 +74,8 @@ export default {
       // remove onbeforeunload listener
       window.onbeforeunload = null;
       // finish
-      this.$router.push(this.$route.query.redirect || "/portal");
+      // emit close
+      this.$emit("close");
     },
   },
   mounted() {
@@ -81,7 +83,7 @@ export default {
     if (this.did_survey) {
       window.onbeforeunload = null;
       // redirect to query redirect page (route.query.redirect) or portal if unspecified
-      this.$router.push(this.$route.query.redirect || "/portal");
+      this.$emit("close");
       new WarningToast("You already completed the daily survey today!", 2000);
     }
   },
@@ -89,7 +91,7 @@ export default {
     did_survey() {
       if (this.did_survey) {
         window.onbeforeunload = null;
-        this.$router.push(this.$route.query.redirect || "/portal");
+        this.$emit("close");
         new SuccessToast("Looks like you completed the survey somewhere else!", 2000);
       }
     },
