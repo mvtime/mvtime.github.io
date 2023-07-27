@@ -15,7 +15,7 @@
             placeholder="Your Name"
           />
           <select class="styled_input styled_obj" v-model="form.grade">
-            <option value="" hidden disabled selected>Grade Level</option>
+            <option class="placeholder_text" value="" hidden disabled selected>Grade Level</option>
             <option value="9">9th</option>
             <option value="10">10th</option>
             <option value="11">11th</option>
@@ -36,7 +36,7 @@
     </div>
     <div class="bottom_actions">
       <button v-if="page == 'form'" class="close_action" @click="$emit('close')">
-        {{ page == "form" && !contents_ready ? "Close" : "Cancel" }}
+        {{ page == "form" && form.name == "" && form.grade == "" ? "Close" : "Cancel" }}
       </button>
       <div class="flex_spacer"></div>
       <button class="continue_action" :disabled="!contents_ready" @click="action">
@@ -186,5 +186,8 @@ h2.overlay_title {
   height: 0;
   flex-basis: 0;
   flex-grow: 1;
+}
+select:has(.placeholder_text[selected]) {
+  color: var(--color-placeholder);
 }
 </style>

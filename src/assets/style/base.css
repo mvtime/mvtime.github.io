@@ -115,6 +115,7 @@ body,
   /* overlay inputs */
   --color-overlay-input: #dedede;
   --color-on-overlay-input: #000;
+  --color-placeholder: #00000087;
   --color-overlay-input-scrollbar: #00000040;
   --color-overlay-link: #bbbbbb;
   --color-overlay-link-hover: #b1c3d8;
@@ -173,6 +174,7 @@ body:has(#themed_body[_theme="dark"]) {
   /* overlay inputs */
   --color-overlay-input: #2b2b2b;
   --color-on-overlay-input: #fff;
+  --color-placeholder: #ffffff87;
   --color-overlay-input-scrollbar: #ffffff40;
   --color-overlay-link: #444444;
   --color-overlay-link-hover: #414d5f;

@@ -181,7 +181,8 @@ export const useMainStore = defineStore({
   },
   actions: {
     async save_join_form(responses) {
-      // save responses in userdoc.join_form
+      // await userdoc ready then save responses in userdoc.join_form
+      await this.userdoc_ref;
       this.doc.join_form = responses;
       await this.update_remote();
     },
