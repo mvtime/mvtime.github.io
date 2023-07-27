@@ -90,7 +90,7 @@ export default {
     },
   },
   mounted() {
-    // if user is logged in, close
+    // if user is logged in and has completed, close
     if (this.store.user && this.store?.doc?.join_form) {
       // set current page query redirect to home
       this.$router.push({
@@ -101,6 +101,10 @@ export default {
       });
       this.$emit("close");
       new WarningToast("You've already joined!", 2000);
+    }
+    // if user is logged in, use their name to prefill
+    if (this.store.user) {
+      this.form.name = this.store.user.displayName;
     }
   },
   methods: {
