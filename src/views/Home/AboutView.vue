@@ -31,7 +31,7 @@
     </script>
     -->
     <div class="about_header">
-      <h2>Our Mission;</h2>
+      <h2 class="header_style">Our Mission;</h2>
       <br />
       <h3 class="secondary_home_text">
         A better way to organize our cluttered lifes. By students, for the wellbeing of students.

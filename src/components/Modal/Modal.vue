@@ -1,7 +1,7 @@
 <template>
   <main class="modal" ref="modal">
     <header class="modal_header" v-if="title" ref="title">
-      <h2 class="modal_header_title">{{ title }}</h2>
+      <h2 class="header_style modal_header_title">{{ title }}</h2>
     </header>
     <div ref="contents" class="overlay_contents" v-if="content || html">
       <component

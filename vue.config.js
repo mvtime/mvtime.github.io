@@ -1,7 +1,25 @@
 const { defineConfig } = require("@vue/cli-service");
-
+const path = require("path");
 module.exports = defineConfig({
-  configureWebpack: {},
+  configureWebpack: {
+    module: {
+      rules: [
+        // Add markdown-loader for files ending with '.md' in the assets folder
+        {
+          test: /\.md$/,
+          include: [path.resolve(__dirname, "src/assets")],
+          use: [
+            {
+              loader: "html-loader", // Add html-loader to handle the result of markdown-loader
+            },
+            {
+              loader: "markdown-loader",
+            },
+          ],
+        },
+      ],
+    },
+  },
   pluginOptions: {
     electronBuilder: {
       builderOptions: {

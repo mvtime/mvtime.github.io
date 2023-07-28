@@ -1,7 +1,7 @@
 <template>
   <main class="createclass">
     <header class="modal_header">
-      <h2 class="modal_header_title">Create a Class</h2>
+      <h2 class="header_style modal_header_title">Create a Class</h2>
     </header>
     <div class="overlay_contents">
       <div class="overlay_contents_text">Let's create a new class</div>

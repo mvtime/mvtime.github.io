@@ -64,13 +64,26 @@ const router = createRouter({
             requiresAuth: false,
           },
         },
-
+        // {
+        //   path: "download",
+        //   name: "download",
+        //   component: () => import("../views/Home/DownloadView.vue"),
+        //   meta: {
+        //     page_title: "Download [BETA]",
+        //     theme_color: {
+        //       light: "#ffffff",
+        //       dark: "#16130e",
+        //     },
+        //     requiresAuth: false,
+        //   },
+        // },
+        // {
         {
-          path: "download",
-          name: "download",
-          component: () => import("../views/Home/DownloadView.vue"),
+          path: "roadmap",
+          name: "roadmap",
+          component: () => import("../views/Home/TodoView.vue"),
           meta: {
-            page_title: "Download [BETA]",
+            page_title: "Development Roadmap",
             theme_color: {
               light: "#ffffff",
               dark: "#16130e",

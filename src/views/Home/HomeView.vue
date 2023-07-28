@@ -1,7 +1,7 @@
 <template>
   <main class="home">
     <div id="home_main">
-      <h2>Organize. Plan. Study.</h2>
+      <h2 class="header_style">Organize. Plan. Study.</h2>
       <h3 class="middle-text secondary_home_text">
         A more effective way to manage test schedules, long-term assignments, and exam stress.
       </h3>

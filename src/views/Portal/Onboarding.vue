@@ -1,7 +1,7 @@
 <template>
   <main class="onboarding">
     <header class="modal_header">
-      <h2 class="modal_header_title">Welcome to MVTime</h2>
+      <h2 class="header_style modal_header_title">Welcome to MVTime</h2>
     </header>
     <div class="overlay_contents">
       <div class="overlay_contents_text">{{ name }} let's get you set up with your first class</div>

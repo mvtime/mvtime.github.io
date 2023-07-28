@@ -6,7 +6,7 @@
         v-if="page == 'form'"
         class="overlay_contents overlay_contents__page overlay_more_pad_horizontal pad_overlay"
       >
-        <h2 class="modal_header_title overlay_title">Join the MVTT Beta</h2>
+        <h2 class="header_style modal_header_title overlay_title">Join the MVTT Beta</h2>
         <div class="overlay_inputs inputs_column">
           <input
             class="styled_input styled_obj"
@@ -48,7 +48,7 @@
 
 <script>
 import { useMainStore } from "@/store";
-import "@/views/Portal/overlay.css";
+import "@/assets/style/overlay.css";
 import { WarningToast } from "@svonk/util";
 import { _statuslog } from "@/common";
 export default {

@@ -1,7 +1,7 @@
 <template>
   <div class="not-found">
-    <h1>404</h1>
-    <h2 class="hideoverflow">Page Not Found</h2>
+    <h1 class="title_text err_text">404</h1>
+    <h2 class="header_style err_text hideoverflow">Page Not Found</h2>
     <hr class="err-break" />
     <nav>
       <router-link class="router-link click-action-inline" to="/">Home</router-link>
@@ -40,11 +40,11 @@ export default {
 </script>
 
 <style scoped>
-h1 {
+h1.err_text {
   font-weight: 800;
   font-size: 120px;
 }
-h2 {
+h2.err_text {
   font-size: 40px;
   display: block;
   opacity: 0.7;

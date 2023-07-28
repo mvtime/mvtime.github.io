@@ -1,7 +1,7 @@
 <template>
   <main class="download center-1000">
     <div class="download_header">
-      <h2>Downloads</h2>
+      <h2 class="header_style">Downloads</h2>
       <br />
       <h3 class="secondary_home_text">
         Get the latest version of MV Test Tracker for your platform. (Coming Soon!)

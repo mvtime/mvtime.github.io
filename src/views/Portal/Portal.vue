@@ -63,7 +63,7 @@ import CalendarBlock from "@/components/Portal/CalendarBlock.vue";
 import OverlayWrapper from "@/components/Modal/OverlayWrapper.vue";
 import { useMainStore } from "@/store";
 import { placeholderToast, WarningToast } from "@svonk/util";
-import "@/views/Portal/overlay.css";
+import "@/assets/style/overlay.css";
 export default {
   name: "AppPortal",
   components: {

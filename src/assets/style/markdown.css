@@ -1,0 +1,22 @@
+/* header and content styles for markdown */
+
+/* fonts */
+.md,
+.md * {
+  font-family: "monospace", monospace;
+}
+
+/* enable header margins (add back since main.css removes them) */
+
+.md h1 {
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+.md h2 {
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+.md h3 {
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}

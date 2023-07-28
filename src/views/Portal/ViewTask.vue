@@ -1,7 +1,9 @@
 <template>
   <main class="viewtask">
     <header class="modal_header">
-      <h2 class="modal_header_title">View {{ task.type ? task.type : "task" }} details</h2>
+      <h2 class="header_style modal_header_title">
+        View {{ task.type ? task.type : "task" }} details
+      </h2>
     </header>
     <div class="overlay_contents">
       <div class="spaced_contents">
@@ -72,9 +74,6 @@ import { WarningToast, ErrorToast, SuccessToast } from "@svonk/util";
 import { _statuslog } from "@/common";
 import { useMainStore } from "@/store";
 export default {
-  data() {
-    return {};
-  },
   computed: {
     task() {
       let task = this.$route?.query?.task;
@@ -99,13 +98,18 @@ export default {
     }
   },
   methods: {
-    share_task() {
+    async share_task() {
       if (navigator.share) {
+        // const imageBlob = await this.fetchImageBlob(
+        //   process.env.BASE_URL + "img/promo/square_promo.png"
+        // );
         navigator
           .share({
             title: this.task.name,
             text: this.task.description,
             url: window.location.href,
+            // promo img
+            // files: [new File([imageBlob], "mvtt.png", { type: "image/png" })],
           })
           .then(() => new SuccessToast("Opened share dialog", 1000))
           .catch((error) => _statuslog("Error sharing", error));
@@ -116,6 +120,10 @@ export default {
         new ErrorToast("Sharing not supported", 1000);
       }
     },
+    // async fetchImageBlob(url) {
+    //   const response = await fetch(url);
+    //   return await response.blob();
+    // },
   },
 };
 </script>
