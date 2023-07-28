@@ -37,26 +37,29 @@ module.exports = defineConfig({
       short_name: "MVTT",
       theme_color: "#f5c14b",
       description:
-        "MV Test tracker provides an effective way to manage your upcoming tests and exams.",
+        "MV Test tracker provides A more effective way to manage your upcoming tests and exams.",
       screenshots: [
         // in ./img/ss/
         {
-          src: "./img/ss/portal-wide.png",
-          sizes: "1280x720",
-          type: "image/png",
-          label: "Portal (wide)",
-          discription: "The portal page on a wide screen",
-        },
-        {
           src: "./img/ss/portal-narrow.png",
           sizes: "390x694",
+          form_factor: "narrow",
           type: "image/png",
           label: "Portal (narrow)",
           discription: "The portal page on a narrow screen",
         },
         {
+          src: "./img/ss/portal-wide.png",
+          sizes: "1280x720",
+          form_factor: "wide",
+          type: "image/png",
+          label: "Portal (wide)",
+          discription: "The portal page on a wide screen",
+        },
+        {
           src: "./img/ss/portal-wide-light.png",
           sizes: "1280x720",
+          form_factor: "wide",
           type: "image/png",
           label: "Portal (wide & light theme)",
           discription: "The portal page on a wide screen",
@@ -64,6 +67,7 @@ module.exports = defineConfig({
         {
           src: "./img/ss/login-narrow.png",
           sizes: "390x694",
+          form_factor: "narrow",
           type: "image/png",
           label: "Login (narrow)",
           discription: "The login page on a narrow screen",
@@ -71,6 +75,7 @@ module.exports = defineConfig({
         {
           src: "./img/ss/login-wide.png",
           sizes: "1280x720",
+          form_factor: "wide",
           type: "image/png",
           label: "Login (wide)",
           discription: "The login page on a wide screen",

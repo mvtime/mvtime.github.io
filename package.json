@@ -2,7 +2,7 @@
   "name": "mvtime",
   "version": "0.1.0",
   "author": "Sander Vonk",
-  "description": "An effective way to manage test schedules, long-term assignments, and exam stress.",
+  "description": "A more effective way to manage test schedules, long-term assignments, and exam stress.",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",

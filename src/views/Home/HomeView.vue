@@ -3,7 +3,7 @@
     <div id="home_main">
       <h2>Organize. Plan. Study.</h2>
       <h3 class="middle-text secondary_home_text">
-        An effective way to manage test schedules, long-term assignments, and exam stress.
+        A more effective way to manage test schedules, long-term assignments, and exam stress.
       </h3>
       <div class="homepage_actions">
         <button class="action-btn click-action" @click="tomain">
