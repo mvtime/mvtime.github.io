@@ -1,5 +1,35 @@
 <template>
   <main class="about center-1000">
+    <!-- 
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://mvtt.app/about"
+      },
+      "headline": "The MVTT Mission",
+      "description": "A better way to organize our cluttered lifes. By students, for the wellbeing of students....",
+      "image": "https://mvtt.app/og/hero-img.png",  
+      "author": {
+        "@type": "Person",
+        "name": "Sander Vonk",
+        "url": "https://svonk.me"
+      },  
+      "publisher": {
+        "@type": "Organization",
+        "name": "Mountain View Test Tracker",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://mvtt.app/favicon.ico"
+        }
+      },
+      "datePublished": "2023-03-11",
+      "dateModified": "2023-03-18"
+    }
+    </script>
+    -->
     <div class="about_header">
       <h2>Our Mission;</h2>
       <br />
