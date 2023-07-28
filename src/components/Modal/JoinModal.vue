@@ -163,6 +163,8 @@ export default {
 <style scoped>
 img.modal_art_part {
   display: none;
+  user-select: none;
+  pointer-events: none;
 }
 @media (min-width: 800px) {
   main#join_modal {

@@ -107,10 +107,13 @@ export default {
   margin: 0 auto;
 }
 .home_art {
+  /* layout */
   display: flex;
   flex-basis: 200px;
   flex-grow: 1;
-  /* layout */
+  /* interaction */
+  user-select: none;
+  pointer-events: none;
 }
 /* .home_art__placehold:not([lazy="error"]):not([lazy="loaded"]) {
   background: url(@/assets/img/art/homepage_art_small.png) no-repeat cover;
