@@ -22,7 +22,7 @@ export default {
       return useMainStore();
     },
     theme() {
-      return this.store.theme;
+      return this.store.get_theme;
     },
   },
   mounted() {

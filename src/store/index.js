@@ -73,13 +73,14 @@ export const useMainStore = defineStore({
         doc_ref: null,
         collection_ref: null,
       },
+      theme: null,
     });
   },
   // store getters
   getters: {
-    theme() {
+    get_theme() {
       // get local
-      let local_theme = localStorage.getItem("theme");
+      let local_theme = this.theme || localStorage.getItem("theme");
       // get userdoc theme
       let userdoc_theme = this.doc?.theme;
       // set new to system by default
@@ -104,7 +105,7 @@ export const useMainStore = defineStore({
         if (local_theme != userdoc_theme) {
           localStorage.setItem("theme", userdoc_theme);
         }
-        return userdoc_theme;
+        return userdoc_theme ? userdoc_theme : "light";
       }
     },
     non_recent_signin() {
@@ -201,9 +202,15 @@ export const useMainStore = defineStore({
       new SuccessToast("Saved daily survey", 2000);
     },
     async toggle_theme() {
-      this.doc.theme = this.theme == "light" ? "dark" : "light";
-      await this.update_remote();
-      new SuccessToast(`Switched to ${this.doc.theme} theme`, 2000);
+      let currentTheme = this.theme || "light";
+      this.theme = currentTheme == "light" ? "dark" : "light";
+      localStorage.setItem("theme", this.theme);
+      if (this?.doc) {
+        this.doc.theme = this.theme;
+        await this.update_remote();
+      }
+      new SuccessToast(`Switched to ${this.theme} theme`, 2000);
+      this.get_theme;
     },
     async get_classes() {
       // check for duplicates
@@ -303,6 +310,7 @@ export const useMainStore = defineStore({
         doc_ref: null,
         collection_ref: null,
       };
+      this.theme = "light";
       // if page requires auth, redirect to home
       if (router.currentRoute?.value?.meta?.requiresAuth) {
         router.push("/");
@@ -458,7 +466,7 @@ export const useMainStore = defineStore({
         let class_doc_ref = await addDoc(this.teacher.collection_ref, class_obj);
         // add class to user doc;
         new SuccessToast(`Created class "${class_obj.name}"`, 2000);
-        console.log("class_doc_ref", class_doc_ref);
+        _statuslog("🏫 class_doc_ref", class_doc_ref);
         await this.add_class(this.user.email, class_doc_ref.id, class_obj.name, class_obj.period);
       } catch (e) {
         console.error(e);

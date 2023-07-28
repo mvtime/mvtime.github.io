@@ -69,6 +69,7 @@
 </template>
 <script>
 import { WarningToast, ErrorToast, SuccessToast } from "@svonk/util";
+import { _statuslog } from "@/common";
 import { useMainStore } from "@/store";
 export default {
   data() {
@@ -107,7 +108,7 @@ export default {
             url: window.location.href,
           })
           .then(() => new SuccessToast("Opened share dialog", 1000))
-          .catch((error) => console.log("Error sharing", error));
+          .catch((error) => _statuslog("Error sharing", error));
       } else if (navigator.clipboard) {
         navigator.clipboard.writeText(window.location.href);
         new WarningToast("Sharing not supported, copied link to clipboard", 1000);

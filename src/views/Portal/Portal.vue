@@ -100,7 +100,6 @@ export default {
   methods: {
     do_survey() {
       // change to survey page, with query redirect to current page
-      console.log("pushing to survey path");
       this.$router.push({
         name: "daily",
         query: {

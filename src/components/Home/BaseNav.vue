@@ -3,7 +3,7 @@
     <h1 class="gohome hideoverflow">MV Test Tracker</h1>
     <!-- Theme Button -->
     <button
-      :_theme="store.theme"
+      :_theme="store.get_theme"
       class="theme_button"
       title="Switch Theme"
       @click="store.toggle_theme"

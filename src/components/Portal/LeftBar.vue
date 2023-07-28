@@ -11,7 +11,7 @@
     </div>
     <!-- Theme Button -->
     <button
-      :_theme="store.theme"
+      :_theme="store.get_theme"
       class="theme_button click-action"
       title="Switch Theme"
       @click="store.toggle_theme"
