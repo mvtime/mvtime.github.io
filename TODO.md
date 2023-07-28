@@ -22,6 +22,9 @@
 - Make art assets
   - focus on clean transitions, animations
   - looking good in a proto doesn't mean it'll feel nice to use
+  - ~~Create promotional materials~~
+    - ~~update og:img~~
+    - ~~create public/img/promo imgs~~
   - ~~Create contact page~~
     - ~~fun lighthearted art stuff~~
 - ~~Create survey / check-in modal~~
