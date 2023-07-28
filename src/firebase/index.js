@@ -24,12 +24,15 @@ const db = getFirestore(app);
 const analytics = getAnalytics(app);
 
 // export firebase
-export { app, auth, db, analytics };
+export { app, auth, db, analytics, authChangeAction };
 
 // handle auth updates (user login/logout) and set user data in store
 import { useMainStore } from "../store";
 import { _statuslog } from "@/common";
 auth.onAuthStateChanged((user) => {
+  authChangeAction(user);
+});
+function authChangeAction(user) {
   const store = useMainStore();
   if (user) {
     store.set_user(user);
@@ -53,4 +56,4 @@ auth.onAuthStateChanged((user) => {
   } else {
     store.clear();
   }
-});
+}

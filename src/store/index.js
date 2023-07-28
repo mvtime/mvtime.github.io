@@ -19,7 +19,7 @@ import {
   arrayUnion,
   arrayRemove,
 } from "firebase/firestore";
-import { auth, db } from "../firebase";
+import { auth, db, authChangeAction } from "../firebase";
 import { signInWithPopup, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
 const provider = new GoogleAuthProvider();
 
@@ -182,6 +182,17 @@ export const useMainStore = defineStore({
     },
   },
   actions: {
+    async userLoginPromise() {
+      // wait for this.user to be set
+      return new Promise((resolve) => {
+        let interval = setInterval(() => {
+          if (this.user) {
+            clearInterval(interval);
+            resolve();
+          }
+        }, 100);
+      });
+    },
     async save_join_form(responses) {
       // wait for user doc to be created / exist then save responses to doc.join_form
       this.doc.join_form = responses;
@@ -195,15 +206,18 @@ export const useMainStore = defineStore({
         responses: responses,
       };
       await setDoc(survey_ref, response_obj);
+      // wait for user login
+      if (!this.user) {
+        await this.userLoginPromise();
+      }
       // update user doc to have date in "done_surveys"
-      this.doc.done_surveys = this.doc.done_surveys ? this.doc.done_surveys : [];
+      this.doc.done_surveys = this.doc?.done_surveys ? this.doc.done_surveys : [];
       this.doc.done_surveys.push(today);
       await this.update_remote();
       new SuccessToast("Saved daily survey", 2000);
     },
     async toggle_theme() {
-      let currentTheme = this.theme || "light";
-      this.theme = currentTheme == "light" ? "dark" : "light";
+      this.theme = this.get_theme == "light" ? "dark" : "light";
       localStorage.setItem("theme", this.theme);
       if (this?.doc) {
         this.doc.theme = this.theme;
@@ -335,7 +349,12 @@ export const useMainStore = defineStore({
             2000,
             require("@svonk/util/assets/info-unlocked-icon.svg")
           );
-          if (!router.currentRoute?.value?.query?.redirect) {
+          _statuslog("🔑 Logged in as " + this.user.displayName);
+          authChangeAction(this.user);
+          if (
+            !router.currentRoute?.value?.query?.redirect &&
+            !router.currentRoute?.value?.meta?.blockStandardRedirect
+          ) {
             router.push("/portal");
           }
           return Promise.resolve();
@@ -375,6 +394,7 @@ export const useMainStore = defineStore({
         name: this.user.displayName,
         email: this.user.email,
         classes: [],
+        theme: this.get_theme,
       };
       if (this.is_teacher) {
         await this.create_teacher_doc();
