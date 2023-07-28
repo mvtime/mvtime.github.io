@@ -106,6 +106,11 @@ h3,
     max-width: unset;
   }
 }
+/* fix toast text alignment */
+.toast.default,
+.toast.transparent {
+  align-items: center;
+}
 /* fix popup icons on dark mode */
 .popup-icon {
   filter: var(--filter-icon);
@@ -132,8 +137,6 @@ h3,
 
 /* theme button */
 .theme_button {
-  /* sizebar specific styling */
-
   display: block;
   height: var(--size-sidebar-button);
   width: var(--size-sidebar-button);
