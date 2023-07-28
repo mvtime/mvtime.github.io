@@ -1,6 +1,16 @@
 <template>
   <header>
     <h1 class="gohome hideoverflow">MV Test Tracker</h1>
+    <!-- Theme Button -->
+    <button
+      :_theme="store.theme"
+      class="theme_button"
+      title="Switch Theme"
+      @click="store.toggle_theme"
+    >
+      <div class="theme_icon"></div>
+      <div class="toggle_text">Switch Theme</div>
+    </button>
     <span class="flex_spacer"></span>
     <button
       class="nav-mobile-btn"
@@ -165,29 +175,12 @@ header nav a {
     width: 20px;
     flex-grow: 1;
   }
+  .theme_button:hover,
+  .theme_button:active {
+    width: var(--size-sidebar-button);
+  }
 }
-/*! ugly but mobile-friendly 
-
-@media (max-width: 500px) {
-  header .nav-actions {
-    position: fixed;
-    top: 0;
-    right: 0;
-    border-radius: 0;
-    right: 0;
-    top: 0;
-    width: 400px;
-    max-width: 100%;
-    height: 100%;
-  }
-  header .base-pages-nav {
-    flex-grow: 1;
-    max-height: 400px;
-    justify-content: space-evenly;
-    font-size: 2em;
-  }
-  header #nav-auth-btn {
-    font-size: 2em;
-  }
-} */
+.theme_button {
+  margin: 0 calc(var(--nav-spacing) * 2);
+}
 </style>

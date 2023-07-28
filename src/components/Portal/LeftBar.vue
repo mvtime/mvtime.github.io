@@ -92,69 +92,10 @@ export default {
 }
 /* theme icon */
 .theme_button {
-  position: absolute;
-  display: block;
+  /* sizebar specific styling */
   bottom: calc(var(--padding-sidebar) / 1.5);
   left: calc(var(--padding-sidebar) / 1.5);
-  height: var(--size-sidebar-button);
-  width: var(--size-sidebar-button);
-  cursor: pointer;
-  z-index: 1;
-  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) / 3);
-  border: none;
-  background-color: var(--color-on-bg);
-  padding: 0;
-  /* animation */
-  transition: var(--transition-click-action), width 0.2s ease-in-out;
-  transform-origin: calc(var(--size-sidebar-button) / 2);
-  /* layout */
-  overflow: hidden;
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-  justify-content: flex-start;
-}
-/* little animation on theme change */
-.theme_icon {
-  transition: transform 0.5s cubic-bezier(0.49, -0.02, 0, 1.38);
-}
-[_theme="dark"].theme_button .theme_icon {
-  transform: rotate(360deg);
-}
-.theme_button > * {
-  flex-shrink: 0;
-}
-
-.toggle_text {
-  color: #aaa;
-  filter: var(--filter-icon);
-  width: calc(var(--width-sidebar-button-showing) - var(--size-sidebar-button));
-  text-align: right;
-  font-weight: 500;
-  font-size: 14px;
-  font-family: "Roboto", "Lato", "Inter", sans-serif;
-  padding-right: 10px;
-}
-.theme_button:hover,
-.theme_button:active {
-  width: calc(var(--width-sidebar-button-showing));
-}
-.theme_icon {
-  height: 100%;
-  width: var(--size-sidebar-button);
-  filter: var(--filter-icon);
-  /*! Update to match theme icons */
-  background-image: url(@/assets/img/general/portal/theme/light.png);
-  background-image: url(@/assets/img/general/portal/theme/light.svg);
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
-  user-select: none;
-  pointer-events: none;
-}
-[_theme="dark"] .theme_icon {
-  background-image: url(@/assets/img/general/portal/theme/dark.png);
-  background-image: url(@/assets/img/general/portal/theme/dark.svg);
+  position: absolute;
 }
 .sidebar_overflow::-webkit-scrollbar {
   display: none;
