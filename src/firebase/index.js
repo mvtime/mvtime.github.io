@@ -56,11 +56,11 @@ function setupSnapshot(user) {
     doc(db, "users", user.uid),
     { includeMetadataChanges: true },
     (doc) => {
-      _statuslog("⬥ Got snapshot from remote");
       if (doc.metadata.hasPendingWrites) {
-        _statuslog("⏷ Got changes from remote");
+        _statuslog("⬥ Got snapshot from local changes");
         return;
       }
+      _statuslog("⏷ Got snapshot from remote");
       // check if doc exists
       if (!doc.exists()) {
         store.create_doc();
@@ -98,7 +98,7 @@ function msToText(ms) {
   );
 }
 
-function startTimeout(delay = 1000 * 60 * 2) {
+function startTimeout(delay = 1000 * 60 * 5) {
   return setTimeout(() => {
     _statuslog(`⬥ Page unused for ${msToText(delay)}, removing onSnapshot listener`);
     unsubscribe();
@@ -108,7 +108,8 @@ function startTimeout(delay = 1000 * 60 * 2) {
 function refreshTimeout(delay) {
   const store = useMainStore();
   if (!subscribed) {
-    setupSnapshot(store.user, store);
+    // setup snapshot and pull data
+    setupSnapshot(store.user);
     _statuslog("⬥ Resubscribed to remote changes");
   }
   clearTimeout(timeout);
