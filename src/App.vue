@@ -1,5 +1,12 @@
 <template>
-  <main id="themed_body" class="parent" :_theme="theme">
+  <main
+    id="themed_body"
+    class="parent"
+    :_theme="theme"
+    @click="refreshTimeout"
+    @keydown="refreshTimeout"
+    @focus="refreshTimeout"
+  >
     <router-view></router-view>
   </main>
 </template>
@@ -42,6 +49,13 @@ export default {
       : "light";
     const storedTheme = localStorage.getItem("theme");
     this.isDarkMode = storedTheme === "dark" || (storedTheme === null && systemTheme === "dark");
+  },
+  methods: {
+    refreshTimeout() {
+      if (this.store) {
+        this.store.refresh_timeout();
+      }
+    },
   },
 };
 </script>

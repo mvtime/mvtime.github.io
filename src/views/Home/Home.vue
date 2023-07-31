@@ -30,6 +30,10 @@ export default {
   display: flex;
   flex-flow: column nowrap;
 }
+.inner-base {
+  padding: 40px 0;
+  flex-grow: 1;
+}
 @media (max-width: 1000px) {
   .base {
     padding: 50px 60px;
@@ -39,9 +43,11 @@ export default {
   .base {
     padding: 40px 40px;
   }
+  .inner-base {
+    padding: 20px 0;
+  }
 }
 .inner-base {
-  padding: 20px 0;
-  flex-grow: 1;
+  padding-bottom: 0;
 }
 </style>

@@ -19,7 +19,7 @@ import {
   arrayUnion,
   arrayRemove,
 } from "firebase/firestore";
-import { auth, db, authChangeAction } from "../firebase";
+import { auth, db, authChangeAction, refreshTimeout } from "../firebase";
 import { signInWithPopup, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
 const provider = new GoogleAuthProvider();
 
@@ -182,6 +182,11 @@ export const useMainStore = defineStore({
     },
   },
   actions: {
+    refresh_timeout(delay) {
+      // refresh listener timeout if user is logged in
+      if (this.user) return;
+      refreshTimeout(delay);
+    },
     async userLoginPromise() {
       // wait for this.user to be set
       return new Promise((resolve) => {

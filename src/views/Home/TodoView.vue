@@ -26,10 +26,18 @@ export default {
       renderedTodo: "",
     };
   },
+  computed: {
+    todoMarkdown() {
+      try {
+        return require("@/assets/todo.md");
+      } catch (e) {
+        return null;
+      }
+    },
+  },
   mounted() {
     // The content is already converted to HTML by markdown-loader and html-loader
-    const todoMarkdown = require("@/assets/todo.md");
-    this.renderedTodo = todoMarkdown.default;
+    this.renderedTodo = this.todoMarkdown?.default;
   },
 };
 </script>
