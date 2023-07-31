@@ -33,6 +33,7 @@ auth.onAuthStateChanged((user) => {
   authChangeAction(user);
 });
 let unsub;
+let subscribed = false;
 let timeout;
 function authChangeAction(user) {
   const store = useMainStore();
@@ -49,7 +50,8 @@ function authChangeAction(user) {
   }
 }
 
-function setupSnapshot(user, store) {
+function setupSnapshot(user) {
+  const store = useMainStore();
   unsub = onSnapshot(
     doc(db, "users", user.uid),
     { includeMetadataChanges: true },
@@ -72,7 +74,7 @@ function setupSnapshot(user, store) {
       _statuslog("⚠ Error getting snapshot from remote", err);
     }
   );
-  _statuslog("⬥ Subscribed to remote changes");
+  subscribed = true;
 }
 
 // allow for unsubscribing from onSnapshot
@@ -83,16 +85,32 @@ function unsubscribe() {
     unsub();
     _statuslog("⬥ Unsubscribed from remote changes");
   }
+  subscribed = false;
 }
 
-function startTimeout(delay = 1000 * 60 * 5) {
+function msToText(ms) {
+  // use modolo to get minutes and seconds
+  const minutes = Math.floor(ms / 1000 / 60);
+  const seconds = Math.floor((ms / 1000) % 60);
+  return (
+    (minutes || !seconds ? `${minutes} minute${minutes != 1 ? "s" : ""}` : "") +
+    (seconds ? `${seconds} second${seconds != 1 ? "s" : ""}` : "")
+  );
+}
+
+function startTimeout(delay = 1000 * 60 * 2) {
   return setTimeout(() => {
-    _statuslog("⬥ Page unused for 5 minutes, removing onSnapshot listener");
+    _statuslog(`⬥ Page unused for ${msToText(delay)}, removing onSnapshot listener`);
     unsubscribe();
   }, delay);
 }
 
 function refreshTimeout(delay) {
+  const store = useMainStore();
+  if (!subscribed) {
+    setupSnapshot(store.user, store);
+    _statuslog("⬥ Resubscribed to remote changes");
+  }
   clearTimeout(timeout);
   timeout = startTimeout(delay);
 }

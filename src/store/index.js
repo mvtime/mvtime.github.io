@@ -184,7 +184,7 @@ export const useMainStore = defineStore({
   actions: {
     refresh_timeout(delay) {
       // refresh listener timeout if user is logged in
-      if (this.user) return;
+      if (!this.user) return;
       refreshTimeout(delay);
     },
     async userLoginPromise() {
