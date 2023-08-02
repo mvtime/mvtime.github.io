@@ -262,12 +262,12 @@ select.styled_obj {
   flex-basis: 20px;
   cursor: pointer;
   user-select: none;
+  background-color: var(--color-overlay-input);
+  border-radius: 3px;
 }
 .styled_line_links__account .styled_line_links__remove .remove_icon {
   width: 100%;
   height: 100%;
-  background-color: var(--color-overlay-input);
-  border-radius: 2px;
   pointer-events: none;
 }
 .styled_line_links__account .styled_line_links__email {
