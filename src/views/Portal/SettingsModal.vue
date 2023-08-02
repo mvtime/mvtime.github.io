@@ -66,7 +66,14 @@
         {{ changed ? "Cancel" : "Close" }}
       </button>
       <div class="flex_spacer"></div>
-      <button class="continue_action" :disabled="!changed" @click="save">Save</button>
+      <button
+        class="continue_action"
+        :class="{ loading_bg: loading }"
+        :disabled="!changed"
+        @click="save"
+      >
+        Save
+      </button>
     </div>
   </div>
 </template>
@@ -79,6 +86,7 @@ export default {
   data() {
     return {
       changed: false,
+      loading: false,
       new_email: "",
     };
   },
@@ -96,13 +104,31 @@ export default {
       this.$emit("close");
     },
     link_account() {
-      this.store.link_account(this.new_email);
-      this.new_email = "";
       this.changed = true;
+      this.loading = true;
+      this.store
+        .link_account(this.new_email)
+        .then(() => {
+          this.loading = false;
+          this.new_email = "";
+        })
+        .catch(() => {
+          this.loading = false;
+          this.changed = false;
+        });
     },
     unlink_account(email) {
-      this.store.unlink_account(email);
       this.changed = true;
+      this.loading = true;
+      this.store
+        .unlink_account(email)
+        .then(() => {
+          this.loading = false;
+        })
+        .catch(() => {
+          this.loading = false;
+          this.changed = false;
+        });
     },
     fix_email() {
       // fix emails so that they can be signed into with google even if they used the + notation

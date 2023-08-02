@@ -234,8 +234,8 @@ export const useMainStore = defineStore({
           checks++;
         }
         if (
-          !email_doc.data()?.delivery?.attempts ||
-          !email_doc.data()?.delivery?.info?.accepted?.includes(email)
+          !email_doc.data()?.delivery?.info?.accepted?.includes(email) ||
+          email_doc.data()?.delivery?.attempts == 0
         ) {
           _statuslog("📧 Email failed to send", email_doc.data());
           throw "Email failed to send";
@@ -244,23 +244,28 @@ export const useMainStore = defineStore({
         // update remote
         this.doc.linked.push(email);
         await this.update_remote();
-        new SuccessToast(
-          `Sent email to ${email}, you'll receive a copy at ${this.user.email}`,
-          4000
-        );
+        new SuccessToast(`We notified ${email}, you'll receive a copy of the email too!`, 4000);
+        return Promise.resolve();
       } catch (err) {
         new ErrorToast(`Couldn't invite "${email}"`, err, 2000);
+        return Promise.reject(err);
       }
     },
     async unlink_account(email) {
-      if (!this.user) return;
-      // if exists in userdoc.linked, remove and save
-      if (this.doc.linked.includes(email)) {
-        this.doc.linked = this.doc.linked.filter((e) => e != email);
-        await this.update_remote();
-        new SuccessToast(`Removed ${email} from your linked accounts`, 2000);
-      } else {
-        new WarningToast(`${email} is not linked to this account`, 2000);
+      try {
+        if (!this.user) return;
+        // if exists in userdoc.linked, remove and save
+        if (this.doc.linked.includes(email)) {
+          this.doc.linked = this.doc.linked.filter((e) => e != email);
+          await this.update_remote();
+          new SuccessToast(`Removed ${email} from your linked accounts`, 2000);
+        } else {
+          new WarningToast(`${email} is not linked to this account`, 2000);
+        }
+        Promise.resolve();
+      } catch (err) {
+        new ErrorToast(`Couldn't unlink "${email}"`, err, 2000);
+        return Promise.reject(err);
       }
     },
     refresh_timeout(delay) {
