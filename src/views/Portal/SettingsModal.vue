@@ -63,7 +63,7 @@
     </div>
     <div class="bottom_actions">
       <button class="back_action" @click="$emit('close')">
-        {{ changed ? "Cancel" : "Close" }}
+        {{ changed || loading ? "Cancel" : "Close" }}
       </button>
       <div class="flex_spacer"></div>
       <button
