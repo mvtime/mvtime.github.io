@@ -39,6 +39,7 @@
       - ~~join modal~~
     - finish emails
       - cloud functions
+      - ~~email template~~
       - ~~mail server~~
       - ~~send from firebase doc~~
     - finish personal account connection

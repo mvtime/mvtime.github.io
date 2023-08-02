@@ -9,6 +9,7 @@ body,
   --margin-home-action: 10px;
   /* button displays (showing what to use) */
   --padding-button-display: 5px 7px;
+  --padding-button-display-horizontal: 7px;
   --radius-button-display: 5px;
   /* general homepage */
   --footer-height: 36px;

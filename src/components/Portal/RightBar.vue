@@ -7,11 +7,11 @@
       <div class="flex_spacer"></div>
     </div>
     <button
-      class="info_button click-action"
-      title="About MV Test Tracker"
-      @click="$router.push('/about')"
+      class="settings_button click-action"
+      title="Settings"
+      @click="$router.push('/settings')"
     >
-      <div class="info_icon"></div>
+      <div class="settings_icon"></div>
     </button>
     <SidebarToggle @click="close_sidebar" />
   </div>
@@ -89,7 +89,7 @@ export default {
   }
 }
 /* info icon */
-.info_button {
+.settings_button {
   position: absolute;
   display: block;
   bottom: calc(var(--padding-sidebar) / 1.5);
@@ -103,12 +103,12 @@ export default {
   background-color: var(--color-on-bg);
   padding: 0;
 }
-.info_icon {
+.settings_icon {
   height: 100%;
   width: 100%;
   filter: var(--filter-icon);
-  background-image: url(@/assets/img/general/portal/info.png);
-  background-image: url(@/assets/img/general/portal/info.svg);
+  background-image: url(@/assets/img/general/portal/settings.png);
+  background-image: url(@/assets/img/general/portal/settings.svg);
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;

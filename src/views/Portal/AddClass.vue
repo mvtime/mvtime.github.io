@@ -34,11 +34,7 @@
     <div class="bottom_actions">
       <button class="close_action" @click="$router.push('/portal')">Close</button>
       <div class="flex_spacer"></div>
-      <button
-        class="continue_action"
-        @click="store.add_class(teacher_email, class_id, class_name)"
-        :disabled="!teacher_email || !class_id"
-      >
+      <button class="continue_action" @click="add_class" :disabled="!teacher_email || !class_id">
         Add Class
       </button>
     </div>
@@ -78,6 +74,13 @@ export default {
     },
     store() {
       return useMainStore();
+    },
+  },
+  methods: {
+    add_class() {
+      this.store.add_class(this.teacher_email, this.class_id, this.class_name).then(() => {
+        this.$emit("close");
+      });
     },
   },
 };

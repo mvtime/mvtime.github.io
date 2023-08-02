@@ -148,6 +148,20 @@ const router = createRouter({
           },
         },
         {
+          path: "/settings",
+          name: "settings",
+          component: () => import("../views/Portal/SettingsModal.vue"),
+          meta: {
+            page_title: "Settings",
+            theme_color: {
+              light: "#ffffff",
+              dark: "#121212",
+            },
+            requiresAuth: true,
+            noSurvey: true,
+          },
+        },
+        {
           path: "/portal/onboarding",
           name: "onboarding",
           component: () => import("../views/Portal/Onboarding.vue"),
@@ -158,6 +172,7 @@ const router = createRouter({
               dark: "#121212",
             },
             requiresAuth: true,
+            block_close: true,
             noSurvey: true,
           },
         },

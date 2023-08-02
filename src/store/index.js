@@ -444,13 +444,13 @@ export const useMainStore = defineStore({
         classes_subcollection_query_snapshot.forEach((doc) => {
           let class_data = doc.data();
           class_data.id = doc.id;
+          // support for legacy names
+          class_data.name =
+            (class_data.period ? "P" + class_data.period + " - " : "") + class_data.name;
+          class_data.is_joined = true;
           // if user already in class, change name to "[JOINED] name"
           if (this.doc.classes.includes([email, doc.id].join("/"))) {
-            class_data.name =
-              "[JOINED] " +
-              (class_data.period ? "P" + class_data.period + " - " : "") + // support for legacy names
-              class_data.name;
-            class_data.is_joined = true;
+            class_data.name = "[JOINED] " + class_data.name;
           }
           classes.push(class_data);
         });
@@ -464,12 +464,14 @@ export const useMainStore = defineStore({
     async add_class(teacher_email, class_id, class_name, class_period) {
       if (!this.doc) return;
       if (!class_id) return;
-      if (this.doc.classes.includes(class_id)) return;
-      this.doc.classes.push([teacher_email, class_id].join("/"));
+      console.log(class_id);
+      let class_key = [teacher_email, class_id].join("/");
+      if (this.doc.classes.includes(class_key)) return;
+      this.doc.classes.push(class_key);
       await this.update_remote();
       new SuccessToast(`Added "P${class_period} - ${class_name}" to your classes`, 2000);
-      // redirect to /portal
-      router.push("/portal");
+      // return new success promise
+      return Promise.resolve();
     },
     async create_class(class_obj) {
       _statuslog("🔨 Creating class", class_obj);

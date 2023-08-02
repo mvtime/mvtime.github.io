@@ -17,7 +17,15 @@
           :style="{ '--color-class': class_obj.color, '--color-class-alt': class_obj.color + '40' }"
           :class="{ filter_active: filtered_classes.includes(class_obj.id) }"
         >
-          <div class="class_swatch" title="Remove Class" @click="store.remove_class(class_obj.id)">
+          <div
+            class="class_swatch"
+            title="Remove Class"
+            @click="
+              store.remove_class(class_obj.id);
+              $emit('clear_filters');
+              $event.stopPropagation();
+            "
+          >
             <div class="class_swatch__icon"></div>
           </div>
 

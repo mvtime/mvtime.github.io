@@ -1,10 +1,10 @@
 <template>
-  <main class="onboarding">
+  <div class="onboarding">
     <header class="modal_header">
       <h2 class="header_style modal_header_title">Welcome to MVTime</h2>
     </header>
     <div class="overlay_contents">
-      <div class="overlay_contents_text">{{ name }} let's get you set up with your first class</div>
+      <div class="overlay_contents_text">{{ name }} Let's get you set up with your first class</div>
       <div class="inputs_row">
         <input
           v-model="teacher_email"
@@ -36,23 +36,20 @@
       </div>
     </div>
     <div class="bottom_actions">
-      <button class="back_action" @click="$router.push('/portal')">Skip</button>
+      <button class="back_action" @click="$emit('close')">Skip</button>
       <div class="flex_spacer"></div>
-      <button
-        class="continue_action"
-        @click="store.add_class(teacher_email, class_id, class_name)"
-        :disabled="!teacher_email || !class_id"
-      >
+      <button class="continue_action" @click="add_class" :disabled="!teacher_email || !class_id">
         Add Class
       </button>
     </div>
-  </main>
+  </div>
 </template>
 
 <script>
 import { useMainStore } from "@/store";
 export default {
   name: "OnboardingView",
+  emits: ["close"],
   data() {
     return {
       teacher_email: "",
@@ -93,6 +90,13 @@ export default {
   mounted() {
     // focus
     this.$refs.teacher_email.focus();
+  },
+  methods: {
+    add_class() {
+      this.store.add_class(this.teacher_email, this.class_id, this.class_name).then(() => {
+        this.$emit("close");
+      });
+    },
   },
 };
 </script>
