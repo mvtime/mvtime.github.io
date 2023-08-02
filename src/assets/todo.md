@@ -19,14 +19,31 @@
 - Accounts
   - allow connected personal / non-school email
   - create prefs screen / email prefs saving
-- Non-User-Facing
-  - cleanup code / write docs (+doctests?)
 - Surveys
   - make a way for users to see their own responses over time
     - include major assignments in this timeline
+- Emails
+  - setup cloud functions to send daily(?) emails
+  - ~~setup email server~~
 - Features / Timeline
   - create a timeline / overall plan
-  - work with Aarush on large features before the beginning of the year
+    - this page should be sufficient in the meantime
+  - work on large features before the year starts
+    - finish surveys
+      - weekly
+      - ~~daily~~
+    - finish onboarding
+      - pre-set classes
+      - ui tutorial
+      - ~~add first class~~
+      - ~~join modal~~
+    - finish emails
+      - cloud functions
+      - ~~mail server~~
+      - ~~send from firebase doc~~
+    - finish personal account connection
+- Non-User-Facing
+  - cleanup code / write docs (+doctests?)
 
 ## Specific milestones / tasks
 
@@ -38,18 +55,21 @@
   - ~~join form -> add classes~~
 - Make art assets
   - implement transitions
-  - implement animations: lottiefiles?
-  - looking good in a proto doesn't mean it'll feel nice to use
+    - between pages
+    - ~~for modals~~
+  - implement animations
+    - lottiefiles?
+    - ~~loading imgs~~
   - ~~Create promotional materials~~
     - ~~update og:img~~
     - ~~create public/img/promo imgs~~
   - ~~Create contact page~~
     - ~~fun lighthearted art stuff~~
-- ~~Create survey / check-in modal~~
-  - very aesthetic-based, bright, should feel fun to use
+- Create survey / check-in modal
+  - add graphics / illustrations (on weekly at least)
   - time-based variations
-    - on mondays, mandatory for first use
-    - ~~during the week, recommended, short non-intrusive~~
+    - on mondays, more in-depth, before first use
+    - ~~during the week, short non-intrusive~~
 - Better prefs
   - save theme under prefs, rather than its own key
   - setup email prefs in onboarding

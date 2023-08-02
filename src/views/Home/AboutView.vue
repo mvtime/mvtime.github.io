@@ -46,11 +46,14 @@
       issues. <br /><br />
       MV Test Tracker exists to help everyone involved in the testing proccess to make better use of
       their time, and to remove as much the stress and uncertainty around it as possible. Our tool
-      is made for <i>you</i>, and your feedback and ideas are an essencial part of our mission.
-      <br /><br />
+      is made for <i>you</i>, and your feedback and ideas are an essencial part of our mission. We'd
+      love for you to be involved in the development process, you can see what we're working on
+      <router-link to="/roadmap">here</router-link>! <br /><br />
       Thank you for your support,
       <br />
-      <b>The MV Test Tracker Team</b>
+      <b class="team-signature"
+        ><router-link to="/contact">The MV Test Tracker Team</router-link></b
+      >
     </p>
   </main>
 </template>
@@ -85,5 +88,9 @@ main.about > hr {
   font-family: Lato, Inter, sans-serif;
   width: 100%;
   max-width: 1000px;
+}
+.team-signature a {
+  /* color: var(--color-text); */
+  text-decoration: none;
 }
 </style>

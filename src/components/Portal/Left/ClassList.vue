@@ -1,7 +1,12 @@
 <template>
   <div class="class_list">
-    <div class="class_list__not_empty">
-      <h5 @click="$emit('clear_filters')" title="Click to clear filters">Classes</h5>
+    <div class="class_list__not_empty" :class="{ filtering: !!filtered_classes.length }">
+      <h5
+        @click="$emit('clear_filters')"
+        :title="filtered_classes.length ? 'Click to clear filters' : ''"
+      >
+        Classes
+      </h5>
       <hr class="class_list_hr" />
       <div class="classes_container" :class="{ filtering: !!filtered_classes.length }">
         <div
@@ -83,7 +88,7 @@ h5 {
   border-radius: 8px;
   user-select: none;
 }
-h5:hover {
+.filtering h5:hover {
   background-color: var(--color-on-bg);
 }
 .class_list_hr {
