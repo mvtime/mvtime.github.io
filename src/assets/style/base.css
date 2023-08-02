@@ -306,6 +306,14 @@ img[lazy="loading"],
 img.loading_icon {
   content: url(@/assets/img/placeholder/load_light.png);
 }
+/* loading bg for non-images */
+.loading_bg {
+  background-image: url(@/assets/img/placeholder/load_light.png) !important;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+  color: #00000000 !important;
+}
 
 #themed_body[_theme="dark"] img[lazy="error"],
 #themed_body[_theme="dark"] img.error_icon {

@@ -81,7 +81,8 @@
       <div class="flex_spacer"></div>
       <button
         class="continue_action"
-        @click="store.add_task(task, task_classes)"
+        :class="{ loading_bg: loading }"
+        @click="add_task"
         :disabled="!task.name || !task.date || !task_classes.length"
       >
         Add {{ task.type }}
@@ -94,6 +95,7 @@
 import { useMainStore } from "@/store";
 export default {
   name: "AddTaskView",
+  emits: ["close"],
   data() {
     return {
       task: {
@@ -107,6 +109,7 @@ export default {
         text: "",
         path: "",
       },
+      loading: false,
     };
   },
   computed: {
@@ -145,6 +148,18 @@ export default {
         text: "",
         path: "",
       };
+    },
+    add_task() {
+      this.loading = true;
+      this.store
+        .add_task(this.task, this.task_classes)
+        .then(() => {
+          this.$emit("close");
+        })
+        .catch((err) => {
+          this.loading = false;
+          console.error(err);
+        });
     },
   },
 };

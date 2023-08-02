@@ -35,7 +35,7 @@ provider.setCustomParameters({
 
 // import router
 import router from "../router";
-function validAccount(userEmail) {
+function validOrgAccount(userEmail) {
   return userEmail.split("@")[1] == "mvla.net";
 }
 // get date in local time but with ISO format
@@ -78,6 +78,12 @@ export const useMainStore = defineStore({
   },
   // store getters
   getters: {
+    linked_accounts() {
+      if (!this.user || !this.doc) return [];
+      // get all linked accounts from doc.linked
+      return this.doc.linked || [];
+    },
+    // other
     get_theme() {
       // get local
       let local_theme = this.theme || localStorage.getItem("theme");
@@ -182,6 +188,81 @@ export const useMainStore = defineStore({
     },
   },
   actions: {
+    async link_account(email) {
+      if (!this.user || !this.doc) return;
+      // exclude empty or mvla emails
+      if (!email || validOrgAccount(email) || !email.includes("@")) {
+        new WarningToast("Please enter a valid non-mvla email", 2000);
+        return;
+      }
+      if (this.user.email == email) {
+        new WarningToast("You can't link your own account", 2000);
+        return;
+      }
+
+      // check if email is already linked (has entry with matching .email)
+      if (this.linked_accounts.includes(email)) {
+        new WarningToast("This account is already linked", 2000);
+        return;
+      }
+      // add to doc.linked
+      this.doc.linked = this.doc.linked ? this.doc.linked : [];
+
+      // add email to queue
+      let email_queue = collection(db, "mail");
+      try {
+        let sent_email = await addDoc(email_queue, {
+          to: email,
+          cc: this.user.email,
+          from: `${this.doc.name} via MV Test Tracker <mail@mvtt.app>`,
+          fromname: this.doc.name + " via MV Test Tracker",
+          template: {
+            name: "link_invite",
+            data: {
+              sender_name: this.doc.name.split(" ")[0],
+              sender_uid: this.user.uid,
+            },
+          },
+        });
+        // wait for the email document to have keys .delivery.attempts > 0 and .delivery.error == null
+        let email_doc_ref = doc(email_queue, sent_email.id);
+        let email_doc = await getDoc(email_doc_ref);
+        let checks = 0;
+        while (!email_doc.exists() || (!!email_doc.data()?.delivery?.attempts == 0 && checks < 3)) {
+          await new Promise((resolve) => setTimeout(resolve, (2 ^ checks) * 1000));
+          email_doc = await getDoc(email_doc_ref);
+          checks++;
+        }
+        if (
+          !email_doc.data()?.delivery?.attempts ||
+          !email_doc.data()?.delivery?.info?.accepted?.includes(email)
+        ) {
+          _statuslog("📧 Email failed to send", email_doc.data());
+          throw "Email failed to send";
+        }
+
+        // update remote
+        this.doc.linked.push(email);
+        await this.update_remote();
+        new SuccessToast(
+          `Sent email to ${email}, you'll receive a copy at ${this.user.email}`,
+          4000
+        );
+      } catch (err) {
+        new ErrorToast(`Couldn't invite "${email}"`, err, 2000);
+      }
+    },
+    async unlink_account(email) {
+      if (!this.user) return;
+      // if exists in userdoc.linked, remove and save
+      if (this.doc.linked.includes(email)) {
+        this.doc.linked = this.doc.linked.filter((e) => e != email);
+        await this.update_remote();
+        new SuccessToast(`Removed ${email} from your linked accounts`, 2000);
+      } else {
+        new WarningToast(`${email} is not linked to this account`, 2000);
+      }
+    },
     refresh_timeout(delay) {
       // refresh listener timeout if user is logged in
       if (!this.user) return;
@@ -298,7 +379,7 @@ export const useMainStore = defineStore({
       new SuccessToast("Removed class", 2000);
     },
     set_user(user) {
-      if (!user.email || !validAccount(user.email)) {
+      if (!user.email || !validOrgAccount(user.email)) {
         auth.signOut();
         new WarningToast("Please use your MVLA email to log in", 2000);
         this.clear();
@@ -347,7 +428,7 @@ export const useMainStore = defineStore({
       // if electron, use redirect, otherwise, use popup
       await (isElectron ? signInWithRedirect(auth, provider) : signInWithPopup(auth, provider))
         .then(() => {
-          if (!this.user || !this.user.email || !validAccount(this.user.email)) return;
+          if (!this.user || !this.user.email || !validOrgAccount(this.user.email)) return;
           new Toast(
             "Logged in as " + this.user.displayName + "!",
             "default",
@@ -431,7 +512,7 @@ export const useMainStore = defineStore({
     },
     async get_classes_by_email(email) {
       this.loaded_email = null;
-      if (!email || !validAccount(email)) {
+      if (!email || !validOrgAccount(email)) {
         this.loaded_classes = null;
         this.loaded_email = email;
         return;
@@ -501,41 +582,45 @@ export const useMainStore = defineStore({
       }
     },
     async add_task(test_obj, test_classes) {
-      if (!test_obj.name) {
-        new ErrorToast("Please enter a test name", 2000);
-        return;
-      } else if (!test_classes || test_classes.length == 0) {
-        new ErrorToast("Please select at least one class", 2000);
-        return;
-      }
-      // use firebase array add to add test to each class
-      let batch = writeBatch(db);
-      let collection_ref = collection(db, "classes");
-      // get doc ref for user email
-      let teacher_doc_ref = doc(collection_ref, this.user.email);
-      let teacher_classes_ref = collection(teacher_doc_ref, "classes");
-      test_classes.forEach((class_id) => {
-        // fix any class_id that has the teacher email in it
-        let displayed_class_id = class_id;
-        class_id = class_id.split("/")[class_id.split("/").length - 1];
-        // use this.teacher.collection_ref to get class collection ref, then update the class documents within
-        let class_ref = doc(teacher_classes_ref, class_id);
-        test_obj.class_id = displayed_class_id;
-        batch.update(class_ref, {
-          tasks: arrayUnion(test_obj),
+      try {
+        if (!test_obj.name) {
+          new ErrorToast("Please enter a test name", 2000);
+          return;
+        } else if (!test_classes || test_classes.length == 0) {
+          new ErrorToast("Please select at least one class", 2000);
+          return;
+        }
+        // use firebase array add to add test to each class
+        let batch = writeBatch(db);
+        let collection_ref = collection(db, "classes");
+        // get doc ref for user email
+        let teacher_doc_ref = doc(collection_ref, this.user.email);
+        let teacher_classes_ref = collection(teacher_doc_ref, "classes");
+        test_classes.forEach((class_id) => {
+          // fix any class_id that has the teacher email in it
+          let displayed_class_id = class_id;
+          class_id = class_id.split("/")[class_id.split("/").length - 1];
+          // use this.teacher.collection_ref to get class collection ref, then update the class documents within
+          let class_ref = doc(teacher_classes_ref, class_id);
+          test_obj.class_id = displayed_class_id;
+          batch.update(class_ref, {
+            tasks: arrayUnion(test_obj),
+          });
         });
-      });
-      await batch.commit();
-      // rerun get_tasks to update local data, discard result
-      await this.get_classes();
+        await batch.commit();
+        // rerun get_tasks to update local data, discard result
+        await this.get_classes();
 
-      new SuccessToast(
-        `Added test "${test_obj.name}" to ${test_classes.length} class${
-          test_classes.length == 1 ? "" : "es"
-        }`,
-        2000
-      );
-      router.push("/portal");
+        new SuccessToast(
+          `Added test "${test_obj.name}" to ${test_classes.length} class${
+            test_classes.length == 1 ? "" : "es"
+          }`,
+          2000
+        );
+        return Promise.resolve();
+      } catch (e) {
+        return Promise.reject(e);
+      }
     },
     async delete_task(test_obj) {
       // retrieve class reference
