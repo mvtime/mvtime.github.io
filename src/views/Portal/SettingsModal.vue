@@ -95,13 +95,20 @@ export default {
       return useMainStore();
     },
     ready_to_link() {
-      return this.new_email && !this.store.linked_accounts?.includes(this.new_email);
+      return (
+        !this.loading &&
+        this.new_email &&
+        this.new_email.includes("@") &&
+        this.new_email.split("@")[1].includes(".")
+      );
     },
   },
   methods: {
     save() {
-      // save contents
-      this.$emit("close");
+      // close the modal if the save was successful
+      if (!this.loading) {
+        this.$emit("close");
+      }
     },
     link_account() {
       this.changed = true;

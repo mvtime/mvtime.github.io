@@ -227,9 +227,12 @@ export const useMainStore = defineStore({
         // wait for the email document to have keys .delivery.attempts > 0 and .delivery.error == null
         let email_doc_ref = doc(email_queue, sent_email.id);
         let email_doc = await getDoc(email_doc_ref);
-        let checks = 0;
-        while (!email_doc.exists() || (!!email_doc.data()?.delivery?.attempts == 0 && checks < 3)) {
-          await new Promise((resolve) => setTimeout(resolve, (2 ^ checks) * 1000));
+        let checks = 1;
+        while (
+          !email_doc.exists() ||
+          (!!email_doc.data()?.delivery?.attempts == 0 && checks <= 3)
+        ) {
+          await new Promise((resolve) => setTimeout(resolve, (2 ^ checks) * 2000));
           email_doc = await getDoc(email_doc_ref);
           checks++;
         }
