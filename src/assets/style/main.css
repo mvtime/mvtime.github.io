@@ -126,6 +126,7 @@ h3.secondary_home_text {
 }
 .button_pointer_text {
   background-color: var(--color-button-display);
+  color: var(--color-on-overlay-input);
   padding: var(--padding-button-display);
   display: inline-block;
   border-radius: var(--radius-button-display);
@@ -145,9 +146,13 @@ h3.secondary_home_text {
   height: 25px;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 5px;
   height: 25px;
   transform: translateY(25%);
+}
+.button_pointer_icon .icon {
+  width: 25px;
+  height: 25px;
 }
 
 /* theme button */
@@ -175,9 +180,9 @@ h3.secondary_home_text {
 .theme_icon {
   transition: transform 0.5s cubic-bezier(0.49, -0.02, 0, 1.38);
 }
-[_theme="dark"].theme_button .theme_icon {
+/* [_theme="dark"] .theme_button .theme_icon {
   transform: rotate(360deg);
-}
+} */
 .theme_button > * {
   flex-shrink: 0;
 }
@@ -211,4 +216,5 @@ h3.secondary_home_text {
 [_theme="dark"] .theme_icon {
   background-image: url(@/assets/img/general/portal/theme/dark.png);
   background-image: url(@/assets/img/general/portal/theme/dark.svg);
+  transform: rotate(360deg);
 }

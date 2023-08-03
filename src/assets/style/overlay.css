@@ -254,12 +254,14 @@ select.styled_obj {
   border-radius: var(--radius-overlay-link);
   display: flex;
   flex-flow: row nowrap;
+  align-items: center;
   gap: 10px;
   width: 100%;
 }
 .styled_line_links__account .styled_line_links__remove {
   height: 20px;
   flex-basis: 20px;
+  margin-left: 2.5px;
   cursor: pointer;
   user-select: none;
   background-color: var(--color-overlay-input);
@@ -276,6 +278,7 @@ select.styled_obj {
   text-overflow: hidden;
   white-space: nowrap;
   text-align: center;
+  line-height: 25px;
 }
 .styled_line_links__link:hover {
   background-color: var(--color-overlay-link-hover);

@@ -55,7 +55,7 @@
       <div class="overlay_contents_text">
         To change your theme, use the
         <span class="button_pointer_text button_pointer_icon">
-          <div class="theme_icon"></div>
+          <div class="theme_icon icon"></div>
           Switch Theme
         </span>
         button on the left sidebar
