@@ -97,6 +97,10 @@ h3.secondary_home_text {
   margin-right: 0px;
 }
 
+.small-action-btn.linked {
+  background-image: url(@/assets/img/general/user-linked.png);
+}
+
 /* override toast min width */
 @media (min-width: 500px) {
   .toast {
