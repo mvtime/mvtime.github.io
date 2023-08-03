@@ -78,7 +78,7 @@ export default {
   methods: {
     close() {
       this.$router.push(
-        this.store?.user && this.store?.doc?.join_form && this.$route?.query?.redirect
+        this.store?.user && this.store?.account_doc?.join_form && this.$route?.query?.redirect
           ? this.$route.query.redirect
           : "/"
       );

@@ -151,8 +151,8 @@ export default {
       // if logged in and not store.doc.join_form, redirect to join form
       if (
         this.store?.user &&
-        this.store?.doc &&
-        !this.store?.doc?.join_form &&
+        this.store?.account_doc &&
+        !this.store?.account_doc?.join_form &&
         !this.store.personal_account
       ) {
         this.$router.push({
