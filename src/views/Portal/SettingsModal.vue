@@ -47,7 +47,7 @@
             />
             <button
               class="styled_links_add__action"
-              @click="store.personal_account ? null : link_account"
+              @click="link_account"
               :disabled="!ready_to_link"
             >
               {{ store.personal_account ? "UNAVALIABLE" : "Add" }}
@@ -115,18 +115,20 @@ export default {
       }
     },
     link_account() {
-      this.changed = true;
-      this.loading = true;
-      this.store
-        .link_account(this.new_email)
-        .then(() => {
-          this.loading = false;
-          this.new_email = "";
-        })
-        .catch(() => {
-          this.loading = false;
-          this.changed = false;
-        });
+      if (!this.store.personal_account) {
+        this.changed = true;
+        this.loading = true;
+        this.store
+          .link_account(this.new_email)
+          .then(() => {
+            this.loading = false;
+            this.new_email = "";
+          })
+          .catch(() => {
+            this.loading = false;
+            this.changed = false;
+          });
+      }
     },
     unlink_account(email) {
       this.changed = true;

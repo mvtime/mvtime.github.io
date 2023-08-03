@@ -532,6 +532,7 @@ export const useMainStore = defineStore({
         doc_ref: null,
         collection_ref: null,
       };
+      localStorage.removeItem("MVTT_app_state");
       // if page requires auth, redirect to home
       if (router.currentRoute?.value?.meta?.requiresAuth) {
         router.push("/");
