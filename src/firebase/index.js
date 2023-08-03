@@ -41,6 +41,8 @@ function authChangeAction(user) {
     store.set_user(user);
     // unsubscribe from any prev
     unsubscribe();
+    // if not signed in, exit
+    if (!store.user) return;
     // setup onSnapshot listener for user data
     setupSnapshot(user.uid);
     timeout = startTimeout();
@@ -66,7 +68,15 @@ function setupSnapshot(uid) {
         store.create_doc();
         return;
       }
-      store.account_doc = listening_doc.data();
+      let listening_doc_data = listening_doc.data();
+      // set based on id
+      if (store.user && store.user?.uid == listening_doc_data.id) {
+        // set the account_doc
+        store.account_doc = listening_doc_data;
+      } else {
+        store.linked_account_doc = listening_doc_data;
+      }
+
       // run get_classes() to update classes
       store.get_classes();
     },
@@ -109,7 +119,7 @@ function refreshTimeout(delay) {
   const store = useMainStore();
   if (!subscribed) {
     // setup snapshot and pull data
-    setupSnapshot(store.user.uid);
+    setupSnapshot(store.personal_account ? store.account_doc.linked_to : store.user.uid);
     _statuslog("⬥ Resubscribed to remote changes");
   }
   clearTimeout(timeout);

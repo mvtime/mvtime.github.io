@@ -30,7 +30,7 @@ auth.useDeviceLanguage();
 // constrict to only mvla.net emails
 provider.setCustomParameters({
   login_hint: "username@mvla.net",
-  hd: "mvla.net",
+  // hd: "mvla.net",
 });
 
 // import router
@@ -66,6 +66,7 @@ export const useMainStore = defineStore({
     return (state = {
       user: null,
       account_doc: null,
+      linked_account_doc: null,
       classes: [],
       loaded_email: null,
       loaded_classes: null,
@@ -80,9 +81,9 @@ export const useMainStore = defineStore({
   // store getters
   getters: {
     linked_accounts() {
-      if (!this.user || !this.account_doc) return [];
+      if (!this.user || !this.active_doc) return [];
       // get all linked accounts from doc.linked
-      return this.account_doc.linked || [];
+      return this.active_doc.linked || [];
     },
     // other
     get_theme() {
@@ -188,9 +189,9 @@ export const useMainStore = defineStore({
       return last == "mvla.net" && !/\d/.test(first);
     },
     done_daily_survey() {
-      if (!this.account_doc) return false;
+      if (!this.active_doc) return false;
       if (this.is_teacher) return true;
-      let isDone = this.account_doc.done_surveys?.includes(today);
+      let isDone = this.active_doc.done_surveys?.includes(today);
       return isDone;
     },
     active_ref() {
@@ -201,6 +202,14 @@ export const useMainStore = defineStore({
     },
   },
   actions: {
+    set_active(data) {
+      if (!data) return;
+      if (this.personal_account) {
+        this.linked_account_doc = data;
+      } else {
+        this.account_doc = data;
+      }
+    },
     async get_linked_account(uid) {
       try {
         if (!uid) throw "No account code provided";
@@ -216,6 +225,10 @@ export const useMainStore = defineStore({
     },
     async link_account_code(code) {
       if (!code) return;
+      if (!this.personal_account) {
+        new WarningToast("This account is a primary account and cannot be linked", 3000);
+        return;
+      }
       try {
         let linked_doc = await this.get_linked_account(code);
         if (!linked_doc) throw "Account doesn't exist or you haven't been invited";
@@ -229,24 +242,28 @@ export const useMainStore = defineStore({
       }
     },
     async link_account(email) {
-      if (!this.user || !this.account_doc) return;
+      if (!this.user || !this.active_doc) return;
+      if (this.personal_account) {
+        new WarningToast("This account is already linked!", 2000);
+      }
       // exclude empty or mvla emails
       if (!email || validOrgAccount(email) || !email.includes("@")) {
         new WarningToast("Please enter a valid non-mvla email", 2000);
         return;
       }
-      if (this.user.email == email) {
-        new WarningToast("You can't link your own account", 2000);
-        return;
-      }
-
       // check if email is already linked (has entry with matching .email)
       if (this.linked_accounts.includes(email)) {
-        new WarningToast("This account is already linked", 2000);
+        new WarningToast("That account is already linked", 2000);
         return;
       }
       // add to doc.linked
-      this.account_doc.linked = this.account_doc.linked || [];
+      if (!this.active_doc.linked) {
+        if (this.personal_account) {
+          this.linked_account_doc.linked = [];
+        } else {
+          this.account_doc.linked = [];
+        }
+      }
 
       // add email to queue
       let email_queue = collection(db, "mail");
@@ -254,12 +271,12 @@ export const useMainStore = defineStore({
         let sent_email = await addDoc(email_queue, {
           to: email,
           cc: this.user.email,
-          from: `${this.account_doc.name} via MV Test Tracker <mail@mvtt.app>`,
-          fromname: this.account_doc.name + " via MV Test Tracker",
+          from: `${this.active_doc.name} via MV Test Tracker <mail@mvtt.app>`,
+          fromname: this.active_doc.name + " via MV Test Tracker",
           template: {
             name: "link_invite",
             data: {
-              sender_name: this.account_doc.name.split(" ")[0],
+              sender_name: this.active_doc.name.split(" ")[0],
               sender_uid: this.user.uid,
             },
           },
@@ -285,7 +302,11 @@ export const useMainStore = defineStore({
         }
 
         // update remote
-        this.account_doc.linked.push(email);
+        if (this.personal_account) {
+          this.linked_account_doc.linked.push(email);
+        } else {
+          this.account_doc.linked.push(email);
+        }
         await this.update_remote();
         new SuccessToast(`We notified ${email}, you'll receive a copy of the email too!`, 4000);
         return Promise.resolve();
@@ -298,8 +319,13 @@ export const useMainStore = defineStore({
       try {
         if (!this.user) return;
         // if exists in userdoc.linked, remove and save
-        if (this.account_doc.linked.includes(email)) {
-          this.account_doc.linked = this.account_doc.linked.filter((e) => e != email);
+        if (this.active_doc.linked.includes(email)) {
+          let filtered_linked = this.active_doc.linked.filter((e) => e != email);
+          if (this.personal_account) {
+            this.linked_account_doc.linked = filtered_linked;
+          } else {
+            this.account_doc.linked = filtered_linked;
+          }
           await this.update_remote();
           new SuccessToast(`Removed ${email} from your linked accounts`, 2000);
         } else {
@@ -329,7 +355,11 @@ export const useMainStore = defineStore({
     },
     async save_join_form(responses) {
       // wait for user doc to be created / exist then save responses to doc.join_form
-      this.account_doc.join_form = responses;
+      if (this.personal_account) {
+        this.linked_account_doc.join_form = responses;
+      } else {
+        this.account_doc.join_form = responses;
+      }
       await this.update_remote();
     },
     async save_daily_survey(responses) {
@@ -345,10 +375,14 @@ export const useMainStore = defineStore({
         await this.userLoginPromise();
       }
       // update user doc to have date in "done_surveys"
-      this.account_doc.done_surveys = this.account_doc?.done_surveys
-        ? this.account_doc.done_surveys
-        : [];
-      this.account_doc.done_surveys.push(today);
+      let updated_surveys = this.active_doc?.done_surveys ? this.active_doc.done_surveys : [];
+      updated_surveys.push(today);
+      if (this.personal_account) {
+        this.linked_account_doc.done_surveys = updated_surveys;
+      } else {
+        this.account_doc.done_surveys = updated_surveys;
+      }
+
       await this.update_remote();
       new SuccessToast("Saved daily survey", 2000);
     },
@@ -364,18 +398,22 @@ export const useMainStore = defineStore({
     },
     async get_classes() {
       // check for duplicates
-      if (this.account_doc?.classes) {
-        let unique = [...new Set(this.account_doc.classes)];
-        if (unique.length != this.account_doc.classes.length) {
-          this.account_doc.classes = unique;
+      if (this.active_doc?.classes) {
+        let unique = [...new Set(this.active_doc.classes)];
+        if (unique.length != this.active_doc.classes.length) {
+          if (this.personal_account) {
+            this.linked_account_doc.classes = unique;
+          } else {
+            this.account_doc.classes = unique;
+          }
           await this.update_remote();
           new WarningToast("Removed duplicate classes", 2000);
         }
       }
       // get all classes' data and combine into an array
-      if (!this.account_doc?.classes) return [];
+      if (!this.active_doc?.classes) return [];
       let classes = [];
-      for (let class_path of this.account_doc.classes) {
+      for (let class_path of this.active_doc.classes) {
         // split class path into teacher/uid
         let [teacher, class_id] = class_path.split("/");
         if (!teacher || !class_id) {
@@ -417,47 +455,75 @@ export const useMainStore = defineStore({
 
       this.classes = classes;
     },
-    async remove_invalid(class_id) {
-      this.account_doc.classes = this.account_doc.classes.filter((c) => c != class_id);
+    async remove_class_id_helper(class_id) {
+      let filtered_classes = this.active_doc.classes.filter((c) => c != class_id);
+      if (this.personal_account) {
+        this.linked_account_doc.classes = filtered_classes;
+      } else {
+        this.account_doc.classes = filtered_classes;
+      }
       await this.update_remote();
+    },
+    async remove_invalid(class_id) {
+      await this.remove_class_id_helper(class_id);
       new WarningToast(`Removed non-existent class "${class_id}"`, 2000);
     },
     async remove_class(class_id) {
-      this.account_doc.classes = this.account_doc.classes.filter((c) => c != class_id);
-      await this.update_remote();
+      await this.remove_class_id_helper(class_id);
       _statuslog("🗑️ Removed class from user's doc: " + class_id);
       new SuccessToast("Removed class", 2000);
     },
     set_user(user) {
-      if (
-        !user.email ||
-        (!validOrgAccount(user.email) &&
-          !this.personal_account &&
-          !(this.account_doc?.personal_account && this.account_doc?.linked_to))
-      ) {
-        auth.signOut();
-        new WarningToast("Please use your MVLA email to log in", 2000);
-        this.clear();
-        return;
-      }
-      this.user = user;
-      // if teacher, setup this.teacher refs
-      if (this.is_teacher) {
-        _statuslog("🏫 Running in teacher mode");
-        this.teacher.doc_ref = doc(db, "classes", this.user.email);
-        this.teacher.collection_ref = collection(this.teacher.doc_ref, "classes");
-      }
-      // if router has a redirect, go to it
-      if (
-        router.currentRoute?.value?.query?.redirect &&
-        !router.currentRoute?.value?.meta?.blockStandardRedirect
-      ) {
-        router.push(router.currentRoute?.value?.query?.redirect);
-      }
+      // load user doc to check .personal_account
+      getDoc(doc(db, "users", user.uid))
+        .then((doc) => {
+          if (doc.exists()) {
+            this.account_doc = doc.data();
+            this.personal_account = this.account_doc?.personal_account;
+          } else {
+            this.account_doc = null;
+            this.linked_account_doc = null;
+            this.personal_account = false;
+          }
+          if (
+            !user.email ||
+            (!validOrgAccount(user.email) &&
+              !this.personal_account &&
+              !(this.account_doc?.personal_account && this.account_doc?.linked_to))
+          ) {
+            auth.signOut();
+            new WarningToast("Please use your MVLA email to log in", 2000);
+            this.clear();
+            return;
+          }
+          this.user = user;
+          // if this is a personal account, get the associated linked account doc
+          if (this.personal_account) {
+            this.get_remote();
+          }
+          // if teacher, setup this.teacher refs
+          if (this.is_teacher) {
+            _statuslog("🏫 Running in teacher mode");
+            this.teacher.doc_ref = doc(db, "classes", this.user.email);
+            this.teacher.collection_ref = collection(this.teacher.doc_ref, "classes");
+          }
+          // if router has a redirect, go to it
+          if (
+            router.currentRoute?.value?.query?.redirect &&
+            !router.currentRoute?.value?.meta?.blockStandardRedirect
+          ) {
+            router.push(router.currentRoute?.value?.query?.redirect);
+          }
+        })
+        .catch(() => {
+          auth.signOut();
+          new WarningToast("Something went wrong loading your user data", 2000);
+        });
     },
     clear() {
       this.user = null;
       this.account_doc = null;
+      this.linked_account_doc = null;
       this.classes = [];
       this.loaded_email = null;
       this.loaded_classes = null;
@@ -555,9 +621,17 @@ export const useMainStore = defineStore({
     // set document data
     async get_remote() {
       // get doc from firebase
-      let account_doc = await getDoc(this.account_ref);
-      if (account_doc.exists()) {
-        this.account_doc = doc.data();
+      let active_doc = await getDoc(this.account_ref);
+      if (active_doc.exists()) {
+        this.set_active(active_doc.data());
+      } else if (this.personal_account) {
+        // linked account doesn't exist
+        _statuslog("🔗 Linked account doesn't exist, removing it and going home");
+        new WarningToast("Linked account doesn't exist, removing it and going home", 2000);
+        this.account_doc.linked_to = null;
+        await this.update_wrapper_acc_doc();
+        this.linked_account_doc = null;
+        router.push("/");
       } else {
         // if doc doesn't exist, create it
         await this.create_doc();
@@ -565,6 +639,7 @@ export const useMainStore = defineStore({
       }
     },
     async create_doc() {
+      _statuslog("📄 User document doesn't exist, creating new one...");
       new WarningToast("User document doesn't exist, creating new one...", 2000);
       this.account_doc = {
         name: this.user.displayName,
@@ -594,10 +669,10 @@ export const useMainStore = defineStore({
     },
     async create_teacher_doc() {
       // create teacher doc under (classes/teacher_email@mvla.net) with sub-collection (classes)
-      let teacher_ref = doc(db, "classes", this.user.email);
+      let teacher_ref = doc(db, "classes", this.active_doc.email || this.user.email);
       await setDoc(teacher_ref, {
-        name: this.user.displayName,
-        email: this.user.email,
+        name: this.active_doc.name || this.user.displayName,
+        email: this.active_doc.email || this.user.email,
       });
       this.teacher = {
         doc_ref: teacher_ref,
@@ -607,8 +682,11 @@ export const useMainStore = defineStore({
     },
     async update_remote() {
       // update remote doc
-      await setDoc(this.account_ref, this.account_doc, { merge: true });
+      await setDoc(this.active_ref, this.active_doc, { merge: true });
       _statuslog("⏶ Pushed changes to remote");
+    },
+    async update_wrapper_acc_doc() {
+      await setDoc(this.account_ref, this.account_doc, { merge: true });
     },
     async get_classes_by_email(email) {
       this.loaded_email = null;
@@ -630,7 +708,7 @@ export const useMainStore = defineStore({
             (class_data.period ? "P" + class_data.period + " - " : "") + class_data.name;
           class_data.is_joined = true;
           // if user already in class, change name to "[JOINED] name"
-          if (this.account_doc?.classes.includes([email, class_doc.id].join("/"))) {
+          if (this.active_doc?.classes.includes([email, class_doc.id].join("/"))) {
             class_data.name = "[JOINED] " + class_data.name;
           }
           classes.push(class_data);
@@ -643,12 +721,16 @@ export const useMainStore = defineStore({
       this.loaded_email = email;
     },
     async add_class(teacher_email, class_id, class_name, class_period) {
-      if (!this.account_doc?.classes) return;
+      if (!this.active_doc?.classes) return;
       if (!class_id) return;
       console.log(class_id);
       let class_key = [teacher_email, class_id].join("/");
-      if (this.account_doc.classes.includes(class_key)) return;
-      this.account_doc.classes.push(class_key);
+      if (this.active_doc.classes.includes(class_key)) return;
+      if (this.personal_account) {
+        this.linked_account_doc.classes.push(class_key);
+      } else {
+        this.account_doc.classes.push(class_key);
+      }
       await this.update_remote();
       new SuccessToast(`Added "P${class_period} - ${class_name}" to your classes`, 2000);
       // return new success promise
@@ -675,7 +757,12 @@ export const useMainStore = defineStore({
         // add class to user doc;
         new SuccessToast(`Created class "${class_obj.name}"`, 2000);
         _statuslog("🏫 class_doc_ref", class_doc_ref);
-        await this.add_class(this.user.email, class_doc_ref.id, class_obj.name, class_obj.period);
+        await this.add_class(
+          this.active_doc.email || this.user.email,
+          class_doc_ref.id,
+          class_obj.name,
+          class_obj.period
+        );
       } catch (e) {
         new ErrorToast("Couldn't create class", cleanError(e), 2000);
       }
