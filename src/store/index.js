@@ -51,7 +51,8 @@ export const useMainStore = defineStore({
     // setting up store
     if (
       localStorage.getItem("MVTT_app_state") &&
-      localStorage.getItem("MVTT_app_state") != "undefined"
+      localStorage.getItem("MVTT_app_state") != "undefined" &&
+      localStorage.getItem("MVTT_app_state") != "null"
     ) {
       try {
         _statuslog("↻ Loading state from local storage");
