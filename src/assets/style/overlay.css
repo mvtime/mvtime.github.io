@@ -282,7 +282,8 @@ select.styled_obj {
   text-align: center;
   line-height: 25px;
 }
-.styled_line_links__link:hover {
+.styled_line_links__link:hover,
+.styled_line_links__account.active {
   background-color: var(--color-overlay-link-hover);
 }
 /* links input */

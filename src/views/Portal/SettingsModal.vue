@@ -19,11 +19,13 @@
               <div
                 class="styled_line_links__account"
                 v-for="email in store.linked_accounts"
+                :class="{ active: store.personal_account && store.user.email == email }"
                 :key="email"
               >
                 <div
                   class="styled_line_links__remove"
                   @click="unlink_account(email)"
+                  v-if="!store.personal_account"
                   title="Remove Account"
                 >
                   <div class="remove_icon"></div>
@@ -41,13 +43,14 @@
               @update="fix_email"
               v-model="new_email"
               placeholder="Personal Email"
+              :disabled="store.personal_account || loading"
             />
             <button
               class="styled_links_add__action"
-              @click="link_account"
+              @click="store.personal_account ? null : link_account"
               :disabled="!ready_to_link"
             >
-              Add
+              {{ store.personal_account ? "UNAVALIABLE" : "Add" }}
             </button>
           </div>
         </div>
@@ -62,17 +65,17 @@
       </div>
     </div>
     <div class="bottom_actions">
-      <button class="back_action" @click="$emit('close')">
+      <button v-if="!store.personal_account" class="back_action" @click="$emit('close')">
         {{ changed || loading ? "Cancel" : "Close" }}
       </button>
       <div class="flex_spacer"></div>
       <button
         class="continue_action"
         :class="{ loading_bg: loading }"
-        :disabled="!changed"
-        @click="save"
+        :disabled="!store.personal_account && !changed"
+        @click="store.personal_account ? $emit('close') : save"
       >
-        Save
+        {{ store.personal_account ? "Close" : "Link" }}
       </button>
     </div>
   </div>
