@@ -17,8 +17,9 @@
   - fix overflow on very small screens
   - show back button?
 - Accounts
-  - allow connected personal / non-school email
   - create prefs screen / email prefs saving
+  - ~~allow connected personal / non-school email~~
+    - ~~settings from portal / email links~~
 - Surveys
   - make a way for users to see their own responses over time
     - include major assignments in this timeline
@@ -39,10 +40,11 @@
       - ~~join modal~~
     - finish emails
       - cloud functions
+      - ~~link personal account email~~
       - ~~email template~~
       - ~~mail server~~
       - ~~send from firebase doc~~
-    - finish personal account connection
+    - ~~finish personal account connection~~
 - Non-User-Facing
   - cleanup code / write docs (+doctests?)
 
