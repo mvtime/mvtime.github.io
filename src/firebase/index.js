@@ -9,7 +9,7 @@ import { getAnalytics } from "firebase/analytics";
 // firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDGqqhApln4pxm4EynPCSkfwyK8aopjfCk",
-  authDomain: "mvtrack.firebaseapp.com",
+  authDomain: "auth.mvtt.app",
   projectId: "mvtrack",
   storageBucket: "mvtrack.appspot.com",
   messagingSenderId: "1070634963357",
