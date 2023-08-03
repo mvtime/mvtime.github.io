@@ -42,7 +42,7 @@ function authChangeAction(user) {
     // unsubscribe from any prev
     unsubscribe();
     // setup onSnapshot listener for user data
-    setupSnapshot(user, store);
+    setupSnapshot(user.uid);
     timeout = startTimeout();
     // rewrite the above with firebase 9 functions
   } else {
@@ -50,10 +50,10 @@ function authChangeAction(user) {
   }
 }
 
-function setupSnapshot(user) {
+function setupSnapshot(uid) {
   const store = useMainStore();
   unsub = onSnapshot(
-    doc(db, "users", user.uid),
+    doc(db, "users", uid),
     { includeMetadataChanges: true },
     (doc) => {
       if (doc.metadata.hasPendingWrites) {
@@ -109,7 +109,7 @@ function refreshTimeout(delay) {
   const store = useMainStore();
   if (!subscribed) {
     // setup snapshot and pull data
-    setupSnapshot(store.user);
+    setupSnapshot(store.user.uid);
     _statuslog("⬥ Resubscribed to remote changes");
   }
   clearTimeout(timeout);

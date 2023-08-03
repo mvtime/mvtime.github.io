@@ -80,6 +80,7 @@
 
 <script>
 import { useMainStore } from "@/store";
+import "@/assets/style/overlay.css";
 export default {
   name: "SettingsModal",
   emits: ["close"],
@@ -166,5 +167,8 @@ export default {
 .add_button[disabled] {
   opacity: 0.5;
   cursor: not-allowed;
+}
+.styled_line_links {
+  gap: 10px;
 }
 </style>

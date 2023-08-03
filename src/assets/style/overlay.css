@@ -83,12 +83,14 @@
   margin-left: calc(var(--padding-overlay) / 2);
 }
 .bottom_actions > *:last-child,
-.bottom_actions > .primary_styled {
+.bottom_actions > .primary_styled,
+.inputs_row .styled_input.primary_styled {
   background-color: var(--color-overlay-action);
   color: var(--color-on-overlay-action);
 }
 .bottom_actions > *:last-child[disabled],
-.bottom_actions > .primary_styled[disabled] {
+.bottom_actions > .primary_styled[disabled],
+.inputs_row .styled_input.primary_styled[disabled] {
   cursor: not-allowed;
   background-color: var(--color-overlay-action-disabled);
   color: var(--color-on-overlay-action-disabled);

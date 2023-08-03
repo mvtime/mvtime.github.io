@@ -100,7 +100,7 @@ export default {
   methods: {
     do_survey() {
       // change to survey page, with query redirect to current page
-      this.$router.push({
+      this.$router.replace({
         name: "daily",
         query: {
           redirect: this.$route.fullPath,
@@ -149,7 +149,12 @@ export default {
     },
     check_and_do_join() {
       // if logged in and not store.doc.join_form, redirect to join form
-      if (this.store?.user && this.store?.doc && !this.store?.doc?.join_form) {
+      if (
+        this.store?.user &&
+        this.store?.doc &&
+        !this.store?.doc?.join_form &&
+        !this.store.personal_account
+      ) {
         this.$router.push({
           name: "join",
           query: {

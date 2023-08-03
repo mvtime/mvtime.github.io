@@ -58,14 +58,14 @@ export const useMainStore = defineStore({
         state = JSON.parse(localStorage.getItem("MVTT_app_state"));
         return state;
       } catch (err) {
-        console.error("⟳ Error parsing local storage state", err);
+        _statuslog("⟳ Error parsing local storage state", err);
       }
     }
     // if no local storage, set up store
     _statuslog("🔨 Setting up store from scratch");
     return (state = {
       user: null,
-      doc: null,
+      account_doc: null,
       classes: [],
       loaded_email: null,
       loaded_classes: null,
@@ -74,25 +74,26 @@ export const useMainStore = defineStore({
         collection_ref: null,
       },
       theme: null,
+      personal_account: false,
     });
   },
   // store getters
   getters: {
     linked_accounts() {
-      if (!this.user || !this.doc) return [];
+      if (!this.user || !this.account_doc) return [];
       // get all linked accounts from doc.linked
-      return this.doc.linked || [];
+      return this.account_doc.linked || [];
     },
     // other
     get_theme() {
       // get local
       let local_theme = this.theme || localStorage.getItem("theme");
       // get userdoc theme
-      let userdoc_theme = this.doc?.theme;
+      let account_doc_theme = this.account_doc?.theme;
       // set new to system by default
       let new_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
       // if not userdoc theme, use local theme, and set userdoc theme to local theme
-      if (!userdoc_theme) {
+      if (!account_doc_theme) {
         if (local_theme) {
           // set to local if local exists
           new_theme = local_theme;
@@ -100,18 +101,18 @@ export const useMainStore = defineStore({
           // set to system if local doesn't exist, and set update local
           localStorage.setItem("theme", new_theme);
         }
-        if (this.doc) {
-          this.doc.theme = new_theme;
+        if (this.account_doc) {
+          this.account_doc.theme = new_theme;
           this.update_remote();
         }
         return local_theme || "light";
       }
       // if userdoc theme, use userdoc theme, and set local theme to userdoc theme
       else {
-        if (local_theme != userdoc_theme) {
-          localStorage.setItem("theme", userdoc_theme);
+        if (local_theme != account_doc_theme) {
+          localStorage.setItem("theme", account_doc_theme);
         }
-        return userdoc_theme ? userdoc_theme : "light";
+        return account_doc_theme ? account_doc_theme : "light";
       }
     },
     non_recent_signin() {
@@ -133,9 +134,15 @@ export const useMainStore = defineStore({
       let diff = new Date().getTime() - creation_time.getTime();
       return diff < 12 * 60 * 60 * 1000;
     },
-    userdoc_ref() {
+    // doc refs
+    account_ref() {
       if (!this.user) return null;
       return doc(db, "users", this.user.uid);
+    },
+    linked_account_ref() {
+      if (!this.user || !this.account_doc) return null;
+      if (!this.account_doc.linked_to) return null;
+      return doc(db, "users", this.account_doc.linked_to);
     },
     get_tasks() {
       // get all the classes with this.classes(), then get all their tasks and combine them into an array
@@ -181,15 +188,48 @@ export const useMainStore = defineStore({
       return last == "mvla.net" && !/\d/.test(first);
     },
     done_daily_survey() {
-      if (!this.doc) return false;
+      if (!this.account_doc) return false;
       if (this.is_teacher) return true;
-      let isDone = this.doc.done_surveys?.includes(today);
+      let isDone = this.account_doc.done_surveys?.includes(today);
       return isDone;
+    },
+    active_ref() {
+      return this.personal_account ? this.linked_account_ref : this.account_ref;
+    },
+    active_doc() {
+      return this.personal_account ? this.linked_account_doc : this.account_doc;
     },
   },
   actions: {
+    async get_linked_account(uid) {
+      try {
+        if (!uid) throw "No account code provided";
+        // get user document from uid
+        let linked_doc = await getDoc(doc(db, "users", uid));
+        if (!linked_doc.exists()) throw "Account doesn't exist or you haven't been invited";
+        let linked_doc_data = linked_doc.data();
+        return Promise.resolve(linked_doc_data);
+      } catch (err) {
+        _statuslog("🔗 Couldn't get linked account", err);
+        return Promise.reject(err);
+      }
+    },
+    async link_account_code(code) {
+      if (!code) return;
+      try {
+        let linked_doc = await this.get_linked_account(code);
+        if (!linked_doc) throw "Account doesn't exist or you haven't been invited";
+        // update remote
+        this.account_doc.linked_to = code;
+        await this.update_remote();
+        new SuccessToast(`Successfully linked to ${linked_doc.name}'s account!`, 4000);
+      } catch (err) {
+        new ErrorToast("Couldn't link account", err, 2000);
+        return Promise.reject(err);
+      }
+    },
     async link_account(email) {
-      if (!this.user || !this.doc) return;
+      if (!this.user || !this.account_doc) return;
       // exclude empty or mvla emails
       if (!email || validOrgAccount(email) || !email.includes("@")) {
         new WarningToast("Please enter a valid non-mvla email", 2000);
@@ -206,7 +246,7 @@ export const useMainStore = defineStore({
         return;
       }
       // add to doc.linked
-      this.doc.linked = this.doc.linked ? this.doc.linked : [];
+      this.account_doc.linked = this.account_doc.linked || [];
 
       // add email to queue
       let email_queue = collection(db, "mail");
@@ -214,12 +254,12 @@ export const useMainStore = defineStore({
         let sent_email = await addDoc(email_queue, {
           to: email,
           cc: this.user.email,
-          from: `${this.doc.name} via MV Test Tracker <mail@mvtt.app>`,
-          fromname: this.doc.name + " via MV Test Tracker",
+          from: `${this.account_doc.name} via MV Test Tracker <mail@mvtt.app>`,
+          fromname: this.account_doc.name + " via MV Test Tracker",
           template: {
             name: "link_invite",
             data: {
-              sender_name: this.doc.name.split(" ")[0],
+              sender_name: this.account_doc.name.split(" ")[0],
               sender_uid: this.user.uid,
             },
           },
@@ -245,7 +285,7 @@ export const useMainStore = defineStore({
         }
 
         // update remote
-        this.doc.linked.push(email);
+        this.account_doc.linked.push(email);
         await this.update_remote();
         new SuccessToast(`We notified ${email}, you'll receive a copy of the email too!`, 4000);
         return Promise.resolve();
@@ -258,8 +298,8 @@ export const useMainStore = defineStore({
       try {
         if (!this.user) return;
         // if exists in userdoc.linked, remove and save
-        if (this.doc.linked.includes(email)) {
-          this.doc.linked = this.doc.linked.filter((e) => e != email);
+        if (this.account_doc.linked.includes(email)) {
+          this.account_doc.linked = this.account_doc.linked.filter((e) => e != email);
           await this.update_remote();
           new SuccessToast(`Removed ${email} from your linked accounts`, 2000);
         } else {
@@ -289,7 +329,7 @@ export const useMainStore = defineStore({
     },
     async save_join_form(responses) {
       // wait for user doc to be created / exist then save responses to doc.join_form
-      this.doc.join_form = responses;
+      this.account_doc.join_form = responses;
       await this.update_remote();
     },
     async save_daily_survey(responses) {
@@ -305,16 +345,18 @@ export const useMainStore = defineStore({
         await this.userLoginPromise();
       }
       // update user doc to have date in "done_surveys"
-      this.doc.done_surveys = this.doc?.done_surveys ? this.doc.done_surveys : [];
-      this.doc.done_surveys.push(today);
+      this.account_doc.done_surveys = this.account_doc?.done_surveys
+        ? this.account_doc.done_surveys
+        : [];
+      this.account_doc.done_surveys.push(today);
       await this.update_remote();
       new SuccessToast("Saved daily survey", 2000);
     },
     async toggle_theme() {
       this.theme = this.get_theme == "light" ? "dark" : "light";
       localStorage.setItem("theme", this.theme);
-      if (this?.doc) {
-        this.doc.theme = this.theme;
+      if (this?.account_doc) {
+        this.account_doc.theme = this.theme;
         await this.update_remote();
       }
       new SuccessToast(`Switched to ${this.theme} theme`, 2000);
@@ -322,18 +364,18 @@ export const useMainStore = defineStore({
     },
     async get_classes() {
       // check for duplicates
-      if (this.doc.classes) {
-        let unique = [...new Set(this.doc.classes)];
-        if (unique.length != this.doc.classes.length) {
-          this.doc.classes = unique;
+      if (this.account_doc?.classes) {
+        let unique = [...new Set(this.account_doc.classes)];
+        if (unique.length != this.account_doc.classes.length) {
+          this.account_doc.classes = unique;
           await this.update_remote();
           new WarningToast("Removed duplicate classes", 2000);
         }
       }
       // get all classes' data and combine into an array
-      if (!this.doc) return [];
+      if (!this.account_doc?.classes) return [];
       let classes = [];
-      for (let class_path of this.doc.classes) {
+      for (let class_path of this.account_doc.classes) {
         // split class path into teacher/uid
         let [teacher, class_id] = class_path.split("/");
         if (!teacher || !class_id) {
@@ -376,18 +418,23 @@ export const useMainStore = defineStore({
       this.classes = classes;
     },
     async remove_invalid(class_id) {
-      this.doc.classes = this.doc.classes.filter((c) => c != class_id);
+      this.account_doc.classes = this.account_doc.classes.filter((c) => c != class_id);
       await this.update_remote();
       new WarningToast(`Removed non-existent class "${class_id}"`, 2000);
     },
     async remove_class(class_id) {
-      this.doc.classes = this.doc.classes.filter((c) => c != class_id);
+      this.account_doc.classes = this.account_doc.classes.filter((c) => c != class_id);
       await this.update_remote();
       _statuslog("🗑️ Removed class from user's doc: " + class_id);
       new SuccessToast("Removed class", 2000);
     },
     set_user(user) {
-      if (!user.email || !validOrgAccount(user.email)) {
+      if (
+        !user.email ||
+        (!validOrgAccount(user.email) &&
+          !this.personal_account &&
+          !(this.account_doc?.personal_account && this.account_doc?.linked_to))
+      ) {
         auth.signOut();
         new WarningToast("Please use your MVLA email to log in", 2000);
         this.clear();
@@ -410,15 +457,15 @@ export const useMainStore = defineStore({
     },
     clear() {
       this.user = null;
-      this.doc = null;
+      this.account_doc = null;
       this.classes = [];
       this.loaded_email = null;
       this.loaded_classes = null;
+      this.personal_account = false;
       this.teacher = {
         doc_ref: null,
         collection_ref: null,
       };
-      this.theme = "light";
       // if page requires auth, redirect to home
       if (router.currentRoute?.value?.meta?.requiresAuth) {
         router.push("/");
@@ -466,6 +513,41 @@ export const useMainStore = defineStore({
           return Promise.reject(err);
         });
     },
+    async login_personal() {
+      new Toast(
+        "Opening login popup...",
+        "default",
+        1000,
+        require("@svonk/util/assets/info-locked-icon.svg")
+      );
+      // create new provider with no hd
+      let personal_provider = new GoogleAuthProvider();
+      personal_provider.addScope("email");
+      personal_provider.addScope("profile");
+      // sign in with google, then set user data
+      let isElectron = navigator?.userAgent?.toLowerCase()?.indexOf(" electron/") > -1;
+      // if electron, use redirect, otherwise, use popup
+      await (isElectron
+        ? signInWithRedirect(auth, personal_provider)
+        : signInWithPopup(auth, personal_provider)
+      )
+        .then(() => {
+          if (!this.user || !this.user.email || validOrgAccount(this.user.email)) return;
+          new Toast(
+            "Logged in as " + this.user.displayName + "!",
+            "default",
+            2000,
+            require("@svonk/util/assets/info-unlocked-icon.svg")
+          );
+          _statuslog("🔑 Logged in as " + this.user.displayName);
+          authChangeAction(this.user);
+          return Promise.resolve();
+        })
+        .catch((err) => {
+          new ErrorToast("Couldn't log in", err, 2000);
+          return Promise.reject(err);
+        });
+    },
     logout() {
       auth.signOut();
       new Toast("Logged Out", "default", 1500, require("@svonk/util/assets/info-locked-icon.svg"));
@@ -473,9 +555,9 @@ export const useMainStore = defineStore({
     // set document data
     async get_remote() {
       // get doc from firebase
-      let doc = await getDoc(this.userdoc_ref);
-      if (doc.exists()) {
-        this.doc = doc.data();
+      let account_doc = await getDoc(this.account_ref);
+      if (account_doc.exists()) {
+        this.account_doc = doc.data();
       } else {
         // if doc doesn't exist, create it
         await this.create_doc();
@@ -484,19 +566,29 @@ export const useMainStore = defineStore({
     },
     async create_doc() {
       new WarningToast("User document doesn't exist, creating new one...", 2000);
-      this.doc = {
+      this.account_doc = {
         name: this.user.displayName,
         email: this.user.email,
         classes: [],
         theme: this.get_theme,
       };
+      if (this.personal_account) {
+        this.account_doc = {
+          linked_to: null,
+          personal_account: true,
+          name: this.user.displayName,
+          email: this.user.email,
+        };
+      }
       if (this.is_teacher) {
         await this.create_teacher_doc();
         new SuccessToast("Created user & teacher documents; Let's get started", 2000);
       } else {
         await this.update_remote();
         new SuccessToast("Created user document; Let's get started", 2000);
-        router.push("/portal/onboarding");
+        if (!this.personal_account) {
+          router.push("/portal/onboarding");
+        }
       }
       // do onboarding
     },
@@ -515,7 +607,7 @@ export const useMainStore = defineStore({
     },
     async update_remote() {
       // update remote doc
-      await setDoc(this.userdoc_ref, this.doc, { merge: true });
+      await setDoc(this.account_ref, this.account_doc, { merge: true });
       _statuslog("⏶ Pushed changes to remote");
     },
     async get_classes_by_email(email) {
@@ -530,15 +622,15 @@ export const useMainStore = defineStore({
         let classes = [];
         let classes_subcollection = collection(doc(db, "classes", email), "classes");
         let classes_subcollection_query_snapshot = await getDocs(query(classes_subcollection));
-        classes_subcollection_query_snapshot.forEach((doc) => {
-          let class_data = doc.data();
-          class_data.id = doc.id;
+        classes_subcollection_query_snapshot.forEach((class_doc) => {
+          let class_data = class_doc.data();
+          class_data.id = class_doc.id;
           // support for legacy names
           class_data.name =
             (class_data.period ? "P" + class_data.period + " - " : "") + class_data.name;
           class_data.is_joined = true;
           // if user already in class, change name to "[JOINED] name"
-          if (this.doc.classes.includes([email, doc.id].join("/"))) {
+          if (this.account_doc?.classes.includes([email, class_doc.id].join("/"))) {
             class_data.name = "[JOINED] " + class_data.name;
           }
           classes.push(class_data);
@@ -551,12 +643,12 @@ export const useMainStore = defineStore({
       this.loaded_email = email;
     },
     async add_class(teacher_email, class_id, class_name, class_period) {
-      if (!this.doc) return;
+      if (!this.account_doc?.classes) return;
       if (!class_id) return;
       console.log(class_id);
       let class_key = [teacher_email, class_id].join("/");
-      if (this.doc.classes.includes(class_key)) return;
-      this.doc.classes.push(class_key);
+      if (this.account_doc.classes.includes(class_key)) return;
+      this.account_doc.classes.push(class_key);
       await this.update_remote();
       new SuccessToast(`Added "P${class_period} - ${class_name}" to your classes`, 2000);
       // return new success promise
@@ -585,7 +677,6 @@ export const useMainStore = defineStore({
         _statuslog("🏫 class_doc_ref", class_doc_ref);
         await this.add_class(this.user.email, class_doc_ref.id, class_obj.name, class_obj.period);
       } catch (e) {
-        console.error(e);
         new ErrorToast("Couldn't create class", cleanError(e), 2000);
       }
     },

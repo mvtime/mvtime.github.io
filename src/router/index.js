@@ -35,7 +35,7 @@ const router = createRouter({
             {
               path: "join",
               name: "join",
-              component: () => import("@/components/Modal/JoinModal.vue"),
+              component: () => import("@/views/Home/JoinModal.vue"),
               meta: {
                 page_title: "Join the MVTT Beta",
                 theme_color: {
@@ -45,6 +45,21 @@ const router = createRouter({
                 requiresAuth: false,
                 // change later to instead have custom action
                 block_close: true,
+                close_path: "/",
+                blockStandardRedirect: true,
+              },
+            },
+            {
+              path: "link/:code?",
+              name: "link",
+              component: () => import("@/views/Home/LinkModal.vue"),
+              props: true,
+              meta: {
+                page_title: "Link Personal Account",
+                theme_color: {
+                  light: "#ffffff",
+                  dark: "#16130e",
+                },
                 close_path: "/",
                 blockStandardRedirect: true,
               },

@@ -1,5 +1,5 @@
 <template>
-  <main class="addtask">
+  <div class="addtask">
     <header class="modal_header">
       <h2 class="header_style modal_header_title">Add a {{ type_full }}</h2>
     </header>
@@ -88,7 +88,7 @@
         Add {{ task.type }}
       </button>
     </div>
-  </main>
+  </div>
 </template>
 
 <script>
