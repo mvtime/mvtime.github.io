@@ -55,18 +55,18 @@ function setupSnapshot(uid) {
   unsub = onSnapshot(
     doc(db, "users", uid),
     { includeMetadataChanges: true },
-    (doc) => {
-      if (doc.metadata.hasPendingWrites) {
+    (listening_doc) => {
+      if (listening_doc.metadata.hasPendingWrites) {
         _statuslog("⬥ Got snapshot from local changes");
         return;
       }
       _statuslog("⏷ Got snapshot from remote");
       // check if doc exists
-      if (!doc.exists()) {
+      if (!listening_doc.exists()) {
         store.create_doc();
         return;
       }
-      store.account_doc = doc.data();
+      store.account_doc = listening_doc.data();
       // run get_classes() to update classes
       store.get_classes();
     },
