@@ -66,7 +66,7 @@ function setupSnapshot(uid) {
         store.create_doc();
         return;
       }
-      store.doc = doc.data();
+      store.account_doc = doc.data();
       // run get_classes() to update classes
       store.get_classes();
     },
