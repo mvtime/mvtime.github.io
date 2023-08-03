@@ -357,8 +357,10 @@ export const useMainStore = defineStore({
     async save_join_form(responses) {
       // wait for user doc to be created / exist then save responses to doc.join_form
       if (this.personal_account) {
+        this.linked_account_doc = this.linked_account_doc || {};
         this.linked_account_doc.join_form = responses;
       } else {
+        this.account_doc = this.account_doc || {};
         this.account_doc.join_form = responses;
       }
       await this.update_remote();
