@@ -1,5 +1,10 @@
 <template>
-  <ModalFromPages :pages="pages" @finish="finish" ref="survey_modal"></ModalFromPages>
+  <ModalFromPages
+    :pages="pages"
+    @finish="finish"
+    @skip="$emit('close')"
+    ref="survey_modal"
+  ></ModalFromPages>
 </template>
 
 <script>
@@ -61,6 +66,13 @@ export default {
       this.ready = true;
     }
     this.store.personal_account = true;
+    if (
+      this.store?.linked_account_doc?.linked_to &&
+      this.store.linked_account_doc.linked_to == this.code
+    ) {
+      this.$emit("close");
+      new WarningToast("These two accounts are already linked!", 2000);
+    }
   },
   methods: {
     finish() {

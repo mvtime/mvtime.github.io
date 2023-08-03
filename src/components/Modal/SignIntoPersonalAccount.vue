@@ -14,18 +14,16 @@
 
 <script>
 import { useMainStore } from "@/store";
+import { WarningToast } from "@svonk/util";
 export default {
   name: "SignIntoPersonalAccount",
-  emits: ["update", "status"],
+  emits: ["skip", "update", "status"],
   data() {
     return {
       ready: false,
     };
   },
   methods: {
-    close() {
-      this.$emit("close");
-    },
     logout_if_org() {
       // sign out
       if (this.store?.user?.email?.includes("mvla.net")) {
@@ -33,8 +31,19 @@ export default {
       }
     },
     check_and_emit() {
-      this.ready = this.store.user?.email && !this.store.user.email.includes("mvla.net");
-      this.$emit("status", !!this.ready);
+      // if already linked, exit
+      if (
+        this.store?.linked_account_doc?.linked_to &&
+        this.$route?.params?.code &&
+        this.store.linked_account_doc.linked_to == this.$route.params.code
+      ) {
+        new WarningToast("These two accounts are already linked!", 2000);
+        this.$emit("skip");
+      } else {
+        // otherwise check status
+        this.ready = this.store.user?.email && !this.store.user.email.includes("mvla.net");
+        this.$emit("status", !!this.ready);
+      }
     },
     sign_into_personal() {
       this.store.personal_account = true;

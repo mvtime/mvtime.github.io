@@ -616,6 +616,7 @@ export const useMainStore = defineStore({
     },
     logout() {
       auth.signOut();
+      this.clear();
       new Toast("Logged Out", "default", 1500, require("@svonk/util/assets/info-locked-icon.svg"));
     },
     // set document data
