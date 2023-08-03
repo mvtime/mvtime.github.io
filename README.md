@@ -12,24 +12,15 @@ npm install
 npm run serve
 ```
 
-### Compiles and minifies for production
-
-```
-npm run build
-```
-
-### Lints and fixes files
-
-```
-npm run lint
-```
-
 ### Builds and deploys to Github Pages (through the gh-pages branch)
 
 ```
 npm run deploy
 ```
 
-### Customize configuration
+### [To-dos and Feature roadmap](https://mvtt.app/roadmap)
 
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### Useful links
+[Home](https://mvtt.app) · 
+[About](https://mvtt.app/about) · 
+[Contact](https://mvtt.app/contact)
