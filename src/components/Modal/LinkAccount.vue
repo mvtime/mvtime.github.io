@@ -79,7 +79,7 @@ export default {
     // get code prop from route
     this.code = this.$route.params.code;
     this.store
-      .get_linked_account(this.code)
+      .doc_from_uid(this.code)
       .then((result) => {
         this.loading = false;
         this.data = result;

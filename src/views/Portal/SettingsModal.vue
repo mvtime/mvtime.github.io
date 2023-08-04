@@ -24,7 +24,7 @@
               >
                 <div
                   class="styled_line_links__remove"
-                  @click="unlink_account(email)"
+                  @click="uninvite_linked(email)"
                   v-if="!store.personal_account"
                   title="Remove Account"
                 >
@@ -129,12 +129,12 @@ export default {
         this.$emit("close");
       }
     },
-    link_account() {
+    invite_linked() {
       if (!this.store.personal_account) {
         this.changed = true;
         this.loading = true;
         this.store
-          .link_account(this.new_email)
+          .invite_linked(this.new_email)
           .then(() => {
             this.loading = false;
             this.new_email = "";
@@ -145,11 +145,11 @@ export default {
           });
       }
     },
-    unlink_account(email) {
+    uninvite_linked(email) {
       this.changed = true;
       this.loading = true;
       this.store
-        .unlink_account(email)
+        .uninvite_linked(email)
         .then(() => {
           this.loading = false;
         })

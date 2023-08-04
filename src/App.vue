@@ -12,6 +12,14 @@
 </template>
 
 <script>
+/**
+ * The main App component, which is the parent of all other components, and mostly serves as a wrapper for the router-view, though it does apply the theme
+ *
+ * @module App
+ * @description The main App component, wrapper for Home or Portal Views.
+ * @requires module:store/MainStore
+ */
+
 import { useMainStore } from "@/store";
 export default {
   name: "App",

@@ -82,7 +82,7 @@
       <button
         class="continue_action"
         :class="{ loading_bg: loading }"
-        @click="add_task"
+        @click="create_task"
         :disabled="!task.name || !task.date || !task_classes.length"
       >
         Add {{ task.type }}
@@ -160,10 +160,10 @@ export default {
         path: "",
       };
     },
-    add_task() {
+    create_task() {
       this.loading = true;
       this.store
-        .add_task(this.task, this.task_classes)
+        .create_task(this.task, this.task_classes)
         .then(() => {
           this.$emit("close");
         })

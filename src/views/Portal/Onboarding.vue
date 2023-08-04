@@ -80,8 +80,8 @@ export default {
       } else if (this.teacher_email === this.store.loaded_email) {
         return this.store.loaded_classes;
       }
-      // commit store get_classes_by_email with teacher_email
-      this.store.get_classes_by_email(this.teacher_email);
+      // commit store fetch_classes_by_email with teacher_email
+      this.store.fetch_classes_by_email(this.teacher_email);
 
       return null;
     },

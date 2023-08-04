@@ -76,7 +76,7 @@ export default {
   },
   methods: {
     finish() {
-      this.store.link_account_code(this.code).then(() => {
+      this.store.link_account_uid(this.code).then(() => {
         this.$emit("close");
       });
     },
