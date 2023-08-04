@@ -81,7 +81,7 @@
           }
         "
       >
-        {{ store.personal_account ? "Close" : "Link" }}
+        {{ store.personal_account ? "Close" : "Finish" }}
       </button>
     </div>
   </div>

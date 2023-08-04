@@ -35,7 +35,7 @@
       <button
         id="nav-auth-btn"
         class="small-action-btn auth-action can-logout can-login click-action"
-        :class="{ linked: store.personal_account }"
+        :class="{ linked: store.personal_account && store.user }"
       >
         Log {{ logged_in ? "Out" : "In" }}
       </button>
