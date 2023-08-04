@@ -46,7 +46,7 @@ today = today.toISOString().split("T")[0];
 // define store
 export const useMainStore = defineStore({
   id: "main",
-  /** Function to create a clean store state, used for initialization */
+  /** Function to create a clean store state, used for initialization. Will attempt to load from localStorage variable to save on firebase calls -> isn't always stable after app update that changes state keyings */
   state: () => {
     let state = {};
     // setting up store
@@ -65,18 +65,91 @@ export const useMainStore = defineStore({
     }
     // if no local storage, set up store
     _statuslog("🔨 Setting up store from scratch");
+    /** Set default store state */
     return (state = {
+      /**
+       * @name user
+       * @description The user object from firebase auth
+       * @type {Object}
+       * @default null
+       */
       user: null,
+      /**
+       * @name account_doc
+       * @description The authenticated user's document from the users collection in firestore
+       * @type {Object}
+       * @default null
+       * @see {@link active_doc}
+       */
       account_doc: null,
+      /**
+       * @name linked_account_doc
+       * @description The linked account document from the users collection in firestore
+       * @type {Object}
+       * @default null
+       * @see {@link active_doc}
+       */
       linked_account_doc: null,
+      /**
+       * @name classes
+       * @description Collection of the ids of classes that the user is in
+       * @type {Array}
+       * @default []
+       * @see {@link fetch_classes}
+       * @see {@link get_tasks}
+       */
       classes: [],
+      /**
+       * @name loaded_email
+       * @description The email of the user that the classes have been loaded for (for previews in AddClass.vue)
+       * @type {String}
+       * @default null
+       * @see {@link loaded_classes}
+       * @see {@link fetch_classes_by_email}
+       */
       loaded_email: null,
+      /**
+       * @name loaded_classes
+       * @description The classes that have been loaded for the loaded_email (for previews in AddClass.vue)
+       * @type {Array}
+       * @default null
+       * @see {@link loaded_email}
+       * @see {@link fetch_classes_by_email}
+       */
       loaded_classes: null,
+      /**
+       * @name teacher
+       * @description The teacher object, with doc_ref and collection_ref
+       * @type {Object}
+       * @default {doc_ref: null, collection_ref: null}
+       * @see {@link is_teacher}
+       * @see {@link create_teacher_doc}
+       */
       teacher: {
         doc_ref: null,
         collection_ref: null,
       },
+      /**
+       * @name theme
+       * @description The theme of the app, either "light" or "dark"
+       * @type {String}
+       * @default null
+       * @see {@link get_theme}
+       * @see {@link toggle_theme}
+       * @see {@link clear}
+       * @note This is a local variable, and is while it may reflect what's in the user's document, it's not always accurate, though it is preferred locally, and persists across sessions / store {@link clear}s
+       */
       theme: null,
+      /**
+       * @name personal_account
+       * @description If the user is using their personal account (true) or a valid org account (false)
+       * @type {Boolean}
+       * @default false
+       * @see {@link linked_account_doc}
+       * @see {@link linked_account_ref}
+       * @see {@link active_doc}
+       * @see {@link active_ref}
+       */
       personal_account: false,
     });
   },
