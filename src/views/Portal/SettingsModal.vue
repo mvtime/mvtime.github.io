@@ -47,7 +47,7 @@
             />
             <button
               class="styled_links_add__action"
-              @click="link_account"
+              @click="invite_linked"
               :disabled="!ready_to_link"
             >
               {{ store.personal_account ? "UNAVALIABLE" : "Add" }}
