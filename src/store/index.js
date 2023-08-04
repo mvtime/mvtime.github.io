@@ -515,7 +515,7 @@ export const useMainStore = defineStore({
             router.currentRoute?.value?.query?.redirect &&
             !router.currentRoute?.value?.meta?.blockStandardRedirect
           ) {
-            router.push(router.currentRoute?.value?.query?.redirect);
+            router.replace(router.currentRoute?.value?.query?.redirect);
           }
         })
         .catch(() => {

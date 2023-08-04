@@ -73,7 +73,13 @@
         class="continue_action"
         :class="{ loading_bg: loading }"
         :disabled="!store.personal_account && !changed"
-        @click="store.personal_account ? $emit('close') : save"
+        @click="
+          if (store.personal_account) {
+            $emit('close');
+          } else {
+            save;
+          }
+        "
       >
         {{ store.personal_account ? "Close" : "Link" }}
       </button>
