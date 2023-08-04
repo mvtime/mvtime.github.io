@@ -78,9 +78,7 @@ export default {
   methods: {
     close() {
       this.$router.replace(
-        this.store?.user && this.store?.active_doc?.join_form && this.$route?.query?.redirect
-          ? this.$route.query.redirect
-          : "/"
+        this.store.done_join_form && this.$route?.query?.redirect ? this.$route.query.redirect : "/"
       );
     },
     tomain() {

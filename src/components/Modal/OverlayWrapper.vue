@@ -34,6 +34,7 @@ export default {
       setTimeout(() => {
         window.onbeforeunload = null;
         this.$emit("close");
+        this.animating_out = false;
       }, 250);
     },
   },

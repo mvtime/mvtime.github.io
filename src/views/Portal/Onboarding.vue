@@ -13,7 +13,7 @@
           type="text"
           placeholder="Teacher's Email"
         />
-        <select v-model="class_id" class="styled_input">
+        <select v-model="class_id" class="styled_input" :disabled="!classes || !classes.length">
           <option
             v-for="class_obj in classes"
             :value="class_obj.id"

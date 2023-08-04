@@ -195,6 +195,12 @@ export const useMainStore = defineStore({
       let isDone = this.active_doc.done_surveys?.includes(today);
       return isDone;
     },
+    done_join_form() {
+      if (!this.user) return false;
+      if (!this.active_doc) return false;
+      if (this.is_teacher) return true;
+      return !!this.active_doc?.join_form;
+    },
     active_ref() {
       return this.personal_account ? this.linked_account_ref : this.account_ref;
     },
@@ -667,7 +673,12 @@ export const useMainStore = defineStore({
         await this.update_remote();
         new SuccessToast("Created user document; Let's get started", 2000);
         if (!this.personal_account) {
-          router.push("/portal/onboarding");
+          router.push({
+            name: "onboarding",
+            query: {
+              redirect: "/settings?redirect=/portal",
+            },
+          });
         }
       }
       // do onboarding
@@ -711,9 +722,9 @@ export const useMainStore = defineStore({
           // support for legacy names
           class_data.name =
             (class_data.period ? "P" + class_data.period + " - " : "") + class_data.name;
-          class_data.is_joined = true;
           // if user already in class, change name to "[JOINED] name"
           if (this.active_doc?.classes.includes([email, class_doc.id].join("/"))) {
+            class_data.is_joined = true;
             class_data.name = "[JOINED] " + class_data.name;
           }
           classes.push(class_data);

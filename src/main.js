@@ -152,3 +152,11 @@ window.toggle_teacher_mode = function () {
   }
   window.location.reload();
 };
+window.test_onboarding = function () {
+  router.push({
+    name: "onboarding",
+    query: {
+      redirect: "/settings",
+    },
+  });
+};

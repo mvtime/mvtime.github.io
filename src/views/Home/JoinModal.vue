@@ -98,7 +98,7 @@ export default {
   },
   mounted() {
     // if user is logged in and has completed, close
-    if (this.store?.user && this.store?.active_doc?.join_form) {
+    if (this.store.done_join_form) {
       // exit
       this.$emit("close");
       new WarningToast("You've already joined!", 2000);
@@ -143,7 +143,7 @@ export default {
     },
     check_store_and_close() {
       // close if join_form is set
-      if (this.store?.user && this.store?.active_doc?.join_form) {
+      if (this.store.done_join_form) {
         this.$emit("close");
       }
     },
