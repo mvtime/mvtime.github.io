@@ -222,7 +222,7 @@ const router = createRouter({
         {
           path: "/portal/new/:tasktype",
           name: "newtask",
-          component: () => import("../views/Portal/AddTask.vue"),
+          component: () => import("../views/Portal/CreateTask.vue"),
           meta: {
             page_title: "Teacher | Add Task",
             theme_color: {

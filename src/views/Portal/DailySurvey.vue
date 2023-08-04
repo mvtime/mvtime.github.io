@@ -3,10 +3,16 @@
 </template>
 
 <script>
-/*
-    :skippable="true"
-    @skip="someFunction"
-*/
+/**
+ * Modal wrapper that allows users to complete a daily survey, consisting of a series of questions (from the @/components/Surveys folder), which are saved to the database.
+ *
+ * @module DailySurveyView
+ * @description This component renders a daily survey modal that allows users to answer a series of questions and submit their responses using the ModalFromPages component.
+ * @requires ModalFromPages
+ * @requires module:store/MainStore
+ * @emits {Function} close - An event emitted when the survey is completed or closed.
+ */
+
 /* eslint-disable vue/no-unused-components */
 import ModalFromPages from "@/components/Modal/ModalFromPages.vue";
 import SmileSentiment from "@/components/Surveys/SmileSentiment.vue";
@@ -21,13 +27,14 @@ export default {
   emits: ["close"],
   components: {
     ModalFromPages,
-    // import page components below
+    /** Page components for the Modal */
     SmileSentiment,
     ScaleSentiment,
     LongResponse,
   },
   data: () => {
     return {
+      /** The page data to display in the ModalToPages component */
       pages: [
         {
           title: "Daily Survey",
@@ -63,33 +70,27 @@ export default {
     store() {
       return useMainStore();
     },
-    did_survey() {
-      return this.store.done_daily_survey;
-    },
   },
   methods: {
+    /** Save the responses to the database and close the modal */
     saveResponses(responses) {
-      // save responses to database
       this.store.save_daily_survey(responses);
-      // remove onbeforeunload listener
       window.onbeforeunload = null;
-      // finish
-      // emit close
       this.$emit("close");
     },
   },
+  /** If the user has already completed the survey when opened, close the modal */
   mounted() {
-    // if done_daily_survey is true, redirect to portal and toast
-    if (this.did_survey) {
+    if (this.store.done_daily_survey) {
       window.onbeforeunload = null;
-      // redirect to query redirect page (route.query.redirect) or portal if unspecified
       this.$emit("close");
       new WarningToast("You already completed the daily survey today!", 2000);
     }
   },
+  /** If we find out the user has already completed the survey at any time, close the modal */
   watch: {
-    did_survey() {
-      if (this.did_survey) {
+    store() {
+      if (this.store.done_daily_survey) {
         window.onbeforeunload = null;
         this.$emit("close");
         new SuccessToast("Looks like you completed the survey somewhere else!", 2000);

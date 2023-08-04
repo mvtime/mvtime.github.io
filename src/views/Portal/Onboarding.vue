@@ -46,6 +46,14 @@
 </template>
 
 <script>
+/**
+ * Version of the AddClassView that is shown to new users.
+ *
+ * @module OnboardingView
+ * @description Modal that allows the user to add a class to their dashboard, with some extra intro text.
+ * @requires module:store/MainStore
+ * @emits {Function} close - An event emitted when the class is added or the modal is closed.
+ */
 import { useMainStore } from "@/store";
 export default {
   name: "OnboardingView",

@@ -88,6 +88,15 @@
 </template>
 
 <script>
+/**
+ * Settings modal for managing user preferences.
+ *
+ * @module SettingsModal
+ * @description Modal that allows users to manage their settings, which is at this point just linked accounts.
+ * @requires module:store/MainStore
+ * @emits {Function} close - An event emitted when the modal is closed.
+ */
+
 import { useMainStore } from "@/store";
 import "@/assets/style/overlay.css";
 export default {

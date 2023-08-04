@@ -1,5 +1,5 @@
 <template>
-  <div class="addtask">
+  <div class="create_task">
     <header class="modal_header">
       <h2 class="header_style modal_header_title">Add a {{ type_full }}</h2>
     </header>
@@ -77,7 +77,7 @@
       </div>
     </div>
     <div class="bottom_actions">
-      <button class="close_action" @click="$router.push('/portal')">Close</button>
+      <button class="close_action" @click="$emit('close')">Close</button>
       <div class="flex_spacer"></div>
       <button
         class="continue_action"
@@ -92,9 +92,20 @@
 </template>
 
 <script>
+/**
+ * Creates a new task for the teacher's selected class(es).
+ *
+ * @module CreateTaskView
+ * @description Modal that allows teacher's to create a new task for their classes.
+ * @param {string} tasktype - The type of task to create (task, project, test, etc.) Provided by the router.
+ * @requires module:store/MainStore
+ * @emits {Function} close - An event emitted when the task is created or the modal is closed.
+ */
+
 import { useMainStore } from "@/store";
+import { _statuslog } from "@/common";
 export default {
-  name: "AddTaskView",
+  name: "CreateTaskView",
   emits: ["close"],
   data() {
     return {
@@ -158,7 +169,7 @@ export default {
         })
         .catch((err) => {
           this.loading = false;
-          console.error(err);
+          _statuslog("📃 Couldn't create task", err);
         });
     },
   },

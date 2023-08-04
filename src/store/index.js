@@ -779,8 +779,10 @@ export const useMainStore = defineStore({
           class_obj.name,
           class_obj.period
         );
+        return Promise.resolve();
       } catch (e) {
         new ErrorToast("Couldn't create class", cleanError(e), 2000);
+        return Promise.reject(e);
       }
     },
     async add_task(test_obj, test_classes) {

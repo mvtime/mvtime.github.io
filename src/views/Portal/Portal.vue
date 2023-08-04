@@ -57,12 +57,20 @@
 </template>
 
 <script>
+/**
+ * The Portal component is the main view for the user dashboard; itdisplays the user's calendar, a left sidebar with filters, and a right sidebar with tasks, and also includes an overlay wrapper for displaying modals.
+ *
+ * @module PortalView
+ * @description The main user dashboard view, holds the calendar and sidebars, as well as a lot of the logic for what to do with data
+ * @requires module:store/MainStore
+ */
+
 import LeftBar from "@/components/Portal/LeftBar.vue";
 import RightBar from "@/components/Portal/RightBar.vue";
 import CalendarBlock from "@/components/Portal/CalendarBlock.vue";
 import OverlayWrapper from "@/components/Modal/OverlayWrapper.vue";
 import { useMainStore } from "@/store";
-import { placeholderToast, WarningToast } from "@svonk/util";
+import { WarningToast } from "@svonk/util";
 import "@/assets/style/overlay.css";
 export default {
   name: "AppPortal",
@@ -74,32 +82,36 @@ export default {
   },
   data() {
     return {
+      /** The classes to include in the CalendarBlock, or include all if empty */
       filtered_classes: [],
+      /** A list of random welcome messages */
       welcomes: ["Welcome", "Hi", "Hello", "Hey", "Howdy"],
     };
   },
   computed: {
+    /** The path to redirect to when closing an overlay, if active */
     close_path() {
       return this.$route?.query?.redirect || this.$route?.meta?.close_path;
+    },
+    /** The user's first name, or adequate placeholder */
+    name() {
+      return this.store.user?.displayName?.split(" ")[0] || "User";
+    },
+    /** Whether the user has completed the daily survey today */
+    did_survey() {
+      return this.store.done_daily_survey;
+    },
+    /** A random welcome message */
+    random_welcome() {
+      return this.welcomes[Math.floor(Math.random() * this.welcomes.length)];
     },
     store() {
       return useMainStore();
     },
-    name() {
-      let store = this.store;
-      if (store.user && store.user.displayName) return store.user.displayName.split(" ")[0];
-      return "User";
-    },
-    did_survey() {
-      return this.store?.done_daily_survey;
-    },
-    random_welcome() {
-      return this.welcomes[Math.floor(Math.random() * this.welcomes.length)];
-    },
   },
   methods: {
+    /** Launch the Daily Survey */
     do_survey() {
-      // change to survey page, with query redirect to current page
       this.$router.replace({
         name: "daily",
         query: {
@@ -108,13 +120,15 @@ export default {
       });
       new WarningToast("Please complete the daily survey to use MVTT today!", 3000);
     },
+    /** Close / minimize the left sidebar on small screens */
     close_left_bar() {
       this.$refs.LeftBar.close_sidebar();
     },
+    /** Close / minimize the right sidebar on small screens */
     close_right_bar() {
       this.$refs.RightBar.close_sidebar();
     },
-    placeholderToast,
+    /** Show a task in the ViewTask ModalVue */
     show_task(task) {
       let taskJSON = JSON.stringify({
         name: task.name,
@@ -132,23 +146,22 @@ export default {
         },
       });
     },
+    /** Toggle on or off a class in the filtered ClassList from showing in the CalendarBlock */
     toggle_filtered_class(c) {
-      // if c is in filtered_class, remove it
       if (this.filtered_classes.includes(c)) {
-        this.filtered_classes = this.filtered_classes.filter((class_id) => class_id !== c);
+        this.filtered_classes = this.filtered_classes.filter((id) => id !== c);
       } else {
-        // else add it
         this.filtered_classes.push(c);
       }
     },
+    /** Launch the Daily Survey if it hasn't yet been completed */
     check_and_do_survey() {
-      // check that done_daily_survey is true, if not open "/survey/daily"
       if (this?.store?.user && !this?.did_survey && this.$route?.meta?.noSurvey !== true) {
         this.do_survey();
       }
     },
+    /** Launch the Join Form if it hasn't been completed yet */
     check_and_do_join() {
-      // if logged in and not done join form, redirect to join form
       if (!this.store.done_join_form) {
         this.$router.push({
           name: "join",
@@ -160,19 +173,19 @@ export default {
       }
     },
   },
+  /** Preform Join Form & Daily Survey completion checks on load */
   mounted() {
     this.check_and_do_join();
     this.check_and_do_survey();
   },
+  /** Preform same checks as mounted, but if any of the completion statuses could've changed on page switch or data load */
   watch: {
     did_survey() {
       this.check_and_do_survey();
     },
-    // watch for route changes
     $route() {
       this.check_and_do_survey();
     },
-    // deep listener for store
     store: {
       handler() {
         this.check_and_do_join();

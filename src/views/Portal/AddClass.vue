@@ -32,7 +32,7 @@
       <div class="overlay_contents_text">Enter your teacher's email above to see their classes</div>
     </div>
     <div class="bottom_actions">
-      <button class="close_action" @click="$router.push('/portal')">Close</button>
+      <button class="close_action" @click="$emit('close')">Close</button>
       <div class="flex_spacer"></div>
       <button class="continue_action" @click="add_class" :disabled="!teacher_email || !class_id">
         Add Class
@@ -42,9 +42,18 @@
 </template>
 
 <script>
+/**
+ * Component for adding a class to the user's dashboard / ClassList.
+ *
+ * @module AddClassView
+ * @description Modal that allows the user to add a class to their dashboard.
+ * @requires module:store/MainStore
+ * @emits {Function} close - An event emitted when the class is added or the modal is closed.
+ */
 import { useMainStore } from "@/store";
 export default {
   name: "AddClassView",
+  emits: ["close"],
   data() {
     return {
       teacher_email: "",

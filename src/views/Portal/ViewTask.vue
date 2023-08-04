@@ -65,21 +65,32 @@
       >
         Delete
       </button>
-      <button class="continue_action" @click="$router.push('/portal')">Close</button>
+      <button class="continue_action" @click="$emit('close')">Close</button>
     </div>
   </main>
 </template>
 <script>
+/**
+ * Displays the details of a task and allows the teacher to delete it, or any user to share it (as JSON in the URI).
+ *
+ * @module ViewTaskView
+ * @description Modal that displays the details of a task and allows the teacher to delete it.
+ * @requires module:store/MainStore
+ * @emits {Function} close - An event emitted when the modal is closed.
+ */
+
 import { WarningToast, ErrorToast, SuccessToast } from "@svonk/util";
 import { _statuslog } from "@/common";
 import { useMainStore } from "@/store";
 export default {
+  name: "ViewTaskView",
+  emits: ["close"],
   computed: {
+    /** The task to display */
     task() {
       let task = this.$route?.query?.task;
       task = task ? JSON.parse(task) : {};
       if (task?.links) {
-        // filter any links without text or path
         task.links = task.links.filter((link) => link.text && link.path);
       } else {
         task.links = null;
@@ -90,40 +101,32 @@ export default {
       return useMainStore();
     },
   },
+  /** If no task is specified at creation, close the modal */
   created() {
-    // do route checking
     if (!this.task) {
       new WarningToast("No task specified", 1000);
-      this.$router.push("/portal");
+      this.$emit("close");
     }
   },
   methods: {
+    /** Shares the task as JSON in the URI, or copies the URI to the clipboard if sharing is not supported */
     async share_task() {
       if (navigator.share) {
-        // const imageBlob = await this.fetchImageBlob(
-        //   process.env.BASE_URL + "img/promo/square_promo.png"
-        // );
         navigator
           .share({
             title: this.task.name,
             text: this.task.description,
             url: window.location.href,
-            // promo img
-            // files: [new File([imageBlob], "mvtt.png", { type: "image/png" })],
           })
           .then(() => new SuccessToast("Opened share dialog", 1000))
-          .catch((error) => _statuslog("Error sharing", error));
+          .catch((err) => _statuslog("Error sharing", err));
       } else if (navigator.clipboard) {
         navigator.clipboard.writeText(window.location.href);
-        new WarningToast("Sharing not supported, copied link to clipboard", 1000);
+        new WarningToast("Sharing not supported, copied link to clipboard", 2000);
       } else {
-        new ErrorToast("Sharing not supported", 1000);
+        new ErrorToast("Sharing not supported", 2000);
       }
     },
-    // async fetchImageBlob(url) {
-    //   const response = await fetch(url);
-    //   return await response.blob();
-    // },
   },
 };
 </script>

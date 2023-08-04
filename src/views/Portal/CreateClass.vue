@@ -34,11 +34,11 @@
       </div>
     </div>
     <div class="bottom_actions">
-      <button class="close_action" @click="$router.push('/portal')">Close</button>
+      <button class="close_action" @click="$emit('close')">Close</button>
       <div class="flex_spacer"></div>
       <button
         class="continue_action"
-        @click="store.create_class(class_obj)"
+        @click="create_class"
         :disabled="!class_obj.name || !class_obj.period"
       >
         Create Class
@@ -48,9 +48,18 @@
 </template>
 
 <script>
+/**
+ * Component for creating a class if the user is a teacher.
+ *
+ * @module CreateClassView
+ * @description Modal that allows the user to create a class if they are a teacher.
+ * @requires module:store/MainStore
+ * @emits {Function} close - An event emitted when the class is created or the modal is closed.
+ */
 import { useMainStore } from "@/store";
 export default {
   name: "AddClassView",
+  emits: ["close"],
   data() {
     return {
       class_obj: {
@@ -61,9 +70,13 @@ export default {
       },
     };
   },
-  computed: {
-    store() {
-      return useMainStore();
+  methods: {
+    create_class() {
+      useMainStore()
+        .create_class(this.class_obj)
+        .then(() => {
+          this.$emit("close");
+        });
     },
   },
 };
