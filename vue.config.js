@@ -24,8 +24,8 @@ module.exports = defineConfig({
     electronBuilder: {
       builderOptions: {
         appId: "app.mvtt",
-        productName: "MV-Test-Tracker",
-        copyright: "MV Test Tracker",
+        productName: "MV Test Tracker",
+        copyright: "© 2022-2023 MV Test Tracker",
         win: {
           icon: "public/img/icons/app.ico",
           target: "nsis",
@@ -38,7 +38,7 @@ module.exports = defineConfig({
           icon: "public/img/icons/app.png",
           target: "AppImage",
         },
-        artifactName: "${productName}.${ext}",
+        artifactName: "MVTT-setup.${ext}",
       },
     },
   },
