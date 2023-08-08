@@ -1,6 +1,7 @@
 "use strict";
 
 import { app, protocol, BrowserWindow } from "electron";
+import { path } from "path";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
 const isDevelopment = process.env.NODE_ENV !== "production";
@@ -9,6 +10,14 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: true, standard: true } },
 ]);
+
+if (process.defaultApp) {
+  if (process.argv.length >= 2) {
+    app.setAsDefaultProtocolClient("app", process.execPath, [path.resolve(process.argv[1])]);
+  }
+} else {
+  app.setAsDefaultProtocolClient("app");
+}
 
 async function createWindow() {
   // Create the browser window.
@@ -37,7 +46,7 @@ async function createWindow() {
   } else {
     createProtocol("app");
     // Load the index.html when not in development
-    win.loadURL("app://index.html" + `?platform=${platform}`);
+    win.loadURL("app://./index.html" + `?platform=${platform}`);
   }
 }
 

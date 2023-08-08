@@ -39,6 +39,13 @@ module.exports = defineConfig({
           target: "AppImage",
         },
         artifactName: "MVTT-setup.${ext}",
+        protocols: [
+          {
+            name: "MVTT App",
+            role: "Viewer",
+            schemes: ["app", "mvtt"],
+          },
+        ],
       },
     },
   },
