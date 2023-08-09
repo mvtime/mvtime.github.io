@@ -51,6 +51,9 @@ module.exports = defineConfig({
   },
   transpileDependencies: true,
   pwa: {
+    workboxOptions: {
+      skipWaiting: true,
+    },
     themeColor: "",
     msTileColor: "#f5c14b",
     author: "Sander Vonk",
