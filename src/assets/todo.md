@@ -13,6 +13,16 @@
 
 ## Working on Now / Planned Soon
 
+- Admin / Contact
+  - Send messages from w/i the app using mail system
+    - user will receive a copy
+  - Create admin portal
+    - ability to fix errors that might impede usability for students
+    - force reload student sessions to update / quickfix
+    - add more protections to teacher mode
+- Student involvement
+  - classes from static set
+  - way for students to access teacher features for their peers / as a proxy for the teacher
 - Modal features
   - fix overflow on very small screens
   - show back button?
@@ -28,8 +38,8 @@
   - ~~setup email server~~
 - Features / Timeline
   - create a timeline / overall plan
-    - this page should be sufficient in the meantime
-  - work on large features before the year starts
+    - ~~this page should be sufficient in the meantime~~
+  - larger features to keep in mind
     - finish surveys
       - weekly
       - ~~daily~~
