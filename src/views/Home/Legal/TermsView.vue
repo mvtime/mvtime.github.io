@@ -28,17 +28,6 @@
       to same.
     </p>
 
-    <p>
-      Our Terms and Conditions was created with the help of the
-      <a
-        style="text-decoration: none; color: inherit"
-        href="https://www.Smallseotoolsbd.com"
-        target="_blank"
-        rel="noopener noreferrer"
-        >Termscreator Terms and Conditions Generator</a
-      >.
-    </p>
-
     <h2>Cookies</h2>
 
     <p>
