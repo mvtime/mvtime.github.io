@@ -39,6 +39,13 @@ import router from "../router";
 function validOrgAccount(userEmail) {
   return userEmail.split("@")[1] == "mvla.net";
 }
+function isIFrame() {
+  try {
+    return window.self !== window.top;
+  } catch (e) {
+    return true;
+  }
+}
 // get date in local time but with ISO format
 let today = new Date();
 today = new Date(today.getTime() - today.getTimezoneOffset() * 60 * 1000);
@@ -764,7 +771,10 @@ export const useMainStore = defineStore({
       );
       // sign in with google, then set user data
       // if electron, use redirect, otherwise, use popup
-      await (isElectron ? signInWithRedirect(auth, provider) : signInWithPopup(auth, provider))
+      await (isElectron || isIFrame()
+        ? signInWithRedirect(auth, provider)
+        : signInWithPopup(auth, provider)
+      )
         .then(() => {
           if (!this.user || !this.user.email || !validOrgAccount(this.user.email)) return;
           new Toast(
@@ -817,7 +827,7 @@ export const useMainStore = defineStore({
       personal_provider.addScope("profile");
       // sign in with google, then set user data
       // if electron, use redirect, otherwise, use popup
-      await (isElectron
+      await (isElectron || isIFrame()
         ? signInWithRedirect(auth, personal_provider)
         : signInWithPopup(auth, personal_provider)
       )
