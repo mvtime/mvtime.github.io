@@ -79,6 +79,32 @@ const router = createRouter({
             requiresAuth: false,
           },
         },
+        {
+          path: "legal/privacy",
+          name: "privacy",
+          component: () => import("../views/Home/Legal/PrivacyView.vue"),
+          meta: {
+            page_title: "Legal - Privacy Policy",
+            theme_color: {
+              light: "#ffffff",
+              dark: "#16130e",
+            },
+            requiresAuth: false,
+          },
+        },
+        {
+          path: "legal/tos",
+          name: "tos",
+          component: () => import("../views/Home/Legal/TermsView.vue"),
+          meta: {
+            page_title: "Legal - Terms of Service",
+            theme_color: {
+              light: "#ffffff",
+              dark: "#16130e",
+            },
+            requiresAuth: false,
+          },
+        },
         // {
         //   path: "download",
         //   name: "download",
