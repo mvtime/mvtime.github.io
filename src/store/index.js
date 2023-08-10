@@ -214,8 +214,13 @@ export const useMainStore = defineStore({
       // check if email is a teacher email (ends in @mvla.net) && has letters in the first part
       if (!this.user) return false;
       if (window?.localStorage?.MVTT_teacher_mode == "true") {
-        _statuslog("🏫 Teacher mode enabled locally");
-        return true;
+        if (this.personal_account) {
+          _statuslog("🏫 Personal account, overriding local teacher mode");
+          return false;
+        } else {
+          _statuslog("🏫 Teacher mode enabled locally");
+          return true;
+        }
       }
       let email = this.user.email;
       let [first, last] = email.split("@");
@@ -708,9 +713,9 @@ export const useMainStore = defineStore({
     set_user(user) {
       // load user doc to check .personal_account
       getDoc(doc(db, "users", user.uid))
-        .then((doc) => {
-          if (doc.exists()) {
-            this.account_doc = doc.data();
+        .then((userDoc) => {
+          if (userDoc.exists()) {
+            this.account_doc = userDoc.data();
             this.personal_account = this.account_doc?.personal_account;
           } else {
             this.account_doc = null;
@@ -750,9 +755,10 @@ export const useMainStore = defineStore({
             router.replace(router.currentRoute?.value?.query?.redirect);
           }
         })
-        .catch(() => {
+        .catch((err) => {
           auth.signOut();
           new WarningToast("Something went wrong loading your user data", 2000);
+          _statuslog("🔥 Error loading user data: " + err);
         });
     },
     /**
@@ -797,7 +803,8 @@ export const useMainStore = defineStore({
           let err = cleanError(error);
           if (
             error.code == "auth/cancelled-popup-request" ||
-            error.code == "auth/popup-closed-by-user"
+            error.code == "auth/popup-closed-by-user" ||
+            error.code == "auth/user-cancelled"
           ) {
             new WarningToast(err, 2000);
           } else {

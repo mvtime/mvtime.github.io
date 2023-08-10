@@ -82,6 +82,7 @@ export default {
   background-color: var(--color-on-bg);
   border-radius: 10px;
   margin-right: 10px;
+  scale: 0.9;
 }
 .teacher_action__icon > * {
   flex-shrink: 0;

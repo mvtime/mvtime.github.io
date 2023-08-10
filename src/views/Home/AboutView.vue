@@ -44,11 +44,12 @@
       Students should never have to sacrifice their ability to demonstrate what they've learned, and
       teachers should never have to see their students stressed, simply because of scheduling
       issues. <br /><br />
-      MV Test Tracker exists to help everyone involved in the testing proccess to make better use of
+      MV Test Tracker exists to help everyone involved in the testing process to make better use of
       their time, and to remove as much the stress and uncertainty around it as possible. Our tool
       is made for <i>you</i>, and your feedback and ideas are an essencial part of our mission. We'd
       love for you to be involved in the development process, you can see what we're working on
-      <router-link to="/roadmap">here</router-link>! <br /><br />
+      <router-link to="/roadmap">here</router-link>! If you're feeling adventurous, you can even
+      <router-link to="/download">try the beta companion software</router-link>! <br /><br />
       Thank you for your support,
       <br />
       <b class="team-signature"
