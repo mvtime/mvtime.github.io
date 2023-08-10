@@ -89,12 +89,15 @@ export default {
   },
   /** If we find out the user has already completed the survey at any time, close the modal */
   watch: {
-    store() {
-      if (this.store.done_daily_survey) {
-        window.onbeforeunload = null;
-        this.$emit("close");
-        new SuccessToast("Looks like you completed the survey somewhere else!", 2000);
-      }
+    store: {
+      handler() {
+        if (this.store.done_daily_survey) {
+          window.onbeforeunload = null;
+          this.$emit("close");
+          new SuccessToast("Looks like you already completed the survey!", 2000);
+        }
+      },
+      deep: true,
     },
   },
 };
