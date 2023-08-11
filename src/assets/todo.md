@@ -20,6 +20,11 @@
     - ability to fix errors that might impede usability for students
     - force reload student sessions to update / quickfix
     - add more protections to teacher mode
+- Tasks / Calendar Objects
+  - note type / generic info w/o color
+  - regular assignment / generic task type
+  - ~~id tasks for easier load/share~~
+  - ~~view task by task id~~
 - Student involvement
   - classes from static set
   - way for students to access teacher features for their peers / as a proxy for the teacher
