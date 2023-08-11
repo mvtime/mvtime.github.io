@@ -83,7 +83,6 @@ export default {
       .then((result) => {
         this.loading = false;
         this.data = result;
-        console.log(result);
       })
       .catch((err) => {
         this.loading = false;

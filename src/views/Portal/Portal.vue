@@ -133,7 +133,8 @@ export default {
       this.$router.push({
         name: "task",
         params: {
-          ref: task.ref,
+          // replace all slashes with ~ to avoid router issues
+          ref: task.ref.replace("@mvla.net", "").split("/").join("~"),
         },
       });
     },

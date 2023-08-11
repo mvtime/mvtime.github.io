@@ -146,7 +146,7 @@ export default {
     },
     async get_task() {
       // get task ref from route params
-      const ref = this.$route.params.ref;
+      const ref = this.$route.params.ref.split("~").join("/");
       if (!ref) {
         new WarningToast("No task specified", 1500);
         this.$emit("close");
@@ -159,7 +159,7 @@ export default {
             new WarningToast("Task not found", 1500);
             this.$emit("close");
           } else {
-            _statuslog("📃 Got task", task);
+            _statuslog("📃 Got task data from ref");
             this.task = task;
             this.ready = true;
           }

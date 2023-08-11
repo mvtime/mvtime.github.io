@@ -1285,6 +1285,7 @@ export const useMainStore = defineStore({
     async task_from_ref(ref) {
       try {
         let [_email, _id, task_id] = ref.split("/");
+        _email += "@mvla.net";
         let class_doc = await getDoc(doc(db, "classes", _email, "classes", _id));
         let class_data = class_doc.data();
 
