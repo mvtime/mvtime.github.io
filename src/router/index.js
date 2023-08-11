@@ -260,7 +260,7 @@ const router = createRouter({
         },
         {
           // specify param "test" in the route
-          path: "/portal/task",
+          path: "/portal/task/:ref?",
           name: "task",
           component: () => import("../views/Portal/ViewTask.vue"),
           meta: {
@@ -271,7 +271,7 @@ const router = createRouter({
             },
             requiresAuth: false,
             props: (route) => ({
-              task: route.query.task,
+              ref: route.params.ref,
             }),
           },
         },

@@ -1275,5 +1275,27 @@ export const useMainStore = defineStore({
 
       return Promise.resolve();
     },
+    /**
+     * @function task_from_ref
+     * @description Get the task object from a task reference
+     * @param {String} ref The task reference to get the task object from
+     * @returns {Promise} A promise that resolves to the task object or rejects with an {String} error
+     * @see {@link get_class_tasks}
+     */
+    async task_from_ref(ref) {
+      try {
+        let [_email, _id, task_id] = ref.split("/");
+        let class_doc = await getDoc(doc(db, "classes", _email, "classes", _id));
+        let class_data = class_doc.data();
+
+        let task_doc = await getDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id));
+        let task_data = task_doc.data();
+        task_data.ref = ref;
+        task_data.class_name = class_data.name || "Unknown Class";
+        return Promise.resolve(task_data);
+      } catch (err) {
+        return Promise.reject(err);
+      }
+    },
   },
 });
