@@ -13,6 +13,7 @@ import {
   getDoc,
   getDocs,
   query,
+  where,
   addDoc,
   writeBatch,
   updateDoc,
@@ -327,28 +328,51 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @function get_class_tasks
+     * @description Get the task documents from the tasks subcollection of a class, and return them combined as one array of the objects
+     * @param {String} class_id The id of the class to get tasks from
+     * @param {String} start_date The date to start getting tasks from
+     * @param {String} end_date The date to stop getting tasks from
+     * @returns {Array} Array of all tasks from the class
+     * @default []
+     * @see {@link fetch_classes}
+     */
+    async get_class_tasks(class_id, start_date, end_date) {
+      // ignore current implementation of tasks. We're moving to instead use a tasks subcollection with documents for each task
+      if (!this.classes?.length) return [];
+      let class_tasks = [];
+      let tasks_collection_ref = collection(db, "classes", class_id, "tasks");
+      // get task documents from the tasks subcollection, but only if date key is within the paramater bounds
+      let tasks_query = query(
+        tasks_collection_ref,
+        where("date", ">=", start_date),
+        where("date", "<=", end_date)
+      );
+      let tasks_docs = await getDocs(tasks_query);
+      tasks_docs.forEach((doc) => {
+        class_tasks.push(doc.data());
+      });
+      return class_tasks;
+    },
+    /**
      * @function get_tasks
      * @description Get all tasks from all classes
      * @returns {Array} Array of all tasks from all classes, with class name and color added
      * @default []
      * @see {@link fetch_classes}
      */
-    get_tasks() {
+    get_tasks(start = 0, end = Infinity) {
       if (!this.classes?.length) return [];
       // get all the classes with this.classes(), then get all their tasks and combine them into an array
       let tasks = [];
       let classes = this.classes;
       for (let i = 0; i < classes.length; i++) {
-        let class_tasks = classes[i].tasks;
-        class_tasks = class_tasks ? class_tasks : [];
+        let class_tasks = this.get_class_tasks(classes[i].id, start, end);
         // add class name and color to each task
         for (let j = 0; j < class_tasks.length; j++) {
           classes[i].name = classes[i].name ? classes[i].name : "Unnamed Class";
           // check task date type and convert to date object if necessary
           if (typeof class_tasks[j].date == "string") {
-            // convert to mm-dd-yyyy from yyyy-mm-dd
-            let [year, month, day] = class_tasks[j].date.split("-");
-            class_tasks[j].date = `${month}-${day}-${year}`;
             class_tasks[j].date = new Date(class_tasks[j].date);
             class_tasks[j].date = isNaN(class_tasks[j].date) ? null : class_tasks[j].date;
           }
@@ -1188,11 +1212,12 @@ export const useMainStore = defineStore({
           let displayed_class_id = class_id;
           class_id = class_id.split("/")[class_id.split("/").length - 1];
           // use this.teacher.collection_ref to get class collection ref, then update the class documents within
-          let class_ref = doc(teacher_classes_ref, class_id);
+          let class_tasks_collection = collection(collection_ref, class_id, "tasks");
+
+          // TODO: Finish this part
+
           test_obj.class_id = displayed_class_id;
-          batch.update(class_ref, {
-            tasks: arrayUnion(test_obj),
-          });
+          // add doc with the data to the class_tasks_ref collection
         });
         await batch.commit();
         // rerun get_tasks to update local data, discard result
