@@ -131,13 +131,13 @@ export default {
     /** Show a task in the ViewTask ModalVue */
     show_task(task) {
       let taskJSON = JSON.stringify({
+        ref: task.ref,
         name: task.name,
         group: task.class_name,
         date: task.date.toLocaleDateString("en-US").replace("/", "-"),
         description: task.description,
         links: task.links,
         type: task.type,
-        class_id: task.class_id,
       });
       this.$router.push({
         name: "task",

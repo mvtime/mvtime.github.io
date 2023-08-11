@@ -49,12 +49,12 @@ export default {
     show_task(task) {
       let taskJSON = JSON.stringify({
         name: task.name,
+        ref: task.ref,
         group: task.class_name,
         date: task.date.toLocaleDateString("en-US").replace("/", "-"),
         description: task.description,
         links: task.links,
         type: task.type,
-        class_id: task.class_id,
       });
       this.$router.push({
         name: task.is_assignment ? "assignment" : "task",

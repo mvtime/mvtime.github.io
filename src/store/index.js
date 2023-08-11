@@ -13,12 +13,12 @@ import {
   getDoc,
   getDocs,
   query,
-  where,
+  // where,
   addDoc,
   writeBatch,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
+  // updateDoc,
+  deleteDoc,
+  // arrayRemove,
 } from "firebase/firestore";
 import { auth, db, authChangeAction, refreshTimeout } from "../firebase";
 import { signInWithPopup, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
@@ -328,51 +328,28 @@ export const useMainStore = defineStore({
       }
     },
     /**
-     * @function get_class_tasks
-     * @description Get the task documents from the tasks subcollection of a class, and return them combined as one array of the objects
-     * @param {String} class_id The id of the class to get tasks from
-     * @param {String} start_date The date to start getting tasks from
-     * @param {String} end_date The date to stop getting tasks from
-     * @returns {Array} Array of all tasks from the class
-     * @default []
-     * @see {@link fetch_classes}
-     */
-    async get_class_tasks(class_id, start_date, end_date) {
-      // ignore current implementation of tasks. We're moving to instead use a tasks subcollection with documents for each task
-      if (!this.classes?.length) return [];
-      let class_tasks = [];
-      let tasks_collection_ref = collection(db, "classes", class_id, "tasks");
-      // get task documents from the tasks subcollection, but only if date key is within the paramater bounds
-      let tasks_query = query(
-        tasks_collection_ref,
-        where("date", ">=", start_date),
-        where("date", "<=", end_date)
-      );
-      let tasks_docs = await getDocs(tasks_query);
-      tasks_docs.forEach((doc) => {
-        class_tasks.push(doc.data());
-      });
-      return class_tasks;
-    },
-    /**
      * @function get_tasks
      * @description Get all tasks from all classes
      * @returns {Array} Array of all tasks from all classes, with class name and color added
      * @default []
      * @see {@link fetch_classes}
      */
-    get_tasks(start = 0, end = Infinity) {
+    get_tasks() {
       if (!this.classes?.length) return [];
       // get all the classes with this.classes(), then get all their tasks and combine them into an array
       let tasks = [];
       let classes = this.classes;
       for (let i = 0; i < classes.length; i++) {
-        let class_tasks = this.get_class_tasks(classes[i].id, start, end);
+        let class_tasks = classes[i].tasks;
+        class_tasks = class_tasks ? class_tasks : [];
         // add class name and color to each task
         for (let j = 0; j < class_tasks.length; j++) {
           classes[i].name = classes[i].name ? classes[i].name : "Unnamed Class";
           // check task date type and convert to date object if necessary
           if (typeof class_tasks[j].date == "string") {
+            // convert to mm-dd-yyyy from yyyy-mm-dd
+            let [year, month, day] = class_tasks[j].date.split("-");
+            class_tasks[j].date = `${month}-${day}-${year}`;
             class_tasks[j].date = new Date(class_tasks[j].date);
             class_tasks[j].date = isNaN(class_tasks[j].date) ? null : class_tasks[j].date;
           }
@@ -389,6 +366,30 @@ export const useMainStore = defineStore({
   },
   /** The actions to manipulate the store state */
   actions: {
+    /**
+     * @function get_class_tasks
+     * @description Get the task documents from the tasks subcollection of a class, and return them combined as one array of the objects
+     * @param {String} class_id The id of the class to get tasks from
+     * @param {String} start_date The date to start getting tasks from
+     * @param {String} end_date The date to stop getting tasks from
+     * @returns {Array} Array of all tasks from the class
+     * @default []
+     * @see {@link fetch_classes}
+     */
+    async get_class_tasks(ref) {
+      if (!this.classes?.length || !ref) return [];
+      let class_tasks = [];
+      let [_email, _id] = ref.split("/");
+      let tasks_collection_ref = collection(db, "classes", _email, "classes", _id, "tasks");
+      let tasks_docs = await getDocs(tasks_collection_ref);
+
+      tasks_docs.forEach((doc) => {
+        let task = doc.data();
+        task.ref = [_email, _id, doc.id].join("/");
+        class_tasks.push(task);
+      });
+      return class_tasks;
+    },
     /**
      * @function clear
      * @description Reset the store state and local storage, and redirect to home if page requires auth
@@ -1060,6 +1061,11 @@ export const useMainStore = defineStore({
         // push class to array
         let doc_data = subclass_doc.data();
         doc_data.id = class_path;
+        doc_data.ref = [teacher, class_id].join("/");
+
+        // get tasks for class
+        doc_data.tasks = await this.get_class_tasks(doc_data.ref);
+
         classes.push(doc_data);
       }
       // sort classes by period number, then by name
@@ -1111,6 +1117,12 @@ export const useMainStore = defineStore({
           }
           classes.push(class_data);
         });
+        classes.sort((a, b) => {
+          if (a.period == b.period) {
+            return a.name.localeCompare(b.name);
+          }
+          return a.period - b.period;
+        });
         this.loaded_classes = classes;
       } else {
         this.loaded_classes = null;
@@ -1131,7 +1143,7 @@ export const useMainStore = defineStore({
     async add_class(teacher_email, class_id, class_name, class_period) {
       if (!this.active_doc?.classes) return;
       if (!class_id) return;
-      console.log(class_id);
+
       let class_key = [teacher_email, class_id].join("/");
       if (this.active_doc.classes.includes(class_key)) return;
       if (this.personal_account) {
@@ -1203,25 +1215,27 @@ export const useMainStore = defineStore({
         }
         // use firebase array add to add test to each class
         let batch = writeBatch(db);
-        let collection_ref = collection(db, "classes");
-        // get doc ref for user email
-        let teacher_doc_ref = doc(collection_ref, this.user.email);
-        let teacher_classes_ref = collection(teacher_doc_ref, "classes");
         test_classes.forEach((class_id) => {
           // fix any class_id that has the teacher email in it
           let displayed_class_id = class_id;
           class_id = class_id.split("/")[class_id.split("/").length - 1];
           // use this.teacher.collection_ref to get class collection ref, then update the class documents within
-          let class_tasks_collection = collection(collection_ref, class_id, "tasks");
-
-          // TODO: Finish this part
-
+          let class_tasks_collection = collection(
+            db,
+            "classes",
+            this.user.email,
+            "classes",
+            class_id,
+            "tasks"
+          );
           test_obj.class_id = displayed_class_id;
-          // add doc with the data to the class_tasks_ref collection
+
+          // batch add a new task doc with the data to the class_tasks_collection collection, using auto-generated id
+          batch.set(doc(class_tasks_collection), test_obj);
         });
         await batch.commit();
         // rerun get_tasks to update local data, discard result
-        await this.fetch_classes();
+        this.fetch_classes();
         new SuccessToast(
           `Added test "${test_obj.name}" to ${test_classes.length} class${
             test_classes.length == 1 ? "" : "es"
@@ -1237,36 +1251,29 @@ export const useMainStore = defineStore({
      * @function delete_task
      * @description Delete an instance of a task from a class (for teachers). Intended to be preformed from the ViewTask Modal
      * @param {Object} test_obj The task object to with the task data, data will be removed from /classes document for this particular instance only
-     * @returns Nothing
+     * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      * @see {@link create_task}
      * @note This currently only removes the instance of the task being viewed. Could add a secondary modal to allow deletion of multiple instances instead?
      */
-    async delete_task(test_obj) {
-      // retrieve class reference
-      let initial_class_id = test_obj.class_id;
-      let class_id = initial_class_id.split("/")[initial_class_id.split("/").length - 1];
-      let class_ref = doc(this.teacher.collection_ref, class_id);
+    async delete_task(task_ref) {
+      try {
+        // retrieve class reference
+        let [_email, _id, task_id] = task_ref.split("/");
 
-      // create removable object and customize date string
+        // remove the document with the same id as the task from the tasks collection
+        await deleteDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id));
 
-      let removed_object = {
-        class_id: test_obj.class_id,
-        date: new Date(test_obj.date).toISOString().split("T")[0],
-        description: test_obj.description,
-        name: test_obj.name,
-        type: test_obj.type,
-      };
+        // rerun get_tasks to update local data
+      } catch (err) {
+        return Promise.reject(err);
+      }
+      try {
+        this.fetch_classes();
+      } catch (err) {
+        _statuslog("🔥 Error fetching classes after task delete", err);
+      }
 
-      // remove task
-      await updateDoc(class_ref, {
-        tasks: arrayRemove(removed_object),
-      });
-      // rerun get_tasks to update local data
-      await this.fetch_classes();
-      new SuccessToast(`Removed task "${test_obj.name}"`, 2000);
-
-      // return user to portal screen
-      router.push("/portal");
+      return Promise.resolve();
     },
   },
 });

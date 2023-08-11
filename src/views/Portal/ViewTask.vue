@@ -60,8 +60,8 @@
       <div class="flex_spacer"></div>
       <button
         class="delete_action primary_styled"
-        v-if="store.is_teacher && store.user && task.class_id.split('/')[0] == store.user.email"
-        @click="store.delete_task(task)"
+        v-if="store.is_teacher && store.user && task.ref.split('/')[0] == store.user.email"
+        @click="delete_task"
       >
         Delete
       </button>
@@ -126,6 +126,18 @@ export default {
       } else {
         new ErrorToast("Sharing not supported", 2000);
       }
+    },
+    async delete_task() {
+      this.store
+        .delete_task(this.task.ref)
+        .then(() => {
+          new SuccessToast(`Removed ${this.task.type} "${this.task.name}"`, 3000);
+          this.$emit("close");
+        })
+        .catch((err) => {
+          new ErrorToast(`Error removing ${this.task.type} "${this.task.name}"`, 3000);
+          _statuslog("⚠ Error removing task", err);
+        });
     },
   },
 };
