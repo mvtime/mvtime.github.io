@@ -191,7 +191,6 @@ export default {
   watch: {
     "store.classes": {
       handler() {
-        console.log("classes changed");
         this.run_get_tasks();
       },
       deep: true,
