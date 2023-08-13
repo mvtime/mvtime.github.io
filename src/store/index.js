@@ -105,8 +105,17 @@ export const useMainStore = defineStore({
        * @default []
        * @see {@link fetch_classes}
        * @see {@link get_tasks}
+       * @see {@link tasks}
        */
       classes: [],
+      /**
+       * @name tasks
+       * @description Collection of the processed task objects
+       * @type {Array}
+       * @default []
+       * @see {@link get_tasks}
+       */
+      tasks: [],
       /**
        * @name loaded_email
        * @description The email of the user that the classes have been loaded for (for previews in AddClass.vue)
@@ -327,45 +336,51 @@ export const useMainStore = defineStore({
         return account_doc_theme ? account_doc_theme : "light";
       }
     },
-    /**
-     * @function get_tasks
-     * @description Get all tasks from all classes
-     * @returns {Array} Array of all tasks from all classes, with class name and color added
-     * @default []
-     * @see {@link fetch_classes}
-     */
-    get_tasks() {
-      if (!this.classes?.length) return [];
-      // get all the classes with this.classes(), then get all their tasks and combine them into an array
-      let tasks = [];
-      let classes = this.classes;
-      for (let i = 0; i < classes.length; i++) {
-        let class_tasks = classes[i].tasks;
-        class_tasks = class_tasks ? class_tasks : [];
-        // add class name and color to each task
-        for (let j = 0; j < class_tasks.length; j++) {
-          classes[i].name = classes[i].name ? classes[i].name : "Unnamed Class";
-          // check task date type and convert to date object if necessary
-          if (typeof class_tasks[j].date == "string") {
-            // convert to mm-dd-yyyy from yyyy-mm-dd
-            let [year, month, day] = class_tasks[j].date.split("-");
-            class_tasks[j].date = `${month}-${day}-${year}`;
-            class_tasks[j].date = new Date(class_tasks[j].date);
-            class_tasks[j].date = isNaN(class_tasks[j].date) ? null : class_tasks[j].date;
-          }
-          // set color from parent class color
-          class_tasks[j].color = classes[i].color;
-          tasks.push({
-            ...class_tasks[j],
-            class_name: classes[i].name,
-          });
-        }
-      }
-      return tasks;
-    },
   },
   /** The actions to manipulate the store state */
   actions: {
+    /**
+     * @function get_tasks
+     * @description Get all tasks from all classes
+     * @returns {Promise} Promise that resolves to Array of all tasks from all classes, with class name and color added
+     * @default []
+     * @see {@link fetch_classes}
+     */
+    async get_tasks() {
+      try {
+        if (!this.classes?.length) return Promise.resolve([]);
+        // get all the classes with this.classes(), then get all their tasks and combine them into an array
+        let tasks = [];
+        let classes = this.classes;
+        for (let i = 0; i < classes.length; i++) {
+          let class_tasks = classes[i].tasks;
+          class_tasks = class_tasks ? class_tasks : [];
+          // add class name and color to each task
+          for (let j = 0; j < class_tasks.length; j++) {
+            classes[i].name = classes[i].name ? classes[i].name : "Unnamed Class";
+            // check task date type and convert to date object if necessary
+            if (typeof class_tasks[j].date == "string") {
+              // convert to mm-dd-yyyy from yyyy-mm-dd
+              class_tasks[j].date = class_tasks[j].date.split("T")[0];
+              let [year, month, day] = class_tasks[j].date.split("-");
+              class_tasks[j].date = `${month}-${day}-${year}`;
+              class_tasks[j].date = new Date(class_tasks[j].date);
+              class_tasks[j].date = isNaN(class_tasks[j].date) ? null : class_tasks[j].date;
+            }
+            // set color from parent class color
+            class_tasks[j].color = classes[i].color;
+            tasks.push({
+              ...class_tasks[j],
+              class_name: classes[i].name,
+            });
+          }
+        }
+        this.tasks = tasks;
+        return Promise.resolve(tasks);
+      } catch (err) {
+        return Promise.reject(err);
+      }
+    },
     /**
      * @function get_class_tasks
      * @description Get the task documents from the tasks subcollection of a class, and return them combined as one array of the objects
@@ -401,6 +416,7 @@ export const useMainStore = defineStore({
       this.account_doc = null;
       this.linked_account_doc = null;
       this.classes = [];
+      this.tasks = [];
       this.loaded_email = null;
       this.loaded_classes = null;
       this.personal_account = false;
@@ -1075,7 +1091,7 @@ export const useMainStore = defineStore({
         }
         return a.period - b.period;
       });
-
+      // this.get_tasks();
       this.classes = classes;
     },
     /**

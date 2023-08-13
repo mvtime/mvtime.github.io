@@ -74,6 +74,7 @@
 <script>
 import { useMainStore } from "@/store";
 import LoadingCover from "@/components/LoadingCover.vue";
+import { _statuslog } from "../../common";
 export default {
   name: "CalendarBlock",
   components: {
@@ -87,8 +88,12 @@ export default {
   data() {
     return {
       loaded_month: new Date(new Date().setDate(1)),
-      is_ready: true,
+      is_ready: false,
+      tasks: [],
     };
+  },
+  mounted() {
+    this.run_get_tasks();
   },
   methods: {
     day_matches(day1, day2) {
@@ -116,6 +121,18 @@ export default {
     prev_month() {
       this.loaded_month = new Date(this.loaded_month.setMonth(this.loaded_month.getMonth() - 1));
     },
+    run_get_tasks() {
+      this.is_ready = false;
+      this.tasks = this.store.tasks;
+      this.store
+        .get_tasks()
+        .then(() => {
+          this.is_ready = true;
+        })
+        .catch((err) => {
+          _statuslog("🔥 Couldn't get tasks", err);
+        });
+    },
   },
   computed: {
     tasks_loaded_month() {
@@ -126,9 +143,6 @@ export default {
           true || task_date
         );
       });
-    },
-    tasks() {
-      return this.store.get_tasks;
     },
     store() {
       return useMainStore();
@@ -173,9 +187,20 @@ export default {
       return days;
     },
   },
+  // watch for store.classes change
   watch: {
-    tasks() {
-      this.is_ready = true;
+    "store.classes": {
+      handler() {
+        console.log("classes changed");
+        this.run_get_tasks();
+      },
+      deep: true,
+    },
+    "store.tasks": {
+      handler() {
+        this.tasks = this.store.tasks;
+      },
+      deep: true,
     },
   },
 };

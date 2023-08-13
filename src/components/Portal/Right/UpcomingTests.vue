@@ -33,9 +33,11 @@ export default {
       return useMainStore();
     },
     tasks() {
-      return this.store.get_tasks
+      return this.store.tasks
         .filter((task) => {
-          return task.date?.getTime() >= Date.now() && !task.is_assignment;
+          return (
+            (task?.date?.getTime ? task.date.getTime() : 0) >= Date.now() && !task.is_assignment
+          );
         })
         .sort((a, b) => {
           if (a.date < b.date) return -1;
