@@ -1068,7 +1068,7 @@ export const useMainStore = defineStore({
           let class_tasks_snapshot = await getDocs(class_tasks);
           class_tasks_snapshot.forEach((task) => {
             let task_data = task.data();
-            task_data.id = task.id;
+            task_data.ref = [_email, _id, task.id].join("/");
             tasks.push(task_data);
           });
           class_data.tasks = tasks;
