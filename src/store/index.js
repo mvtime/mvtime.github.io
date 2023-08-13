@@ -382,30 +382,6 @@ export const useMainStore = defineStore({
       }
     },
     /**
-     * @function get_class_tasks
-     * @description Get the task documents from the tasks subcollection of a class, and return them combined as one array of the objects
-     * @param {String} class_id The id of the class to get tasks from
-     * @param {String} start_date The date to start getting tasks from
-     * @param {String} end_date The date to stop getting tasks from
-     * @returns {Array} Array of all tasks from the class
-     * @default []
-     * @see {@link fetch_classes}
-     */
-    async get_class_tasks(ref) {
-      if (!this.classes?.length || !ref) return [];
-      let class_tasks = [];
-      let [_email, _id] = ref.split("/");
-      let tasks_collection_ref = collection(db, "classes", _email, "classes", _id, "tasks");
-      let tasks_docs = await getDocs(tasks_collection_ref);
-
-      tasks_docs.forEach((doc) => {
-        let task = doc.data();
-        task.ref = [_email, _id, doc.id].join("/");
-        class_tasks.push(task);
-      });
-      return class_tasks;
-    },
-    /**
      * @function clear
      * @description Reset the store state and local storage, and redirect to home if page requires auth
      * @returns Nothing
@@ -1079,11 +1055,26 @@ export const useMainStore = defineStore({
         doc_data.id = class_path;
         doc_data.ref = [teacher, class_id].join("/");
 
-        // get tasks for class
-        doc_data.tasks = await this.get_class_tasks(doc_data.ref);
-
         classes.push(doc_data);
       }
+
+      // get tasks for all classes in parallel
+      await Promise.all(
+        classes.map(async (class_data) => {
+          let tasks = [];
+          let [_email, _id] = class_data.ref.split("/");
+          let class_ref = doc(db, "classes", _email, "classes", _id);
+          let class_tasks = collection(class_ref, "tasks");
+          let class_tasks_snapshot = await getDocs(class_tasks);
+          class_tasks_snapshot.forEach((task) => {
+            let task_data = task.data();
+            task_data.id = task.id;
+            tasks.push(task_data);
+          });
+          class_data.tasks = tasks;
+        })
+      );
+
       // sort classes by period number, then by name
       classes.sort((a, b) => {
         if (a.period == b.period) {
@@ -1297,7 +1288,6 @@ export const useMainStore = defineStore({
      * @description Get the task object from a task reference
      * @param {String} ref The task reference to get the task object from
      * @returns {Promise} A promise that resolves to the task object or rejects with an {String} error
-     * @see {@link get_class_tasks}
      */
     async task_from_ref(ref) {
       try {
