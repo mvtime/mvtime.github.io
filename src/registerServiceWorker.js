@@ -22,6 +22,7 @@ if (process.env.NODE_ENV === "production") {
     },
     updated() {
       _statuslog("🛠 New content is available; please refresh.");
+      localStorage.clear()
       window.location.reload(true);
     },
     offline() {

@@ -93,7 +93,14 @@ export default {
     };
   },
   mounted() {
-    this.run_get_tasks();
+    this.store
+      .fetch_classes()
+      .then(() => {
+        this.run_get_tasks();
+      })
+      .catch((err) => {
+        _statuslog("🔥 Couldn't fetch classes", err);
+      });
   },
   methods: {
     day_matches(day1, day2) {
@@ -122,7 +129,6 @@ export default {
       this.loaded_month = new Date(this.loaded_month.setMonth(this.loaded_month.getMonth() - 1));
     },
     run_get_tasks() {
-      this.is_ready = false;
       this.tasks = this.store.tasks;
       this.store
         .get_tasks()
@@ -191,7 +197,14 @@ export default {
   watch: {
     "store.classes": {
       handler() {
-        this.run_get_tasks();
+        this.store
+          .fetch_classes()
+          .then(() => {
+            this.run_get_tasks();
+          })
+          .catch((err) => {
+            _statuslog("🔥 Couldn't fetch classes", err);
+          });
       },
       deep: true,
     },

@@ -76,7 +76,6 @@ function setupSnapshot(uid) {
       } else {
         store.linked_account_doc = listening_doc_data;
       }
-
       // run fetch_classes() to update classes
       store.fetch_classes();
     },

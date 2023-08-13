@@ -1032,20 +1032,20 @@ export const useMainStore = defineStore({
      */
     async fetch_classes() {
       // check for duplicates
-      if (this.active_doc?.classes) {
-        let unique = [...new Set(this.active_doc.classes)];
-        if (unique.length != this.active_doc.classes.length) {
-          if (this.personal_account) {
-            this.linked_account_doc.classes = unique;
-          } else {
-            this.account_doc.classes = unique;
-          }
-          await this.update_remote();
-          new WarningToast("Removed duplicate classes", 2000);
+      if (!this.active_doc?.classes) Promise.resolve();
+
+      let unique = [...new Set(this.active_doc.classes)];
+      if (unique.length != this.active_doc.classes.length) {
+        if (this.personal_account) {
+          this.linked_account_doc.classes = unique;
+        } else {
+          this.account_doc.classes = unique;
         }
+        await this.update_remote();
+        new WarningToast("Removed duplicate classes", 2000);
       }
+
       // get all classes' data and combine into an array
-      if (!this.active_doc?.classes) return [];
       let classes = [];
       for (let class_path of this.active_doc.classes) {
         // split class path into teacher/uid
@@ -1093,6 +1093,7 @@ export const useMainStore = defineStore({
       });
       // this.get_tasks();
       this.classes = classes;
+      Promise.resolve();
     },
     /**
      * @function fetch_classes_by_email
