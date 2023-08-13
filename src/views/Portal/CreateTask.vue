@@ -126,12 +126,12 @@ export default {
   computed: {
     type_full() {
       return {
+        task: "Assignment",
         socratic: "Socratic Seminar",
         test: "Test",
         summative: "Summative Assignment",
         midterm: "Midterm",
         project: "Project",
-        task: "Task",
       }[this.task.type];
     },
     newlink_ready() {

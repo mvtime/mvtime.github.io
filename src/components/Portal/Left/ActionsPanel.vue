@@ -27,11 +27,12 @@ export default {
   data() {
     return {
       test_types: [
+        ["task", "Assignment"],
         ["socratic", "Socratic Seminar"],
-        ["test", "Test"],
         ["summative", "Summative Assignment"],
         ["midterm", "Midterm"],
         ["project", "Project"],
+        ["test", "Test"],
       ],
     };
   },
