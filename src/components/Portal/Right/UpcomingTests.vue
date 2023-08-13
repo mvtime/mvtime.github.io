@@ -33,6 +33,7 @@ export default {
       return useMainStore();
     },
     tasks() {
+      if (!this.store.tasks) return [];
       return this.store.tasks
         .filter((task) => {
           return (
