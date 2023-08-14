@@ -54,12 +54,19 @@
             <div
               class="calendar_day_task"
               v-for="task of day.tasks"
+              :is_note="task.type === 'note'"
               :key="task.name"
               :title="task.classes_class"
               :style="{ '--color-calendar-task': task.color }"
               @click="$emit('taskclick', task)"
             >
-              <span>{{ task.name }}</span>
+              <span v-if="task.type === 'note'">
+                <span class="calendar_day_task__swatch"></span>
+                <span class="calendar_day_task__note"> NOTE </span>
+              </span>
+              <span v-else>
+                {{ task.name }}
+              </span>
             </div>
           </div>
         </div>
@@ -460,6 +467,7 @@ main.calendar {
   background-color: var(--color-calendar-task);
   /* styles */
   font-size: 0.8rem;
+  font-weight: 600;
   border-radius: 5px;
   text-align: center;
   height: var(--height-calendar-task);
@@ -486,7 +494,39 @@ main.calendar {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.calendar_day_task::after {
+/* for note type */
+.calendar_day_task[is_note="true"] {
+  padding: 0;
+}
+/* contents wrapper */
+.calendar_day_task[is_note="true"] > span {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-flow: row nowrap;
+  background-color: var(--color-calendar-note);
+}
+/* swatch of the note */
+.calendar_day_task[is_note="true"] > span > .calendar_day_task__swatch {
+  display: block;
+  height: calc(var(--height-calendar-task) - 8px);
+  flex: 0 0 calc(var(--height-calendar-task) - 8px);
+  margin: 4px;
+  border-radius: 3px;
+  background-color: var(--color-calendar-task);
+}
+/* text contents of the note*/
+.calendar_day_task[is_note="true"] > span > .calendar_day_task__note {
+  display: block;
+  flex: 1 1;
+  color: var(--color-on-calendar-note);
+  font-size: 0.9em;
+  font-weight: 700;
+  line-height: var(--height-calendar-task);
+  padding: 0 var(--padding-calendar-task);
+}
+
+.calendar_day_task[is_note="false"]::after {
   content: "";
   display: block;
   width: calc(var(--padding-calendar-task) + 2px);

@@ -1236,8 +1236,9 @@ export const useMainStore = defineStore({
         await batch.commit();
         // rerun get_tasks to update local data, discard result
         this.fetch_classes();
+        let name = task_obj.type == "note" ? "" : `"${task_obj.name}"`;
         new SuccessToast(
-          `Added ${task_obj.type || "task"} "${task_obj.name}" to ${task_classes.length} class${
+          `Added ${task_obj.type || "task"} ${name} to ${task_classes.length} class${
             task_classes.length == 1 ? "" : "es"
           }`,
           2000
