@@ -196,15 +196,17 @@ export default {
   // watch for store.classes change
   watch: {
     "store.classes": {
-      handler() {
-        this.store
-          .fetch_classes()
-          .then(() => {
-            this.run_get_tasks();
-          })
-          .catch((err) => {
-            _statuslog("🔥 Couldn't fetch classes", err);
-          });
+      handler(a, b) {
+        if (a.length != b.length) {
+          this.store
+            .fetch_classes()
+            .then(() => {
+              this.run_get_tasks();
+            })
+            .catch((err) => {
+              _statuslog("🔥 Couldn't fetch classes", err);
+            });
+        }
       },
       deep: true,
     },
