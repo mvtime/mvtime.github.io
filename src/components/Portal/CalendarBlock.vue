@@ -118,13 +118,17 @@ export default {
       );
     },
     get_day_tasks(day) {
-      return this.tasks.filter((task) => {
-        const task_date = new Date(task.date);
-        return (
-          this.day_matches(task_date, day) &&
-          (!this.filtered_classes.length || this.filtered_classes.includes(task.class_id))
-        );
-      });
+      return this.tasks
+        .filter((task) => {
+          const task_date = new Date(task.date);
+          return (
+            this.day_matches(task_date, day) &&
+            (!this.filtered_classes.length || this.filtered_classes.includes(task.class_id))
+          );
+        })
+        .sort((a, b) => {
+          if (a.type == "note" && b.type != "note") return -1;
+        });
     },
     next_month() {
       this.loaded_month = new Date(this.loaded_month.setMonth(this.loaded_month.getMonth() + 1));

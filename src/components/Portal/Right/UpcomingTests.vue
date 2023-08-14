@@ -37,7 +37,9 @@ export default {
       return this.store.tasks
         .filter((task) => {
           return (
-            (task?.date?.getTime ? task.date.getTime() : 0) >= Date.now() && !task.is_assignment
+            (task?.date?.getTime ? task.date.getTime() : 0) >= Date.now() &&
+            !task.is_assignment &&
+            task.type != "note"
           );
         })
         .sort((a, b) => {
