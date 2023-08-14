@@ -5,24 +5,31 @@
     </header>
     <div class="overlay_contents">
       <div class="overlay_contents_text">
-        Schedule a new {{ task.type }} for your class{{
-          classes && classes.length == 1 ? "" : "es"
-        }}
+        <span v-if="is_note">Add a new {{ task.type }} to</span>
+        <span v-else>Schedule a new {{ task.type }} for</span>
+        your class{{ classes && classes.length == 1 ? "" : "es" }}
       </div>
       <div class="inputs_row">
         <input
+          v-if="!is_note"
           v-model="task.name"
           class="styled_input"
           type="text"
           :placeholder="type_full + ' Name'"
+          :disabled="is_note"
         />
-        <input type="date" class="styled_input input_task__date" v-model="task.date" />
+        <input
+          type="date"
+          class="styled_input input_task__date"
+          v-model="task.date"
+          :style="{ maxWidth: is_note ? '100%' : null }"
+        />
         <div class="flex-break"></div>
         <textarea
           v-model="task.description"
           class="styled_input styled_textarea task_description"
           type="text"
-          :placeholder="type_full + ' Description (Optional)'"
+          :placeholder="type_full + (is_note ? ' Contents' : ' Description (Optional)')"
         >
         </textarea>
         <div class="flex-break"></div>
@@ -83,7 +90,12 @@
         class="continue_action"
         :class="{ loading_bg: loading }"
         @click="create_task"
-        :disabled="!task.name || !task.date || !task_classes.length"
+        :disabled="
+          (!task.name && !is_note) ||
+          !task.date ||
+          !task_classes.length ||
+          (is_note && !task.description)
+        "
       >
         Add {{ task.type }}
       </button>
@@ -104,6 +116,7 @@
 
 import { useMainStore } from "@/store";
 import { _statuslog } from "@/common";
+import { ErrorToast } from "@svonk/util";
 export default {
   name: "CreateTaskView",
   emits: ["close"],
@@ -153,6 +166,9 @@ export default {
     classes() {
       return this.store.classes;
     },
+    is_note() {
+      return this.task.type === "note";
+    },
   },
   methods: {
     add_newlink() {
@@ -172,7 +188,8 @@ export default {
         })
         .catch((err) => {
           this.loading = false;
-          _statuslog("📃 Couldn't create task", err);
+          _statuslog(`📃 Couldn't create ${this.task.type || "task"}:`, err);
+          new ErrorToast("Couldn't create task", err, 2000);
         });
     },
   },

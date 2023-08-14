@@ -30,11 +30,11 @@ app.mount("#app");
 watch(
   pinia.state,
   (state) => {
-    localStorage.setItem("MVTT_app_state", JSON.stringify(state.main));
+    window.localStorage.setItem("MVTT_app_state", JSON.stringify(state.main));
   },
   { deep: true }
 );
-// when localStorage.MVTT_teacher_mode changes, reload
+// when window.localStorage.MVTT_teacher_mode changes, reload
 window.addEventListener("storage", (e) => {
   if (e.key === "MVTT_teacher_mode") {
     _statuslog("🏫 Detected teacher mode change, reloading");
@@ -145,18 +145,10 @@ router.beforeEach((to) => {
 // Allow teacher mode to be set with window.MVTT_TEACHER_MODE = true
 // (for testing purposes)
 window.toggle_teacher_mode = function () {
-  if (localStorage.getItem("MVTT_teacher_mode") === "true") {
-    localStorage.setItem("MVTT_teacher_mode", "false");
+  if (window.localStorage.getItem("MVTT_teacher_mode") === "true") {
+    window.localStorage.setItem("MVTT_teacher_mode", "false");
   } else {
-    localStorage.setItem("MVTT_teacher_mode", "true");
+    window.localStorage.setItem("MVTT_teacher_mode", "true");
   }
   window.location.reload();
-};
-window.test_onboarding = function () {
-  router.push({
-    name: "onboarding",
-    query: {
-      redirect: "/settings",
-    },
-  });
 };

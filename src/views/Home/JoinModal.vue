@@ -90,7 +90,7 @@ export default {
       }
     },
     combo() {
-      let stored = localStorage.getItem("home_art");
+      let stored = window.localStorage.getItem("home_art");
       let stored_variant = stored ? stored.split("s")[1][0] : null;
 
       return "ls" + stored_variant;

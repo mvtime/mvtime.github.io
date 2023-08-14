@@ -264,7 +264,7 @@ const router = createRouter({
           name: "task",
           component: () => import("../views/Portal/ViewTask.vue"),
           meta: {
-            page_title: "View Test",
+            page_title: "View Task",
             theme_color: {
               light: "#ffffff",
               dark: "#121212",

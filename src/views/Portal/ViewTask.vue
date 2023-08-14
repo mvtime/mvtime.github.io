@@ -13,7 +13,7 @@
             <span class="styled_line__separator"></span>
             <span class="styled_line__value">{{ task.group || task.class_name }}</span>
           </div>
-          <div class="styled_obj">
+          <div class="styled_obj" v-if="task.type != 'note'">
             <span class="styled_line__label">Name:</span>
             <span class="styled_line__separator"></span>
             <span class="styled_line__value">{{ task.name }}</span>

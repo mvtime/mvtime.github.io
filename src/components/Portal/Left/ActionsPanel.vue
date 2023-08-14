@@ -1,20 +1,20 @@
 <template>
   <div class="teacher_actions">
     <div
-      v-for="test_type of test_types"
-      :key="test_type[0]"
+      v-for="task_type of task_types"
+      :key="task_type[0]"
       class="teacher_action"
       @click="
         $router.push({
           name: 'newtask',
-          params: { tasktype: test_type[0] },
+          params: { tasktype: task_type[0] },
         })
       "
     >
       <div class="teacher_action__icon icon__add"></div>
       <div class="teacher_action__text">
         <!-- Schedule a  -->
-        {{ test_type[1] }}
+        {{ task_type[1] }}
       </div>
     </div>
 
@@ -29,7 +29,7 @@
 export default {
   data() {
     return {
-      test_types: [
+      task_types: [
         ["note", "Add a Note"],
         ["task", "Schedule an Assignment"],
         // ["socratic", "Schedule a Socratic"],

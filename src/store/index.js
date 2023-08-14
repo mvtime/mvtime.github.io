@@ -54,18 +54,18 @@ today = today.toISOString().split("T")[0];
 // define store
 export const useMainStore = defineStore({
   id: "main",
-  /** Function to create a clean store state, used for initialization. Will attempt to load from localStorage variable to save on firebase calls -> isn't always stable after app update that changes state keyings */
+  /** Function to create a clean store state, used for initialization. Will attempt to load from window.localStorage variable to save on firebase calls -> isn't always stable after app update that changes state keyings */
   state: () => {
     let state = {};
     // setting up store
     if (
-      localStorage.getItem("MVTT_app_state") &&
-      localStorage.getItem("MVTT_app_state") != "undefined" &&
-      localStorage.getItem("MVTT_app_state") != "null"
+      window.localStorage.getItem("MVTT_app_state") &&
+      window.localStorage.getItem("MVTT_app_state") != "undefined" &&
+      window.localStorage.getItem("MVTT_app_state") != "null"
     ) {
       try {
         _statuslog("↻ Loading state from local storage");
-        state = JSON.parse(localStorage.getItem("MVTT_app_state"));
+        state = JSON.parse(window.localStorage.getItem("MVTT_app_state"));
         return state;
       } catch (err) {
         _statuslog("⟳ Error parsing local storage state", err);
@@ -223,7 +223,7 @@ export const useMainStore = defineStore({
     is_teacher() {
       // check if email is a teacher email (ends in @mvla.net) && has letters in the first part
       if (!this.user) return false;
-      if (window?.localStorage?.MVTT_teacher_mode == "true") {
+      if (window?.window.localStorage?.MVTT_teacher_mode == "true") {
         if (this.personal_account) {
           _statuslog("🏫 Personal account, overriding local teacher mode");
           return false;
@@ -308,7 +308,7 @@ export const useMainStore = defineStore({
      */
     get_theme() {
       // get local
-      let local_theme = this.theme || localStorage.getItem("theme");
+      let local_theme = this.theme || window.localStorage.getItem("theme");
       // get userdoc theme
       let account_doc_theme = this.account_doc?.theme;
       // set new to system by default
@@ -320,7 +320,7 @@ export const useMainStore = defineStore({
           new_theme = local_theme;
         } else {
           // set to system if local doesn't exist, and set update local
-          localStorage.setItem("theme", new_theme);
+          window.localStorage.setItem("theme", new_theme);
         }
         if (this.account_doc) {
           this.account_doc.theme = new_theme;
@@ -331,7 +331,7 @@ export const useMainStore = defineStore({
       // if userdoc theme, use userdoc theme, and set local theme to userdoc theme
       else {
         if (local_theme != account_doc_theme) {
-          localStorage.setItem("theme", account_doc_theme);
+          window.localStorage.setItem("theme", account_doc_theme);
         }
         return account_doc_theme ? account_doc_theme : "light";
       }
@@ -400,7 +400,7 @@ export const useMainStore = defineStore({
         doc_ref: null,
         collection_ref: null,
       };
-      localStorage.removeItem("MVTT_app_state");
+      window.localStorage.removeItem("MVTT_app_state");
       // if page requires auth, redirect to home
       if (router.currentRoute?.value?.meta?.requiresAuth) {
         router.push("/");
@@ -669,7 +669,7 @@ export const useMainStore = defineStore({
      */
     async toggle_theme() {
       this.theme = this.get_theme == "light" ? "dark" : "light";
-      localStorage.setItem("theme", this.theme);
+      window.localStorage.setItem("theme", this.theme);
       if (this?.account_doc) {
         this.account_doc.theme = this.theme;
         await this.update_remote();
@@ -1209,45 +1209,36 @@ export const useMainStore = defineStore({
     /**
      * @function create_task
      * @description Create a task with the given object, and add it to the classes specified in the object. (for teachers)
-     * @param {Object} test_obj The task object to with the task data, data will be added to /classes docs
-     * @param {Array} test_classes The classes to add the task to
+     * @param {Object} task_obj The task object to with the task data, data will be added to /classes docs
+     * @param {Array} task_classes The classes to add the task to
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      */
-    async create_task(test_obj, test_classes) {
+    async create_task(task_obj, task_classes) {
       try {
-        if (!test_obj.name) {
-          new ErrorToast("Please enter a test name", 2000);
-          return;
-        } else if (!test_classes || test_classes.length == 0) {
-          new ErrorToast("Please select at least one class", 2000);
-          return;
+        if (!task_obj.name && task_obj?.type != "note") {
+          return Promise.reject("No task name specified");
+        } else if (!task_classes || task_classes.length == 0) {
+          return Promise.reject("No classes selected");
         }
-        // use firebase array add to add test to each class
+        // use firebase array add to add task to each class
         let batch = writeBatch(db);
-        test_classes.forEach((class_id) => {
+        task_classes.forEach((class_id) => {
           // fix any class_id that has the teacher email in it
           let displayed_class_id = class_id;
-          class_id = class_id.split("/")[class_id.split("/").length - 1];
+          let [_email, _id] = class_id.split("/");
           // use this.teacher.collection_ref to get class collection ref, then update the class documents within
-          let class_tasks_collection = collection(
-            db,
-            "classes",
-            this.user.email,
-            "classes",
-            class_id,
-            "tasks"
-          );
-          test_obj.class_id = displayed_class_id;
+          let class_tasks_collection = collection(db, "classes", _email, "classes", _id, "tasks");
+          task_obj.class_id = displayed_class_id;
 
           // batch add a new task doc with the data to the class_tasks_collection collection, using auto-generated id
-          batch.set(doc(class_tasks_collection), test_obj);
+          batch.set(doc(class_tasks_collection), task_obj);
         });
         await batch.commit();
         // rerun get_tasks to update local data, discard result
         this.fetch_classes();
         new SuccessToast(
-          `Added test "${test_obj.name}" to ${test_classes.length} class${
-            test_classes.length == 1 ? "" : "es"
+          `Added ${task_obj.type || "task"} "${task_obj.name}" to ${task_classes.length} class${
+            task_classes.length == 1 ? "" : "es"
           }`,
           2000
         );
@@ -1259,7 +1250,7 @@ export const useMainStore = defineStore({
     /**
      * @function delete_task
      * @description Delete an instance of a task from a class (for teachers). Intended to be preformed from the ViewTask Modal
-     * @param {Object} test_obj The task object to with the task data, data will be removed from /classes document for this particular instance only
+     * @param {String} task_ref the "email/class_id" String representation of the task ref in firebase
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      * @see {@link create_task}
      * @note This currently only removes the instance of the task being viewed. Could add a secondary modal to allow deletion of multiple instances instead?

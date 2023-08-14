@@ -55,7 +55,7 @@ export default {
     const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
       ? "dark"
       : "light";
-    const storedTheme = localStorage.getItem("theme");
+    const storedTheme = window.localStorage.getItem("theme");
     this.isDarkMode = storedTheme === "dark" || (storedTheme === null && systemTheme === "dark");
   },
   methods: {
