@@ -34,12 +34,15 @@ export default {
   computed: {
     type_full() {
       return {
+        note: "Note",
         task: "Assignment",
-        socratic: "Socratic Seminar",
+        // socratic: "Socratic Seminar",
         test: "Test",
-        summative: "Summative Assignment",
-        midterm: "Midterm",
+        // summative: "Summative Assignment",
+        // midterm: "Midterm",
         project: "Project",
+        quiz: "Quiz",
+        exam: "Exam",
       }[this.task.type];
     },
   },

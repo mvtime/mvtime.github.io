@@ -12,7 +12,10 @@
       "
     >
       <div class="teacher_action__icon icon__add"></div>
-      <div class="teacher_action__text">Schedule a {{ test_type[1] }}</div>
+      <div class="teacher_action__text">
+        <!-- Schedule a  -->
+        {{ test_type[1] }}
+      </div>
     </div>
 
     <div class="teacher_action" @click="$router.push('/portal/create')">
@@ -27,12 +30,15 @@ export default {
   data() {
     return {
       test_types: [
-        ["task", "Assignment"],
-        ["socratic", "Socratic Seminar"],
-        ["summative", "Summative Assignment"],
-        ["midterm", "Midterm"],
-        ["project", "Project"],
-        ["test", "Test"],
+        ["note", "Add a Note"],
+        ["task", "Schedule an Assignment"],
+        // ["socratic", "Schedule a Socratic"],
+        // ["summative", "Schedule a Summative"],
+        ["project", "Schedule a Project"],
+        ["test", "Schedule a Test"],
+        ["quiz", "Schedule a Quiz"],
+        ["exam", "Schedule an Exam"],
+        // ["other", "Schedule something else"],
       ],
     };
   },
