@@ -65,7 +65,12 @@
       <div class="flex_spacer"></div>
       <button
         class="delete_action primary_styled"
-        v-if="store.is_teacher && store.user && task && task.ref.split('/')[0] == store.user.email"
+        v-if="
+          store.is_teacher &&
+          store.user &&
+          task &&
+          task.ref.split('/')[0] == store.user.email.replace('@mvla.net', '')
+        "
         @click="delete_task"
       >
         Delete

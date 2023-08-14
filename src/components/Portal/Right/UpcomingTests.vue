@@ -51,11 +51,13 @@ export default {
     },
   },
   methods: {
+    /** Show a task in the ViewTask ModalVue */
     show_task(task) {
       this.$router.push({
-        name: task.is_assignment ? "assignment" : "task",
+        name: "task",
         params: {
-          ref: task.ref,
+          // replace all slashes with ~ to avoid router issues
+          ref: task.ref.replace("@mvla.net", "").split("/").join("~"),
         },
       });
     },

@@ -1009,7 +1009,7 @@ export const useMainStore = defineStore({
     async fetch_classes() {
       _statuslog("📚 Fetching classes...");
       // check for duplicates
-      if (!this.active_doc?.classes) Promise.resolve();
+      if (!this.active_doc?.classes) return Promise.reject("Waiting for user document to load");
 
       let unique = [...new Set(this.active_doc.classes)];
       if (unique.length != this.active_doc.classes.length) {
@@ -1083,7 +1083,7 @@ export const useMainStore = defineStore({
         }
         return a.period - b.period;
       });
-      // this.get_tasks();
+      this.get_tasks();
       this.classes = classes;
       Promise.resolve();
     },
@@ -1257,9 +1257,10 @@ export const useMainStore = defineStore({
      * @note This currently only removes the instance of the task being viewed. Could add a secondary modal to allow deletion of multiple instances instead?
      */
     async delete_task(task_ref) {
+      let [_email, _id, task_id] = task_ref.split("/");
+      _email += "@mvla.net";
       try {
         // retrieve class reference
-        let [_email, _id, task_id] = task_ref.split("/");
 
         // remove the document with the same id as the task from the tasks collection
         await deleteDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id));
@@ -1269,9 +1270,19 @@ export const useMainStore = defineStore({
         return Promise.reject(err);
       }
       try {
-        this.fetch_classes();
+        let classes = this.classes;
+        classes.forEach((class_obj) => {
+          if (class_obj.id == [_email, _id].join("/")) {
+            class_obj.tasks = class_obj.tasks.filter((task) => {
+              console.log(task.ref, [_email, _id, task_id].join("/"));
+              return [_email, _id, task_id].join("/") != task_ref;
+            });
+          }
+        });
+        this.classes = classes;
+        this.get_tasks();
       } catch (err) {
-        _statuslog("🔥 Error fetching classes after task delete", err);
+        _statuslog("🔥 Error removing task from local", err);
       }
 
       return Promise.resolve();
