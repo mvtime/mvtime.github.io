@@ -1007,7 +1007,7 @@ export const useMainStore = defineStore({
      * @see {@link remove_class_id_helper}
      */
     async fetch_classes() {
-      console.log("fetching classes");
+      _statuslog("📚 Fetching classes...");
       // check for duplicates
       if (!this.active_doc?.classes) Promise.resolve();
 
@@ -1066,7 +1066,6 @@ export const useMainStore = defineStore({
           let [_email, _id] = class_data.ref.split("/");
           let class_ref = doc(db, "classes", _email, "classes", _id);
           let class_tasks = collection(class_ref, "tasks");
-          console.log("doing getall");
           let class_tasks_snapshot = await getDocs(class_tasks);
           class_tasks_snapshot.forEach((task) => {
             let task_data = task.data();

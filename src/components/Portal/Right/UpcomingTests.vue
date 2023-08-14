@@ -50,7 +50,6 @@ export default {
   },
   methods: {
     show_task(task) {
-      console.log("showing_task", task);
       this.$router.push({
         name: task.is_assignment ? "assignment" : "task",
         params: {
