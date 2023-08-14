@@ -52,7 +52,7 @@
           </div>
           <div class="calendar_day_tasks">
             <div
-              class="calendar_day_task"
+              class="calendar_day_task click-action"
               v-for="task of day.tasks"
               :is_note="task.type === 'note'"
               :key="task.name"

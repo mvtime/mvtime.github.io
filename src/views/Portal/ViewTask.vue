@@ -30,7 +30,9 @@
             }}</span>
           </div>
           <div class="styled_obj">
-            <span class="styled_line__label">Description:</span>
+            <span class="styled_line__label"
+              >{{ task.type == "note" ? "Contents" : "Description" }}:</span
+            >
             <span class="styled_line__separator"></span>
             <span
               class="styled_line__value"
