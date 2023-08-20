@@ -61,7 +61,7 @@
   align-items: center;
   padding: calc(var(--padding-overlay) / 1.5) var(--padding-overlay);
 }
-.bottom_actions > * {
+.bottom_actions > *:not(.flex_spacer) {
   margin-left: var(--padding-overlay);
   height: var(--height-overlay-action);
   padding: 0 var(--padding-overlay-action);
