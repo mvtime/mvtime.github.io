@@ -140,14 +140,15 @@ export default {
       }
     },
     async delete_task() {
+      let name = this.task.name ? ` "${this.task.name}"` : this.task.class_name;
       this.store
         .delete_task(this.task.ref)
         .then(() => {
-          new SuccessToast(`Removed ${this.task.type} "${this.task.name}"`, 3000);
+          new SuccessToast(`Removed ${this.task.type}${name}`, 3000);
           this.$emit("close");
         })
         .catch((err) => {
-          new ErrorToast(`Error removing ${this.task.type} "${this.task.name}"`, 3000);
+          new ErrorToast(`Error removing ${this.task.type}${name}`, 3000);
           _statuslog("⚠ Error removing task", err);
         });
     },

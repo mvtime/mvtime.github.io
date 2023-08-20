@@ -1222,6 +1222,7 @@ export const useMainStore = defineStore({
         }
         // use firebase array add to add task to each class
         let batch = writeBatch(db);
+        let updated_classes = Array.from(this.classes);
         task_classes.forEach((class_id) => {
           // fix any class_id that has the teacher email in it
           let displayed_class_id = class_id;
@@ -1231,11 +1232,23 @@ export const useMainStore = defineStore({
           task_obj.class_id = displayed_class_id;
 
           // batch add a new task doc with the data to the class_tasks_collection collection, using auto-generated id
-          batch.set(doc(class_tasks_collection), task_obj);
+          let task_ref = doc(class_tasks_collection);
+          batch.set(task_ref, task_obj);
+          updated_classes.forEach((class_obj) => {
+            if (class_obj.id == displayed_class_id) {
+              class_obj.tasks.push({
+                ...task_obj,
+                ref: [_email, _id, task_ref.id].join("/"),
+                _proxy: true,
+              });
+            }
+          });
         });
         await batch.commit();
-        // rerun get_tasks to update local data, discard result
-        this.fetch_classes();
+        // update this.classes.tasks for each, then rerun get_tasks to update this.tasks from updated classes
+        this.classes = updated_classes;
+        this.get_tasks();
+
         let name = task_obj.type == "note" ? "" : `"${task_obj.name}"`;
         new SuccessToast(
           `Added ${task_obj.type || "task"} ${name} to ${task_classes.length} class${
@@ -1274,8 +1287,7 @@ export const useMainStore = defineStore({
         classes.forEach((class_obj) => {
           if (class_obj.id == [_email, _id].join("/")) {
             class_obj.tasks = class_obj.tasks.filter((task) => {
-              console.log(task.ref, [_email, _id, task_id].join("/"));
-              return [_email, _id, task_id].join("/") != task_ref;
+              return task.ref != [_email, _id, task_id].join("/");
             });
           }
         });
