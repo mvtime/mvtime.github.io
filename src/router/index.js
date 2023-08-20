@@ -260,8 +260,8 @@ const router = createRouter({
         },
         {
           // specify param "test" in the route
-          path: "/portal/task/:ref?",
-          name: "task",
+          path: "/portal/view/:ref?",
+          name: "viewtask",
           component: () => import("../views/Portal/ViewTask.vue"),
           meta: {
             page_title: "View Task",
