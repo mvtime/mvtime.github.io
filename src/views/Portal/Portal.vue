@@ -231,6 +231,14 @@ main.portal .portal_sidebar {
   }
   main.portal .portal_sidebar {
     z-index: 2;
+    position: fixed;
+  }
+
+  .portal_sidebar.left-bar {
+    left: 0;
+  }
+  .portal_sidebar.right-bar {
+    right: 0;
   }
   main.portal .portal_sidebar:not(.active) {
     cursor: pointer;
@@ -304,14 +312,8 @@ header.portal_info {
 @media (max-width: 400px) {
   main.portal .portal_sidebar {
     min-width: 300px;
-    position: absolute;
+    position: fixed;
     top: 0;
-  }
-  .portal_sidebar.left-bar {
-    left: 0;
-  }
-  .portal_sidebar.right-bar {
-    right: 0;
   }
   .portal_content {
     --padding-portal: 20px 30px;
