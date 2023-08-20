@@ -1313,6 +1313,7 @@ export const useMainStore = defineStore({
         let class_data = class_doc.data();
 
         let task_doc = await getDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id));
+        if (!task_doc.exists()) return Promise.resolve(null);
         let task_data = task_doc.data();
         task_data.ref = ref;
         task_data.class_name = class_data.name || "Unknown Class";

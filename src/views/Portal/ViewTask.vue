@@ -164,7 +164,7 @@ export default {
         .task_from_ref(ref)
         .then((task) => {
           if (!task) {
-            new WarningToast("Task not found", 1500);
+            new WarningToast("Couldn't find that task", 2000);
             this.$emit("close");
           } else {
             _statuslog("📃 Got task data from ref");
