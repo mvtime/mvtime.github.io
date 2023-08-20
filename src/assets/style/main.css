@@ -154,6 +154,15 @@ h3.secondary_home_text {
   height: 25px;
   transform: translateY(25%);
 }
+.button_pointer_icon.click-action {
+  transform: scale(1) translateY(25%);
+}
+.button_pointer_icon.click-action:hover {
+  transform: scale(1.05) translateY(25%);
+}
+.button_pointer_icon.click-action:active {
+  transform: scale(0.95) translateY(25%);
+}
 .button_pointer_icon .icon {
   width: 25px;
   height: 25px;

@@ -60,7 +60,11 @@
       </div>
       <div class="overlay_contents_text">
         To change your theme, use the
-        <span class="button_pointer_text button_pointer_icon">
+        <span
+          id="theme_pointer_button"
+          class="button_pointer_text button_pointer_icon click-action"
+          @click="store.toggle_theme()"
+        >
           <div class="theme_icon icon"></div>
           Switch Theme
         </span>
