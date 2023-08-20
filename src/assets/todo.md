@@ -25,6 +25,8 @@
   - ~~regular assignment / generic task type~~
   - ~~id tasks for easier load/share~~
   - ~~view task by task id~~
+  - ~~less cluttered scheduling options (use dropdown)~~
+  - ~~convert /task to /view/{type}/{info}~~
 - Student involvement
   - classes from static set
   - way for students to access teacher features for their peers / as a proxy for the teacher
