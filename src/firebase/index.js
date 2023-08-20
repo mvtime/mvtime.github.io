@@ -29,6 +29,7 @@ export { app, auth, db, analytics, authChangeAction, refreshTimeout };
 // handle auth updates (user login/logout) and set user data in store
 import { useMainStore } from "../store";
 import { _statuslog } from "@/common";
+import router from "@/router";
 auth.onAuthStateChanged((user) => {
   authChangeAction(user);
 });
@@ -119,6 +120,12 @@ function refreshTimeout(delay) {
   if (!subscribed) {
     // setup snapshot and pull data
     setupSnapshot(store.personal_account ? store.account_doc.linked_to : store.user.uid);
+    // get class data / tasks again if "/portal" in path (check w/ router)
+    if (router.currentRoute.value && router.currentRoute.value.path.startsWith("/portal")) {
+      _statuslog("⬥ Refreshing class data");
+      store.fetch_classes();
+    }
+
     _statuslog("⬥ Resubscribed to remote changes");
   }
   clearTimeout(timeout);
