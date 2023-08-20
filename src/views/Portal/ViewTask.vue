@@ -140,7 +140,7 @@ export default {
       }
     },
     async delete_task() {
-      let name = this.task.name ? ` "${this.task.name}"` : this.task.class_name;
+      let name = this.task.name ? ` "${this.task.name}"` : "";
       this.store
         .delete_task(this.task.ref)
         .then(() => {
