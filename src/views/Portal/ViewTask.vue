@@ -158,6 +158,9 @@ export default {
       if (!ref) {
         new WarningToast("No task specified", 1500);
         this.$emit("close");
+      } else if (ref.split("/").length < 3) {
+        new WarningToast("Invalid task specified", 1500);
+        this.$emit("close");
       }
       // get task from store
       this.store
