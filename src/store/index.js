@@ -1322,5 +1322,26 @@ export const useMainStore = defineStore({
         return Promise.reject(err);
       }
     },
+    /**
+     * @function show_timeout
+     * @description Show a popup saying that the session has timed out
+     * @returns Nothing
+     * @see {@link hide_timeout}
+     * @see {@link refresh_timeout}
+     */
+    show_timeout() {
+      _statuslog("🕒 Showing timeout");
+    },
+
+    /**
+     * @function hide_timeout
+     * @description Hide the popup saying that the session has timed out
+     * @returns Nothing
+     * @see {@link show_timeout}
+     * @see {@link refresh_timeout}
+     */
+    hide_timeout() {
+      _statuslog("🕒 Hiding timeout");
+    },
   },
 });

@@ -95,6 +95,8 @@ function unsubscribe() {
     unsub();
     _statuslog("⬥ Unsubscribed from remote changes");
   }
+  let store = useMainStore();
+  store.show_timeout();
   subscribed = false;
 }
 
@@ -125,7 +127,7 @@ function refreshTimeout(delay) {
       _statuslog("⬥ Refreshing class data");
       store.fetch_classes();
     }
-
+    store.hide_timeout();
     _statuslog("⬥ Resubscribed to remote changes");
   }
   clearTimeout(timeout);

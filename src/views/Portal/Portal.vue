@@ -212,13 +212,18 @@ main.portal .portal_sidebar {
 }
 
 main.portal .portal_sidebar {
-  max-height: 800px;
   margin: auto 0;
   height: 100%;
   transition: transform 0.3s ease-out;
   /* layout */
   display: flex;
   flex-flow: column nowrap;
+}
+@media (min-height: 800px) {
+  main.portal .portal_sidebar {
+    max-height: 800px;
+    top: calc(50% - 400px);
+  }
 }
 @media (max-width: 1200px) {
   main.portal .portal_content {
