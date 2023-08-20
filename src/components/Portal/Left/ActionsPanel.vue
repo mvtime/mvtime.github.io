@@ -31,14 +31,7 @@ export default {
     return {
       task_types: [
         ["note", "Add a Note"],
-        ["task", "Schedule an Assignment"],
-        // ["socratic", "Schedule a Socratic"],
-        // ["summative", "Schedule a Summative"],
-        ["project", "Schedule a Project"],
-        ["test", "Schedule a Test"],
-        ["quiz", "Schedule a Quiz"],
-        ["exam", "Schedule an Exam"],
-        // ["other", "Schedule something else"],
+        ["task", "Schedule a Task or Test"],
       ],
     };
   },

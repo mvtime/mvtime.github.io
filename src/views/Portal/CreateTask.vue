@@ -1,7 +1,24 @@
 <template>
   <div class="create_task">
     <header class="modal_header">
-      <h2 class="header_style modal_header_title">Add a {{ type_full }}</h2>
+      <h2 class="header_style modal_header_title">
+        <span>Add a{{ is_vowel(type_full[0]) ? "n" : "" }}&MediumSpace;</span>
+        <select
+          title="Task type"
+          v-model="task.type"
+          class="type_dropdown styled_input styled_select"
+          ref="type"
+        >
+          <option
+            class="type_dropdown__option styled_select__option"
+            v-for="pair in Object.entries(types)"
+            :value="pair[0]"
+            :key="pair[0]"
+          >
+            {{ pair[1] }}
+          </option>
+        </select>
+      </h2>
     </header>
     <div class="overlay_contents">
       <div class="overlay_contents_text">
@@ -117,6 +134,7 @@
 import { useMainStore } from "@/store";
 import { _statuslog } from "@/common";
 import { ErrorToast } from "@svonk/util";
+
 export default {
   name: "CreateTaskView",
   emits: ["close"],
@@ -134,11 +152,7 @@ export default {
         path: "",
       },
       loading: false,
-    };
-  },
-  computed: {
-    type_full() {
-      return {
+      types: {
         note: "Note",
         task: "Assignment",
         // socratic: "Socratic Seminar",
@@ -148,7 +162,12 @@ export default {
         project: "Project",
         quiz: "Quiz",
         exam: "Exam",
-      }[this.task.type];
+      },
+    };
+  },
+  computed: {
+    type_full() {
+      return this.get_type(this.task.type);
     },
     newlink_ready() {
       // check if path and text, and also that path is a valid url
@@ -171,6 +190,12 @@ export default {
     },
   },
   methods: {
+    get_type(type = this.task.type) {
+      return this.types[type] || type;
+    },
+    is_vowel(char) {
+      return ["a", "e", "i", "o", "u"].includes(char.toLowerCase());
+    },
     add_newlink() {
       if (!this.task.links) this.task.links = [];
       this.task.links.push(this.newlink);
@@ -230,5 +255,16 @@ export default {
 }
 .styled_input.input_task__date {
   margin-right: 0;
+}
+select.type_dropdown {
+  padding: 5px;
+  background-color: var(--color-overlay-input);
+  color: var(--color-on-overlay-input);
+  border: none;
+  border-radius: var(--radius-overlay-input);
+  width: auto;
+}
+.type_dropdown__option {
+  font-size: 14px;
 }
 </style>

@@ -102,10 +102,19 @@
   border-left: none;
   border-right: none;
 }
-h2.modal_header_title {
+.modal_header,
+.modal_header_title {
+  display: inline-flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+h2.modal_header_title,
+h2.modal_header_title > * {
   font-size: 25px;
   font-weight: 600;
   margin-bottom: 0;
+  flex-shrink: 0;
 }
 
 .inputs_row,
