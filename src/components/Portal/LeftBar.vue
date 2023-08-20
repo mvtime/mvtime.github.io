@@ -82,7 +82,13 @@ export default {
   main.portal .portal_sidebar:hover {
     transform: translate(calc(-100% + 25px));
   }
+  /* prevent accidental clicks when hovering over collapsed sidebar */
+  main.portal .portal_sidebar:not(.active) * {
+    pointer-events: none !important;
+    user-select: none !important;
+  }
 }
+
 .branding-title {
   font-weight: 700;
   font-size: 20px;
