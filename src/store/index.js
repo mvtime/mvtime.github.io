@@ -223,7 +223,10 @@ export const useMainStore = defineStore({
     is_teacher() {
       // check if email is a teacher email (ends in @mvla.net) && has letters in the first part
       if (!this.user) return false;
-      if (window?.window.localStorage?.MVTT_teacher_mode == "true") {
+      if (
+        window?.localStorage?.MVTT_teacher_mode == "true" ||
+        this.active_doc?.teacher_mode == true
+      ) {
         if (this.personal_account) {
           _statuslog("🏫 Personal account, overriding local teacher mode");
           return false;
@@ -234,7 +237,6 @@ export const useMainStore = defineStore({
       }
       let email = this.user.email;
       let [first, last] = email.split("@");
-      // return last == "mvla.net" && !/\d/.test(first);
       return last == "mvla.net" && !/\d/.test(first);
     },
     /**
