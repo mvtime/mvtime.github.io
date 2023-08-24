@@ -224,20 +224,32 @@ export const useMainStore = defineStore({
       // check if email is a teacher email (ends in @mvla.net) && has letters in the first part
       if (!this.user) return false;
       if (
-        window?.localStorage?.MVTT_teacher_mode == "true" ||
-        this.active_doc?.teacher_mode == true
+        this.active_doc?.teacher_mode == true ||
+        window?.localStorage?.MVTT_teacher_mode == "true"
       ) {
-        if (this.personal_account) {
-          _statuslog("🏫 Personal account, overriding local teacher mode");
-          return false;
+        if (this.active_doc?.teacher_mode == true || this.active_doc?.teacher_mode == null) {
+          window.localStorage.setItem("MVTT_teacher_mode", true);
+          if (this.personal_account) {
+            _statuslog("🏫 Personal account, overriding local teacher mode");
+            return false;
+          } else {
+            _statuslog("🏫 Teacher mode enabled locally");
+            return true;
+          }
         } else {
-          _statuslog("🏫 Teacher mode enabled locally");
-          return true;
+          window.localStorage.setItem("MVTT_teacher_mode", false);
+          _statuslog("🏫 Teacher mode disabled locally to reflect remote changes");
         }
       }
+
       let email = this.user.email;
       let [first, last] = email.split("@");
-      return last == "mvla.net" && !/\d/.test(first);
+      if (last == "mvla.net" && !/\d/.test(first)) {
+        _statuslog("🏫 Teacher mode enabled for non-student district account");
+        return true;
+      } else {
+        return false;
+      }
     },
     /**
      * @function done_daily_survey
