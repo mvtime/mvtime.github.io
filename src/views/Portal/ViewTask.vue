@@ -48,7 +48,7 @@
                 v-for="task_link in task.links"
                 target="_blank"
                 :key="task_link.path"
-                :href="task_link.path"
+                :href="`/to/${encodeURIComponent(task_link.path)}`"
                 >{{ task_link.text }}</a
               >
             </span>
@@ -124,11 +124,17 @@ export default {
     /** Shares the task as JSON in the URI, or copies the URI to the clipboard if sharing is not supported */
     async share_task() {
       if (navigator.share) {
+        let url = new URL(window.location.href);
+        // fix url for prod
+        url.host = "mvtt.app";
+        url.port = "";
+        url.protocol = "https";
+
         navigator
           .share({
             title: this.task.name,
             text: this.task.description,
-            url: window.location.href,
+            url: url.href,
           })
           .then(() => new SuccessToast("Opened share dialog", 1000))
           .catch((err) => _statuslog("Error sharing", err));

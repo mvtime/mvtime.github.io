@@ -16,7 +16,7 @@
     </div>
     <div class="bottom_actions">
       <button class="close_action" v-if="skippable" @click="$emit('skip')">
-        {{ progress && progress.current > 1 ? "Abandon" : "Close" }}
+        {{ skip_text || (progress && progress.current > 1 ? "Abandon" : "Close") }}
       </button>
       <div class="progress_display" v-if="progress && progress.total > 1">
         <span
@@ -52,6 +52,7 @@
  * @property {Object} progress - An object with current and total properties, to display progress.
  * @property {Boolean} is_notification - Whether the modal is a notification, and should not be closed.
  * @property {String} submit_text - The text to display on the continue button.
+ * @property {String} skip_text - The text to display on the skip button.
  *  */
 import { _statuslog } from "@/common";
 import smoothReflow from "vue-smooth-reflow";
@@ -123,6 +124,10 @@ export default {
       required: false,
     },
     submit_text: {
+      type: String,
+      required: false,
+    },
+    skip_text: {
       type: String,
       required: false,
     },

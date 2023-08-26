@@ -198,6 +198,10 @@ export default {
     },
     add_newlink() {
       if (!this.task.links) this.task.links = [];
+      // add protocol if missing
+      this.newlink.path = this.newlink.path.startsWith("http")
+        ? this.newlink.path
+        : "https://" + this.newlink.path;
       this.task.links.push(this.newlink);
       this.newlink = {
         text: "",

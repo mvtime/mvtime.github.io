@@ -32,6 +32,21 @@ const router = createRouter({
             requiresAuth: false,
           },
           children: [
+            // redirect page
+            {
+              path: "to/:path?",
+              name: "redirect",
+              component: () => import("../views/Home/Redirect.vue"),
+              meta: {
+                page_title: "Redirecting...",
+                theme_color: {
+                  light: "#ffffff",
+                  dark: "#16130e",
+                },
+                requiresAuth: false,
+              },
+            },
+            // join form
             {
               path: "join",
               name: "join",

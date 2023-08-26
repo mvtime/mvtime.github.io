@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import "@/assets/style/overlay.css";
 export default {
   name: "OverlayWrapper",
   emits: ["close"],
