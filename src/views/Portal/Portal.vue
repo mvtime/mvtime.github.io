@@ -212,7 +212,7 @@ main.portal .portal_sidebar {
 }
 
 main.portal .portal_sidebar {
-  margin: auto 0;
+  /* margin: auto 0; */
   height: 100%;
   transition: transform 0.3s ease-out;
   /* layout */
