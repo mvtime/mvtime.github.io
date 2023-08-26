@@ -27,12 +27,15 @@
   - ~~view task by task id~~
   - ~~less cluttered scheduling options (use dropdown)~~
   - ~~convert /task to /view/{type}/{info}~~
+  - ~~add editing functionality~~
 - Student involvement
-  - classes from static set
+  - share class join link / join by code
   - way for students to access teacher features for their peers / as a proxy for the teacher
+  - classes from static set
 - Modal features
   - fix overflow on very small screens
   - show back button?
+  - ~~redirect modal / outlink interceptor~~
 - Accounts
   - create prefs screen / email prefs saving
   - ~~allow connected personal / non-school email~~
