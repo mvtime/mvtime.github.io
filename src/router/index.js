@@ -274,12 +274,29 @@ const router = createRouter({
           },
         },
         {
-          // specify param "test" in the route
+          // specify param "ref" in the route
           path: "/portal/view/:ref?",
           name: "viewtask",
           component: () => import("../views/Portal/ViewTask.vue"),
           meta: {
             page_title: "View Task",
+            theme_color: {
+              light: "#ffffff",
+              dark: "#121212",
+            },
+            requiresAuth: false,
+            props: (route) => ({
+              ref: route.params.ref,
+            }),
+          },
+        },
+        {
+          // specify param "ref" in the route
+          path: "/portal/edit/:ref?",
+          name: "edit",
+          component: () => import("../views/Portal/EditTask.vue"),
+          meta: {
+            page_title: "Edit Task",
             theme_color: {
               light: "#ffffff",
               dark: "#121212",

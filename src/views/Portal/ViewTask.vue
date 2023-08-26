@@ -71,9 +71,9 @@
           task &&
           task.ref.split('/')[0] == store.user.email.replace('@mvla.net', '')
         "
-        @click="delete_task"
+        @click="edit_task"
       >
-        Delete
+        Edit
       </button>
       <button class="continue_action" @click="$emit('close')">Close</button>
     </div>
@@ -81,10 +81,10 @@
 </template>
 <script>
 /**
- * Displays the details of a task and allows the teacher to delete it, or any user to share it (as JSON in the URI).
+ * Displays the details of a task and allows the teacher to edit it, or any user to share it (as JSON in the URI).
  *
  * @module ViewTaskView
- * @description Modal that displays the details of a task and allows the teacher to delete it.
+ * @description Modal that displays the details of a task and allows the teacher to edit it.
  * @requires module:store/MainStore
  * @emits {Function} close - An event emitted when the modal is closed.
  */
@@ -145,18 +145,14 @@ export default {
         new ErrorToast("Sharing not supported", 2000);
       }
     },
-    async delete_task() {
-      let name = this.task.name ? ` "${this.task.name}"` : "";
-      this.store
-        .delete_task(this.task.ref)
-        .then(() => {
-          new SuccessToast(`Removed ${this.task.type}${name}`, 3000);
-          this.$emit("close");
-        })
-        .catch((err) => {
-          new ErrorToast(`Error removing ${this.task.type}${name}`, 3000);
-          _statuslog("⚠ Error removing task", err);
-        });
+    edit_task() {
+      // this.$emit("close");
+      this.$router.push({
+        name: "edit",
+        params: {
+          ref: this.task.ref.split("/").join("~"),
+        },
+      });
     },
     async get_task() {
       // get task ref from route params

@@ -16,7 +16,7 @@ import {
   // where,
   addDoc,
   writeBatch,
-  // updateDoc,
+  updateDoc,
   deleteDoc,
   // arrayRemove,
 } from "firebase/firestore";
@@ -1273,6 +1273,43 @@ export const useMainStore = defineStore({
         return Promise.resolve();
       } catch (e) {
         return Promise.reject(e);
+      }
+    },
+    /**
+     * @function update_task
+     * @description Update an instance of a task from a class (for teachers). Intended to be preformed from the EditTask Modal
+     * @param {String} task_ref the "email/class_id/task_id" String representation of the task ref in firebase
+     * @param {Object} task_obj The updated task object
+     */
+    async update_task(task_ref, task_obj) {
+      try {
+        delete task_obj.class_id;
+        delete task_obj.ref;
+        let [_email, _id, task_id] = task_ref.split("/");
+        _email += "@mvla.net";
+        // update the document with the same id as the task from the tasks collection
+        await updateDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id), task_obj);
+
+        // update local data
+        let classes = this.classes;
+        classes.forEach((class_obj) => {
+          if (class_obj.id == [_email, _id].join("/")) {
+            class_obj.tasks.forEach((task) => {
+              if (task.ref == task_ref) {
+                task = task_obj;
+              }
+            });
+          }
+        });
+
+        // show changes
+        this.classes = classes;
+        this.get_tasks();
+
+        // finish
+        return Promise.resolve();
+      } catch (err) {
+        return Promise.reject(err);
       }
     },
     /**
