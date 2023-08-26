@@ -30,6 +30,7 @@
         <!-- v-for tasks -->
         <div
           class="calendar_day"
+          :_date="day.date.toISOString().split('T')[0]"
           :class="{
             calendar_day__placeholder: day.is_placeholder,
             calendar_day__hastask: day.tasks ? day.tasks.length : false,

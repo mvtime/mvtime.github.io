@@ -1097,8 +1097,8 @@ export const useMainStore = defineStore({
         }
         return a.period - b.period;
       });
-      this.get_tasks();
       this.classes = classes;
+      this.get_tasks();
       Promise.resolve();
     },
     /**
@@ -1289,18 +1289,24 @@ export const useMainStore = defineStore({
         _email += "@mvla.net";
         // update the document with the same id as the task from the tasks collection
         await updateDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id), task_obj);
-
-        // update local data
+        _statuslog("📝 Updated remote task");
         let classes = this.classes;
-        classes.forEach((class_obj) => {
-          if (class_obj.id == [_email, _id].join("/")) {
-            class_obj.tasks.forEach((task) => {
-              if (task.ref == task_ref) {
-                task = task_obj;
-              }
-            });
+        // update local version of task in classes
+        const classIndex = classes.findIndex(
+          (class_obj) => class_obj.id === [_email, _id].join("/")
+        );
+
+        if (classIndex !== -1) {
+          const taskIndex = classes[classIndex].tasks.findIndex(
+            (task) => task.ref === [_email, _id, task_id].join("/")
+          );
+
+          if (taskIndex !== -1) {
+            // Update the task object within the tasks array of the class_obj
+            classes[classIndex].tasks[taskIndex] = { ...task_obj, ref: task_ref, _proxy: true };
+            _statuslog("📝 Updated local task");
           }
-        });
+        }
 
         // show changes
         this.classes = classes;
