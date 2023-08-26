@@ -396,10 +396,6 @@ main.calendar {
   z-index: 5;
 }
 
-.calendar_day.calendar_day__placeholder {
-  opacity: 0.5;
-  /* pointer-events: none; */
-}
 .calendar_day_date {
   /* layout */
   display: flex;
@@ -419,22 +415,28 @@ main.calendar {
   user-select: none;
   z-index: 2;
 }
-.calendar_day.calendar_day__placeholder .calendar_day_date {
-  display: none;
-}
-.calendar_day.calendar_day__placeholder:hover > .calendar_day_date {
-  display: flex;
-}
 /* hide paceholder tasks until hover */
-.calendar_day.calendar_day__placeholder > .calendar_day_tasks {
-  visibility: hidden;
+.calendar_day.calendar_day__placeholder > * {
+  opacity: 0.1;
+  transition: opacity 0.2s 0.2s ease-out;
+}
+.calendar_day.calendar_day__placeholder:hover > * {
+  opacity: 1;
+  transition: opacity 0.1s ease-out;
 }
 .calendar_day.calendar_day__placeholder:hover > .calendar_day_tasks {
   visibility: visible;
 }
-.calendar_day.calendar_day__placeholder:hover {
-  opacity: 0.75;
+.calendar_day.calendar_day__placeholder {
+  opacity: 0.5;
+  scale: 0.9;
+  transition: opacity 0.2s ease-out, scale 0.2s ease-out;
 }
+.calendar_day.calendar_day__placeholder:hover {
+  opacity: 0.85;
+  scale: 1;
+}
+
 /* tasks */
 .calendar_day_tasks {
   height: 100%;

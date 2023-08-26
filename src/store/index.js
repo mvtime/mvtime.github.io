@@ -1309,7 +1309,7 @@ export const useMainStore = defineStore({
         }
 
         // show changes
-        this.classes = classes;
+        this.classes = [...classes];
         this.get_tasks();
 
         // finish
