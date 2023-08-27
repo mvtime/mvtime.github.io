@@ -20,33 +20,15 @@
     - ability to fix errors that might impede usability for students
     - force reload student sessions to update / quickfix
     - add more protections to teacher mode
-- ~~Tasks / Calendar Objects~~
-  - ~~note type / generic info w/o color~~
-  - ~~regular assignment / generic task type~~
-  - ~~id tasks for easier load/share~~
-  - ~~view task by task id~~
-  - ~~less cluttered scheduling options (use dropdown)~~
-  - ~~convert /task to /view/{type}/{info}~~
-  - ~~add editing functionality~~
-  - ~~confirm task delete~~
 - Student involvement
   - share class join link / join by code
   - way for students to access teacher features for their peers / as a proxy for the teacher
   - classes from static set
-- Modal features
-  - show upcoming tasks at end
-  - ~~fix overflow on very small screens~~
-  - ~~redirect modal / outlink interceptor~~
-- Accounts
-  - create prefs screen / email prefs saving
-  - ~~allow connected personal / non-school email~~
-    - ~~settings from portal / email links~~
 - Surveys
+  - show list of upcoming tasks at end
   - make a way for users to see their own responses over time
     - include major assignments in this timeline
-- Emails
-  - setup cloud functions to send daily(?) emails
-  - ~~setup email server~~
+  - ~~implement daily surveys~~
 - Features / Timeline
   - create a timeline / overall plan
     - ~~this page should be sufficient in the meantime~~
@@ -59,15 +41,32 @@
       - ui tutorial
       - ~~add first class~~
       - ~~join modal~~
-    - finish emails
-      - cloud functions
-      - ~~link personal account email~~
-      - ~~email template~~
-      - ~~mail server~~
-      - ~~send from firebase doc~~
-    - ~~finish personal account connection~~
-- Non-User-Facing
-  - cleanup code / write docs (+doctests?)
+- Emails
+  - setup cloud functions to send daily(?) emails
+  - ~~link personal account email~~
+  - ~~email template~~
+  - ~~setup email server~~
+  - ~~send from firebase doc~~
+- Accounts
+  - create email prefs screen
+  - ~~finish personal account connection~~
+  - ~~create prefs screen~~
+  - ~~allow connected personal / non-school email~~
+    - ~~settings from portal / email links~~
+- ~~Non-User-Facing~~
+  - ~~cleanup code / write docs~~
+    ~~Tasks / Calendar Objects~~
+  - ~~note type / generic info w/o color~~
+  - ~~regular assignment / generic task type~~
+  - ~~id tasks for easier load/share~~
+  - ~~view task by task id~~
+  - ~~less cluttered scheduling options (use dropdown)~~
+  - ~~convert /task to /view/{type}/{info}~~
+  - ~~add editing functionality~~
+  - ~~confirm task delete~~
+- ~~Modal features~~
+  - ~~fix overflow on very small screens~~
+  - ~~redirect modal / outlink interceptor~~
 
 ## Specific milestones / tasks
 
