@@ -6,7 +6,8 @@
     <div class="overlay_contents" ref="contents">
       <div v-if="ready">
         <div class="overlay_contents_text">
-          Change the details of your {{ task.type || "task" }} below
+          Change the details of your {{ task.type || "task" }} in
+          <span class="class_name button_pointer_text">{{ class_name }}</span>
         </div>
         <div class="inputs_row">
           <input
@@ -39,11 +40,11 @@
               >
               <div v-else class="styled_line_links">
                 <a
-                  class="styled_line_links__link"
+                  class="styled_line_links__link styled_line_links__remove"
                   target="_blank"
                   v-for="link in task.links"
-                  :href="link.path"
                   :key="link.path"
+                  @click="remove_link(link)"
                   >{{ link.text }}</a
                 >
               </div>
@@ -167,8 +168,9 @@ export default {
       return !this.newlink.path || !this.newlink.text || !this.newlink.path.startsWith("http");
     },
     class_name() {
-      if (!this.classes) return null;
-      let class_obj = this.classes.find((class_obj) => class_obj.id === this.class_id);
+      let classes = this.store?.classes;
+      if (!classes) return null;
+      let class_obj = classes.find((class_obj) => class_obj.id === this.task.class_id);
       if (!class_obj) return null;
       return class_obj.name;
     },
@@ -178,11 +180,20 @@ export default {
     is_note() {
       return this.task.type === "note";
     },
-    class() {
-      return this.store.classes.find((class_obj) => class_obj.id === this.task.class_id);
-    },
     changed() {
       return JSON.stringify(this.task) !== JSON.stringify(this.original);
+    },
+    date() {
+      let date = new Date(this.task?.date);
+      if (isNaN(date.getTime())) return;
+      // read it as being in the current timezone
+      date = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
+
+      return new Date(date).toLocaleDateString(undefined, {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+      });
     },
   },
   methods: {
@@ -211,7 +222,6 @@ export default {
           new ErrorToast("Couldn't create task", err, 2000);
         });
     },
-
     async delete_task() {
       let name = this.task.name ? ` "${this.task.name}"` : "";
       this.store
@@ -256,6 +266,10 @@ export default {
           _statuslog("⚠ Error getting task", err);
           this.$emit("close");
         });
+    },
+    remove_link(link) {
+      this.task.links = this.task.links.filter((l) => l.path !== link.path);
+      this.newlink = link;
     },
   },
 };

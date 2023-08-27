@@ -21,13 +21,7 @@
           <div class="styled_obj">
             <span class="styled_line__label">Date:</span>
             <span class="styled_line__separator"></span>
-            <span class="styled_line__value">{{
-              new Date(task.date).toLocaleDateString(undefined, {
-                weekday: "long",
-                month: "long",
-                day: "numeric",
-              })
-            }}</span>
+            <span class="styled_line__value">{{ date }}</span>
           </div>
           <div class="styled_obj">
             <span class="styled_line__label"
@@ -106,6 +100,18 @@ export default {
   computed: {
     store() {
       return useMainStore();
+    },
+    date() {
+      let date = new Date(this.task?.date);
+      if (isNaN(date.getTime())) return;
+      // read it as being in the current timezone
+      date = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
+
+      return new Date(date).toLocaleDateString(undefined, {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+      });
     },
   },
   mounted() {

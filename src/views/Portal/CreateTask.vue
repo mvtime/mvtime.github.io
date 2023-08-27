@@ -57,11 +57,11 @@
             >
             <div v-else class="styled_line_links">
               <a
-                class="styled_line_links__link"
+                class="styled_line_links__link styled_line_links__remove"
                 target="_blank"
                 v-for="link in task.links"
-                :href="link.path"
                 :key="link.path"
+                @click="remove_link(link)"
                 >{{ link.text }}</a
               >
             </div>
@@ -221,6 +221,10 @@ export default {
           new ErrorToast("Couldn't create task", err, 2000);
         });
     },
+  },
+  remove_link(link) {
+    this.task.links = this.task.links.filter((l) => l.path !== link.path);
+    this.newlink = link;
   },
 };
 </script>

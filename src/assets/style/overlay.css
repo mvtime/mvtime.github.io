@@ -257,6 +257,8 @@ select.styled_obj {
   flex-basis: auto;
   flex-grow: 1;
   flex-shrink: 1;
+  /* styles */
+  cursor: pointer;
 }
 .styled_line_links__account {
   background-color: var(--color-overlay-link);
@@ -294,6 +296,10 @@ select.styled_obj {
 .styled_line_links__link:hover,
 .styled_line_links__account.active {
   background-color: var(--color-overlay-link-hover);
+}
+.styled_line_links__remove:hover {
+  background-color: var(--color-overlay-link-remove-hover);
+  color: var(--color-on-overlay-link-remove-hover);
 }
 /* links input */
 .styled_input.styled_links_box {
