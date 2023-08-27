@@ -245,7 +245,6 @@ export default {
             this.$emit("close");
           } else {
             _statuslog("📃 Got task data from ref");
-            console.log(task);
             this.task = task;
             this.original = { ...task };
             this.ready = true;
