@@ -25,13 +25,15 @@ import { signInWithPopup, GoogleAuthProvider, signInWithRedirect } from "firebas
 const provider = new GoogleAuthProvider();
 const isElectron = navigator?.userAgent?.toLowerCase()?.indexOf(" electron/") > -1;
 
+const ORG_DOMAIN = "@mvla.net";
+
 // add email and name to provider
 provider.addScope("email");
 provider.addScope("profile");
 auth.useDeviceLanguage();
 // constrict to only mvla.net emails
 provider.setCustomParameters({
-  login_hint: "username@mvla.net",
+  login_hint: "username" + ORG_DOMAIN,
   // hd: "mvla.net",
 });
 
@@ -221,7 +223,7 @@ export const useMainStore = defineStore({
      * @default false
      */
     is_teacher() {
-      // check if email is a teacher email (ends in @mvla.net) && has letters in the first part
+      // check if email is a teacher email (ends in ORG_DOMAIN) && has letters in the first part
       if (!this.user) return false;
       if (
         this.active_doc?.teacher_mode == true ||
@@ -998,7 +1000,7 @@ export const useMainStore = defineStore({
      * @see {@link is_teacher}
      */
     async create_teacher_doc() {
-      // create teacher doc under (classes/teacher_email@mvla.net) with sub-collection (classes)
+      // create teacher doc under (classes/teacher_email+ORG_DOMAIN) with sub-collection (classes)
       let teacher_ref = doc(db, "classes", this.active_doc.email || this.user.email);
       await setDoc(teacher_ref, {
         name: this.active_doc.name || this.user.displayName,
@@ -1286,7 +1288,7 @@ export const useMainStore = defineStore({
         delete task_obj.class_id;
         delete task_obj.ref;
         let [_email, _id, task_id] = task_ref.split("/");
-        _email += "@mvla.net";
+        _email += ORG_DOMAIN;
         // update the document with the same id as the task from the tasks collection
         await updateDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id), task_obj);
         _statuslog("📝 Updated remote task");
@@ -1295,15 +1297,13 @@ export const useMainStore = defineStore({
         const classIndex = classes.findIndex(
           (class_obj) => class_obj.id === [_email, _id].join("/")
         );
-
+        const ref = [_email, _id, task_id].join("/");
         if (classIndex !== -1) {
-          const taskIndex = classes[classIndex].tasks.findIndex(
-            (task) => task.ref === [_email, _id, task_id].join("/")
-          );
+          const taskIndex = classes[classIndex].tasks.findIndex((task) => task.ref === ref);
 
           if (taskIndex !== -1) {
             // Update the task object within the tasks array of the class_obj
-            classes[classIndex].tasks[taskIndex] = { ...task_obj, ref: task_ref, _proxy: true };
+            classes[classIndex].tasks[taskIndex] = { ...task_obj, ref: ref, _proxy: true };
             _statuslog("📝 Updated local task");
           }
         }
@@ -1328,7 +1328,7 @@ export const useMainStore = defineStore({
      */
     async delete_task(task_ref) {
       let [_email, _id, task_id] = task_ref.split("/");
-      _email += "@mvla.net";
+      _email += ORG_DOMAIN;
       try {
         // retrieve class reference
 
@@ -1365,7 +1365,7 @@ export const useMainStore = defineStore({
     async task_from_ref(ref) {
       try {
         let [_email, _id, task_id] = ref.split("/");
-        _email += "@mvla.net";
+        _email += ORG_DOMAIN;
         let class_doc = await getDoc(doc(db, "classes", _email, "classes", _id));
         let class_data = class_doc.data();
 
