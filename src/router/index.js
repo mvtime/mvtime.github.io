@@ -299,6 +299,7 @@ const router = createRouter({
               dark: "#121212",
             },
             requiresAuth: true,
+            requiresTeacher: true,
           },
         },
         {
@@ -313,6 +314,7 @@ const router = createRouter({
               dark: "#121212",
             },
             requiresAuth: true,
+            requiresTeacher: true,
           },
         },
       ],

@@ -159,10 +159,6 @@ export default {
       el: this.$refs.title,
       hideOverflow: true,
     });
-    if (!this.store.is_teacher) {
-      new WarningToast("You must be a teacher to edit tasks", 2000);
-      this.$emit("close");
-    }
     this.get_task();
   },
   computed: {
