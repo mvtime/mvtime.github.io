@@ -52,17 +52,12 @@ export default {
       ready: false,
       loading: false,
       ref: this.$route?.params?.ref,
+      class_obj: {},
     };
   },
   computed: {
     store() {
       return useMainStore();
-    },
-    class_obj() {
-      if (!this.ref) return {};
-      let classes = this.store?.classes;
-      if (!classes || !this.ref) return {};
-      return classes.find((class_obj) => class_obj.id === this.ref) || {};
     },
   },
   mounted() {
@@ -75,11 +70,16 @@ export default {
       new WarningToast("There was no class provided", 2000);
       this.$emit("close");
     } else {
-      this.ref = this.ref.split("~").join("/");
+      let [_email, _id] = this.ref.split("~");
+      _email += "@mvla.net";
+      this.ref = [_email, _id].join("/");
       if (this.ref.split("/").length !== 2) {
         new WarningToast("Couldn't find that class", 2000);
         this.$emit("close");
       } else {
+        let classes = this.store?.classes;
+        if (!classes || !this.ref) this.class_obj = {};
+        this.class_obj = classes.find((class_obj) => class_obj.id === this.ref) || {};
         this.ready = true;
       }
     }

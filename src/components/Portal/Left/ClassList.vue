@@ -19,13 +19,21 @@
         >
           <div
             class="class_swatch"
-            title="Remove Class"
+            :title="store.is_teacher ? 'Edit Class' : 'Leave Class'"
             @click="
-              leave_class(class_obj);
+              if (store.is_teacher) {
+                edit_class(class_obj);
+              } else {
+                leave_class(class_obj);
+              }
               $event.stopPropagation();
             "
           >
-            <div class="class_swatch__icon"></div>
+            <div
+              v-if="!store.is_teacher"
+              class="class_swatch__icon class_swatch_remove__icon"
+            ></div>
+            <div v-else class="class_swatch__icon class_swatch_edit__icon"></div>
           </div>
 
           <span v-if="class_obj.period" class="class_name"
@@ -68,11 +76,24 @@ export default {
   },
   emits: ["toggle_filtered_class", "clear_filters"],
   methods: {
+    clean_ref(ref) {
+      let [_email, _id] = ref.split("/");
+      _email = _email.split("@")[0];
+      return [_email, _id].join("~");
+    },
     leave_class(class_obj) {
       this.$router.push({
         name: "leave",
         params: {
-          ref: class_obj.id.split("/").join("~"),
+          ref: this.clean_ref(class_obj.id),
+        },
+      });
+    },
+    edit_class(class_obj) {
+      this.$router.push({
+        name: "editclass",
+        params: {
+          ref: this.clean_ref(class_obj.id),
         },
       });
     },
@@ -168,11 +189,17 @@ h5 {
   width: 100%;
   height: 100%;
   filter: var(--filter-icon) var(--filter-test-calendar-icon);
-  background-image: url(@/assets/img/general/portal/remove.png);
-  background-image: url(@/assets/img/general/portal/remove.svg);
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
+}
+.class_swatch_remove__icon {
+  background-image: url(@/assets/img/general/portal/remove.png);
+  background-image: url(@/assets/img/general/portal/remove.svg);
+}
+.class_swatch_edit__icon {
+  background-image: url(@/assets/img/general/portal/edit.png);
+  background-image: url(@/assets/img/general/portal/edit.svg);
 }
 .class_swatch:hover .class_swatch__icon {
   visibility: visible;

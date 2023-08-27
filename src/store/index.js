@@ -736,6 +736,10 @@ export const useMainStore = defineStore({
       } else {
         this.account_doc.classes = filtered_classes;
       }
+      // remove from local
+      this.classes = this.classes.filter((c) => c.id != class_id);
+      this.get_tasks();
+      // update remote
       await this.update_remote();
     },
     /**
@@ -1308,10 +1312,46 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @function update_class
+     * @description Update an instance of a class (for teachers). Intended to be preformed from the EditClass Modal
+     * @param {String} class_ref the "email/class_id" String representation of the class ref in firebase
+     * @param {Object} class_obj The updated class object
+     * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
+     */
+    async update_class(class_ref, class_obj) {
+      try {
+        let [_email, _id] = class_ref.split("/");
+        _email += ORG_DOMAIN;
+        // update the document with the same id as the class from the classes collection
+        await updateDoc(doc(db, "classes", _email, "classes", _id), class_obj);
+        _statuslog("📝 Updated remote class");
+        let classes = this.classes;
+        // update local version of class in classes
+        const classIndex = classes.findIndex(
+          (class_obj) => class_obj.id === [_email, _id].join("/")
+        );
+        if (classIndex !== -1) {
+          // Update the class object within the classes array
+          classes[classIndex] = { ...classes[classIndex], ...class_obj, _proxy: true };
+          _statuslog("📝 Updated local class");
+        }
+
+        // show changes
+        this.classes = [...classes];
+        this.get_tasks();
+
+        // finish
+        return Promise.resolve();
+      } catch (err) {
+        return Promise.reject(err);
+      }
+    },
+    /**
      * @function update_task
      * @description Update an instance of a task from a class (for teachers). Intended to be preformed from the EditTask Modal
      * @param {String} task_ref the "email/class_id/task_id" String representation of the task ref in firebase
      * @param {Object} task_obj The updated task object
+     * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      */
     async update_task(task_ref, task_obj) {
       try {
@@ -1405,6 +1445,25 @@ export const useMainStore = defineStore({
         task_data.ref = ref;
         task_data.class_name = class_data.name || "Unknown Class";
         return Promise.resolve(task_data);
+      } catch (err) {
+        return Promise.reject(err);
+      }
+    },
+    /**
+     * @function class_from_ref
+     * @description Get the class object from a class reference
+     * @param {String} ref The class reference to get the class object from
+     * @returns {Promise} A promise that resolves to the class object or rejects with an {String} error
+     */
+    async class_from_ref(ref) {
+      try {
+        let [_email, _id] = ref.split("/");
+        _email += ORG_DOMAIN;
+        let class_doc = await getDoc(doc(db, "classes", _email, "classes", _id));
+        if (!class_doc.exists()) return Promise.reject();
+        let class_data = class_doc.data();
+        _statuslog("📚 Got class data");
+        return Promise.resolve(class_data);
       } catch (err) {
         return Promise.reject(err);
       }

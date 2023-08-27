@@ -304,6 +304,21 @@ const router = createRouter({
         },
         {
           // specify param "ref" in the route
+          path: "/portal/edit/class/:ref?",
+          name: "editclass",
+          component: () => import("../views/Portal/EditClass.vue"),
+          meta: {
+            page_title: "Edit Class",
+            theme_color: {
+              light: "#ffffff",
+              dark: "#121212",
+            },
+            requiresAuth: true,
+            requiresTeacher: true,
+          },
+        },
+        {
+          // specify param "ref" in the route
           path: "/portal/delete/:type?/:ref?",
           name: "delete",
           component: () => import("../views/Portal/DeleteTask.vue"),
