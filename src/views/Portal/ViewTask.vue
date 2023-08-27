@@ -23,7 +23,7 @@
             <span class="styled_line__separator"></span>
             <span class="styled_line__value">{{ date }}</span>
           </div>
-          <div class="styled_obj">
+          <div class="styled_obj" v-if="task.description || task.type == 'note'">
             <span class="styled_line__label"
               >{{ task.type == "note" ? "Contents" : "Description" }}:</span
             >
