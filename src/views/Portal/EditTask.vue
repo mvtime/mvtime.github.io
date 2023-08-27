@@ -11,7 +11,7 @@
             class="class_name button_pointer_text"
             :style="{
               '--color-class': class_obj.color,
-              '--color-class-alt': class_obj.color + '40',
+              '--color-class-alt': class_obj.color + '2d',
             }"
             >{{ class_obj.name }}</span
           >
