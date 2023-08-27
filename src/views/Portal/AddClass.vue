@@ -25,7 +25,8 @@
             :key="class_obj.id"
             :disabled="class_obj.is_joined"
           >
-            {{ class_obj.name }}
+            <span v-if="class_obj.is_joined">[JOINED]</span>
+            P{{ class_obj.period }} - {{ class_obj.name }}
           </option>
           <option v-if="teacher_email && !classes" value="" disabled hidden selected>
             {{ loading ? "Loading..." : "No classes found" }}
@@ -101,6 +102,7 @@ export default {
   methods: {
     add_class() {
       this.adding = true;
+      console.log(this.class_obj);
       this.store
         .add_class(this.teacher_email, this.class_id, this.class_obj.name, this.class_obj.period)
         .then(() => {

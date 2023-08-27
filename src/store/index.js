@@ -1166,13 +1166,9 @@ export const useMainStore = defineStore({
         classes_subcollection_query_snapshot.forEach((class_doc) => {
           let class_data = class_doc.data();
           class_data.id = class_doc.id;
-          // support for legacy names
-          class_data.name =
-            (class_data.period ? "P" + class_data.period + " - " : "") + class_data.name;
           // if user already in class, change name to "[JOINED] name"
           if (this.active_doc?.classes.includes([email, class_doc.id].join("/"))) {
             class_data.is_joined = true;
-            class_data.name = "[JOINED] " + class_data.name;
           }
           classes.push(class_data);
         });
