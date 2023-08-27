@@ -173,7 +173,7 @@ export default {
     class_obj() {
       let classes = this.store?.classes;
       if (!classes) return null;
-      return classes.find((class_obj) => class_obj.id === this.task.class_id) || {};
+      return classes.find((class_obj) => class_obj.id === this.original.class_id) || {};
     },
     store() {
       return useMainStore();
