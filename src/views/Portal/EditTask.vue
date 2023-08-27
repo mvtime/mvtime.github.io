@@ -7,7 +7,14 @@
       <div v-if="ready">
         <div class="overlay_contents_text">
           Change the details of your {{ task.type || "task" }} in
-          <span class="class_name button_pointer_text">{{ class_name }}</span>
+          <span
+            class="class_name button_pointer_text"
+            :style="{
+              '--color-class': class_obj.color,
+              '--color-class-alt': class_obj.color + '40',
+            }"
+            >{{ class_obj.name }}</span
+          >
         </div>
         <div class="inputs_row">
           <input
@@ -167,12 +174,10 @@ export default {
       // check if path and text, and also that path is a valid url
       return !this.newlink.path || !this.newlink.text || !this.newlink.path.startsWith("http");
     },
-    class_name() {
+    class_obj() {
       let classes = this.store?.classes;
       if (!classes) return null;
-      let class_obj = classes.find((class_obj) => class_obj.id === this.task.class_id);
-      if (!class_obj) return null;
-      return class_obj.name;
+      return classes.find((class_obj) => class_obj.id === this.task.class_id) || {};
     },
     store() {
       return useMainStore();
@@ -327,5 +332,11 @@ select.type_dropdown {
 .loading_icon {
   max-height: 150px;
   min-width: 100%;
+}
+
+.class_name {
+  background-color: var(--color-class-alt);
+  color: var(--color-class);
+  font-weight: 600;
 }
 </style>
