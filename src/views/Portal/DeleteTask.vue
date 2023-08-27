@@ -96,10 +96,9 @@ export default {
     delete_task() {
       this.loading = true;
       this.store
-        .delete_task(this.task.ref)
+        .delete_task(this.ref)
         .then(() => {
           new SuccessToast(`Removed ${this.type}`, 3000);
-          this.loading = false;
           this.$emit("close");
         })
         .catch((err) => {
