@@ -362,7 +362,7 @@ export const useMainStore = defineStore({
      * @returns {String} 6-character code from ref
      * @see {@link code_from_ref}
      */
-    code_from_ref_helper(ref) {
+    hash(ref) {
       let hash = CryptoJS.SHA256(ref).toString();
       return hash.substring(0, 6);
     },
@@ -370,7 +370,7 @@ export const useMainStore = defineStore({
      * @function code_from_ref
      * @description Create a proxy code from a ref (email/uid)
      * @param {String} ref ref in email/uid format
-     * @see {@link code_from_ref_helper}
+     * @see {@link hash}
      */
     async code_from_ref(ref) {
       try {
@@ -385,7 +385,7 @@ export const useMainStore = defineStore({
         ref = _email + "/" + _id;
 
         // get code
-        const code = this.code_from_ref_helper(ref);
+        const code = this.hash(ref);
 
         // create code doc
         const code_ref = doc(db, "codes", code);
