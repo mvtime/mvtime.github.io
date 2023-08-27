@@ -55,7 +55,7 @@
       <img alt="Loading Icon" class="loading_icon" v-else />
     </div>
     <div class="bottom_actions">
-      <button class="share_action" @click="share_task">Share</button>
+      <button class="continue_action" @click="$emit('close')">Close</button>
       <div class="flex_spacer"></div>
       <button
         class="delete_action primary_styled"
@@ -69,7 +69,7 @@
       >
         Edit
       </button>
-      <button class="continue_action" @click="$emit('close')">Close</button>
+      <button class="share_action" @click="share_task">Share</button>
     </div>
   </main>
 </template>

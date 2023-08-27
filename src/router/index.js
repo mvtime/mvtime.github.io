@@ -38,7 +38,7 @@ const router = createRouter({
               name: "redirect",
               component: () => import("../views/Home/Redirect.vue"),
               meta: {
-                page_title: "Redirecting...",
+                page_title: "Confirm Redirect",
                 theme_color: {
                   light: "#ffffff",
                   dark: "#16130e",
