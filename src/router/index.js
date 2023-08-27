@@ -285,9 +285,6 @@ const router = createRouter({
               dark: "#121212",
             },
             requiresAuth: false,
-            props: (route) => ({
-              ref: route.params.ref,
-            }),
           },
         },
         {
@@ -301,10 +298,21 @@ const router = createRouter({
               light: "#ffffff",
               dark: "#121212",
             },
-            requiresAuth: false,
-            props: (route) => ({
-              ref: route.params.ref,
-            }),
+            requiresAuth: true,
+          },
+        },
+        {
+          // specify param "ref" in the route
+          path: "/portal/delete/:type?/:ref?",
+          name: "delete",
+          component: () => import("../views/Portal/DeleteTask.vue"),
+          meta: {
+            page_title: "Confirm Task Delete",
+            theme_color: {
+              light: "#ffffff",
+              dark: "#121212",
+            },
+            requiresAuth: true,
           },
         },
       ],

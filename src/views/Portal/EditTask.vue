@@ -1,6 +1,6 @@
 <template>
   <div class="create_task">
-    <header class="modal_header">
+    <header class="modal_header" ref="title">
       <h2 class="header_style modal_header_title">Edit {{ task.type || "task" }} details</h2>
     </header>
     <div class="overlay_contents" ref="contents">
@@ -120,7 +120,7 @@
 
 import { useMainStore } from "@/store";
 import { _statuslog } from "@/common";
-import { ErrorToast, WarningToast, SuccessToast } from "@svonk/util";
+import { ErrorToast, WarningToast } from "@svonk/util";
 import smoothReflow from "vue-smooth-reflow";
 
 export default {
@@ -153,7 +153,6 @@ export default {
   mounted() {
     this.$smoothReflow({
       el: this.$refs.contents,
-      hideOverflow: true,
       childTransitions: true,
     });
     this.$smoothReflow({
@@ -227,18 +226,17 @@ export default {
           new ErrorToast("Couldn't create task", err, 2000);
         });
     },
-    async delete_task() {
-      let name = this.task.name ? ` "${this.task.name}"` : "";
-      this.store
-        .delete_task(this.task.ref)
-        .then(() => {
-          new SuccessToast(`Removed ${this.task.type}${name}`, 3000);
-          this.$emit("close");
-        })
-        .catch((err) => {
-          new ErrorToast(`Error removing ${this.task.type}${name}`, 3000);
-          _statuslog("⚠ Error removing task", err);
-        });
+    delete_task() {
+      this.$router.push({
+        name: "delete",
+        params: {
+          type: this.task.type,
+          ref: this.$route.params.ref,
+        },
+        query: {
+          title: this.is_note ? this.task.description : this.task.name,
+        },
+      });
     },
     async get_task() {
       // get task ref from route params
@@ -333,7 +331,6 @@ select.type_dropdown {
   max-height: 150px;
   min-width: 100%;
 }
-
 .class_name {
   background-color: var(--color-class-alt);
   color: var(--color-class);

@@ -20,7 +20,7 @@
         </select>
       </h2>
     </header>
-    <div class="overlay_contents">
+    <div class="overlay_contents" ref="contents">
       <div class="overlay_contents_text">
         <span v-if="is_note">Add a new {{ task.type }} to</span>
         <span v-else>Schedule a new {{ task.type }} for</span>
@@ -134,10 +134,17 @@
 import { useMainStore } from "@/store";
 import { _statuslog } from "@/common";
 import { ErrorToast } from "@svonk/util";
+import smoothReflow from "vue-smooth-reflow";
 
 export default {
   name: "CreateTaskView",
   emits: ["close"],
+  mixins: [smoothReflow],
+  mounted() {
+    this.$smoothReflow({
+      el: this.$refs.contents,
+    });
+  },
   data() {
     return {
       task: {
