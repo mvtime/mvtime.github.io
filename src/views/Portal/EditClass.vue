@@ -47,7 +47,18 @@
       <img alt="Loading Icon" class="loading_icon" v-else />
     </div>
     <div class="bottom_actions">
-      <button class="close_action" @click="$emit('close')">{{ ready ? "Cancel" : "Close" }}</button>
+      <button
+        class="alt_action"
+        @click="
+          if (ready) {
+            share_class();
+          } else {
+            $emit('close');
+          }
+        "
+      >
+        {{ ready ? "Share" : "Close" }}
+      </button>
       <div class="flex_spacer"></div>
       <button class="leave_action primary_styled" @click="leave_class" :disabled="!ready">
         Leave
@@ -75,7 +86,7 @@
  */
 import { useMainStore } from "@/store";
 import smoothReflow from "vue-smooth-reflow";
-import { WarningToast } from "@svonk/util";
+import { WarningToast, SuccessToast, ErrorToast } from "@svonk/util";
 import { _statuslog } from "../../common";
 export default {
   name: "EditClassView",
@@ -142,6 +153,26 @@ export default {
     },
     leave_class() {
       this.$router.push({ name: "leave", params: { ref: this.$route?.params?.ref } });
+    },
+    /** Shares the task link with the native share function, or to the clipboard if sharing is not supported */
+    async share_class() {
+      if (navigator.share) {
+        let url = new URL("https://mvtt.app/portal/add/code/" + this.$route.params?.ref);
+
+        navigator
+          .share({
+            title: `P${this.class_obj.period} - ${this.class_obj.name}`,
+            text: "Join my class on MVTT!",
+            url: url.href,
+          })
+          .then(() => new SuccessToast("Opened share dialog", 1000))
+          .catch((err) => _statuslog("Error sharing", err));
+      } else if (navigator.clipboard) {
+        navigator.clipboard.writeText(window.location.href);
+        new WarningToast("Sharing not supported, copied link to clipboard", 2000);
+      } else {
+        new ErrorToast("Sharing not supported", 2000);
+      }
     },
   },
 };

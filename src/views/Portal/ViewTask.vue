@@ -127,7 +127,7 @@ export default {
     this.get_task();
   },
   methods: {
-    /** Shares the task as JSON in the URI, or copies the URI to the clipboard if sharing is not supported */
+    /** Shares the task link with the native share function, or to the clipboard if sharing is not supported */
     async share_task() {
       if (navigator.share) {
         let url = new URL(window.location.href);

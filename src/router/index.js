@@ -231,13 +231,25 @@ const router = createRouter({
             noSurvey: true,
           },
         },
-
         {
           path: "/portal/add",
           name: "addclass",
           component: () => import("../views/Portal/AddClass.vue"),
           meta: {
             page_title: "Join a Class",
+            theme_color: {
+              light: "#ffffff",
+              dark: "#121212",
+            },
+            requiresAuth: true,
+          },
+        },
+        {
+          path: "/portal/add/code/:ref?",
+          name: "joinclass",
+          component: () => import("../views/Portal/AddClass.vue"),
+          meta: {
+            page_title: "Join from Code",
             theme_color: {
               light: "#ffffff",
               dark: "#121212",
