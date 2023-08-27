@@ -25,6 +25,7 @@
     "@lottiefiles/vue-lottie-player": "^1.1.0",
     "@svonk/util": "^1.0.3",
     "core-js": "^3.8.3",
+    "crypto-js": "^4.1.1",
     "electron-build": "^0.0.3",
     "firebase": "^10.1.0",
     "graceful-fs": "^4.2.11",

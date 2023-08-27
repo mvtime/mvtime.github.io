@@ -20,6 +20,7 @@ import {
   deleteDoc,
   // arrayRemove,
 } from "firebase/firestore";
+import CryptoJS from "crypto-js";
 import { auth, db, authChangeAction, refreshTimeout } from "../firebase";
 import { signInWithPopup, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
 const provider = new GoogleAuthProvider();
@@ -355,6 +356,46 @@ export const useMainStore = defineStore({
   },
   /** The actions to manipulate the store state */
   actions: {
+    /**
+     * @function code_from_ref_helper
+     * @param {String} ref ref in email/uid format
+     * @returns {String} 6-character code from ref
+     * @see {@link code_from_ref}
+     */
+    code_from_ref_helper(ref) {
+      let hash = CryptoJS.SHA256(ref).toString();
+      return hash.substring(0, 6);
+    },
+    /**
+     * @function code_from_ref
+     * @description Create a proxy code from a ref (email/uid)
+     * @param {String} ref ref in email/uid format
+     * @see {@link code_from_ref_helper}
+     */
+    async code_from_ref(ref) {
+      try {
+        if (!ref) return Promise.reject("No ref provided");
+        // fix ref to be in email@mvla.net/uid
+        // - fix for different formats
+        ref = ref.split("~").join("/");
+        // - remove domain from email and re-add
+        let [_email, _id] = ref.split("/");
+        if (!_email || !_id) return Promise.reject("Invalid ref");
+        _email = _email.split("@")[0] + ORG_DOMAIN;
+        ref = _email + "/" + _id;
+
+        // get code
+        const code = this.code_from_ref_helper(ref);
+
+        // create code doc
+        const code_ref = doc(db, "codes", code);
+        await setDoc(code_ref, { ref: ref });
+
+        return Promise.resolve(code);
+      } catch (err) {
+        return Promise.reject(err);
+      }
+    },
     /**
      * @function toggle_teacher
      * @description Toggle teacher mode (for testing)
