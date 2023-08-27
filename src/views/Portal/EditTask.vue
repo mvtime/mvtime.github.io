@@ -6,7 +6,8 @@
     <div class="overlay_contents" ref="contents">
       <div v-if="ready">
         <div class="overlay_contents_text change_text">
-          Change the details of your {{ task.type || "task" }} in
+          Change the details of your {{ task.type || "task"
+          }}{{ original.name ? ` "${original.name}"` : "" }} in
           <span
             class="class_name button_pointer_text"
             :style="{
