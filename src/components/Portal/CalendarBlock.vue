@@ -418,11 +418,11 @@ main.calendar {
 /* hide paceholder tasks until hover */
 .calendar_day.calendar_day__placeholder > * {
   opacity: 0.1;
-  transition: opacity 0.2s 0.2s ease-out;
+  transition: opacity 0.2s ease-out;
 }
 .calendar_day.calendar_day__placeholder:hover > * {
   opacity: 1;
-  transition: opacity 0.1s ease-out;
+  transition-duration: 0.5s;
 }
 .calendar_day.calendar_day__placeholder:hover > .calendar_day_tasks {
   visibility: visible;
