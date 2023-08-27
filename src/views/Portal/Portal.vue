@@ -51,7 +51,11 @@
       v-slot="scope"
       @close="close_path ? $router.push(close_path) : $router.push('/portal')"
     >
-      <router-view class="router_center_view" @close="scope.close" />
+      <router-view
+        class="router_center_view"
+        @close="scope.close"
+        @clear_filters="filtered_classes = []"
+      />
     </OverlayWrapper>
   </main>
 </template>

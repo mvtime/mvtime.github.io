@@ -21,8 +21,7 @@
             class="class_swatch"
             title="Remove Class"
             @click="
-              store.remove_class(class_obj.id);
-              $emit('clear_filters');
+              leave_class(class_obj);
               $event.stopPropagation();
             "
           >
@@ -35,7 +34,7 @@
           <span v-else class="class_name">{{ class_obj.name }}</span>
         </div>
         <div
-          v-if="!store.is_teacher"
+          v-if="!store.is_teacher || true"
           class="classes_container_class classes_container_class__add_class"
           @click="$router.push('/portal/add')"
         >
@@ -68,6 +67,16 @@ export default {
     },
   },
   emits: ["toggle_filtered_class", "clear_filters"],
+  methods: {
+    leave_class(class_obj) {
+      this.$router.push({
+        name: "leave",
+        params: {
+          ref: class_obj.id.split("/").join("~"),
+        },
+      });
+    },
+  },
 };
 </script>
 

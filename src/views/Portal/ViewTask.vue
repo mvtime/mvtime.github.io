@@ -58,7 +58,7 @@
       <button class="continue_action" @click="$emit('close')">Close</button>
       <div class="flex_spacer"></div>
       <button
-        class="delete_action primary_styled"
+        class="edit_action primary_styled"
         v-if="
           store.is_teacher &&
           store.user &&
@@ -69,7 +69,7 @@
       >
         Edit
       </button>
-      <button class="share_action" @click="share_task">Share</button>
+      <button class="share_action" @click="share_task" :disabled="!ready">Share</button>
     </div>
   </main>
 </template>

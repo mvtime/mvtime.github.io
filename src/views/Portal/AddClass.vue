@@ -8,11 +8,17 @@
       <div class="inputs_row">
         <input
           v-model="teacher_email"
+          ref="teacher_email"
           class="styled_input"
           type="text"
           placeholder="Teacher's Email"
         />
-        <select v-model="class_id" class="styled_input" :disabled="!classes || !classes.length">
+        <select
+          v-model="class_id"
+          class="styled_input"
+          :disabled="!classes || !classes.length"
+          :class="{ loading_bg: loading && teacher_email }"
+        >
           <option
             v-for="class_obj in classes"
             :value="class_obj.id"
@@ -34,7 +40,12 @@
     <div class="bottom_actions">
       <button class="close_action" @click="$emit('close')">Close</button>
       <div class="flex_spacer"></div>
-      <button class="continue_action" @click="add_class" :disabled="!teacher_email || !class_id">
+      <button
+        class="continue_action"
+        @click="add_class"
+        :disabled="!teacher_email || !class_id"
+        :class="{ loading_bg: adding }"
+      >
         Add Class
       </button>
     </div>
@@ -58,14 +69,16 @@ export default {
     return {
       teacher_email: "",
       class_id: "",
+      adding: false,
     };
   },
+  mounted() {
+    this.$refs.teacher_email.focus();
+  },
   computed: {
-    class_name() {
+    class_obj() {
       if (!this.classes) return null;
-      let class_obj = this.classes.find((class_obj) => class_obj.id === this.class_id);
-      if (!class_obj) return null;
-      return class_obj.name;
+      return this.classes.find((class_obj) => class_obj.id === this.class_id) || {};
     },
     loading() {
       return this.store.loaded_email !== this.teacher_email;
@@ -87,9 +100,15 @@ export default {
   },
   methods: {
     add_class() {
-      this.store.add_class(this.teacher_email, this.class_id, this.class_name).then(() => {
-        this.$emit("close");
-      });
+      this.adding = true;
+      this.store
+        .add_class(this.teacher_email, this.class_id, this.class_obj.name, this.class_obj.period)
+        .then(() => {
+          this.$emit("close");
+        })
+        .catch(() => {
+          this.adding = false;
+        });
     },
   },
 };

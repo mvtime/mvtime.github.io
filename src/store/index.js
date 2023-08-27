@@ -747,6 +747,7 @@ export const useMainStore = defineStore({
     async remove_invalid(class_id) {
       await this.remove_class_id_helper(class_id);
       new WarningToast(`Removed non-existent class "${class_id}"`, 2000);
+      return Promise.resolve();
     },
     /**
      * @function remove_class
@@ -755,9 +756,16 @@ export const useMainStore = defineStore({
      * @see {@link remove_class_id_helper}
      */
     async remove_class(class_id) {
-      await this.remove_class_id_helper(class_id);
-      _statuslog("🗑️ Removed class from user's doc: " + class_id);
-      new SuccessToast("Removed class", 2000);
+      try {
+        await this.remove_class_id_helper(class_id);
+        _statuslog("🗑️ Removed class from user's doc: " + class_id);
+        new SuccessToast("Left class", 2000);
+        return Promise.resolve();
+      } catch (err) {
+        _statuslog("🔥 Error removing class from user's doc: " + err);
+        new ErrorToast("Couldn't leave class", err, 2000);
+        return Promise.reject(err);
+      }
     },
     /**
      * @function set_user

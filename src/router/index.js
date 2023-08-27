@@ -317,6 +317,20 @@ const router = createRouter({
             requiresTeacher: true,
           },
         },
+        {
+          // specify param "ref" in the route
+          path: "/portal/leave/:ref?",
+          name: "leave",
+          component: () => import("../views/Portal/LeaveClass.vue"),
+          meta: {
+            page_title: "Confirm Class Leave",
+            theme_color: {
+              light: "#ffffff",
+              dark: "#121212",
+            },
+            requiresAuth: true,
+          },
+        },
       ],
     },
     // redirect any /app routes to /portal
