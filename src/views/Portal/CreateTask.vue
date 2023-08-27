@@ -93,7 +93,15 @@
       <div class="checkboxes">
         <div class="checkbox" v-for="class_obj in classes" :key="class_obj.id">
           <input type="checkbox" :id="class_obj.id" :value="class_obj.id" v-model="task_classes" />
-          <label v-if="class_obj.period" :for="class_obj.id">
+          <label
+            class="button_pointer_text class_name"
+            v-if="class_obj.period"
+            :for="class_obj.id"
+            :style="{
+              '--color-class': class_obj.color,
+              '--color-class-alt': class_obj.color + '2d',
+            }"
+          >
             P{{ class_obj.period }} - {{ class_obj.name }}
           </label>
           <label v-else :for="class_obj.id">{{ class_obj.name }}</label>
@@ -281,5 +289,25 @@ select.type_dropdown {
 }
 .type_dropdown__option {
   font-size: 14px;
+}
+.class_name {
+  background-color: var(--color-class-alt);
+  color: var(--color-class);
+  font-weight: 600;
+  margin-left: 0.75em;
+}
+.checkboxes .checkbox input:checked + label.class_name {
+  background-color: var(--color-class);
+  color: var(--color-on-class);
+}
+/* new display method */
+.checkboxes {
+  gap: 0.25em;
+}
+.checkboxes .checkbox input {
+  display: none;
+}
+.checkboxes .checkbox label {
+  margin-left: unset;
 }
 </style>

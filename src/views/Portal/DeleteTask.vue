@@ -4,16 +4,16 @@
       <h2 class="header_style modal_header_title">Confirm {{ type }} delete</h2>
     </header>
     <div class="overlay_contents overlay_contents_text" ref="contents">
-      Are you sure you want to delete the {{ type }} you were editing? <br /><br />
-      This action is irreversible, and will remove a{{ is_vowel(type[0]) ? "n" : "" }} {{ type
-      }}{{ title ? ` "${title}"` : "" }} from your class
+      Are you sure you want to delete the {{ type }}{{ title ? ` "${title}"` : "" }} you were
+      editing? <br /><br />
+      This action is irreversible, and will permanently remove it from
       <span
         class="class_name button_pointer_text"
         :style="{
           '--color-class': class_obj.color,
           '--color-class-alt': class_obj.color + '2d',
         }"
-        >{{ class_obj.name }}</span
+        >{{ `P${class_obj.period} - ${class_obj.name}` }}</span
       >.
     </div>
     <div class="bottom_actions">
@@ -90,9 +90,6 @@ export default {
     }
   },
   methods: {
-    is_vowel(char) {
-      return ["a", "e", "i", "o", "u"].includes(char.toLowerCase());
-    },
     delete_task() {
       this.loading = true;
       this.store
