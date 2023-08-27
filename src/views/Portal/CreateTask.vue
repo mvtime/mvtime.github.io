@@ -310,4 +310,14 @@ select.type_dropdown {
 .checkboxes .checkbox label {
   margin-left: unset;
 }
+/* inline variation */
+.checkboxes {
+  gap: 0.5em;
+  display: inline-flex;
+  flex-flow: row wrap;
+}
+.checkboxes .checkbox {
+  margin: 0;
+  display: inline-flex;
+}
 </style>
