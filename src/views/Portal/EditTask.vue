@@ -5,7 +5,7 @@
     </header>
     <div class="overlay_contents" ref="contents">
       <div v-if="ready">
-        <div class="overlay_contents_text">
+        <div class="overlay_contents_text change_text">
           Change the details of your {{ task.type || "task" }} in
           <span
             class="class_name button_pointer_text"

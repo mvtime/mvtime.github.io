@@ -144,6 +144,12 @@ h3.secondary_home_text {
   align-items: center;
   flex-wrap: wrap;
 }
+.overlay_contents_text:has(.button_pointer_text) {
+  line-height: 1.75;
+}
+.overlay_contents_text .button_pointer_text {
+  line-height: 1;
+}
 .button_pointer_icon {
   padding: 0 var(--padding-button-display-horizontal) 0 0;
   margin: 0 5px;

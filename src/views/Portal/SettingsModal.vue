@@ -58,6 +58,23 @@
           </div>
         </div>
       </div>
+      <div v-if="!store.personal_account" class="overlay_contents_text">
+        Click
+        <span
+          class="button_pointer_text click-action"
+          @click="
+            store.toggle_teacher();
+            changed = true;
+          "
+        >
+          here </span
+        >&MediumSpace; to {{ store.is_teacher ? "disable" : "enable" }} teacher mode&MediumSpace;
+        <span v-if="store.is_teacher">to return to the student view.</span>
+        <span v-else
+          >to create, and manage your own classes and tasks. This may require setup by an admin if
+          you do not have a teacher email.</span
+        >
+      </div>
       <div class="overlay_contents_text">
         To change your theme, use the
         <span
@@ -79,16 +96,16 @@
       <button
         class="continue_action"
         :class="{ loading_bg: loading }"
-        :disabled="!store.personal_account && !changed"
+        :disabled="!store.personal_account && !changed && !store.is_teacher"
         @click="
-          if (store.personal_account) {
+          if (store.personal_account || store.is_teacher) {
             $emit('close');
           } else {
-            save;
+            save();
           }
         "
       >
-        {{ store.personal_account ? "Close" : "Finish" }}
+        {{ store.personal_account ? "Close" : store.is_teacher ? "Done" : "Finish" }}
       </button>
     </div>
   </div>

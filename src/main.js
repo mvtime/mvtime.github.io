@@ -141,14 +141,3 @@ router.beforeEach((to) => {
     return { path: "/portal" };
   }
 });
-
-// Allow teacher mode to be set with window.MVTT_TEACHER_MODE = true
-// (for testing purposes)
-window.toggle_teacher_mode = function () {
-  if (window.localStorage.getItem("MVTT_teacher_mode") === "true") {
-    window.localStorage.setItem("MVTT_teacher_mode", "false");
-  } else {
-    window.localStorage.setItem("MVTT_teacher_mode", "true");
-  }
-  window.location.reload();
-};

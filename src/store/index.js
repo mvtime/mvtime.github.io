@@ -356,6 +356,32 @@ export const useMainStore = defineStore({
   /** The actions to manipulate the store state */
   actions: {
     /**
+     * @function toggle_teacher
+     * @description Toggle teacher mode (for testing)
+     * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
+     * @see {@link is_teacher}
+     */
+    async toggle_teacher() {
+      // use localStorage.MVTT_teacher_mode as basis for toggle, then set the localStorage and remote doc
+      if (!this.user) return;
+      let prev =
+        this.active_doc?.teacher_mode || window.localStorage.getItem("MVTT_teacher_mode") == "true";
+      window.localStorage.setItem("MVTT_teacher_mode", !prev);
+      let new_text = !prev ? "on" : "off";
+      if (this.active_doc) {
+        if (!prev) {
+          this.active_doc.teacher_mode = true;
+        } else {
+          delete this.active_doc.teacher_mode;
+        }
+        await this.update_remote();
+        _statuslog(`🏫 Remote teacher mode toggled ${new_text}`);
+      }
+      _statuslog(`🏫 Local teacher mode toggled ${new_text}`);
+      new SuccessToast(`Teacher mode toggled ${new_text}`, 2000);
+    },
+
+    /**
      * @function get_tasks
      * @description Get all tasks from all classes
      * @returns {Promise} Promise that resolves to Array of all tasks from all classes, with class name and color added

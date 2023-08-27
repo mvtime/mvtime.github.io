@@ -132,10 +132,4 @@ export default {
   color: var(--color-class);
   font-weight: 600;
 }
-.overlay_contents_text {
-  line-height: 1.75;
-}
-.overlay_contents_text > span {
-  line-height: 1;
-}
 </style>
