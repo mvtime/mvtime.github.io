@@ -43,13 +43,15 @@
         </select>
       </div>
       <div class="inputs_row" v-else>
-        <input
-          :value="$route.params.code || $route.params.ref || ''"
+        <div
           id="code_ref"
           class="styled_input"
+          :class="{ code: $route.params.code, ref: $route.params.ref }"
           type="text"
           placeholder="Join Code / Reference"
-        />
+        >
+          {{ $route.params.code || $route.params.ref || "" }}
+        </div>
       </div>
       <div class="overlay_contents_text" v-if="class_obj">
         You'll be joining
@@ -80,7 +82,7 @@
         class="continue_action"
         @click="add_class"
         :disabled="!teacher_email || !class_id"
-        :class="{ loading_bg: adding }"
+        :class="{ loading_bg: adding || (is_join && loading) }"
       >
         Add Class
       </button>
@@ -125,8 +127,8 @@ export default {
   },
   computed: {
     class_obj() {
-      if (!this.classes) return null;
-      return this.classes.find((class_obj) => class_obj.id === this.class_id) || {};
+      if (!this.classes) return false;
+      return this.classes.find((class_obj) => class_obj.id === this.class_id) || false;
     },
     loading() {
       return this.store.loaded_email !== this.teacher_email;
@@ -172,6 +174,7 @@ export default {
           new ErrorToast("Invalid join code", err, 4000);
           _statuslog("🔥 " + err);
           this.to_normal_add();
+          return;
         }
       }
 
@@ -189,12 +192,11 @@ export default {
           this.store.loaded_classes &&
           this.store.loaded_classes.find((class_obj) => class_obj.id === _id);
         if (found) {
+          this.class_id = _id;
           if (found.is_joined) {
             new WarningToast("You've already joined that class", 3000);
             _statuslog("🔥 Already joined class", ref);
             //this.$emit("close");
-          } else {
-            this.class_id = _id;
           }
         } else {
           new WarningToast("Couldn't find that class", 3000);
@@ -216,9 +218,14 @@ export default {
 <style>
 #code_ref {
   text-align: center;
-  font-size: 2.5em;
   font-weight: 600;
   height: auto;
   padding: var(--padding-overlay-input);
+}
+#code_ref.code {
+  font-size: 2.5em;
+}
+#code_ref.ref {
+  font-size: 1.25em;
 }
 </style>
