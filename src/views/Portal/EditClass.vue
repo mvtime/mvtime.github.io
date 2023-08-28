@@ -1,7 +1,7 @@
 <template>
   <main class="createclass">
     <header class="modal_header">
-      <h2 class="header_style modal_header_title">Edit your Class</h2>
+      <h2 class="header_style modal_header_title">Edit class details</h2>
     </header>
     <div class="overlay_contents" ref="contents">
       <div v-if="ready">
@@ -228,7 +228,7 @@ export default {
   flex-grow: 3;
 }
 .loading_icon {
-  max-height: 120px;
+  max-height: 84.5px;
   min-width: 100%;
 }
 .button_pointer_text.class_name {
