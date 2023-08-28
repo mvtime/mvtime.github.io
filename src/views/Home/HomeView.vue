@@ -85,7 +85,7 @@ export default {
       if (this.logged_in) {
         this.$router.push("/portal");
       } else {
-        this.$router.push("/join");
+        this.$router.push({ name: "join", query: { redirect: this.$route?.query?.redirect } });
       }
     },
   },
