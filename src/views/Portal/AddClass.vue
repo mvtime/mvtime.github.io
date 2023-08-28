@@ -1,14 +1,17 @@
 <template>
   <main class="addclass">
     <header class="modal_header">
-      <h2 class="header_style modal_header_title">Add a Class</h2>
+      <h2 class="header_style modal_header_title">{{ !is_join ? "Add a" : "Join" }} Class</h2>
     </header>
-    <div class="overlay_contents">
+    <div class="overlay_contents" ref="contents">
       <div class="overlay_contents_text">
-        <span v-if="is_join">Joining from your teacher's class code</span>
+        <span v-if="is_join"
+          >{{ store.loaded_email == teacher_email ? "Loaded" : "Loading" }} from your teacher's
+          class code</span
+        >
         <span v-else>Join a new class</span>
       </div>
-      <div class="inputs_row">
+      <div class="inputs_row" v-if="!is_join">
         <input
           v-model="teacher_email"
           ref="teacher_email"
@@ -38,6 +41,29 @@
             {{ teacher_email && classes ? "Select a Class" : "" }}
           </option>
         </select>
+      </div>
+      <div class="inputs_row" v-else>
+        <input
+          :value="$route.params.code || $route.params.ref || ''"
+          id="code_ref"
+          class="styled_input"
+          type="text"
+          placeholder="Join Code / Reference"
+        />
+      </div>
+      <div class="overlay_contents_text" v-if="class_obj">
+        You'll be joining
+        <span
+          class="class_name button_pointer_text"
+          :style="{
+            '--color-class': class_obj.color,
+            '--color-class-alt': class_obj.color + '2d',
+          }"
+          >{{ `P${class_obj.period} - ${class_obj.name}` }}</span
+        >
+      </div>
+      <div v-if="class_obj" class="overlay_contents_text">
+        <br />
       </div>
       <div class="overlay_contents_text">
         <span v-if="is_join"
@@ -72,11 +98,13 @@
  * @emits {Function} close - An event emitted when the class is added or the modal is closed.
  */
 import { useMainStore } from "@/store";
-import { _statuslog } from "../../common";
-import { ErrorToast, WarningToast, SuccessToast } from "@svonk/util";
+import { _statuslog } from "@/common";
+import { ErrorToast, WarningToast /*SuccessToast*/ } from "@svonk/util";
+import smoothReflow from "vue-smooth-reflow";
 export default {
   name: "AddClassView",
   emits: ["close"],
+  mixins: [smoothReflow],
   data() {
     return {
       teacher_email: "",
@@ -85,7 +113,13 @@ export default {
     };
   },
   mounted() {
-    this.$refs.teacher_email.focus();
+    this.$smoothReflow({
+      el: this.$refs.contents,
+      childTransitions: true,
+    });
+    if (this.$refs.teacher_email) {
+      this.$refs.teacher_email.focus();
+    }
     // if ref is provided, set email and class_id
     this.use_ref();
   },
@@ -147,7 +181,7 @@ export default {
         _email += "@mvla.net";
         this.teacher_email = _email;
         this.store.fetch_classes_by_email(_email);
-        while (this.store.loaded_email !== _email) {
+        while (this.store.loaded_email !== this.teacher_email) {
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
 
@@ -158,19 +192,9 @@ export default {
           if (found.is_joined) {
             new WarningToast("You've already joined that class", 3000);
             _statuslog("🔥 Already joined class", ref);
-            this.$emit("close");
+            //this.$emit("close");
           } else {
             this.class_id = _id;
-            this.add_class()
-              .then(() => {
-                new SuccessToast("Successfully joined class", 2000);
-                _statuslog("🎉 Successfully joined class", ref);
-              })
-              .catch((err) => {
-                new ErrorToast("Something went wrong joining that class", err, 3000);
-                _statuslog("🔥 Couldn't join class from ref", ref);
-                this.to_normal_add();
-              });
           }
         } else {
           new WarningToast("Couldn't find that class", 3000);
@@ -189,4 +213,12 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+#code_ref {
+  text-align: center;
+  font-size: 2.5em;
+  font-weight: 600;
+  height: auto;
+  padding: var(--padding-overlay-input);
+}
+</style>

@@ -291,9 +291,6 @@ select.type_dropdown {
   font-size: 14px;
 }
 .class_name {
-  background-color: var(--color-class-alt);
-  color: var(--color-class);
-  font-weight: 600;
   margin-left: 0.75em;
 }
 .checkboxes .checkbox input:checked + label.class_name {

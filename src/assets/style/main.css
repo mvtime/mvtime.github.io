@@ -150,6 +150,13 @@ h3.secondary_home_text {
 .overlay_contents_text .button_pointer_text {
   line-height: 1;
 }
+
+.button_pointer_text.class_name {
+  background-color: var(--color-class-alt);
+  color: var(--color-class);
+  font-weight: 600;
+}
+
 .button_pointer_icon {
   padding: 0 var(--padding-button-display-horizontal) 0 0;
   margin: 0 5px;

@@ -244,9 +244,4 @@ export default {
   max-height: 84.5px;
   min-width: 100%;
 }
-.button_pointer_text.class_name {
-  background-color: var(--color-class-alt);
-  color: var(--color-class);
-  font-weight: 600;
-}
 </style>

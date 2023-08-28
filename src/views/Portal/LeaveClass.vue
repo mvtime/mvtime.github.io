@@ -109,9 +109,4 @@ export default {
   max-height: 150px;
   min-width: 100%;
 }
-.class_name {
-  background-color: var(--color-class-alt);
-  color: var(--color-class);
-  font-weight: 600;
-}
 </style>

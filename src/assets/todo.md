@@ -32,6 +32,7 @@
   - ~~daily surveys~~
 - Classes
   - add from pre-set list
+  - display join code to class
   - ~~make classes editable~~
   - ~~join from code~~
 - Onboarding
