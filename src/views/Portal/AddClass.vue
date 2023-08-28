@@ -174,9 +174,12 @@ export default {
           }
         } else {
           new WarningToast("Couldn't find that class", 3000);
-          _statuslog("🔥 Couldn't find class for join ref", ref);
+          _statuslog("🔥 Unfound class for join ref", ref);
           this.to_normal_add();
         }
+      } else {
+        new WarningToast("Please provide a join code", 3000);
+        this.to_normal_add();
       }
     },
     to_normal_add() {
