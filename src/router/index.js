@@ -258,7 +258,7 @@ const router = createRouter({
           },
         },
         {
-          path: "/add/code/:code?",
+          path: "/portal/add/code/:code?",
           name: "codeclass",
           component: () => import("../views/Portal/AddClass.vue"),
           meta: {
