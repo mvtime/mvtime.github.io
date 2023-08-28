@@ -54,7 +54,7 @@
         </div>
       </div>
       <div class="overlay_contents_text" v-if="class_obj">
-        You'll be joining
+        {{ class_obj && class_obj.is_joined ? "You've already joined" : "You'll be joining" }}
         <span
           class="class_name button_pointer_text"
           :style="{
@@ -194,7 +194,7 @@ export default {
         if (found) {
           this.class_id = _id;
           if (found.is_joined) {
-            new WarningToast("You've already joined that class", 3000);
+            new WarningToast("You've already joined this class", 3000);
             _statuslog("🔥 Already joined class", ref);
             //this.$emit("close");
           }
