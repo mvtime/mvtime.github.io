@@ -81,7 +81,7 @@
       <button
         class="continue_action"
         @click="add_class"
-        :disabled="!teacher_email || !class_id"
+        :disabled="!teacher_email || !class_id || (class_obj && class_obj.is_joined)"
         :class="{ loading_bg: adding || (is_join && loading) }"
       >
         Add Class
