@@ -16,31 +16,28 @@
 - Admin / Contact
   - Send messages from w/i the app using mail system
     - user will receive a copy
-  - Create admin portal
+  - Admin portal
+    - create portal based on /portal but with panel in place of calendar
     - ability to fix errors that might impede usability for students
     - force reload student sessions to update / quickfix
     - add more protections to teacher mode
 - Student involvement
-  - share class join link / join by code
   - way for students to access teacher features for their peers / as a proxy for the teacher
-  - classes from static set
+  - student self "classes" for college apps, other things to keep track of
 - Surveys
-  - show list of upcoming tasks at end
   - make a way for users to see their own responses over time
     - include major assignments in this timeline
-  - ~~implement daily surveys~~
-- Features / Timeline
-  - create a timeline / overall plan
-    - ~~this page should be sufficient in the meantime~~
-  - larger features to keep in mind
-    - finish surveys
-      - weekly
-      - ~~daily~~
-    - finish onboarding
-      - pre-set classes
-      - ui tutorial
-      - ~~add first class~~
-      - ~~join modal~~
+  - weekly / major surveys
+  - show upcoming tasks at end of daily surveys
+  - ~~daily surveys~~
+- Classes
+  - add from pre-set list
+  - ~~make classes editable~~
+  - ~~join from code~~
+- Onboarding
+  - ui tutorial
+  - ~~add first class~~
+  - ~~join modal~~
 - Emails
   - setup cloud functions to send daily(?) emails
   - ~~link personal account email~~
@@ -96,8 +93,8 @@
 - Better prefs
   - save theme under prefs, rather than its own key
   - setup email prefs in onboarding
-  - add the option to trust another email / oauth account with access to your account
-    - good for phones and such, save to prefs of the acc, then check either request oauth is student, or request oauth is in student prefs.trusted
+  - ~~add the option to trust another email / oauth account with access to your account~~
+    - ~~good for phones and such, save to prefs of the acc, then check either request oauth is student, or request oauth is in student prefs.trusted~~
 - Create studying / prep pages
   - really use the data/info that we have, let them create study schedules for themselves
   - automatic / algorithm-driven suggestions?
