@@ -132,9 +132,15 @@ export default {
     async use_ref() {
       let ref = this.$route.params?.ref;
       if (!ref && this.$route.params?.code) {
-        ref = await this.store.ref_from_code(this.$route.params?.code);
+        try {
+          ref = await this.store.ref_from_code(this.$route.params?.code);
+        } catch (err) {
+          new ErrorToast("Invalid join code", err, 4000);
+          _statuslog("🔥 " + err);
+          this.to_normal_add();
+        }
       }
-      console.log(ref);
+
       if (ref && this.is_join) {
         _statuslog("🔍 Attempting to use class join ref", ref);
         let [_email, _id] = ref.split("~");
