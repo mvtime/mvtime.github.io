@@ -112,7 +112,7 @@ export default {
       return useMainStore();
     },
     is_join() {
-      return this.$route?.name == "joinclass";
+      return this.$route?.name == "joinclass" || this.$route?.name == "codeclass";
     },
   },
   methods: {
@@ -130,7 +130,11 @@ export default {
         });
     },
     async use_ref() {
-      const ref = this.$route.params?.ref;
+      let ref = this.$route.params?.ref;
+      if (!ref && this.$route.params?.code) {
+        ref = await this.store.ref_from_code(this.$route.params?.code);
+      }
+      console.log(ref);
       if (ref && this.is_join) {
         _statuslog("🔍 Attempting to use class join ref", ref);
         let [_email, _id] = ref.split("~");

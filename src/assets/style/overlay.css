@@ -72,7 +72,7 @@
 }
 .bottom_actions > *:first-child {
   margin-left: 0;
-  background: none;
+  background-color: #00000000;
   color: var(--color-text);
   padding: 0;
 }

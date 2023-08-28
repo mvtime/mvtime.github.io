@@ -56,6 +56,8 @@
             $emit('close');
           }
         "
+        :disabled="ready && loading_share"
+        :class="{ loading_bg: loading_share && ready }"
       >
         {{ ready ? "Share" : "Close" }}
       </button>
@@ -99,6 +101,7 @@ export default {
       loading: false,
       ready: false,
       ref: this.$route?.params?.ref,
+      loading_share: false,
     };
   },
   computed: {
@@ -156,23 +159,33 @@ export default {
     },
     /** Shares the task link with the native share function, or to the clipboard if sharing is not supported */
     async share_class() {
-      if (navigator.share) {
-        let url = new URL("https://mvtt.app/portal/add/code/" + this.$route.params?.ref);
-
-        navigator
-          .share({
-            title: `P${this.class_obj.period} - ${this.class_obj.name}`,
-            text: "Join my class on MVTT!",
-            url: url.href,
-          })
-          .then(() => new SuccessToast("Opened share dialog", 1000))
-          .catch((err) => _statuslog("Error sharing", err));
-      } else if (navigator.clipboard) {
-        navigator.clipboard.writeText(window.location.href);
-        new WarningToast("Sharing not supported, copied link to clipboard", 2000);
-      } else {
-        new ErrorToast("Sharing not supported", 2000);
-      }
+      this.loading_share = true;
+      this.store
+        .code_from_ref(this.ref)
+        .then((code) => {
+          let url = new URL("https://add.mvtt.app/" + code);
+          if (navigator.share) {
+            navigator
+              .share({
+                title: `P${this.class_obj.period} - ${this.class_obj.name}`,
+                text: "Join my class on MVTT!",
+                url: url.href,
+              })
+              .then(() => new SuccessToast("Opened share dialog", 1000))
+              .catch((err) => _statuslog("Error sharing", err));
+          } else if (navigator.clipboard) {
+            navigator.clipboard.writeText(url.href);
+            new WarningToast("Sharing not supported, copied link to clipboard", 2000);
+          } else {
+            new ErrorToast("Sharing not supported", 2000);
+          }
+          this.loading_share = false;
+        })
+        .catch((err) => {
+          new ErrorToast("Something went wrong getting the code", err?.message || err, 2000);
+          _statuslog("🔥Couldn't get code", this.ref, err);
+          this.loading_share = false;
+        });
     },
   },
 };

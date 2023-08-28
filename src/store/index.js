@@ -387,11 +387,45 @@ export const useMainStore = defineStore({
         // get code
         const code = this.hash(ref);
 
-        // create code doc
-        const code_ref = doc(db, "codes", code);
-        await setDoc(code_ref, { ref: ref });
+        // check if class object already has code in this.classes
+        let class_obj = this.classes.find((e) => e.id == ref);
+        if (class_obj?.code !== code) {
+          // add ref to code doc
+          const code_ref = doc(db, "codes", code);
+          await setDoc(code_ref, { ref: ref });
 
+          // add code to class doc
+          const class_ref = doc(db, "classes", _email, "classes", _id);
+          await updateDoc(class_ref, { code: code }, { merge: true });
+        }
         return Promise.resolve(code);
+      } catch (err) {
+        return Promise.reject(err);
+      }
+    },
+    /**
+     * @function ref_from_code
+     * @description Get the ref (email/uid) from a code
+     * @param {String} code The code to get the ref for
+     * @returns {Promise} A promise that resolves to the ref (email/uid) or rejects with an {String} error
+     */
+    async ref_from_code(code) {
+      try {
+        if (!code) throw "No code provided";
+        // get ref from code doc
+        const code_ref = doc(db, "codes", code);
+        const code_doc = await getDoc(code_ref);
+        if (!code_doc.exists()) throw "Code doesn't exist";
+
+        let ref = code_doc.data().ref;
+        if (!ref) throw "Code doesn't have ref";
+
+        // fix ref to use url email(without domain)~uid format
+        let [_email, _id] = ref.split("/");
+        if (!_email || !_id) throw "Invalid ref";
+        _email = _email.split("@")[0];
+        ref = _email + "~" + _id;
+        return Promise.resolve(ref);
       } catch (err) {
         return Promise.reject(err);
       }
