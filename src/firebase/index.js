@@ -119,6 +119,7 @@ function startTimeout(delay = 1000 * 60 * 5) {
 
 function refreshTimeout(delay) {
   const store = useMainStore();
+  store.hide_timeout();
   if (!subscribed) {
     // setup snapshot and pull data
     setupSnapshot(store.personal_account ? store.account_doc.linked_to : store.user.uid);
@@ -127,7 +128,6 @@ function refreshTimeout(delay) {
       _statuslog("⬥ Refreshing class data");
       store.fetch_classes();
     }
-    store.hide_timeout();
     _statuslog("⬥ Resubscribed to remote changes");
   }
   clearTimeout(timeout);
