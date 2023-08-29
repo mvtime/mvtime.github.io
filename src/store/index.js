@@ -232,10 +232,10 @@ export const useMainStore = defineStore({
         if (this.active_doc?.teacher_mode == true || this.active_doc?.teacher_mode == null) {
           window.localStorage.setItem("MVTT_teacher_mode", true);
           if (this.personal_account) {
-            _statuslog("🏫 Personal account, overriding local teacher mode");
+            _statuslog("🏫 No teacher mode for personal account");
             return false;
           } else {
-            _statuslog("🏫 Teacher mode enabled locally");
+            _statuslog("🏫 Local teacher mode");
             return true;
           }
         } else {
