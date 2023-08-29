@@ -28,6 +28,7 @@ body,
   --gap-calendar-day: 5px;
   --radius-calendar-day: 5px;
   --spacing-calendar-day: 5px;
+  --height-calendar-weekday-label: 35px;
   --size-calendar-day-date: 20px;
   --padding-calendar-task: 5px;
   --height-calendar-task: 25px;

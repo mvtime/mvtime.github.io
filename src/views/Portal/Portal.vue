@@ -41,10 +41,16 @@
           </div>
         </header>
         <!-- calendar -->
+        <!-- on mounted, if this.loaded, run run_get_tasks -->
         <CalendarBlock
           :filtered_classes="filtered_classes"
           @taskclick="show_task($event)"
           ref="calendar"
+          @mounted="
+            if (loaded) {
+              $refs.calendar.run_get_tasks();
+            }
+          "
         />
       </div>
     </div>
@@ -95,6 +101,7 @@ export default {
       filtered_classes: [],
       /** A list of random welcome messages */
       welcomes: ["Welcome", "Hi", "Hello", "Hey", "Howdy"],
+      loaded: false,
     };
   },
   computed: {
@@ -176,6 +183,7 @@ export default {
   },
   /** Preform Join Form & Daily Survey completion checks on load */
   mounted() {
+    _statuslog("🏗 Portal mounted");
     this.check_and_do_join();
     this.check_and_do_survey();
     this.store
@@ -183,6 +191,7 @@ export default {
       .then(() => {
         // run calendar run_get_tasks method
         this.$refs.calendar.run_get_tasks();
+        this.loaded = true;
       })
       .catch((err) => {
         _statuslog("🔥 Couldn't fetch classes", err);

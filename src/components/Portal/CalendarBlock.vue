@@ -29,6 +29,21 @@
       <div class="calendar_days">
         <!-- v-for tasks -->
         <div
+          class="calendar_day calendar_day__weekday_label"
+          v-for="day of [
+            'Sunday',
+            'Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday',
+            'Saturday',
+          ]"
+          :key="day"
+        >
+          <span class="calendar_day__weekday_label__text">{{ day }}</span>
+        </div>
+        <div
           class="calendar_day"
           :_date="day.date.toISOString().split('T')[0]"
           :class="{
@@ -92,7 +107,7 @@ export default {
     filtered_classes: Array,
     default: () => [],
   },
-  emits: ["taskclick"],
+  emits: ["taskclick", "mounted"],
   data() {
     return {
       loaded_month: new Date(new Date().setDate(1)),
@@ -102,6 +117,7 @@ export default {
   },
   mounted() {
     _statuslog("📅 Calendar mounted");
+    this.$emit("mounted");
     this.tasks = this.store.tasks;
   },
   methods: {
@@ -344,7 +360,7 @@ main.calendar {
   /* layout */
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(6, 1fr);
+  grid-template-rows: var(--height-calendar-weekday-label) repeat(6, 1fr);
   grid-gap: var(--gap-calendar-day);
   box-sizing: border-box;
   padding: 0;
@@ -410,6 +426,20 @@ main.calendar {
   border-radius: calc(var(--radius-calendar-day) / 1.5);
   user-select: none;
   z-index: 2;
+}
+/* day labels */
+.calendar_day__weekday_label {
+  padding: 5px;
+  line-height: calc(var(--height-calendar-weekday-label) - 10px);
+  color: var(--color-on-calendar-date);
+  font-weight: 600;
+  font-size: 0.8em;
+}
+.calendar_day__weekday_label span.calendar_day__weekday_label__text {
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 /* hide paceholder tasks until hover */
 .calendar_day.calendar_day__placeholder > * {
@@ -529,7 +559,7 @@ main.calendar {
   padding: 0 var(--padding-calendar-task);
 }
 
-.calendar_day_task[is_note="false"]::after {
+.calendar_day_task[is_note="false"]:not(.calendar_day__weekday_label)::after {
   content: "";
   display: block;
   width: calc(var(--padding-calendar-task) + 2px);
