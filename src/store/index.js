@@ -67,7 +67,7 @@ export const useMainStore = defineStore({
       window.localStorage.getItem("MVTT_app_state") != "null"
     ) {
       try {
-        _statuslog("↻ Loading state from local storage");
+        _statuslog("↻ State from local storage");
         state = JSON.parse(window.localStorage.getItem("MVTT_app_state"));
         return state;
       } catch (err) {
@@ -198,7 +198,6 @@ export const useMainStore = defineStore({
       let last_signin = this.user?.metadata?.lastSignInTime;
       if (!last_signin) return false;
       last_signin = new Date(last_signin);
-      _statuslog("⏲️ Last signed-in: " + last_signin.toLocaleString());
       let diff = new Date().getTime() - last_signin.getTime();
       return diff > 24 * 60 * 60 * 1000;
     },
@@ -893,7 +892,7 @@ export const useMainStore = defineStore({
           }
           // if teacher, setup this.teacher refs
           if (this.is_teacher) {
-            _statuslog("🏫 Running in teacher mode");
+            _statuslog("🏫 In teacher mode");
             this.teacher.doc_ref = doc(db, "classes", this.user.email);
             this.teacher.collection_ref = collection(this.teacher.doc_ref, "classes");
           }
@@ -1520,7 +1519,7 @@ export const useMainStore = defineStore({
 
         let task_doc = await getDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id));
         if (!task_doc.exists()) return Promise.resolve(null);
-        _statuslog("📄 Got task data from ref");
+        _statuslog("📄 Task from ref");
         let task_data = task_doc.data();
         task_data.ref = ref;
         task_data.class_name = class_data.name || "Unknown Class";

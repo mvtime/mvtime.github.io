@@ -60,10 +60,10 @@ function setupSnapshot(uid) {
     { includeMetadataChanges: true },
     (listening_doc) => {
       if (listening_doc.metadata.hasPendingWrites) {
-        _statuslog("⬥ Got snapshot from local changes");
+        _statuslog("⬥ Snapshot from local changes");
         return;
       }
-      _statuslog("⏷ Got snapshot from remote");
+      _statuslog("⏷ Snapshot from remote");
       // check if doc exists
       if (!listening_doc.exists()) {
         store.create_doc();
@@ -81,7 +81,7 @@ function setupSnapshot(uid) {
       // store.fetch_classes();
     },
     (err) => {
-      _statuslog("⚠ Error getting snapshot from remote", err);
+      _statuslog("⚠ Couldn't get snapshot from remote", err);
     }
   );
   subscribed = true;
