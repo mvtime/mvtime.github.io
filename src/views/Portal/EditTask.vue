@@ -254,7 +254,6 @@ export default {
             _statuslog("⚠ Couldn't find task");
             this.$emit("close");
           } else {
-            _statuslog("📃 Got task data from ref");
             this.task = task;
             this.original = { ...task };
             this.ready = true;

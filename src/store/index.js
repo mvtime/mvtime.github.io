@@ -860,10 +860,10 @@ export const useMainStore = defineStore({
      * @see {@link personal_account}
      */
     set_user(user) {
+      _statuslog("🔑 Setting user");
       // load user doc to check .personal_account
       getDoc(doc(db, "users", user.uid))
         .then((userDoc) => {
-          _statuslog("🔑 Setting user - got userdoc");
           if (userDoc.exists()) {
             this.account_doc = userDoc.data();
             this.personal_account = this.account_doc?.personal_account;
@@ -1142,7 +1142,7 @@ export const useMainStore = defineStore({
      */
     async fetch_classes() {
       let run_hash = Math.random().toString(36).substring(7);
-      _statuslog(`📚 <${run_hash}> | Started fetch`);
+      _statuslog(`📚 Started fetch  | <${run_hash}>`);
       // check for duplicates
       if (!this.active_doc?.classes) return Promise.reject("Waiting for user document to load");
 
@@ -1187,7 +1187,7 @@ export const useMainStore = defineStore({
 
         classes.push(doc_data);
       }
-      _statuslog(`📚 <${run_hash}> | Got class docs`);
+      _statuslog(`📚 Got class docs | <${run_hash}>`);
       // get tasks for all classes in parallel
       await Promise.all(
         classes.map(async (class_data) => {
@@ -1204,7 +1204,7 @@ export const useMainStore = defineStore({
           class_data.tasks = tasks;
         })
       );
-      _statuslog(`📚 <${run_hash}> | Got task infos`);
+      _statuslog(`📚 Got task docs  | <${run_hash}>`);
 
       // sort classes by period number, then by name
       classes.sort((a, b) => {
@@ -1519,8 +1519,8 @@ export const useMainStore = defineStore({
         _statuslog("📚 Got class data");
 
         let task_doc = await getDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id));
-        _statuslog("📄 Got task doc");
         if (!task_doc.exists()) return Promise.resolve(null);
+        _statuslog("📄 Got task data from ref");
         let task_data = task_doc.data();
         task_data.ref = ref;
         task_data.class_name = class_data.name || "Unknown Class";

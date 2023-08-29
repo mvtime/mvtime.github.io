@@ -178,7 +178,6 @@ export default {
             new WarningToast("Couldn't find that task", 2000);
             this.$emit("close");
           } else {
-            _statuslog("📃 Got task data from ref");
             this.task = task;
             this.ready = true;
           }
