@@ -102,6 +102,7 @@ export default {
   },
   mounted() {
     _statuslog("📅 Calendar mounted");
+    this.tasks = this.store.tasks;
   },
   methods: {
     day_matches(day1, day2) {
