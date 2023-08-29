@@ -1,0 +1,5 @@
+defaults:
+  - scope:
+      path: ""
+    values:
+      status: 200
