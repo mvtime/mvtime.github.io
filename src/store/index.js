@@ -61,14 +61,12 @@ export const useMainStore = defineStore({
   state: () => {
     let state = {};
     // setting up store
-    if (
-      window.localStorage.getItem("MVTT_app_state") &&
-      window.localStorage.getItem("MVTT_app_state") != "undefined" &&
-      window.localStorage.getItem("MVTT_app_state") != "null"
-    ) {
+    let local = window.localStorage.getItem("MVTT_app_state");
+    if (local && local != "undefined" && local != "null") {
       try {
         _statuslog("↻ State from local storage");
-        state = JSON.parse(window.localStorage.getItem("MVTT_app_state"));
+        state = JSON.parse(local);
+        state.paused = false;
         return state;
       } catch (err) {
         _statuslog("⟳ Error parsing local storage state", err);
@@ -171,6 +169,15 @@ export const useMainStore = defineStore({
        * @see {@link active_ref}
        */
       personal_account: false,
+      /**
+       * @name paused
+       * @description If the app is paused (true) or not (false)
+       * @type {Boolean}
+       * @default false
+       * @see {@link show_timeout}
+       * @see {@link hide_timeout}
+       */
+      paused: false,
     });
   },
   /** The getters to get data that's based off of the store state, but requires manipulation */
@@ -699,6 +706,7 @@ export const useMainStore = defineStore({
      * @see {@link refreshTimeout}
      */
     refresh_timeout(delay) {
+      this.paused = false;
       // refresh listener timeout if user is logged in
       if (!this.user) return;
       refreshTimeout(delay);
@@ -1557,6 +1565,7 @@ export const useMainStore = defineStore({
      */
     show_timeout() {
       _statuslog("🕒 Showing timeout");
+      this.paused = true;
     },
 
     /**
@@ -1568,6 +1577,7 @@ export const useMainStore = defineStore({
      */
     hide_timeout() {
       _statuslog("🕒 Hiding timeout");
+      this.paused = false;
     },
   },
 });

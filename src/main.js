@@ -141,3 +141,7 @@ router.beforeEach((to) => {
     return { path: "/portal" };
   }
 });
+
+window.show_timeout = function () {
+  useMainStore().show_timeout();
+};

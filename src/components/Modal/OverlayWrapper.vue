@@ -1,5 +1,8 @@
 <template>
-  <div class="overlay_center_view overlay_slot__wrapper" :class="{ animate_out: animating_out }">
+  <div
+    class="overlay overlay_center_view overlay_slot__wrapper"
+    :class="{ animate_out: animating_out }"
+  >
     <div class="overlay_close" @click="closable ? close() : null" :closable="closable"></div>
 
     <component v-if="component" class="overlay_slot" :is="component" @close="close" />

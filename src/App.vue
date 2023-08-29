@@ -8,6 +8,21 @@
     @focus="refreshTimeout"
   >
     <router-view></router-view>
+    <OverlayWrapper v-if="store.paused">
+      <main class="pause_modal router_center_view" ref="pause_modal">
+        <header class="modal_header">
+          <h2 class="header_style modal_header_title">Session paused</h2>
+        </header>
+        <div ref="pause_contents" class="overlay_contents">
+          <div class="overlay_contents_text">
+            Your session was inactive for an extended period of time and has been paused to conserve
+            resources.
+          </div>
+          <br />
+          <div class="overlay_contents_text">Please click anywhere to resume using MVTT.</div>
+        </div>
+      </main>
+    </OverlayWrapper>
   </main>
 </template>
 
@@ -19,10 +34,13 @@
  * @description The main App component, wrapper for Home or Portal Views.
  * @requires module:store/MainStore
  */
-
+import OverlayWrapper from "@/components/Modal/OverlayWrapper.vue";
 import { useMainStore } from "@/store";
 export default {
   name: "App",
+  components: {
+    OverlayWrapper,
+  },
   data() {
     return {
       platform: "",
@@ -49,6 +67,8 @@ export default {
       }
       console.log("Electron Platform: " + this.platform);
     }
+    this.store.paused = false;
+    window.addEventListener("focus", this.refreshTimeout);
   },
   created() {
     // do dark mode from local storage, then from store (if logged in)
@@ -68,9 +88,15 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 main.parent {
   width: 100%;
   height: 100%;
+}
+.pause_modal .overlay_contents {
+  border-bottom: none;
+}
+.pause_modal {
+  width: 350px !important;
 }
 </style>

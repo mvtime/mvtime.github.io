@@ -110,7 +110,8 @@
   align-items: center;
 }
 h2.modal_header_title,
-h2.modal_header_title > * {
+h2.modal_header_title > *,
+h2.header_style.modal_header_title {
   font-size: 25px;
   font-weight: 600;
   margin-bottom: 0;
