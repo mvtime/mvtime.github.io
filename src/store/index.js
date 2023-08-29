@@ -364,7 +364,7 @@ export const useMainStore = defineStore({
      */
     hash(ref) {
       let hash = CryptoJS.SHA256(ref).toString();
-      return hash.substring(0, 6);
+      return hash.substring(0, 5);
     },
     /**
      * @function code_from_ref
@@ -415,6 +415,7 @@ export const useMainStore = defineStore({
         // get ref from code doc
         const code_ref = doc(db, "codes", code);
         const code_doc = await getDoc(code_ref);
+        _statuslog("🔗 Got code doc", code_doc.data());
         if (!code_doc.exists()) throw "Code doesn't exist";
 
         let ref = code_doc.data().ref;
@@ -549,6 +550,7 @@ export const useMainStore = defineStore({
         if (!uid) throw "No account uid provided";
         // get user document from uid
         let linked_doc = await getDoc(doc(db, "users", uid));
+        _statuslog("🔗 Got linking account's document", linked_doc.data());
         if (!linked_doc.exists()) throw "Account doesn't exist or you haven't been added yet";
         let linked_doc_data = linked_doc.data();
         return Promise.resolve(linked_doc_data);
@@ -638,6 +640,7 @@ export const useMainStore = defineStore({
         ) {
           await new Promise((resolve) => setTimeout(resolve, (2 ^ checks) * 2000));
           email_doc = await getDoc(email_doc_ref);
+          _statuslog("📧 Checked email doc");
           checks++;
         }
         if (
@@ -860,6 +863,7 @@ export const useMainStore = defineStore({
       // load user doc to check .personal_account
       getDoc(doc(db, "users", user.uid))
         .then((userDoc) => {
+          _statuslog("🔑 Setting user - got userdoc");
           if (userDoc.exists()) {
             this.account_doc = userDoc.data();
             this.personal_account = this.account_doc?.personal_account;
@@ -1024,6 +1028,7 @@ export const useMainStore = defineStore({
       // set document data
       // get doc from firebase
       let active_doc = await getDoc(this.account_ref);
+      _statuslog("📄 Got user doc remote");
       if (active_doc.exists()) {
         this.set_active(active_doc.data());
       } else if (this.personal_account) {
@@ -1136,7 +1141,8 @@ export const useMainStore = defineStore({
      * @see {@link remove_class_id_helper}
      */
     async fetch_classes() {
-      _statuslog("📚 Fetching classes...");
+      let run_hash = Math.random().toString(36).substring(7);
+      _statuslog(`📚 <${run_hash}> | Started fetch`);
       // check for duplicates
       if (!this.active_doc?.classes) return Promise.reject("Waiting for user document to load");
 
@@ -1149,6 +1155,7 @@ export const useMainStore = defineStore({
         }
         await this.update_remote();
         new WarningToast("Removed duplicate classes", 2000);
+        _statuslog("📚 Removed duplicate classes");
       }
 
       // get all classes' data and combine into an array
@@ -1160,15 +1167,8 @@ export const useMainStore = defineStore({
           await this.remove_invalid(class_path);
           continue;
         }
-        // get document for teacher email (first part of path)
-        let teacher_ref = doc(db, "classes", teacher);
-        let teacher_doc = await getDoc(teacher_ref);
-        if (!teacher_doc.exists()) {
-          await this.remove_invalid(class_path);
-          continue;
-        }
         // get classes sub-collection from teacher's doc
-        let teacher_classes = collection(teacher_ref, "classes");
+        let teacher_classes = collection(db, "classes", teacher, "classes");
         if (!teacher_classes) {
           await this.remove_invalid(class_path);
           continue;
@@ -1187,7 +1187,7 @@ export const useMainStore = defineStore({
 
         classes.push(doc_data);
       }
-
+      _statuslog(`📚 <${run_hash}> | Got class docs`);
       // get tasks for all classes in parallel
       await Promise.all(
         classes.map(async (class_data) => {
@@ -1204,6 +1204,7 @@ export const useMainStore = defineStore({
           class_data.tasks = tasks;
         })
       );
+      _statuslog(`📚 <${run_hash}> | Got task infos`);
 
       // sort classes by period number, then by name
       classes.sort((a, b) => {
@@ -1234,6 +1235,7 @@ export const useMainStore = defineStore({
         return;
       }
       let classes_maindoc = await getDoc(doc(db, "classes", email));
+      _statuslog("📄 Got classes from email");
       if (classes_maindoc.exists()) {
         let classes = [];
         /**
@@ -1242,6 +1244,7 @@ export const useMainStore = defineStore({
          */
         let classes_subcollection = collection(doc(db, "classes", email), "classes");
         let classes_subcollection_query_snapshot = await getDocs(query(classes_subcollection));
+        _statuslog("📄 Got classes subcollection from email");
         classes_subcollection_query_snapshot.forEach((class_doc) => {
           let class_data = class_doc.data();
           class_data.id = class_doc.id;
@@ -1513,8 +1516,10 @@ export const useMainStore = defineStore({
         _email += ORG_DOMAIN;
         let class_doc = await getDoc(doc(db, "classes", _email, "classes", _id));
         let class_data = class_doc.data();
+        _statuslog("📚 Got class data");
 
         let task_doc = await getDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id));
+        _statuslog("📄 Got task doc");
         if (!task_doc.exists()) return Promise.resolve(null);
         let task_data = task_doc.data();
         task_data.ref = ref;
@@ -1535,6 +1540,7 @@ export const useMainStore = defineStore({
         let [_email, _id] = ref.split("/");
         _email += ORG_DOMAIN;
         let class_doc = await getDoc(doc(db, "classes", _email, "classes", _id));
+        _statuslog("📄 Got class doc");
         if (!class_doc.exists()) return Promise.reject();
         let class_data = class_doc.data();
         _statuslog("📚 Got class data");

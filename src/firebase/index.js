@@ -78,7 +78,7 @@ function setupSnapshot(uid) {
         store.linked_account_doc = listening_doc_data;
       }
       // run fetch_classes() to update classes
-      store.fetch_classes();
+      // store.fetch_classes();
     },
     (err) => {
       _statuslog("⚠ Error getting snapshot from remote", err);

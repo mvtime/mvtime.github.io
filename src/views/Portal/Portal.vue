@@ -41,7 +41,11 @@
           </div>
         </header>
         <!-- calendar -->
-        <CalendarBlock :filtered_classes="filtered_classes" @taskclick="show_task($event)" />
+        <CalendarBlock
+          :filtered_classes="filtered_classes"
+          @taskclick="show_task($event)"
+          ref="calendar"
+        />
       </div>
     </div>
     <RightBar ref="RightBar" @close_left_bar="close_left_bar" />
@@ -76,6 +80,7 @@ import OverlayWrapper from "@/components/Modal/OverlayWrapper.vue";
 import { useMainStore } from "@/store";
 import { WarningToast } from "@svonk/util";
 import "@/assets/style/overlay.css";
+import { _statuslog } from "../../common";
 export default {
   name: "AppPortal",
   components: {
@@ -173,6 +178,15 @@ export default {
   mounted() {
     this.check_and_do_join();
     this.check_and_do_survey();
+    this.store
+      .fetch_classes()
+      .then(() => {
+        // run calendar run_get_tasks method
+        this.$refs.calendar.run_get_tasks();
+      })
+      .catch((err) => {
+        _statuslog("🔥 Couldn't fetch classes", err);
+      });
   },
   /** Preform same checks as mounted, but if any of the completion statuses could've changed on page switch or data load */
   watch: {

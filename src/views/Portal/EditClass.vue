@@ -89,7 +89,7 @@
 import { useMainStore } from "@/store";
 import smoothReflow from "vue-smooth-reflow";
 import { WarningToast, SuccessToast, ErrorToast } from "@svonk/util";
-import { _statuslog } from "../../common";
+import { _statuslog } from "@/common";
 export default {
   name: "EditClassView",
   emits: ["close"],

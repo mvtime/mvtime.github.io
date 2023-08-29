@@ -82,7 +82,7 @@
 <script>
 import { useMainStore } from "@/store";
 import LoadingCover from "@/components/LoadingCover.vue";
-import { _statuslog } from "../../common";
+import { _statuslog } from "@/common";
 export default {
   name: "CalendarBlock",
   components: {
@@ -101,14 +101,7 @@ export default {
     };
   },
   mounted() {
-    this.store
-      .fetch_classes()
-      .then(() => {
-        this.run_get_tasks();
-      })
-      .catch((err) => {
-        _statuslog("🔥 Couldn't fetch classes", err);
-      });
+    _statuslog("📅 Calendar mounted");
   },
   methods: {
     day_matches(day1, day2) {
@@ -142,14 +135,15 @@ export default {
     },
     run_get_tasks() {
       this.tasks = this.store.tasks;
-      this.store
-        .get_tasks()
-        .then(() => {
-          this.is_ready = true;
-        })
-        .catch((err) => {
-          _statuslog("🔥 Couldn't get tasks", err);
-        });
+      this.is_ready = true;
+      // this.store
+      //   .get_tasks()
+      //   .then(() => {
+      //     this.is_ready = true;
+      //   })
+      //   .catch((err) => {
+      //     _statuslog("🔥 Couldn't get tasks", err);
+      //   });
     },
   },
   computed: {
@@ -209,7 +203,8 @@ export default {
   watch: {
     "store.classes": {
       handler(a, b) {
-        if (a.length != b.length) {
+        if (a.length != b.length && this.is_ready) {
+          _statuslog("📦 Classes array length changed, calendar updating tasks");
           this.store
             .fetch_classes()
             .then(() => {
