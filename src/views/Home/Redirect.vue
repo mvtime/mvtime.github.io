@@ -19,7 +19,8 @@
  */
 
 import Modal from "@/components/Modal/Modal.vue";
-import { WarningToast } from "@svonk/util";
+import { WarningToast, SuccessToast } from "@svonk/util";
+import { _statuslog } from "@/common";
 export default {
   name: "RedirectView",
   components: {
@@ -37,6 +38,15 @@ export default {
     } else {
       // fix path to add protocol if it's missing
       this.path = this.path.startsWith("http") ? this.path : `https://${this.path}`;
+    }
+    try {
+      const url = new URL(this.path);
+      if ("mvtt.app" == url.host) {
+        new SuccessToast("Redirecting to MVTT");
+        this.open();
+      }
+    } catch {
+      _statuslog("Couldn not verify path domain is not MVTT");
     }
   },
   computed: {
