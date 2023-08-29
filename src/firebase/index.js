@@ -55,6 +55,7 @@ function authChangeAction(user) {
 
 function setupSnapshot(uid) {
   const store = useMainStore();
+  store.hide_timeout();
   unsub = onSnapshot(
     doc(db, "users", uid),
     { includeMetadataChanges: true },
@@ -88,15 +89,17 @@ function setupSnapshot(uid) {
 }
 
 // allow for unsubscribing from onSnapshot
-function unsubscribe() {
+function unsubscribe(show_prompt) {
   // clear timeout
   clearTimeout(timeout);
+  if (show_prompt) {
+    store.show_timeout();
+  }
   if (unsub) {
     unsub();
     _statuslog("⬥ Unsubscribed from remote changes");
   }
   let store = useMainStore();
-  store.show_timeout();
   subscribed = false;
 }
 
@@ -113,7 +116,7 @@ function msToText(ms) {
 function startTimeout(delay = 1000 * 60 * 5) {
   return setTimeout(() => {
     _statuslog(`⬥ Page unused for ${msToText(delay)}, removing onSnapshot listener`);
-    unsubscribe();
+    unsubscribe(true);
   }, delay);
 }
 
