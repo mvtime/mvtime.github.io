@@ -1,8 +1,8 @@
 /* header and content styles for markdown */
 
 /* fonts */
-.md,
-.md * {
+.md.mono,
+.md.mono * {
   font-family: "monospace", monospace;
 }
 
@@ -19,4 +19,37 @@
 .md h3 {
   margin-top: 1em;
   margin-bottom: 0.5em;
+}
+
+/* for ViewTask */
+.md.md_contents > :first-child:not(:only-child) {
+  margin-top: 0.25em;
+}
+
+.md.md_contents h1 {
+  font-size: 1.5em;
+}
+.md.md_contents h2 {
+  font-size: 1.25em;
+}
+.md.md_contents h3 {
+  font-size: 1.1em;
+}
+
+/* .md.md_contents p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+} */
+.md.md_contents ul {
+  padding-inline-start: 1em;
+
+  margin-block-start: 0;
+  margin-block-end: 0;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+}
+
+/* fix gap between items */
+.md.md_contents ul > li {
+  margin-bottom: 0em;
 }

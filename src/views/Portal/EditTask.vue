@@ -215,7 +215,15 @@ export default {
       this.store
         .update_task(this.task.ref, this.task)
         .then(() => {
-          this.$emit("close");
+          // this.$emit("close");
+          // redirect to view
+          this.$router.push({
+            name: "viewtask",
+            params: {
+              type: this.task.type,
+              ref: this.$route.params.ref,
+            },
+          });
         })
         .catch((err) => {
           this.loading = false;

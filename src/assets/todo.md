@@ -28,7 +28,7 @@
   - make a way for users to see their own responses over time
     - include major assignments in this timeline
   - weekly / major surveys
-  - show upcoming tasks at end of daily surveys
+  - ~~show upcoming tasks at end of daily surveys~~
   - ~~daily surveys~~
 - Classes
   - add from pre-set list

@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import ExamCard from "./ExamCard.vue";
+import ExamCard from "@/components/Portal/ExamCard.vue";
 import { useMainStore } from "@/store";
 
 export default {

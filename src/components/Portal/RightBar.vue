@@ -19,7 +19,7 @@
 
 <script>
 import SidebarToggle from "@/components/Portal/SidebarToggle.vue";
-import UpcomingTests from "./Right/UpcomingTests.vue";
+import UpcomingTests from "@/components/Portal/UpcomingTests.vue";
 export default {
   name: "RightBar",
   components: {

@@ -18,6 +18,7 @@ import ModalFromPages from "@/components/Modal/ModalFromPages.vue";
 import SmileSentiment from "@/components/Surveys/SmileSentiment.vue";
 import ScaleSentiment from "@/components/Surveys/ScaleSentiment.vue";
 import LongResponse from "@/components/Surveys/LongResponse.vue";
+import UpcomingPage from "@/components/Surveys/UpcomingPage.vue";
 // Mark all components passed into page.content with shallowRef(Component)
 import { shallowRef } from "vue";
 import { useMainStore } from "@/store";
@@ -31,6 +32,7 @@ export default {
     SmileSentiment,
     ScaleSentiment,
     LongResponse,
+    UpcomingPage,
   },
   data: () => {
     return {
@@ -54,14 +56,20 @@ export default {
           submit_text: "Next",
         },
         {
-          title: "Anything Else?",
+          title: "Anything else?",
           content: shallowRef(LongResponse),
           submit_text: "Done",
           is_notification: true,
         },
         {
+          title: "Preview what's next",
+          content: shallowRef(UpcomingPage),
+          is_notification: true,
+        },
+        {
           title: "Thank you!",
           html: `<p>Thank you for your input, you shouldn't have to answer any other questions until tomorrow!</p>`,
+          submit_text: "Done",
         },
       ],
     };

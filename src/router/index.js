@@ -32,6 +32,22 @@ const router = createRouter({
             requiresAuth: false,
           },
           children: [
+            // view task
+
+            {
+              // specify param "ref" in the route
+              path: "/view/:ref?",
+              name: "viewtaskalt",
+              component: () => import("@/views/Portal/ViewTask.vue"),
+              meta: {
+                page_title: "View Task",
+                theme_color: {
+                  light: "#ffffff",
+                  dark: "#121212",
+                },
+                requiresAuth: false,
+              },
+            },
             // redirect page
             {
               path: "to/:path?",

@@ -29,8 +29,8 @@
             >
             <span class="styled_line__separator"></span>
             <span
-              class="styled_line__value"
-              v-html="task.description ? task.description : 'Not Provided'"
+              class="styled_line__value md md_contents"
+              v-html="task.description ? text : 'Not Provided'"
             ></span>
           </div>
           <div class="styled_obj links_obj" v-if="task.links">
@@ -87,6 +87,9 @@ import { WarningToast, ErrorToast, SuccessToast } from "@svonk/util";
 import { _statuslog } from "@/common";
 import { useMainStore } from "@/store";
 import smoothReflow from "vue-smooth-reflow";
+import showdown from "showdown";
+import "@/assets/style/markdown.css";
+let converter = new showdown.Converter();
 export default {
   name: "ViewTaskView",
   emits: ["close"],
@@ -113,6 +116,12 @@ export default {
         day: "numeric",
       });
     },
+    text() {
+      return (
+        (this.task.description && converter.makeHtml(this.task.description)) ||
+        this.task.description
+      );
+    },
   },
   mounted() {
     this.$smoothReflow({
@@ -129,13 +138,8 @@ export default {
   methods: {
     /** Shares the task link with the native share function, or to the clipboard if sharing is not supported */
     async share_task() {
+      let url = new URL("https://view.mvtt.app/" + this.$route.params.ref);
       if (navigator.share) {
-        let url = new URL(window.location.href);
-        // fix url for prod
-        url.host = "mvtt.app";
-        url.port = "";
-        url.protocol = "https";
-
         navigator
           .share({
             title: this.task.name,
@@ -145,7 +149,7 @@ export default {
           .then(() => new SuccessToast("Opened share dialog", 1000))
           .catch((err) => _statuslog("Error sharing", err));
       } else if (navigator.clipboard) {
-        navigator.clipboard.writeText(window.location.href);
+        navigator.clipboard.writeText(url.href);
         new WarningToast("Sharing not supported, copied link to clipboard", 2000);
       } else {
         new ErrorToast("Sharing not supported", 2000);
@@ -162,13 +166,20 @@ export default {
     },
     async get_task() {
       // get task ref from route params
+      if (!this.$route.params.ref) {
+        new WarningToast("No task specified", 1500);
+        this.$emit("close");
+        return;
+      }
       const ref = this.$route.params.ref.split("~").join("/");
       if (!ref) {
         new WarningToast("No task specified", 1500);
         this.$emit("close");
-      } else if (ref.split("/").length < 3) {
+        return;
+      } else if (ref.split("/").length != 3) {
         new WarningToast("Invalid task specified", 1500);
         this.$emit("close");
+        return;
       }
       // get task from store
       this.store

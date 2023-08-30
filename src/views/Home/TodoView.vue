@@ -9,7 +9,7 @@
       </h3>
     </div>
     <hr />
-    <div class="todo_body md">
+    <div class="todo_body md mono">
       <div v-if="renderedTodo" v-html="renderedTodo"></div>
       <div v-else class="todo_placeholder">
         <img alt="Loading..." class="loading_icon" />
