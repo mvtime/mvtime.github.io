@@ -37,7 +37,7 @@ export default {
     ClassList,
     ActionsPanel,
   },
-  emits: ["close_right_bar", "set_class"],
+  emits: ["close_right_bar", "set_class", "mounted"],
   data() {
     return {
       sidebar_open: false,
@@ -49,6 +49,7 @@ export default {
     },
   },
   mounted() {
+    this.$emit("mounted");
     window.addEventListener("resize", this.close_sidebar);
   },
   unmounted() {
@@ -65,6 +66,9 @@ export default {
     },
     set_class(c) {
       this.$emit("set_class", c);
+    },
+    load() {
+      this.loading = false;
     },
   },
 };

@@ -6,6 +6,11 @@
       @clear_filters="filtered_classes = []"
       @close_right_bar="close_right_bar"
       :filtered_classes="filtered_classes"
+      @mounted="
+        if (loaded) {
+          $refs.LeftBar.load();
+        }
+      "
     />
     <div
       class="portal_content"
@@ -54,7 +59,15 @@
         />
       </div>
     </div>
-    <RightBar ref="RightBar" @close_left_bar="close_left_bar" />
+    <RightBar
+      ref="RightBar"
+      @close_left_bar="close_left_bar"
+      @mounted="
+        if (loaded) {
+          $refs.RightBar.load();
+        }
+      "
+    />
     <!-- show overlay only if router-view is active -->
     <OverlayWrapper
       v-if="$route.name !== 'portal'"
@@ -191,6 +204,8 @@ export default {
       .then(() => {
         // run calendar run_get_tasks method
         this.$refs.calendar.run_get_tasks();
+        this.$refs.RightBar.load();
+        this.$refs.LeftBar.load();
         this.loaded = true;
       })
       .catch((err) => {
@@ -230,6 +245,7 @@ main.portal {
 main.portal .portal_sidebar {
   box-shadow: var(--shadow-highlight);
   flex-basis: 300px;
+  width: 300px;
   flex-grow: 0;
   flex-shrink: 1;
   background-color: var(--color-bg);
@@ -257,7 +273,7 @@ main.portal .portal_sidebar {
     border-radius: 0px !important;
     box-shadow: none !important;
   }
-  main.portal .portal_content {
+  main.portal {
     background-color: var(--color-bg);
   }
 }

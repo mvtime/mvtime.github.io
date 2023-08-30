@@ -331,6 +331,10 @@ img.loading_icon {
   color: #00000000 !important;
 }
 
+#themed_body[_theme="dark"] .loading_bg {
+  background-image: url(@/assets/img/placeholder/load_dark.png) !important;
+}
+
 #themed_body[_theme="dark"] img[lazy="error"],
 #themed_body[_theme="dark"] img.error_icon {
   content: url(@/assets/img/placeholder/error_dark.png);

@@ -3,7 +3,7 @@
     <div class="sidebar_overflow">
       <div class="auth-action can-logout doprompt">Log Out</div>
       <div class="flex_spacer"></div>
-      <UpcomingTests />
+      <UpcomingTests :loading="loading" />
       <div class="flex_spacer"></div>
     </div>
     <button
@@ -26,18 +26,21 @@ export default {
     SidebarToggle,
     UpcomingTests,
   },
-  emits: ["close_left_bar"],
+  emits: ["close_left_bar", "mounted"],
   data() {
     return {
       sidebar_open: false,
+      loading: true,
     };
   },
   mounted() {
+    this.$emit("mounted");
     window.addEventListener("resize", this.close_sidebar);
   },
   unmounted() {
     window.removeEventListener("resize", this.close_sidebar);
   },
+
   methods: {
     show_if_inactive() {
       if (!this.sidebar_open) this.sidebar_open = true;
@@ -46,6 +49,9 @@ export default {
     },
     close_sidebar() {
       if (this.sidebar_open) setTimeout(() => (this.sidebar_open = false), 10);
+    },
+    load() {
+      this.loading = false;
     },
   },
 };

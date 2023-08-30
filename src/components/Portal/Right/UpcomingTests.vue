@@ -1,9 +1,9 @@
 <template>
   <div class="upcoming_tasks">
-    <div v-if="tasks && tasks.length" class="upcoming_tasks__not_empty">
+    <div v-if="(tasks && tasks.length) || loading" class="upcoming_tasks__not_empty">
       <h5>Upcoming</h5>
       <hr class="upcoming_tasks_hr" />
-      <div class="tasks_container">
+      <div class="tasks_container" v-if="tasks && tasks.length">
         <ExamCard
           class="tasks_container_task"
           v-for="task of tasks"
@@ -12,6 +12,7 @@
           @click="show_task(task)"
         />
       </div>
+      <img v-else class="loading_tasks loading_icon" alt="Loading..." />
     </div>
     <div v-else class="upcoming_tasks__empty">
       <h5>No Upcoming Tasks!</h5>
@@ -25,6 +26,12 @@ import { useMainStore } from "@/store";
 
 export default {
   name: "UpcomingTasks",
+  props: {
+    loading: {
+      type: Boolean,
+      default: false,
+    },
+  },
   components: {
     ExamCard,
   },
@@ -95,5 +102,9 @@ h5 {
   margin: 5px 0;
   border: none;
   border-top: 2px solid var(--color-task-separator);
+}
+.loading_tasks {
+  min-width: 100%;
+  max-height: 150px;
 }
 </style>
