@@ -74,7 +74,11 @@ export default {
 .left-bar {
   border-radius: 0 var(--radius-sidebar) var(--radius-sidebar) 0;
 }
-
+@media (min-width: 1200px) and (max-height: 800px) {
+  main.portal .portal_sidebar {
+    border-right: 3px solid var(--color-on-bg);
+  }
+}
 @media (max-width: 1200px) {
   main.portal .portal_sidebar {
     transform: translate(calc(-100% + 15px));

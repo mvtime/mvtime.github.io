@@ -260,6 +260,11 @@ main.calendar {
   /* overflow for loading */
   overflow: hidden;
 }
+@media (min-width: 1200px) and (max-height: 800px) {
+  main.calendar {
+    background-color: var(--color-calendar-alt);
+  }
+}
 
 .calendar_header {
   position: absolute;
@@ -431,7 +436,7 @@ main.calendar {
 .calendar_day__weekday_label {
   padding: 5px;
   line-height: calc(var(--height-calendar-weekday-label) - 10px);
-  color: var(--color-on-calendar-date);
+  color: var(--color-calendar-weekday-label);
   font-weight: 600;
   font-size: 0.8em;
 }

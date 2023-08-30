@@ -252,6 +252,16 @@ main.portal .portal_sidebar {
     top: calc(50% - 400px);
   }
 }
+@media (min-width: 1200px) and (max-height: 800px) {
+  main.portal .portal_sidebar {
+    border-radius: 0px !important;
+    box-shadow: none !important;
+  }
+  main.portal .portal_content {
+    background-color: var(--color-bg);
+  }
+}
+
 @media (max-width: 1200px) {
   main.portal .portal_content {
     position: absolute;
