@@ -1581,8 +1581,10 @@ export const useMainStore = defineStore({
      * @see {@link refresh_timeout}
      */
     hide_timeout() {
-      _statuslog("🕒 Hiding timeout");
-      this.paused = false;
+      if (this.paused) {
+        _statuslog("🕒 Hiding timeout");
+        this.paused = false;
+      }
     },
   },
 });
