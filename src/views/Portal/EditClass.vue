@@ -112,7 +112,7 @@ export default {
       return JSON.stringify(this.class_obj) != JSON.stringify(this.original);
     },
     is_owned() {
-      return this.store.active_doc.email.split("@")[0] == this.ref.split("/")[0];
+      return this.store.user.email.split("@")[0] == this.ref.split("/")[0];
     },
   },
   mounted() {
@@ -129,7 +129,7 @@ export default {
       return;
     }
     // if not the right teacher, close the modal
-    if (this.store.user.email.split("@")[0] != this.ref.split("/")) {
+    if (!this.is_owned) {
       this.$emit("close");
       new WarningToast("You are not the teacher of this class", 2000);
     }
