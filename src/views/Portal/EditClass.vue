@@ -126,6 +126,7 @@ export default {
     } else {
       new WarningToast("Invalid class provided");
       this.$emit("close");
+      return;
     }
     // if not the right teacher, close the modal
     if (this.store.user.email.split("@")[0] != this.ref.split("/")) {
