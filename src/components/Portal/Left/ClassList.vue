@@ -19,9 +19,14 @@
         >
           <div
             class="class_swatch"
-            :title="store.is_teacher ? 'Edit Class' : 'Leave Class'"
+            :_email="class_obj.email"
+            :title="
+              store.is_teacher && class_obj.email == this.store.user.email
+                ? 'Edit Class'
+                : 'Leave Class'
+            "
             @click="
-              if (store.is_teacher) {
+              if (store.is_teacher && class_obj.email == this.store.user.email) {
                 edit_class(class_obj);
               } else {
                 leave_class(class_obj);
@@ -30,7 +35,7 @@
             "
           >
             <div
-              v-if="!store.is_teacher"
+              v-if="!store.is_teacher || class_obj.email != this.store.user.email"
               class="class_swatch__icon class_swatch_remove__icon"
             ></div>
             <div v-else class="class_swatch__icon class_swatch_edit__icon"></div>
@@ -71,7 +76,12 @@ export default {
       return useMainStore();
     },
     classes() {
-      return this.store.classes;
+      return this.store.classes.map((class_obj) => {
+        return {
+          ...class_obj,
+          email: class_obj.id.split("/")[0],
+        };
+      });
     },
   },
   emits: ["toggle_filtered_class", "clear_filters"],

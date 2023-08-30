@@ -1241,36 +1241,36 @@ export const useMainStore = defineStore({
         this.loaded_email = email;
         return;
       }
-      let classes_maindoc = await getDoc(doc(db, "classes", email));
-      _statuslog("📄 Got classes from email");
-      if (classes_maindoc.exists()) {
-        let classes = [];
-        /**
-         * This file contains the Vuex store for the application. It manages the state of the application and provides methods for adding, creating, and deleting classes and tasks.
-         * @file store/index.js
-         */
-        let classes_subcollection = collection(doc(db, "classes", email), "classes");
-        let classes_subcollection_query_snapshot = await getDocs(query(classes_subcollection));
-        _statuslog("📄 Got classes subcollection from email");
-        classes_subcollection_query_snapshot.forEach((class_doc) => {
-          let class_data = class_doc.data();
-          class_data.id = class_doc.id;
-          // if user already in class, change name to "[JOINED] name"
-          if (this.active_doc?.classes.includes([email, class_doc.id].join("/"))) {
-            class_data.is_joined = true;
-          }
-          classes.push(class_data);
-        });
-        classes.sort((a, b) => {
-          if (a.period == b.period) {
-            return a.name.localeCompare(b.name);
-          }
-          return a.period - b.period;
-        });
-        this.loaded_classes = classes;
-      } else {
-        this.loaded_classes = null;
-      }
+      //let classes_maindoc = await getDoc(doc(db, "classes", email));
+      _statuslog("📄 Getting classes from email");
+      //if (classes_maindoc.exists()) {
+      let classes = [];
+      /**
+       * This file contains the Vuex store for the application. It manages the state of the application and provides methods for adding, creating, and deleting classes and tasks.
+       * @file store/index.js
+       */
+      let classes_subcollection = collection(doc(db, "classes", email), "classes");
+      let classes_subcollection_query_snapshot = await getDocs(query(classes_subcollection));
+      _statuslog("📄 Got classes subcollection from email");
+      classes_subcollection_query_snapshot.forEach((class_doc) => {
+        let class_data = class_doc.data();
+        class_data.id = class_doc.id;
+        // if user already in class, change name to "[JOINED] name"
+        if (this.active_doc?.classes.includes([email, class_doc.id].join("/"))) {
+          class_data.is_joined = true;
+        }
+        classes.push(class_data);
+      });
+      classes.sort((a, b) => {
+        if (a.period == b.period) {
+          return a.name.localeCompare(b.name);
+        }
+        return a.period - b.period;
+      });
+      this.loaded_classes = classes;
+      // } else {
+      //    this.loaded_classes = null;
+      // }
 
       this.loaded_email = email;
     },
@@ -1296,6 +1296,7 @@ export const useMainStore = defineStore({
         this.account_doc.classes.push(class_key);
       }
       await this.update_remote();
+      await this.fetch_classes();
       new SuccessToast(`Added "P${class_period} - ${class_name}" to your classes`, 2000);
       // return new success promise
       return Promise.resolve();

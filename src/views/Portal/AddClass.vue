@@ -203,7 +203,7 @@ export default {
           _statuslog("🔥 Unfound class for join ref", ref);
           this.to_normal_add();
         }
-      } else {
+      } else if (this.is_join) {
         new WarningToast("Please provide a join code", 3000);
         this.to_normal_add();
       }

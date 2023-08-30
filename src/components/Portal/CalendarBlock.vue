@@ -155,7 +155,7 @@ export default {
     },
     this_month() {
       let new_date = new Date(new Date().setDate(1));
-      if (date_matches(this.loaded_month, new_date)) {
+      if (this.day_matches(this.loaded_month, new_date)) {
         this.is_changed = !this.is_changed;
       }
       this.loaded_month = new_date;

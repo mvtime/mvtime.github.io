@@ -56,7 +56,7 @@
             $emit('close');
           }
         "
-        :disabled="ready && loading_share"
+        :disabled="(ready && loading_share) || is_owned"
         :class="{ loading_bg: loading_share && ready }"
       >
         {{ ready ? "Share" : "Close" }}
@@ -111,6 +111,9 @@ export default {
     changed() {
       return JSON.stringify(this.class_obj) != JSON.stringify(this.original);
     },
+    is_owned() {
+      return this.store.active_doc.email.split("@")[0] == this.ref.split("/")[0];
+    },
   },
   mounted() {
     this.$smoothReflow({
@@ -123,6 +126,11 @@ export default {
     } else {
       new WarningToast("Invalid class provided");
       this.$emit("close");
+    }
+    // if not the right teacher, close the modal
+    if (this.store.user.email.split("@")[0] != this.ref.split("/")) {
+      this.$emit("close");
+      new WarningToast("You are not the teacher of this class", 2000);
     }
   },
   methods: {
