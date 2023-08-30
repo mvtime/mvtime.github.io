@@ -1374,6 +1374,7 @@ export const useMainStore = defineStore({
               class_obj.tasks.push({
                 ...task_obj,
                 ref: [_email, _id, task_ref.id].join("/"),
+                class_id: displayed_class_id,
                 _proxy: true,
               });
             }
@@ -1449,16 +1450,20 @@ export const useMainStore = defineStore({
         _statuslog("📝 Updated remote task");
         let classes = this.classes;
         // update local version of task in classes
-        const classIndex = classes.findIndex(
-          (class_obj) => class_obj.id === [_email, _id].join("/")
-        );
+        let class_id = [_email, _id].join("/");
+        const classIndex = classes.findIndex((class_obj) => class_obj.id === class_id);
         const ref = [_email, _id, task_id].join("/");
         if (classIndex !== -1) {
           const taskIndex = classes[classIndex].tasks.findIndex((task) => task.ref === ref);
 
           if (taskIndex !== -1) {
             // Update the task object within the tasks array of the class_obj
-            classes[classIndex].tasks[taskIndex] = { ...task_obj, ref: ref, _proxy: true };
+            classes[classIndex].tasks[taskIndex] = {
+              ...task_obj,
+              ref: ref,
+              class_id: class_id,
+              _proxy: true,
+            };
             _statuslog("📝 Updated local task");
           }
         }

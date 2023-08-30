@@ -448,7 +448,7 @@ main.calendar {
 }
 /* hide paceholder tasks until hover */
 .calendar_day.calendar_day__placeholder > * {
-  opacity: 0.1;
+  opacity: 0.2;
   transition: opacity 0.2s ease-out;
 }
 .calendar_day.calendar_day__placeholder:hover > * {
