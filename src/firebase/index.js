@@ -92,6 +92,7 @@ function setupSnapshot(uid) {
 function unsubscribe(show_prompt) {
   // clear timeout
   clearTimeout(timeout);
+  let store = useMainStore();
   if (show_prompt) {
     store.show_timeout();
   }
@@ -99,7 +100,6 @@ function unsubscribe(show_prompt) {
     unsub();
     _statuslog("⬥ Unsubscribed from remote changes");
   }
-  let store = useMainStore();
   subscribed = false;
 }
 
