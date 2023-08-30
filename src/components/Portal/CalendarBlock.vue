@@ -26,7 +26,13 @@
       </nav>
     </div>
     <div class="calendar_days_container">
-      <div class="calendar_days">
+      <div
+        class="calendar_days"
+        :class="{
+          calendar_days__current: day_matches(loaded_month, new Date(new Date().setDate(1))),
+          calendar_days__changed: is_changed,
+        }"
+      >
         <!-- v-for tasks -->
         <div
           class="calendar_day calendar_day__weekday_label"
@@ -50,6 +56,7 @@
             calendar_day__placeholder: day.is_placeholder,
             calendar_day__hastask: day.tasks ? day.tasks.length : false,
             calendar_day__today: day.is_today,
+            calendar_day__past: day.is_past,
           }"
           v-for="day of days"
           :key="day.date"
@@ -113,6 +120,7 @@ export default {
       loaded_month: new Date(new Date().setDate(1)),
       is_ready: false,
       tasks: [],
+      is_changed: false,
     };
   },
   mounted() {
@@ -142,12 +150,15 @@ export default {
         });
     },
     next_month() {
+      this.is_changed = true;
       this.loaded_month = new Date(this.loaded_month.setMonth(this.loaded_month.getMonth() + 1));
     },
     this_month() {
+      this.is_changed = true;
       this.loaded_month = new Date(new Date().setDate(1));
     },
     prev_month() {
+      this.is_changed = true;
       this.loaded_month = new Date(this.loaded_month.setMonth(this.loaded_month.getMonth() - 1));
     },
     run_get_tasks() {
@@ -178,6 +189,7 @@ export default {
     },
     days() {
       const days = [];
+      const today = new Date(new Date().toISOString().split("T")[0]);
       const this_date = this.loaded_month.getTime();
       function get_this_date() {
         return new Date(this_date);
@@ -192,6 +204,7 @@ export default {
           date: preflow_day,
           tasks: this.get_day_tasks(preflow_day),
           is_placeholder: true,
+          is_past: preflow_day.getTime() < today.getTime(),
         });
       }
       // do normal days
@@ -201,6 +214,7 @@ export default {
           date: month_day,
           tasks: this.get_day_tasks(month_day),
           is_today: this.day_matches(month_day, new Date()),
+          is_past: month_day.getTime() < today.getTime(),
         });
       }
 
@@ -211,6 +225,7 @@ export default {
           date: overflow_day,
           tasks: this.get_day_tasks(overflow_day),
           is_placeholder: true,
+          is_past: overflow_day.getTime() < today.getTime(),
         });
       }
       return days;
@@ -596,7 +611,8 @@ main.calendar {
     align-items: stretch;
   }
   .calendar_day.calendar_day__placeholder,
-  .calendar_day:not(.calendar_day__hastask) {
+  .calendar_day:not(.calendar_day__hastask),
+  .calendar_days.calendar_days__current:not(.calendar_days__changed) .calendar_day__past {
     display: none;
   }
   .calendar_day {
