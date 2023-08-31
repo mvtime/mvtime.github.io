@@ -138,10 +138,6 @@ router.beforeEach((to) => {
       1500,
       require("@svonk/util/assets/info-locked-icon.svg")
     );
-    return { path: "/portal" };
+    return { name: "portal" };
   }
 });
-
-window.show_timeout = function () {
-  useMainStore().show_timeout();
-};
