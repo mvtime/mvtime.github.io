@@ -8,7 +8,7 @@
     @focus="refreshTimeout"
   >
     <router-view></router-view>
-    <OverlayWrapper v-if="store.paused">
+    <OverlayWrapper v-if="store.paused || animating" ref="overlay">
       <main class="pause_modal router_center_view" ref="pause_modal">
         <header class="modal_header">
           <h2 class="header_style modal_header_title">Session paused</h2>
@@ -45,6 +45,7 @@ export default {
     return {
       platform: "",
       isElectron: false,
+      animating: false,
     };
   },
   computed: {
@@ -82,6 +83,23 @@ export default {
     refreshTimeout() {
       if (this.store) {
         this.store.refresh_timeout();
+      }
+    },
+  },
+  watch: {
+    "store.paused": function (new_val, old_val) {
+      if (new_val) {
+        // focus on next tick
+        this.$nextTick(() => {
+          this.$refs.pause_modal.focus();
+        });
+      } else if (old_val && this.$refs.overlay) {
+        console.log("closing overlay");
+        this.animating = true;
+        this.$refs.overlay.close();
+        setTimeout(() => {
+          this.animating = false;
+        }, 250);
       }
     },
   },

@@ -67,6 +67,7 @@ body,
 /* light theme colors for the project */
 body,
 #themed_body {
+  color-scheme: light;
   /* colors */
   --color-home: #ffffff;
   --color-bg: #ffffff;
