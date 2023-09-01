@@ -129,6 +129,11 @@ export default {
     this.tasks = this.store.tasks;
   },
   methods: {
+    format_date(date) {
+      // format date in yyyy-MM-dd for date input
+      return date.toISOString().split("T")[0] || "";
+    },
+  
     day_matches(day1, day2) {
       return (
         day1.getDate() === day2.getDate() &&
@@ -167,14 +172,6 @@ export default {
     run_get_tasks() {
       this.tasks = this.store.tasks;
       this.is_ready = true;
-      // this.store
-      //   .get_tasks()
-      //   .then(() => {
-      //     this.is_ready = true;
-      //   })
-      //   .catch((err) => {
-      //     _statuslog("🔥 Couldn't get tasks", err);
-      //   });
     },
   },
   computed: {

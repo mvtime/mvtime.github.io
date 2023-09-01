@@ -301,7 +301,7 @@ const router = createRouter({
           },
         },
         {
-          path: "/portal/new/:tasktype",
+          path: "/portal/new/:tasktype?",
           name: "newtask",
           component: () => import("../views/Portal/CreateTask.vue"),
           meta: {

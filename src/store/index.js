@@ -499,6 +499,22 @@ export const useMainStore = defineStore({
             });
           }
         }
+        // sort tasks by day, if day the same, sort by period, then by name
+        tasks.sort((a, b) => {
+          a.name = a.name ? a.name : "";
+          b.name = b.name ? b.name : "";
+          if (a.date && b.date) {
+            if (a.date.getTime() == b.date.getTime()) {
+              if (a.period == b.period) {
+                return a.name.localeCompare(b.name);
+              }
+              return a.period - b.period;
+            }
+            return a.date.getTime() - b.date.getTime();
+          }
+          return a.name.localeCompare(b.name);
+        });
+
         this.tasks = tasks;
         return Promise.resolve(tasks);
       } catch (err) {

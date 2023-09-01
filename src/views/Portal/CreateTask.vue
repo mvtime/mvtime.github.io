@@ -157,7 +157,7 @@ export default {
     return {
       task: {
         name: "",
-        date: "",
+        date: this.$route.query.date ? this.$route.query.date : "",
         description: "",
         type: this.$route.params.tasktype ? this.$route.params.tasktype : "task",
       },
