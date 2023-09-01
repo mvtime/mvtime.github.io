@@ -94,7 +94,6 @@ export default {
           this.$refs.pause_modal.focus();
         });
       } else if (old_val && this.$refs.overlay) {
-        console.log("closing overlay");
         this.animating = true;
         this.$refs.overlay.close();
         setTimeout(() => {
