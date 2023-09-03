@@ -36,6 +36,7 @@
  */
 import OverlayWrapper from "@/components/Modal/OverlayWrapper.vue";
 import { useMainStore } from "@/store";
+import $ from "jquery";
 export default {
   name: "App",
   components: {
@@ -68,6 +69,7 @@ export default {
       }
       console.log("Electron Platform: " + this.platform);
     }
+    this.set_theme();
     this.store.paused = false;
     window.addEventListener("focus", this.refreshTimeout);
   },
@@ -85,6 +87,15 @@ export default {
         this.store.refresh_timeout();
       }
     },
+    set_theme() {
+      if (this.theme == "light") {
+        $("meta.theme-color").attr("media", "");
+        $("meta.theme-color-dark").attr("media", "false");
+      } else {
+        $("meta.theme-color-dark").attr("media", "");
+        $("meta.theme-color").attr("media", "false");
+      }
+    },
   },
   watch: {
     "store.paused": function (new_val, old_val) {
@@ -100,6 +111,9 @@ export default {
           this.animating = false;
         }, 250);
       }
+    },
+    theme() {
+      this.set_theme();
     },
   },
 };
