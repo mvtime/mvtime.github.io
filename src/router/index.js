@@ -196,7 +196,7 @@ const router = createRouter({
       meta: {
         page_title: "Portal",
         theme_color: {
-          light: "#ffffff",
+          light: "#f2f2f2",
           dark: "#121212",
         },
         requiresAuth: true,
@@ -209,7 +209,7 @@ const router = createRouter({
           meta: {
             page_title: "Daily Check-In",
             theme_color: {
-              light: "#ffffff",
+              light: "#f2f2f2",
               dark: "#121212",
             },
             requiresAuth: true,
@@ -225,7 +225,7 @@ const router = createRouter({
           meta: {
             page_title: "Settings",
             theme_color: {
-              light: "#ffffff",
+              light: "#f2f2f2",
               dark: "#121212",
             },
             requiresAuth: true,
@@ -239,7 +239,7 @@ const router = createRouter({
           meta: {
             page_title: "Onboarding",
             theme_color: {
-              light: "#ffffff",
+              light: "#f2f2f2",
               dark: "#121212",
             },
             requiresAuth: true,
@@ -254,7 +254,7 @@ const router = createRouter({
           meta: {
             page_title: "Join a Class",
             theme_color: {
-              light: "#ffffff",
+              light: "#f2f2f2",
               dark: "#121212",
             },
             requiresAuth: true,
@@ -267,7 +267,7 @@ const router = createRouter({
           meta: {
             page_title: "Join from Reference",
             theme_color: {
-              light: "#ffffff",
+              light: "#f2f2f2",
               dark: "#121212",
             },
             requiresAuth: true,
@@ -280,7 +280,7 @@ const router = createRouter({
           meta: {
             page_title: "Join from Code",
             theme_color: {
-              light: "#ffffff",
+              light: "#f2f2f2",
               dark: "#121212",
             },
             requiresAuth: true,
@@ -293,7 +293,7 @@ const router = createRouter({
           meta: {
             page_title: "Teacher | Create Class",
             theme_color: {
-              light: "#ffffff",
+              light: "#f2f2f2",
               dark: "#121212",
             },
             requiresAuth: true,
@@ -307,7 +307,7 @@ const router = createRouter({
           meta: {
             page_title: "Teacher | Add Task",
             theme_color: {
-              light: "#ffffff",
+              light: "#f2f2f2",
               dark: "#121212",
             },
             requiresAuth: true,
@@ -322,7 +322,7 @@ const router = createRouter({
           meta: {
             page_title: "View Task",
             theme_color: {
-              light: "#ffffff",
+              light: "#f2f2f2",
               dark: "#121212",
             },
             requiresAuth: false,
@@ -336,7 +336,7 @@ const router = createRouter({
           meta: {
             page_title: "Edit Task",
             theme_color: {
-              light: "#ffffff",
+              light: "#f2f2f2",
               dark: "#121212",
             },
             requiresAuth: true,
@@ -351,7 +351,7 @@ const router = createRouter({
           meta: {
             page_title: "Edit Class",
             theme_color: {
-              light: "#ffffff",
+              light: "#f2f2f2",
               dark: "#121212",
             },
             requiresAuth: true,
@@ -366,7 +366,7 @@ const router = createRouter({
           meta: {
             page_title: "Confirm Task Delete",
             theme_color: {
-              light: "#ffffff",
+              light: "#f2f2f2",
               dark: "#121212",
             },
             requiresAuth: true,
@@ -381,7 +381,7 @@ const router = createRouter({
           meta: {
             page_title: "Confirm Class Leave",
             theme_color: {
-              light: "#ffffff",
+              light: "#f2f2f2",
               dark: "#121212",
             },
             requiresAuth: true,
