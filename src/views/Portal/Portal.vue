@@ -234,6 +234,7 @@ export default {
 /* portal */
 main.portal {
   background-color: var(--color-secondary);
+  transition: background-color 0.3s ease-out;
   /* sizing */
   width: 100%;
   height: 100%;
@@ -257,7 +258,8 @@ main.portal .portal_sidebar {
 main.portal .portal_sidebar {
   /* margin: auto 0; */
   height: 100%;
-  transition: transform 0.3s ease-out;
+  transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, border-width 0.3s ease-out,
+    border-radius 0.3s ease-out;
   /* layout */
   display: flex;
   flex-flow: column nowrap;
