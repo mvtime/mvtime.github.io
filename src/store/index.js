@@ -819,7 +819,7 @@ export const useMainStore = defineStore({
       }
       new SuccessToast(`Switched to ${this.theme} theme`, 2000);
       // trigger theme update
-      this.get_theme;
+      this.theme = this.get_theme;
     },
 
     /**

@@ -72,7 +72,7 @@ function setupSnapshot(uid) {
       }
       let listening_doc_data = listening_doc.data();
       // set based on id
-      if (store.user && store.user?.uid == listening_doc_data.id) {
+      if (store.user && store.user?.uid == listening_doc.id) {
         // set the account_doc
         store.account_doc = listening_doc_data;
       } else {
