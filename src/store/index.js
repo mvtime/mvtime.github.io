@@ -333,11 +333,11 @@ export const useMainStore = defineStore({
       // get local
       let local_theme = this.theme || window.localStorage.getItem("theme");
       // get userdoc theme
-      let account_doc_theme = this.account_doc?.theme;
+      let active_doc_theme = this.active_doc?.prefs?.theme;
       // set new to system by default
       let new_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
       // if not userdoc theme, use local theme, and set userdoc theme to local theme
-      if (!account_doc_theme) {
+      if (!active_doc_theme) {
         if (local_theme) {
           // set to local if local exists
           new_theme = local_theme;
@@ -345,18 +345,20 @@ export const useMainStore = defineStore({
           // set to system if local doesn't exist, and set update local
           window.localStorage.setItem("theme", new_theme);
         }
-        if (this.account_doc) {
-          this.account_doc.theme = new_theme;
+        if (this.active_doc) {
+          let new_doc = { ...this.active_doc };
+          new_doc.prefs = { ...new_doc.prefs, theme: new_theme };
+          this.set_active(new_doc);
           this.update_remote();
         }
         return local_theme || "light";
       }
       // if userdoc theme, use userdoc theme, and set local theme to userdoc theme
       else {
-        if (local_theme != account_doc_theme) {
-          window.localStorage.setItem("theme", account_doc_theme);
+        if (local_theme != active_doc_theme) {
+          window.localStorage.setItem("theme", active_doc_theme);
         }
-        return account_doc_theme ? account_doc_theme : "light";
+        return active_doc_theme ? active_doc_theme : "light";
       }
     },
   },
@@ -813,8 +815,14 @@ export const useMainStore = defineStore({
     async toggle_theme() {
       this.theme = this.get_theme == "light" ? "dark" : "light";
       window.localStorage.setItem("theme", this.theme);
-      if (this?.account_doc) {
-        this.account_doc.theme = this.theme;
+      if (this.active_doc) {
+        // update
+        let new_doc = { ...this.active_doc };
+        new_doc.prefs = { ...new_doc.prefs, theme: this.theme };
+        // fixes for legacy
+        delete new_doc.theme;
+        // commit changes
+        this.set_active(new_doc);
         await this.update_remote();
       }
       new SuccessToast(`Switched to ${this.theme} theme`, 2000);
@@ -1106,7 +1114,7 @@ export const useMainStore = defineStore({
         name: this.user.displayName,
         email: this.user.email,
         classes: [],
-        theme: this.get_theme,
+        prefs: { theme: this.get_theme, show_timeout: true },
       };
       if (this.personal_account) {
         this.account_doc = {
@@ -1114,6 +1122,7 @@ export const useMainStore = defineStore({
           personal_account: true,
           name: this.user.displayName,
           email: this.user.email,
+          prefs: { theme: this.get_theme, show_timeout: true },
         };
       }
       if (this.is_teacher) {
