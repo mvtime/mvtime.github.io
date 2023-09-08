@@ -133,7 +133,7 @@ export default {
       // format date in yyyy-MM-dd for date input
       return date.toISOString().split("T")[0] || "";
     },
-  
+
     day_matches(day1, day2) {
       return (
         day1.getDate() === day2.getDate() &&
@@ -262,7 +262,7 @@ export default {
 <style scoped>
 main.calendar {
   width: 100%;
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0 auto;
   box-sizing: border-box;
   padding: var(--padding-calendar);
