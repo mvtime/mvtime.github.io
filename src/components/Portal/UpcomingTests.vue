@@ -54,7 +54,7 @@ export default {
           if (a.date > b.date) return 1;
           return 0;
         })
-        .slice(0, 4);
+        .slice(0, 6);
     },
   },
   methods: {
