@@ -42,7 +42,7 @@
                 v-for="task_link in task.links"
                 target="_blank"
                 :key="task_link.path"
-                :href="`/to/${encodeURIComponent(task_link.path)}`"
+                :href="task_link.path"
                 >{{ task_link.text }}</a
               >
             </span>

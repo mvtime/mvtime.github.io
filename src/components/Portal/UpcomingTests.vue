@@ -9,6 +9,7 @@
           v-for="task of tasks"
           :task="task"
           :key="task.name"
+          :classes="this.store.classes"
           @click="show_task(task)"
         />
       </div>

@@ -2,6 +2,7 @@
   <main
     id="themed_body"
     class="parent"
+    ref="app"
     :_theme="theme"
     @click="refreshTimeout"
     @keydown="refreshTimeout"
@@ -37,6 +38,7 @@
 import OverlayWrapper from "@/components/Modal/OverlayWrapper.vue";
 import { useMainStore } from "@/store";
 import $ from "jquery";
+import { _statuslog } from "./common";
 export default {
   name: "App",
   components: {
@@ -72,6 +74,21 @@ export default {
     this.set_theme();
     this.store.paused = false;
     window.addEventListener("focus", this.refreshTimeout);
+
+    // catch href clicks to open as "/to/{encoded href}"
+    this.$refs.app.addEventListener("click", (e) => {
+      // catch click if it has an href
+      if (e.target.href) {
+        // check that it's an outlink
+        let url = new URL(e.target.href);
+        if (url?.hostname == "mvtt.app") return;
+
+        // if outlink, open in new tab as "/to/{encoded href}"
+        e.preventDefault();
+        _statuslog(`🔗 Opening outlink in a new tab | "${url.href}"`);
+        window.open("/to/" + encodeURIComponent(url.href), "_blank");
+      }
+    });
   },
   created() {
     // do dark mode from local storage, then from store (if logged in)

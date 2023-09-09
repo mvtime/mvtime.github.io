@@ -4,7 +4,13 @@
       <div class="tasks_container__empty__text overlay_contents_text">No Upcoming Tasks!</div>
     </div>
     <div class="tasks_container" v-else>
-      <ExamCard class="tasks_container_task" v-for="task of tasks" :task="task" :key="task.name" />
+      <ExamCard
+        class="tasks_container_task"
+        v-for="task of tasks"
+        :task="task"
+        :key="task.name"
+        :classes="this.store.classes"
+      />
     </div>
   </div>
 </template>
