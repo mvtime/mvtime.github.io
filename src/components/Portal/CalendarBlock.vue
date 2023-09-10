@@ -81,7 +81,17 @@
           v-for="day of days"
           :key="day.date"
         >
-          <div class="calendar_day_date">
+          <div
+            class="calendar_day_date"
+            @click="
+              $router.push({
+                name: 'newtask',
+                query: {
+                  date: format_date(day.date),
+                },
+              })
+            "
+          >
             <span class="calendar_day_date__short"> {{ new Date(day.date).getDate() }}</span>
             <span class="calendar_day_date__long" style="display: none">
               {{
@@ -575,6 +585,7 @@ main.calendar {
   align-items: center;
   font-weight: 700;
   /* style */
+  cursor: pointer;
   backdrop-filter: blur(5px);
   background-color: var(--color-calendar-date);
   font-size: 11px;
