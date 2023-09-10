@@ -195,13 +195,14 @@ h5 {
   background-position: center;
 }
 .class_swatch__icon {
-  visibility: hidden;
+  opacity: 0;
   width: 100%;
   height: 100%;
-  filter: var(--filter-icon) var(--filter-test-calendar-icon);
-  background-size: contain;
+  filter: var(--filter-swatch-icon);
+  background-size: 16px;
   background-repeat: no-repeat;
   background-position: center;
+  transition: opacity 0.2s ease-in-out;
 }
 .class_swatch_remove__icon {
   background-image: url(@/assets/img/general/portal/remove.png);
@@ -211,8 +212,9 @@ h5 {
   background-image: url(@/assets/img/general/portal/edit.png);
   background-image: url(@/assets/img/general/portal/edit.svg);
 }
-.class_swatch:hover .class_swatch__icon {
-  visibility: visible;
+.class_swatch:hover .class_swatch__icon,
+.class_swatch:active .class_swatch__icon {
+  opacity: 1;
 }
 .class_swatch {
   display: inline-block;

@@ -79,10 +79,25 @@
               v-for="task of day.tasks"
               :is_note="task.type === 'note'"
               :key="task.name"
-              :title="task.classes_class"
-              :style="{ '--color-calendar-task': task.color }"
+              :title="task.name"
+              draggable
+              :style="{
+                '--color-calendar-task': task.color,
+                '--color-calendar-task-alt': task.color + '40',
+              }"
               @click="$emit('taskclick', task)"
             >
+              <div
+                class="calendar_day_task_editable"
+                v-if="
+                  task &&
+                  store.is_teacher &&
+                  store.user &&
+                  task.ref.split('/')[0] == store.active_doc.email
+                "
+              >
+                <span class="task_edit__icon"></span>
+              </div>
               <span v-if="task.type === 'note'">
                 <span class="calendar_day_task__swatch"></span>
                 <span class="calendar_day_task__note"> NOTE </span>
@@ -578,7 +593,45 @@ main.calendar {
   line-height: var(--height-calendar-task);
   padding: 0 var(--padding-calendar-task);
 }
+.calendar_day_task .calendar_day_task_editable {
+  /* fill task */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 
+  /* overlay center */
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+
+  /* background and transition */
+  border-radius: 5px;
+  background-color: var(--color-calendar-task);
+  opacity: 0;
+  z-index: 2;
+  transition: opacity 0.2s ease-out;
+  /* backdrop-filter: blur(3px); */
+}
+
+.calendar_day_task:hover .calendar_day_task_editable,
+.calendar_day_task:active .calendar_day_task_editable {
+  opacity: 1;
+}
+
+.task_edit__icon {
+  width: 100%;
+  height: 100%;
+  filter: var(--filter-swatch-icon);
+  background-size: 20px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url(@/assets/img/general/portal/edit.png);
+  background-image: url(@/assets/img/general/portal/edit.svg);
+}
 .calendar_day_task[is_note="false"]:not(.calendar_day__weekday_label)::after {
   content: "";
   display: block;
@@ -666,7 +719,6 @@ main.calendar {
   }
   .calendar_day_task {
     margin: var(--spacing-calendar-day) !important;
-
     flex-grow: 1;
     white-space: normal;
     height: unset;

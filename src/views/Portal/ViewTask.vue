@@ -221,7 +221,6 @@ export default {
   max-height: 150px;
   min-width: 100%;
 }
-
 .class_name {
   line-height: 1em;
 }

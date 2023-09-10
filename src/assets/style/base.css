@@ -87,6 +87,7 @@ body,
   --color-on-action: #fff;
   --color-action: #242325;
   --filter-icon: none;
+  --filter-swatch-icon: invert(1) hue-rotate(180deg);
   --color-secondary: #f2f2f2;
   --shadow-highlight: 0 0 10px #00000030;
   /** calendar **/
@@ -102,6 +103,7 @@ body,
   --color-calendar-weekday-label: #969696;
   /* calendar task */
   --color-calendar-task: #f5c14b;
+  --color-calendar-task-alt: #f5c14b40;
   --color-on-calendar-task: #fff;
   --filter-calendar-task: none;
   --color-text-on-calendar: #333;
@@ -163,6 +165,7 @@ body:has(#themed_body[_theme="dark"]) {
   --color-action: #f5c14b;
   --color-on-action: #000;
   --filter-icon: invert(1) hue-rotate(180deg);
+  --filter-swatch-icon: none;
   --color-secondary: #121212;
   --shadow-highlight: 0 0 1px 2px #00000020, 0 0 10px #00000020;
   /* calendar */
