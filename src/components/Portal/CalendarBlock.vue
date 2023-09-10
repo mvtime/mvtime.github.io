@@ -67,7 +67,11 @@
             calendar_day__drag_to: drag.to == day.date,
             calendar_day__drag_from: drag.from == day.date,
           }"
-          @dragover="drag_over(day.date)"
+          @dragover="
+            if (drag.to != day.date) {
+              drag.to = drag.to != drag.from ? day.date : null;
+            }
+          "
           v-for="day of days"
           :key="day.date"
         >
@@ -97,7 +101,12 @@
                 store.user &&
                 task.ref.split('/')[0] == store.active_doc.email
               "
-              @dragstart="drag_start(task, day.date)"
+              @dragstart="
+                drag = {
+                  task: task,
+                  from: day.date,
+                }
+              "
               @dragend="drag_drop"
               :style="{
                 '--color-calendar-task': task.color,
@@ -173,49 +182,37 @@ export default {
       try {
         const rect = this.$refs.calendar_days.getBoundingClientRect();
         if (
+          this.drag.to &&
           (e.clientX || e.clientX) &&
           (e.clientX < rect.left ||
             e.clientX > rect.right ||
             e.clientY < rect.top ||
             e.clientY > rect.bottom)
         ) {
-          this.drag_leave();
+          this.drag.to = null;
         }
       } catch (err) {
         _statuslog("🔥 Couldn't check if mouse left calendar", err);
       }
     },
     // drag:
-    drag_start(task, date) {
-      this.drag = {
-        task: task,
-        from: date,
-      };
-    },
-    drag_over(date) {
-      if (this.drag.to != date) {
-        this.drag.to = this.drag.to != this.drag.from ? date : null;
-      }
-    },
-    drag_leave() {
-      if (this.drag.to) {
-        this.drag.to = null;
-      }
-    },
     drag_drop() {
       if (this.drag.to && this.drag.to != this.drag.from && this.drag.task) {
         // move task to new date
+        let to = this.drag.to;
+
         this.drag.load = true;
+        this.drag.to = null;
         this.store
           .update_task(this.drag.task.ref, {
             ...this.drag.task,
-            date: this.drag.to.toISOString().split("T")[0],
+            date: to.toISOString().split("T")[0],
           })
           .then(() => {
             new SuccessToast(
               `Moved ${this.drag.task.type} ${
                 this.drag.task.name ? '"' + this.drag.task.name + '" ' : ""
-              }to ${this.drag.to.toLocaleDateString()}`,
+              }to ${to.toLocaleDateString()}`,
               2000
             );
             _statuslog("📅 Moved task date");
@@ -605,11 +602,13 @@ main.calendar {
   opacity: 0.2;
   transition: opacity 0.2s ease-out;
 }
-.calendar_day.calendar_day__placeholder:hover > * {
+.calendar_day.calendar_day__placeholder:hover > *,
+.calendar_day.calendar_day__placeholder.calendar_day__drag_to > * {
   opacity: 1;
   transition-duration: 0.5s;
 }
-.calendar_day.calendar_day__placeholder:hover > .calendar_day_tasks {
+.calendar_day.calendar_day__placeholder:hover > .calendar_day_tasks,
+.calendar_day.calendar_day__placeholder.calendar_day__drag_to > .calendar_day_tasks {
   visibility: visible;
 }
 .calendar_day.calendar_day__placeholder {
@@ -617,7 +616,8 @@ main.calendar {
   scale: 0.9;
   transition: opacity 0.2s ease-out, scale 0.2s ease-out;
 }
-.calendar_day.calendar_day__placeholder:hover {
+.calendar_day.calendar_day__placeholder:hover,
+.calendar_day.calendar_day__placeholder.calendar_day__drag_to {
   opacity: 0.85;
   scale: 1;
 }
