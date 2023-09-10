@@ -157,11 +157,11 @@ export default {
     return {
       task: {
         name: "",
-        date: this.$route.query.date ? this.$route.query.date : "",
+        date: this.$route.query?.date ? this.$route.query.date : "",
         description: "",
         type: this.$route.params.tasktype ? this.$route.params.tasktype : "task",
       },
-      task_classes: [],
+      task_classes: this.$route.query?.class ? [this.$route.query.class] : [],
       newlink: {
         text: "",
         path: "",

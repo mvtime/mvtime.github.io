@@ -6,6 +6,12 @@
       @clear_filters="filtered_classes = []"
       @close_right_bar="close_right_bar"
       :filtered_classes="filtered_classes"
+      @dragclass="
+        close_left_bar();
+        drag_class($event);
+      "
+      @drag="$refs.calendar.check_leave($event)"
+      @dragend="$refs.calendar.drop_class($event)"
       @mounted="
         if (loaded) {
           $refs.LeftBar.load();
@@ -51,6 +57,7 @@
           :filtered_classes="filtered_classes"
           @taskclick="show_task($event)"
           ref="calendar"
+          :dragging_class="dragging_class"
           @mounted="
             if (loaded) {
               $refs.calendar.run_get_tasks();
@@ -115,6 +122,7 @@ export default {
       /** A list of random welcome messages */
       welcomes: ["Welcome", "Hi", "Hello", "Hey", "Howdy"],
       loaded: false,
+      dragging_class: null,
     };
   },
   computed: {
@@ -139,6 +147,9 @@ export default {
     },
   },
   methods: {
+    drag_class(e) {
+      this.dragging_class = e;
+    },
     /** Launch the Daily Survey */
     do_survey() {
       this.$router.replace({
@@ -218,6 +229,10 @@ export default {
       this.check_and_do_survey();
     },
     $route() {
+      if (this.$route.name != "portal") {
+        this.close_right_bar();
+        this.close_left_bar();
+      }
       this.check_and_do_survey();
     },
     store: {

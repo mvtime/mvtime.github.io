@@ -6,7 +6,7 @@
       <!-- Actions Panel -->
       <ActionsPanel v-if="store && store.is_teacher" />
       <!-- Class List -->
-      <ClassList v-bind="$attrs" />
+      <ClassList v-bind="$attrs" @dragclass="$emit('dragclass', $event)" />
       <div class="flex_spacer"></div>
     </div>
     <!-- Theme Button -->
@@ -37,7 +37,7 @@ export default {
     ClassList,
     ActionsPanel,
   },
-  emits: ["close_right_bar", "set_class", "mounted"],
+  emits: ["close_right_bar", "set_class", "mounted", "dragclass"],
   data() {
     return {
       sidebar_open: false,

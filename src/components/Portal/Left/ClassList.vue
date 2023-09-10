@@ -9,11 +9,17 @@
       </h5>
       <hr class="class_list_hr" />
       <div class="classes_container" :class="{ filtering: !!filtered_classes.length }">
-        <div
+        <a
           class="classes_container_class"
+          :href="'/class/' + clean_ref(class_obj.ref)"
           v-for="class_obj of classes"
+          draggable="true"
+          @dragstart="$emit('dragclass', class_obj)"
           :key="class_obj.name"
-          @click="$emit('toggle_filtered_class', class_obj.id)"
+          @click="
+            $event.preventDefault();
+            $emit('toggle_filtered_class', class_obj.id);
+          "
           :style="{ '--color-class': class_obj.color, '--color-class-alt': class_obj.color + '40' }"
           :class="{ filter_active: filtered_classes.includes(class_obj.id) }"
         >
@@ -45,7 +51,7 @@
             >P{{ class_obj.period }} - {{ class_obj.name }}</span
           >
           <span v-else class="class_name">{{ class_obj.name }}</span>
-        </div>
+        </a>
         <div
           v-if="!store.is_teacher || true"
           class="classes_container_class classes_container_class__add_class"
@@ -84,7 +90,7 @@ export default {
       });
     },
   },
-  emits: ["toggle_filtered_class", "clear_filters"],
+  emits: ["toggle_filtered_class", "clear_filters", "dragclass"],
   methods: {
     clean_ref(ref) {
       let [_email, _id] = ref.split("/");
@@ -154,6 +160,10 @@ h5 {
   user-select: none;
   border-radius: 5px;
   padding: var(--spacing-classes-alt);
+  /* link fix */
+  color: var(--color-text);
+  text-decoration: none;
+  font-weight: 500;
 }
 .classes_container_class:hover {
   background-color: var(--color-on-bg);

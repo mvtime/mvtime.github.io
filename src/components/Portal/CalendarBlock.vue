@@ -28,8 +28,9 @@
     <div
       class="calendar_days_container"
       :style="{
-        '--color-dragging': drag.task && drag.task.color,
-        '--color-dragging-alt': drag.task && drag.task.color + '80',
+        '--color-dragging': (drag.task && drag.task.color) || (drag.class && drag.class.color),
+        '--color-dragging-alt':
+          ((drag.task && drag.task.color) || (drag.class && drag.class.color)) + '80',
       }"
     >
       <div
@@ -65,11 +66,16 @@
             calendar_day__today: day.is_today,
             calendar_day__past: day.is_past,
             calendar_day__drag_to: drag.to == day.date,
+            calendar_day__drag_class_to: drag.to == day.date && drag.class,
             calendar_day__drag_from: drag.from == day.date,
           }"
           @dragover="
             if (drag.to != day.date) {
-              drag.to = drag.to != drag.from ? day.date : null;
+              if (drag.class) {
+                drag.to = day.date;
+              } else {
+                drag.to = drag.to != drag.from ? day.date : null;
+              }
             }
           "
           v-for="day of days"
@@ -161,8 +167,8 @@ export default {
     LoadingCover,
   },
   props: {
-    filtered_classes: Array,
-    default: () => [],
+    filtered_classes: { Array, default: () => [] },
+    dragging_class: { Object, default: () => null },
   },
   emits: ["taskclick", "mounted"],
   data() {
@@ -199,8 +205,21 @@ export default {
       }
     },
     // drag:
+    drop_class() {
+      if (this.drag?.class && this.drag?.to) {
+        // open task add with class and date
+        this.$router.push({
+          name: "newtask",
+          query: {
+            class: this.drag.class.id,
+            date: this.drag.to.toISOString().split("T")[0],
+          },
+        });
+      }
+      this.drag = {};
+    },
     drag_drop() {
-      if (this.drag.to && this.drag.to != this.drag.from && this.drag.task) {
+      if (this.drag.to && this.drag.from && this.drag.to != this.drag.from && this.drag.task) {
         // move task to new date
         let to = this.drag.to;
 
@@ -226,6 +245,8 @@ export default {
             _statuslog("🔥 Couldn't update task", err);
             this.drag = {};
           });
+      } else if (this.drag.to && this.drag.class) {
+        console.log("drop class", this.drag.class);
       } else {
         this.drag = {};
       }
@@ -342,6 +363,10 @@ export default {
   },
   // watch for store.classes change
   watch: {
+    dragging_class() {
+      this.drag = {};
+      this.drag.class = this.dragging_class;
+    },
     "store.classes": {
       handler(a, b) {
         if (a.length != b.length && this.is_ready) {
@@ -598,6 +623,9 @@ main.calendar {
   backdrop-filter: blur(3px);
   z-index: 6;
   opacity: 1;
+}
+.calendar_day.calendar_day__drag_class_to:not(.calendar_day__drag_from)::before {
+  content: "+";
 }
 
 /* hide paceholder tasks until hover */
