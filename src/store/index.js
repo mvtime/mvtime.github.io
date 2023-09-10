@@ -1470,7 +1470,9 @@ export const useMainStore = defineStore({
         delete task_obj.class_id;
         delete task_obj.ref;
         let [_email, _id, task_id] = task_ref.split("/");
-        _email += ORG_DOMAIN;
+        if (!_email.includes(ORG_DOMAIN)) {
+          _email += ORG_DOMAIN;
+        }
         // update the document with the same id as the task from the tasks collection
         await updateDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id), task_obj);
         _statuslog("📝 Updated remote task");

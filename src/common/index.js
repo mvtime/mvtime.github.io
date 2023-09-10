@@ -1,9 +1,13 @@
 /** Imperfect helper for _statusLog() */
 function getFirstNonStandardCharacter(str) {
-  const match = str.match(
-    /^([\P{L}\p{Extended_Pictographic}]|(?:[\uD800-\uDBFF][\uDC00-\uDFFF]))/u
-  );
-  return match ? match[0] : null;
+  try {
+    const match = str.match(
+      /^([\P{L}\p{Extended_Pictographic}]|(?:[\uD800-\uDBFF][\uDC00-\uDFFF]))/u
+    );
+    return match ? match[0] : null;
+  } catch (err) {
+    return null;
+  }
 }
 
 /** Log function, takes any number of arguments. If the first character is nonstandard and followed by a space, it'll use that as a tag */

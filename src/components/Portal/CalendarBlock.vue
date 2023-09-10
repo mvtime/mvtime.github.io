@@ -1,5 +1,5 @@
 <template>
-  <main class="calendar">
+  <main class="calendar" @drag="check_leave">
     <!-- use LoadingCover component when is_ready -->
     <LoadingCover v-if="!is_ready" class="calendar_loading" covering="Calendar Tasks" />
     <!-- calendar content -->
@@ -25,9 +25,16 @@
         </button>
       </nav>
     </div>
-    <div class="calendar_days_container">
+    <div
+      class="calendar_days_container"
+      :style="{
+        '--color-dragging': drag.task && drag.task.color,
+        '--color-dragging-alt': drag.task && drag.task.color + '80',
+      }"
+    >
       <div
         class="calendar_days"
+        ref="calendar_days"
         :class="{
           calendar_days__current: day_matches(loaded_month, new Date(new Date().setDate(1))),
           calendar_days__changed: is_changed,
@@ -57,7 +64,10 @@
             calendar_day__hastask: day.tasks ? day.tasks.length : false,
             calendar_day__today: day.is_today,
             calendar_day__past: day.is_past,
+            calendar_day__drag_to: drag.to == day.date,
+            calendar_day__drag_from: drag.from == day.date,
           }"
+          @dragover="drag_over(day.date)"
           v-for="day of days"
           :key="day.date"
         >
@@ -74,18 +84,30 @@
             </span>
           </div>
           <div class="calendar_day_tasks">
-            <div
+            <a
               class="calendar_day_task click-action"
+              :class="{ calendar_day_task__dragging: drag.task == task }"
               v-for="task of day.tasks"
               :is_note="task.type === 'note'"
               :key="task.name"
               :title="task.name"
-              draggable
+              :draggable="
+                task &&
+                store.is_teacher &&
+                store.user &&
+                task.ref.split('/')[0] == store.active_doc.email
+              "
+              @dragstart="drag_start(task, day.date)"
+              @dragend="drag_drop"
               :style="{
                 '--color-calendar-task': task.color,
                 '--color-calendar-task-alt': task.color + '40',
               }"
-              @click="$emit('taskclick', task)"
+              :href="'/view/' + get_link(task.ref)"
+              @click="
+                $event.preventDefault();
+                $emit('taskclick', task);
+              "
             >
               <div
                 class="calendar_day_task_editable"
@@ -96,7 +118,7 @@
                   task.ref.split('/')[0] == store.active_doc.email
                 "
               >
-                <span class="task_edit__icon"></span>
+                <span class="task_icon task_edit__icon" :class="{ loading_bg: drag.load }"></span>
               </div>
               <span v-if="task.type === 'note'">
                 <span class="calendar_day_task__swatch"></span>
@@ -105,7 +127,7 @@
               <span v-else>
                 {{ task.name }}
               </span>
-            </div>
+            </a>
           </div>
         </div>
         <div v-if="!tasks_loaded_month" class="calendar__no_tasks" style="display: none">
@@ -120,6 +142,7 @@
 import { useMainStore } from "@/store";
 import LoadingCover from "@/components/LoadingCover.vue";
 import { _statuslog } from "@/common";
+import { ErrorToast, SuccessToast } from "@svonk/util";
 export default {
   name: "CalendarBlock",
   components: {
@@ -136,6 +159,7 @@ export default {
       is_ready: false,
       tasks: [],
       is_changed: false,
+      drag: {},
     };
   },
   mounted() {
@@ -144,6 +168,70 @@ export default {
     this.tasks = this.store.tasks;
   },
   methods: {
+    check_leave(e) {
+      // check if the mouse has left the calendar using drag event
+      try {
+        const rect = this.$refs.calendar_days.getBoundingClientRect();
+        if (
+          (e.clientX || e.clientX) &&
+          (e.clientX < rect.left ||
+            e.clientX > rect.right ||
+            e.clientY < rect.top ||
+            e.clientY > rect.bottom)
+        ) {
+          this.drag_leave();
+        }
+      } catch (err) {
+        _statuslog("🔥 Couldn't check if mouse left calendar", err);
+      }
+    },
+    // drag:
+    drag_start(task, date) {
+      this.drag = {
+        task: task,
+        from: date,
+      };
+    },
+    drag_over(date) {
+      if (this.drag.to != date) {
+        this.drag.to = this.drag.to != this.drag.from ? date : null;
+      }
+    },
+    drag_leave() {
+      if (this.drag.to) {
+        this.drag.to = null;
+      }
+    },
+    drag_drop() {
+      if (this.drag.to && this.drag.to != this.drag.from && this.drag.task) {
+        // move task to new date
+        this.drag.load = true;
+        this.store
+          .update_task(this.drag.task.ref, {
+            ...this.drag.task,
+            date: this.drag.to.toISOString().split("T")[0],
+          })
+          .then(() => {
+            new SuccessToast(
+              `Moved ${this.drag.task.type} ${
+                this.drag.task.name ? '"' + this.drag.task.name + '" ' : ""
+              }to ${this.drag.to.toLocaleDateString()}`,
+              2000
+            );
+            _statuslog("📅 Moved task date");
+            this.drag = {};
+          })
+          .catch((err) => {
+            new ErrorToast("Couldn't update task", err, 2000);
+            _statuslog("🔥 Couldn't update task", err);
+            this.drag = {};
+          });
+      } else {
+        this.drag = {};
+      }
+    },
+
+    // non-drag:
     format_date(date) {
       // format date in yyyy-MM-dd for date input
       return date.toISOString().split("T")[0] || "";
@@ -187,6 +275,12 @@ export default {
     run_get_tasks() {
       this.tasks = this.store.tasks;
       this.is_ready = true;
+    },
+    get_link(ref) {
+      // replace all slashes with ~, and remove the part after @ in the part before the first slash
+      let [_email, _id, task_id] = ref.split("/");
+      _email = _email.split("@")[0];
+      return [_email, _id, task_id].join("~");
     },
   },
   computed: {
@@ -476,6 +570,36 @@ main.calendar {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.calendar_day::before {
+  /* allow for fade transition */
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+  content: "";
+}
+.calendar_day.calendar_day__drag_to:not(.calendar_day__drag_from)::before {
+  /* center and overlay */
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* background */
+  content: "+";
+  font-size: 25px;
+  font-weight: 700;
+  color: var(--color-dragging);
+
+  /* styles */
+  background-color: var(--color-dragging-alt);
+  backdrop-filter: blur(3px);
+  z-index: 5;
+  opacity: 1;
+}
+
 /* hide paceholder tasks until hover */
 .calendar_day.calendar_day__placeholder > * {
   opacity: 0.2;
@@ -616,17 +740,22 @@ main.calendar {
   transition: opacity 0.2s ease-out;
   /* backdrop-filter: blur(3px); */
 }
-
 .calendar_day_task:hover .calendar_day_task_editable,
-.calendar_day_task:active .calendar_day_task_editable {
+.calendar_day_task:active .calendar_day_task_editable,
+.calendar_day_task.calendar_day_task__dragging .calendar_day_task_editable {
   opacity: 1;
 }
-
-.task_edit__icon {
+.task_icon {
   width: 100%;
   height: 100%;
-  filter: var(--filter-swatch-icon);
   background-size: 20px;
+}
+.task_icon.loading_bg {
+  background-size: 40px;
+  filter: none;
+}
+.task_edit__icon {
+  filter: var(--filter-swatch-icon);
   background-repeat: no-repeat;
   background-position: center;
   background-image: url(@/assets/img/general/portal/edit.png);
