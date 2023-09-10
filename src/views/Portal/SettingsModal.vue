@@ -115,7 +115,15 @@
           }
         "
       >
-        {{ store.personal_account ? "Close" : store.is_teacher ? "Done" : "Finish" }}
+        {{
+          changed
+            ? "Finish"
+            : store.personal_account
+            ? "Close"
+            : store.is_teacher
+            ? "Done"
+            : "Finish"
+        }}
       </button>
     </div>
   </div>

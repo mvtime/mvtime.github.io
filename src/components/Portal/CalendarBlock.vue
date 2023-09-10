@@ -90,7 +90,10 @@
           <div class="calendar_day_tasks">
             <a
               class="calendar_day_task click-action"
-              :class="{ calendar_day_task__dragging: drag.task == task }"
+              :class="{
+                calendar_day_task__dragging: drag.task == task,
+                calendar_day_task__loading: drag.task == task && drag.load,
+              }"
               v-for="task of day.tasks"
               :is_note="task.type === 'note'"
               :key="task.name"
@@ -744,6 +747,9 @@ main.calendar {
 .calendar_day_task:active .calendar_day_task_editable,
 .calendar_day_task.calendar_day_task__dragging .calendar_day_task_editable {
   opacity: 1;
+}
+.calendar_day_task.calendar_day_task__dragging:not(.calendar_day_task__loading) {
+  opacity: 0.001;
 }
 .task_icon {
   width: 100%;
