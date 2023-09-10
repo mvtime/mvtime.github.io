@@ -396,7 +396,7 @@ export default {
 <style scoped>
 main.calendar {
   width: 100%;
-  max-width: 1200px;
+  max-width: 900px;
   margin: 0 auto;
   box-sizing: border-box;
   padding: var(--padding-calendar);
@@ -408,6 +408,11 @@ main.calendar {
   box-shadow: var(--shadow-highlight);
   /* overflow for loading */
   overflow: hidden;
+}
+@media (min-height: 900px) and (max-height: 1200px) {
+  main.calendar {
+    max-width: 100vh;
+  }
 }
 @media (min-width: 1200px) and (max-height: 800px) {
   main.calendar {

@@ -11,17 +11,26 @@
       <div class="classes_container" :class="{ filtering: !!filtered_classes.length }">
         <a
           class="classes_container_class"
+          :ref="class_obj.ref"
           :href="'/class/' + clean_ref(class_obj.ref)"
           v-for="class_obj of classes"
           draggable="true"
-          @dragstart="$emit('dragclass', class_obj)"
+          @dragstart="
+            $emit('dragclass', class_obj);
+            $emit('clear_filters');
+            dragging = class_obj;
+          "
+          @dragend="dragging = null"
           :key="class_obj.name"
           @click="
             $event.preventDefault();
             $emit('toggle_filtered_class', class_obj.id);
           "
           :style="{ '--color-class': class_obj.color, '--color-class-alt': class_obj.color + '40' }"
-          :class="{ filter_active: filtered_classes.includes(class_obj.id) }"
+          :class="{
+            filter_active: filtered_classes.includes(class_obj.id),
+            classes_container_class__dragging: dragging && dragging.ref == class_obj.ref,
+          }"
         >
           <div
             class="class_swatch"
@@ -77,6 +86,11 @@ export default {
     },
   },
   name: "ClassList",
+  data() {
+    return {
+      dragging: null,
+    };
+  },
   computed: {
     store() {
       return useMainStore();
@@ -172,7 +186,8 @@ h5 {
 .filtering .classes_container_class:not(.classes_container_class__add_class) {
   opacity: 0.7;
 }
-.filtering .classes_container_class.filter_active {
+.filtering .classes_container_class.filter_active,
+.classes_container_class.classes_container_class__dragging {
   background-color: var(--color-class-alt);
   opacity: 1;
 }
