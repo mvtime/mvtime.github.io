@@ -20,6 +20,10 @@
             resources.
           </div>
           <br />
+          <div class="overlay_contents_text">
+            You can hide this message using the toggle in your account preferences.
+          </div>
+          <br />
           <div class="overlay_contents_text">Please click anywhere to resume using MVTT.</div>
         </div>
       </main>
@@ -53,7 +57,7 @@ export default {
   },
   computed: {
     do_timeout() {
-      return this.store?.account_doc?.prefs?.show_timeout;
+      return !this.store?.account_doc?.prefs?.hide_timeout;
     },
     pageTitle() {
       return document.title;

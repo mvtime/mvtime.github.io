@@ -1130,7 +1130,7 @@ export const useMainStore = defineStore({
         name: this.user.displayName,
         email: this.user.email,
         classes: [],
-        prefs: { theme: this.get_theme, show_timeout: true },
+        prefs: { theme: this.get_theme, hide_timeout: false },
       };
       if (this.personal_account) {
         this.account_doc = {
@@ -1138,7 +1138,7 @@ export const useMainStore = defineStore({
           personal_account: true,
           name: this.user.displayName,
           email: this.user.email,
-          prefs: { theme: this.get_theme, show_timeout: true },
+          prefs: { theme: this.get_theme, hide_timeout: false },
         };
       }
       if (this.is_teacher) {

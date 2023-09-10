@@ -83,7 +83,7 @@
           :loads="true"
         />
         &nbsp;
-        <span>Session pause popup {{ show_timeout ? "enabled" : "disabled" }}</span>
+        <span>Session timeout popup {{ show_timeout ? "enabled" : "disabled" }}</span>
       </div>
       <div class="overlay_contents_text">
         To change your theme, use the
@@ -153,7 +153,7 @@ export default {
       return useMainStore();
     },
     show_timeout() {
-      return this.store?.account_doc?.prefs?.show_timeout;
+      return !this.store?.account_doc?.prefs?.hide_timeout;
     },
     ready_to_link() {
       return (
@@ -167,14 +167,14 @@ export default {
   methods: {
     update_timeout_option(value) {
       if (this.store.account_doc) {
-        let before = this.store.account_doc?.prefs?.show_timeout;
+        let before = !this.store.account_doc?.prefs?.hide_timeout;
         if (before != value) {
           // update the value
           this.store
             .update_wrapper_with_merge({
               prefs: {
                 ...this.store.account_doc.prefs,
-                show_timeout: value,
+                hide_timeout: !value,
               },
             })
             .then(() => {
