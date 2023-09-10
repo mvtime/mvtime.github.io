@@ -79,9 +79,13 @@ export default {
     this.$refs.app.addEventListener("click", (e) => {
       // catch click if it has an href
       if (e.target.href) {
+        // fix link if it doesnt have a protocol or is relative
+        if (!e.target.href.includes("://") || e.target.href.startsWith("/")) {
+          e.target.href = new URL(e.target.href, window.location.href).href;
+        }
         // check that it's an outlink
         let url = new URL(e.target.href);
-        if (url?.hostname == "mvtt.app") return;
+        if (url?.hostname == "mvtt.app" || url?.hostname == window?.location?.hostname) return;
 
         // if outlink, open in new tab as "/to/{encoded href}"
         e.preventDefault();

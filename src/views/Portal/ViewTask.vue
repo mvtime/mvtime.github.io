@@ -11,7 +11,18 @@
           <div class="styled_obj">
             <span class="styled_line__label">Class:</span>
             <span class="styled_line__separator"></span>
-            <span class="styled_line__value">{{ task.group || task.class_name }}</span>
+            <span class="styled_line__value">
+              <!-- TODO: add /class page -->
+              <a
+                class="class_name button_pointer_text"
+                :_href="`/class/${task._class.ref}`"
+                :style="{
+                  '--color-class': task._class.color,
+                  '--color-class-alt': task._class.color + '2d',
+                }"
+                >{{ task.group || task.class_name }}</a
+              >
+            </span>
           </div>
           <div class="styled_obj" v-if="task.type != 'note'">
             <span class="styled_line__label">Name:</span>
@@ -209,5 +220,9 @@ export default {
 .loading_icon {
   max-height: 150px;
   min-width: 100%;
+}
+
+.class_name {
+  line-height: 1em;
 }
 </style>

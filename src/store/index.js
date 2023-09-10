@@ -497,7 +497,7 @@ export const useMainStore = defineStore({
             class_tasks[j].color = classes[i].color;
             tasks.push({
               ...class_tasks[j],
-              class_name: classes[i].name,
+              class_name: `P${classes[i].period} - ${classes[i].name}`,
             });
           }
         }
@@ -1554,14 +1554,19 @@ export const useMainStore = defineStore({
         _email += ORG_DOMAIN;
         let class_doc = await getDoc(doc(db, "classes", _email, "classes", _id));
         let class_data = class_doc.data();
-        _statuslog("📚 Got class data");
+        _statuslog("📚 Got class from ref");
 
         let task_doc = await getDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id));
         if (!task_doc.exists()) return Promise.resolve(null);
-        _statuslog("📄 Task from ref");
+        _statuslog("📄 Got task from ref");
         let task_data = task_doc.data();
-        task_data.ref = ref;
-        task_data.class_name = class_data.name || "Unknown Class";
+        task_data = {
+          ...task_data,
+          ref: ref,
+          class_id: [_email, _id].join("/"),
+          class_name: `P${class_data.period} - ${class_data.name}`,
+          _class: { ...class_data, ref: [_email.split(ORG_DOMAIN)[0], _id].join("~") },
+        };
         return Promise.resolve(task_data);
       } catch (err) {
         return Promise.reject(err);

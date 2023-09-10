@@ -1,6 +1,6 @@
 <template>
   <div class="task_card" :style="{ '--color-calendar-task': task.color }">
-    <div class="task_card_icon" :title="class_name(task.class_id)">
+    <div class="task_card_icon" :title="task.class_name">
       <div class="task_card_icon_container">
         <div class="task_card_icon_container__img"></div>
       </div>
@@ -30,10 +30,6 @@ export default {
       type: Object,
       required: true,
     },
-    classes: {
-      type: Array,
-      default: () => [],
-    },
   },
   computed: {
     type_full() {
@@ -48,12 +44,6 @@ export default {
         quiz: "Quiz",
         exam: "Exam",
       }[this.task.type];
-    },
-  },
-  methods: {
-    class_name(id) {
-      let class_obj = this.classes.find((c) => c.id == id);
-      return class_obj ? `P${class_obj.period} - ${class_obj.name}` : "";
     },
   },
 };

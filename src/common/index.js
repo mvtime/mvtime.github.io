@@ -28,4 +28,9 @@ function _statuslog() {
     console.log(...extras, ...args);
   }
 }
+try {
+  console.log = _statuslog;
+} catch (err) {
+  _statuslog("⚠ Couldn't override console.log", err);
+}
 export { _statuslog };
