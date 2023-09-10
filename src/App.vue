@@ -9,7 +9,7 @@
     @focus="refreshTimeout"
   >
     <router-view></router-view>
-    <OverlayWrapper v-if="store.paused || animating" ref="overlay">
+    <OverlayWrapper v-if="do_timeout && (store.paused || animating)" ref="overlay">
       <main class="pause_modal router_center_view" ref="pause_modal">
         <header class="modal_header">
           <h2 class="header_style modal_header_title">Session paused</h2>
@@ -52,6 +52,9 @@ export default {
     };
   },
   computed: {
+    do_timeout() {
+      return this.store?.account_doc?.prefs?.show_timeout;
+    },
     pageTitle() {
       return document.title;
     },
@@ -120,17 +123,19 @@ export default {
   },
   watch: {
     "store.paused": function (new_val, old_val) {
-      if (new_val) {
-        // focus on next tick
-        this.$nextTick(() => {
-          this.$refs.pause_modal.focus();
-        });
-      } else if (old_val && this.$refs.overlay) {
-        this.animating = true;
-        this.$refs.overlay.close();
-        setTimeout(() => {
-          this.animating = false;
-        }, 250);
+      if (this.do_timeout) {
+        if (new_val) {
+          // focus on next tick
+          this.$nextTick(() => {
+            this.$refs.pause_modal.focus();
+          });
+        } else if (old_val && this.$refs.overlay) {
+          this.animating = true;
+          this.$refs.overlay.close();
+          setTimeout(() => {
+            this.animating = false;
+          }, 250);
+        }
       }
     },
     theme() {

@@ -68,12 +68,22 @@
           "
         >
           here </span
-        >&MediumSpace; to {{ store.is_teacher ? "disable" : "enable" }} teacher mode&MediumSpace;
-        <span v-if="store.is_teacher">to return to the student view.</span>
+        >&MediumSpace; to {{ store.is_teacher ? "disable" : "enable" }} teacher mode
+        <span v-if="store.is_teacher">and return to the student view.</span>
         <span v-else
           >to create, and manage your own classes and tasks. This may require setup by an admin if
           you do not have a teacher email.</span
         >
+      </div>
+      <div class="overlay_contents_text pause_popup_section">
+        <ToggleBar
+          class="click-action"
+          :value="show_timeout"
+          @update="update_timeout_option"
+          :loads="true"
+        />
+        &nbsp;
+        <span>Session pause popup {{ show_timeout ? "enabled" : "disabled" }}</span>
       </div>
       <div class="overlay_contents_text">
         To change your theme, use the
@@ -122,10 +132,15 @@
  */
 
 import { useMainStore } from "@/store";
+import ToggleBar from "@/components/ToggleBar.vue";
 import "@/assets/style/overlay.css";
+import { SuccessToast } from "@svonk/util";
 export default {
   name: "SettingsModal",
   emits: ["close"],
+  components: {
+    ToggleBar,
+  },
   data() {
     return {
       changed: false,
@@ -137,6 +152,9 @@ export default {
     store() {
       return useMainStore();
     },
+    show_timeout() {
+      return this.store?.account_doc?.prefs?.show_timeout;
+    },
     ready_to_link() {
       return (
         !this.loading &&
@@ -147,6 +165,30 @@ export default {
     },
   },
   methods: {
+    update_timeout_option(value) {
+      if (this.store.account_doc) {
+        let before = this.store.account_doc?.prefs?.show_timeout;
+        if (before != value) {
+          // update the value
+          this.store
+            .update_wrapper_with_merge({
+              prefs: {
+                ...this.store.account_doc.prefs,
+                show_timeout: value,
+              },
+            })
+            .then(() => {
+              this.changed = true;
+              new SuccessToast(
+                value
+                  ? "We'll show the popup when your session times out"
+                  : "You won't see the timeout popup anymore",
+                2000
+              );
+            });
+        }
+      }
+    },
     save() {
       // close the modal if the save was successful
       if (!this.loading) {
@@ -197,6 +239,13 @@ export default {
 </script>
 
 <style scoped>
+.pause_popup_section {
+  line-height: 1.75;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-top: 0.75em;
+}
 .remove_icon {
   filter: var(--filter-icon);
   background-image: url(@/assets/img/general/portal/remove.png);

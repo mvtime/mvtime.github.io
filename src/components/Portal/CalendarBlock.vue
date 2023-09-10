@@ -585,8 +585,8 @@ main.calendar {
   width: 100%;
   height: 100%;
   /* background */
-  content: "+";
-  font-size: 25px;
+  content: "🠻";
+  font-size: 30px;
   font-weight: 700;
   color: var(--color-dragging);
 

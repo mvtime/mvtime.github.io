@@ -1100,6 +1100,22 @@ export const useMainStore = defineStore({
       await setDoc(this.account_ref, this.account_doc, { merge: true });
     },
     /**
+     * @function update_wrapper_acc_doc
+     * @description Update the authenticated user's document in the remote database with the data given (for personal accounts only)
+     * @returns Nothing
+     * @see {@link update_remote}
+     * @see {@link personal_account}
+     * @see {@link update_wrapper_acc_doc}
+     */
+    async update_wrapper_with_merge(data) {
+      try {
+        await setDoc(this.account_ref, data, { merge: true });
+        return Promise.resolve();
+      } catch (err) {
+        return Promise.reject(err);
+      }
+    },
+    /**
      * @function create_doc
      * @description Create the user's document in the remote database, create a teacher document if the user is a teacher, and create a personal account if the user is using a personal account. Also preforms onboarding for non-teacher
      * @returns Nothing
