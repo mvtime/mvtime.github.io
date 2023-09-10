@@ -11,7 +11,7 @@
 - ~~Collect student wellness data~~
   - ~~will allow us to show its usefulness~~
 
-## Working on Now / Planned Soon
+## Working on Now / Planned Soon (Sander)
 
 - Admin / Contact
   - Send messages from w/i the app using mail system
@@ -30,6 +30,11 @@
   - weekly / major surveys
   - ~~show upcoming tasks at end of daily surveys~~
   - ~~daily surveys~~
+- Tasks
+  - disallow finish when link still in-progress
+  - store proxy in class doc - load from there for efficiency / read & write count
+  - allow / encourage links to other classes / through selecter?
+  - ~~drag tasks on calendar to change date~~
 - Classes
   - add from pre-set list
   - display join code to class
@@ -37,6 +42,9 @@
   - ~~join from code~~
 - Onboarding
   - ui tutorial
+  - better logout prompt
+  - large modal type for intro - better video support
+    - fill screen on small devices
   - ~~add first class~~
   - ~~join modal~~
 - Emails
@@ -92,7 +100,7 @@
     - on mondays, more in-depth, before first use
     - ~~during the week, short non-intrusive~~
 - Better prefs
-  - save theme under prefs, rather than its own key
+  - ~~save theme under prefs, rather than its own key~~
   - setup email prefs in onboarding
   - ~~add the option to trust another email / oauth account with access to your account~~
     - ~~good for phones and such, save to prefs of the acc, then check either request oauth is student, or request oauth is in student prefs.trusted~~
