@@ -596,7 +596,7 @@ main.calendar {
   /* styles */
   background-color: var(--color-dragging-alt);
   backdrop-filter: blur(3px);
-  z-index: 5;
+  z-index: 6;
   opacity: 1;
 }
 
