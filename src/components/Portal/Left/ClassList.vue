@@ -14,7 +14,7 @@
           :ref="class_obj.ref"
           :href="'/class/' + clean_ref(class_obj.ref)"
           v-for="class_obj of classes"
-          draggable="true"
+          :draggable="store.is_teacher && class_obj.email == this.store.user.email"
           @dragstart="
             $emit('dragclass', class_obj);
             $emit('clear_filters');

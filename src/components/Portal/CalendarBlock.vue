@@ -83,13 +83,16 @@
         >
           <div
             class="calendar_day_date"
+            :class="{ 'click-action': store.is_teacher }"
             @click="
-              $router.push({
-                name: 'newtask',
-                query: {
-                  date: format_date(day.date),
-                },
-              })
+              if (store.is_teacher) {
+                $router.push({
+                  name: 'newtask',
+                  query: {
+                    date: format_date(day.date),
+                  },
+                });
+              }
             "
           >
             <span class="calendar_day_date__short"> {{ new Date(day.date).getDate() }}</span>
@@ -585,7 +588,6 @@ main.calendar {
   align-items: center;
   font-weight: 700;
   /* style */
-  cursor: pointer;
   backdrop-filter: blur(5px);
   background-color: var(--color-calendar-date);
   font-size: 11px;
