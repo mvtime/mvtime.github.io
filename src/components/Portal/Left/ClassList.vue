@@ -20,7 +20,10 @@
             $emit('clear_filters');
             dragging = class_obj;
           "
-          @dragend="dragging = null"
+          @dragend="
+            dragging = null;
+            $emit('dragclass', { ...class_obj, _done: true });
+          "
           :key="class_obj.name"
           @click="
             $event.preventDefault();
