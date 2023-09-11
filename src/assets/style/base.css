@@ -4,6 +4,7 @@
 /* general vars */
 body,
 #themed_body {
+  --size-desktop: 1400px;
   /* buttons */
   --transition-click-action: transform 0.3s ease-out;
   --margin-home-action: 10px;

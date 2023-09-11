@@ -285,7 +285,7 @@ main.portal .portal_sidebar {
     top: calc(50% - 400px);
   }
 }
-@media (min-width: 1200px) and (max-height: 800px) {
+@media (min-width: /* [desktop size] */ 1370px) and (max-height: 800px) {
   main.portal .portal_sidebar {
     border-radius: 0px !important;
     box-shadow: none !important;
@@ -295,7 +295,7 @@ main.portal .portal_sidebar {
   }
 }
 
-@media (max-width: 1200px) {
+@media (max-width: /* [desktop size] */ 1370px) {
   main.portal .portal_content {
     position: absolute;
     z-index: 1;

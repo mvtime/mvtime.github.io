@@ -85,12 +85,12 @@ export default {
   background-size: contain;
   background-position: right center;
 }
-@media (min-width: 1200px) and (max-height: 800px) {
+@media (min-width: /* [desktop size] */ 1370px) and (max-height: 800px) {
   main.portal .portal_sidebar {
     border-left: 3px solid var(--color-on-bg);
   }
 }
-@media (max-width: 1200px) {
+@media (max-width: /* [desktop size] */ 1370px) {
   main.portal .portal_sidebar {
     transform: translate(calc(100% - 15px));
   }
