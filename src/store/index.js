@@ -505,7 +505,7 @@ export const useMainStore = defineStore({
         tasks.sort((a, b) => {
           a.name = a.name ? a.name : "";
           b.name = b.name ? b.name : "";
-          if (a.date && b.date) {
+          if (a.date && b.date && a.date.getTime && b.date.getTime) {
             if (a.date.getTime() == b.date.getTime()) {
               if (a.period == b.period) {
                 return a.name.localeCompare(b.name);
