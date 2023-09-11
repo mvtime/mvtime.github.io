@@ -26,7 +26,7 @@
       "
     >
       <div class="portal_content__spaced">
-        <header class="portal_info">
+        <header class="portal_info calendar_width">
           <div class="portal_info_title">
             <span class="portal_info_usertype"
               >{{ store.is_teacher ? "Teacher" : "Student" }} Dashboard</span
@@ -326,7 +326,6 @@ main.portal .portal_sidebar {
 }
 /* top bar */
 header.portal_info {
-  max-width: 800px;
   margin: 0 auto;
   margin-bottom: 20px;
 }

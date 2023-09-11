@@ -381,7 +381,7 @@ export default {
   // watch for store.classes change
   watch: {
     dragging_class(a, b) {
-      if (a.ref != b.ref) {
+      if (a?.ref != b?.ref) {
         this.drag = {};
       }
       this.drag.class = this.dragging_class;
@@ -411,11 +411,33 @@ export default {
   },
 };
 </script>
-
+<style>
+main.calendar,
+.calendar_width {
+  max-width: 750px;
+}
+@media (min-height: 900px) and (max-height: 1200px) {
+  main.calendar,
+  .calendar_width {
+    max-width: calc(100vh - 150px);
+  }
+}
+@media (min-height: 1200px) {
+  main.calendar,
+  .calendar_width {
+    max-width: 1300px;
+  }
+}
+@media (min-width: 1200px) and (max-height: 800px) {
+  main.calendar,
+  .calendar_width {
+    background-color: var(--color-calendar-alt);
+  }
+}
+</style>
 <style scoped>
 main.calendar {
   width: 100%;
-  max-width: 900px;
   margin: 0 auto;
   box-sizing: border-box;
   padding: var(--padding-calendar);
@@ -428,17 +450,6 @@ main.calendar {
   /* overflow for loading */
   overflow: hidden;
 }
-@media (min-height: 900px) and (max-height: 1200px) {
-  main.calendar {
-    max-width: 100vh;
-  }
-}
-@media (min-width: 1200px) and (max-height: 800px) {
-  main.calendar {
-    background-color: var(--color-calendar-alt);
-  }
-}
-
 .calendar_header {
   position: absolute;
   top: calc(var(--padding-calendar) / 2);
