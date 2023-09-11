@@ -225,7 +225,9 @@ export default {
           name: "newtask",
           query: {
             class: this.drag.class.id,
-            date: this.drag.to.toISOString().split("T")[0],
+            date: new Date(this.drag.to.getTime() - this.drag.to.getTimezoneOffset() * 60 * 1000)
+              .toISOString()
+              .split("T")[0],
           },
         });
       }
@@ -241,7 +243,7 @@ export default {
         this.store
           .update_task(this.drag.task.ref, {
             ...this.drag.task,
-            date: to.toISOString().split("T")[0],
+            date: new Date(to - to.getTimezoneOffset() * 60 * 1000).toISOString().split("T")[0],
           })
           .then(() => {
             new SuccessToast(
