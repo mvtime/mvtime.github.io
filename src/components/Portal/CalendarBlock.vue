@@ -241,7 +241,7 @@ export default {
         this.store
           .update_task(this.drag.task.ref, {
             ...this.drag.task,
-            date: to,
+            date: to.toISOString().split("T")[0],
           })
           .then(() => {
             new SuccessToast(
