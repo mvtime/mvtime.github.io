@@ -41,12 +41,15 @@ export default {
     },
     tasks() {
       if (!this.store.tasks) return [];
+      let now = new Date().setHours(0, 0, 0, 0);
+      // 8 hours in ms (show today's tasks as upcoming until 8AM)
+      let morning = 8 * 60 * 60 * 1000;
       return this.store.tasks
         .filter((task) => {
           return (
-            (task?.date?.getTime ? task.date.getTime() : 0) >= Date.now() &&
-            !task.is_assignment &&
-            task.type != "note"
+            task.type != "note" &&
+            (task?.date?.getTime ? task.date.getTime() : 0) >= now - morning &&
+            !task.is_assignment
           );
         })
         .sort((a, b) => {
