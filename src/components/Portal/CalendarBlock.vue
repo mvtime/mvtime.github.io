@@ -69,15 +69,7 @@
             calendar_day__drag_class_to: drag.to == day.date && drag.class,
             calendar_day__drag_from: drag.from == day.date,
           }"
-          @dragover="
-            if (drag.to != day.date) {
-              if (drag.class) {
-                drag.to = day.date;
-              } else {
-                drag.to = drag.to != drag.from ? day.date : null;
-              }
-            }
-          "
+          @dragover="drag_over(day.date)"
           v-for="day of days"
           :key="day.date"
         >
@@ -221,6 +213,7 @@ export default {
     drop_class() {
       if (this.drag?.class && this.drag?.to) {
         // open task add with class and date
+        _statuslog("📅 Dropped class on calendar day");
         this.$router.push({
           name: "newtask",
           query: {
@@ -232,6 +225,15 @@ export default {
         });
       }
       this.drag = {};
+    },
+    drag_over(date) {
+      if (this.drag.to != date) {
+        if (this.drag.class) {
+          this.drag.to = date;
+        } else {
+          this.drag.to = this.drag.to != this.drag.from ? date : null;
+        }
+      }
     },
     drag_drop() {
       if (this.drag.to && this.drag.from && this.drag.to != this.drag.from && this.drag.task) {
@@ -260,8 +262,8 @@ export default {
             _statuslog("🔥 Couldn't update task", err);
             this.drag = {};
           });
-      } else if (this.drag.to && this.drag.class) {
-        console.log("drop class", this.drag.class);
+        // } else if (this.drag.to && this.drag.class) {
+        //   this.drop_class();
       } else {
         this.drag = {};
       }
@@ -378,8 +380,10 @@ export default {
   },
   // watch for store.classes change
   watch: {
-    dragging_class() {
-      this.drag = {};
+    dragging_class(a, b) {
+      if (a.ref != b.ref) {
+        this.drag = {};
+      }
       this.drag.class = this.dragging_class;
     },
     "store.classes": {
