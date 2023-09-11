@@ -1618,7 +1618,9 @@ export const useMainStore = defineStore({
      * @see {@link refresh_timeout}
      */
     show_timeout() {
-      _statuslog("🕒 Showing timeout");
+      _statuslog(
+        "🕒 Showing timeout" + this.account_doc?.prefs?.hide_timeout ? " | Hidden locally" : ""
+      );
       this.paused = true;
     },
 
