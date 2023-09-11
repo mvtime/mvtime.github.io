@@ -1633,7 +1633,9 @@ export const useMainStore = defineStore({
      */
     hide_timeout() {
       if (this.paused) {
-        _statuslog("🕒 Hiding timeout");
+        if (!this.account_doc?.prefs?.hide_timeout) {
+          _statuslog("🕒 Hiding timeout");
+        }
         this.paused = false;
       }
     },
