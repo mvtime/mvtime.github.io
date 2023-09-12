@@ -123,4 +123,10 @@ export default {
   align-items: center;
   justify-content: flex-start;
 }
+.task_card_details__extended__date {
+  flex: auto 0 1;
+}
+.task_card_details__extended__type {
+  flex: 0px 1 1;
+}
 </style>
