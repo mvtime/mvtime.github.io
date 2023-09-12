@@ -462,6 +462,12 @@ main.calendar {
   /* overflow for loading */
   overflow: hidden;
 }
+@media (min-width: /* [desktop size] */ 1270px) and (max-height: 1200px) {
+  main.calendar {
+    border: 3px solid var(--color-on-bg);
+    box-shadow: none;
+  }
+}
 .calendar_header {
   position: absolute;
   top: calc(var(--padding-calendar) / 2);
