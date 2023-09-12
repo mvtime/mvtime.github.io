@@ -599,10 +599,10 @@ main.calendar {
   content: "";
   display: block;
   position: absolute;
-  bottom: 0;
+  bottom: -1px;
   left: 0;
   width: 100%;
-  height: var(--spacing-calendar-day);
+  height: calc(var(--spacing-calendar-day) + 1px);
   user-select: none;
   pointer-events: none;
   background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, var(--color-calendar-day) 100%);
