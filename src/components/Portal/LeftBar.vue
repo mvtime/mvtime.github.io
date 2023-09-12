@@ -78,12 +78,12 @@ export default {
 .left-bar {
   border-radius: 0 var(--radius-sidebar) var(--radius-sidebar) 0;
 }
-@media (min-width: /* [desktop size] */ 1370px) and (max-height: 800px) {
+@media (min-width: /* [desktop size] */ 1270px) and (max-height: 1200px) {
   main.portal .portal_sidebar {
     border-right: 3px solid var(--color-on-bg);
   }
 }
-@media (max-width: /* [desktop size] */ 1370px) {
+@media (max-width: /* [desktop size] */ 1270px) {
   main.portal .portal_sidebar {
     transform: translate(calc(-100% + 15px));
   }

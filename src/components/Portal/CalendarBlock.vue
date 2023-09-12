@@ -416,13 +416,13 @@ main.calendar,
 .calendar_width {
   max-width: 750px;
 }
-@media (max-width: /* [desktop size] */ 1370px) {
+@media (max-width: /* [desktop size] */ 1270px) {
   main.calendar,
   .calendar_width {
     max-width: 1000px;
   }
 }
-@media (max-width: /* [desktop size] */ 1370px) and (min-height: 725px) and (max-height: 1100px) {
+@media (max-width: /* [desktop size] */ 1270px) and (min-height: 725px) and (max-height: 1100px) {
   main.calendar,
   .calendar_width {
     max-width: calc(130vh - 50px);
@@ -440,7 +440,7 @@ main.calendar,
     max-width: 1300px;
   }
 }
-@media (min-width: /* [desktop size] */ 1370px) and (max-height: 800px) {
+@media (min-width: /* [desktop size] */ 1270px) and (max-height: 800px) {
   main.calendar,
   .calendar_width {
     background-color: var(--color-calendar-alt);
@@ -605,7 +605,11 @@ main.calendar {
   height: calc(var(--spacing-calendar-day) + 1px);
   user-select: none;
   pointer-events: none;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, var(--color-calendar-day) 100%);
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0px,
+    var(--color-calendar-day) var(--spacing-calendar-day)
+  );
   z-index: 5;
 }
 

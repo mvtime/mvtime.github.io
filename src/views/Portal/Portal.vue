@@ -285,17 +285,20 @@ main.portal .portal_sidebar {
     top: calc(50% - 400px);
   }
 }
-@media (min-width: /* [desktop size] */ 1370px) and (max-height: 800px) {
+@media (min-width: /* [desktop size] */ 1270px) and (max-height: 1200px) {
   main.portal .portal_sidebar {
     border-radius: 0px !important;
     box-shadow: none !important;
+    height: 100%;
+    top: 0;
+    max-height: unset;
   }
   main.portal {
     background-color: var(--color-bg);
   }
 }
 
-@media (max-width: /* [desktop size] */ 1370px) {
+@media (max-width: /* [desktop size] */ 1270px) {
   main.portal .portal_content {
     position: absolute;
     z-index: 1;
