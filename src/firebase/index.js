@@ -54,6 +54,10 @@ function authChangeAction(user) {
 }
 
 function setupSnapshot(uid) {
+  if (!uid) {
+    _statuslog("⚠ No uid provided to setupSnapshot");
+    return;
+  }
   const store = useMainStore();
   store.hide_timeout();
   unsub = onSnapshot(
@@ -72,7 +76,7 @@ function setupSnapshot(uid) {
       }
       let listening_doc_data = listening_doc.data();
       // set based on id
-      if (store.user && store.user?.uid == listening_doc.id) {
+      if (store?.user?.uid == listening_doc.id) {
         // set the account_doc
         store.account_doc = listening_doc_data;
       } else {
@@ -125,7 +129,7 @@ function refreshTimeout(delay) {
   store.hide_timeout();
   if (!subscribed) {
     // setup snapshot and pull data
-    setupSnapshot(store.personal_account ? store.account_doc.linked_to : store.user.uid);
+    setupSnapshot(store.personal_account ? store.account_doc?.linked_to : store.user.uid);
     // get class data / tasks again if "/portal" in path (check w/ router)
     if (router.currentRoute.value && router.currentRoute.value.path.startsWith("/portal")) {
       _statuslog("⬥ Refreshing class data");

@@ -214,7 +214,7 @@ export default {
       .fetch_classes()
       .then(() => {
         // run calendar run_get_tasks method
-        this.$refs.calendar.run_get_tasks();
+        if (this.$refs.calendar) this.$refs.calendar.run_get_tasks();
         this.$refs.RightBar.load();
         this.$refs.LeftBar.load();
         this.loaded = true;

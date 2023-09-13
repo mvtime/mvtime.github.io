@@ -28,6 +28,14 @@
         </div>
       </main>
     </OverlayWrapper>
+    <OverlayWrapper
+      v-if="store.logout_prompt"
+      ref="logout_modal"
+      @close="store.logout_prompt = false"
+      v-slot="scope"
+    >
+      <LogoutModal class="router_center_view" @close="scope.close" />
+    </OverlayWrapper>
   </main>
 </template>
 
@@ -40,13 +48,15 @@
  * @requires module:store/MainStore
  */
 import OverlayWrapper from "@/components/Modal/OverlayWrapper.vue";
+import LogoutModal from "@/components/Modal/LogoutModal.vue";
 import { useMainStore } from "@/store";
 import $ from "jquery";
-import { _statuslog } from "./common";
+import { _statuslog } from "@/common";
 export default {
   name: "App",
   components: {
     OverlayWrapper,
+    LogoutModal,
   },
   data() {
     return {
@@ -80,6 +90,7 @@ export default {
     }
     this.set_theme();
     this.store.paused = false;
+    this.store.logout_prompt = false;
     window.addEventListener("focus", this.refreshTimeout);
 
     // catch href clicks to open as "/to/{encoded href}"

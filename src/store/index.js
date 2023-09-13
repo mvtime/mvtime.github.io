@@ -67,6 +67,7 @@ export const useMainStore = defineStore({
         _statuslog("↻ State from local storage");
         state = JSON.parse(local);
         state.paused = false;
+        state.logout_prompt = false;
         return state;
       } catch (err) {
         _statuslog("⟳ Error parsing local storage state", err);
@@ -178,6 +179,13 @@ export const useMainStore = defineStore({
        * @see {@link hide_timeout}
        */
       paused: false,
+      /**
+       * @name logout_prompt
+       * @description If the app is showing a logout prompt (true) or not (false)
+       * @type {Boolean}
+       * @default false
+       */
+      logout_prompt: false,
     });
   },
   /** The getters to get data that's based off of the store state, but requires manipulation */
@@ -574,7 +582,7 @@ export const useMainStore = defineStore({
         if (!uid) throw "No account uid provided";
         // get user document from uid
         let linked_doc = await getDoc(doc(db, "users", uid));
-        _statuslog("🔗 Got linking account's document", linked_doc.data());
+        _statuslog("🔗 Got linking account's document");
         if (!linked_doc.exists()) throw "Account doesn't exist or you haven't been added yet";
         let linked_doc_data = linked_doc.data();
         return Promise.resolve(linked_doc_data);
@@ -596,12 +604,16 @@ export const useMainStore = defineStore({
         new WarningToast("This account is a primary account and cannot be linked", 3000);
         return;
       }
+      if (!this.account_doc) {
+        await this.create_doc();
+        console.log("created doc", this.account_doc);
+      }
       try {
         let linked_doc = await this.doc_from_uid(uid);
         if (!linked_doc) throw "Account doesn't exist or you haven't been invited";
         // update remote
         this.account_doc.linked_to = uid;
-        await this.update_remote();
+        await this.update_wrapper_acc_doc();
         new SuccessToast(`Successfully linked to ${linked_doc.name}'s account!`, 4000);
       } catch (err) {
         new ErrorToast("Couldn't link account", err, 2000);
@@ -901,13 +913,15 @@ export const useMainStore = defineStore({
           } else {
             this.account_doc = null;
             this.linked_account_doc = null;
-            this.personal_account = false;
           }
           if (
             !user.email ||
             (!validOrgAccount(user.email) &&
-              !this.personal_account &&
-              !(this.account_doc?.personal_account && this.account_doc?.linked_to))
+              !(
+                this.personal_account &&
+                (router?.currentRoute?.value?.name == "link" ||
+                  (this.account_doc?.personal_account && this.account_doc?.linked_to))
+              ))
           ) {
             auth.signOut();
             new WarningToast(
@@ -1019,16 +1033,16 @@ export const useMainStore = defineStore({
         ? signInWithRedirect(auth, personal_provider)
         : signInWithPopup(auth, personal_provider)
       )
-        .then(() => {
-          if (!this.user || !this.user.email || validOrgAccount(this.user.email)) return;
+        .then((r) => {
+          if (!r.user || !r.user.email || validOrgAccount(r.user.email)) this.logout();
           new Toast(
-            "Logged in as " + this.user.displayName + "!",
+            "Logged in as " + r.user.displayName + "!",
             "default",
             2000,
             require("@svonk/util/assets/info-unlocked-icon.svg")
           );
-          _statuslog("🔑 Logged in as " + this.user.displayName);
-          authChangeAction(this.user);
+          _statuslog("🔑 Logged in as " + r.user.displayName);
+          authChangeAction(r.user);
           return Promise.resolve();
         })
         .catch((err) => {
@@ -1042,9 +1056,13 @@ export const useMainStore = defineStore({
      * @returns Nothing
      * @see {@link clear}
      */
-    logout() {
+    async logout() {
+      if (router.currentRoute?.value?.meta?.requiresAuth) {
+        await router.push({ path: "/" });
+      }
       auth.signOut();
       this.clear();
+      // redirect if current route requires auth
       new Toast("Logged Out", "default", 1500, require("@svonk/util/assets/info-locked-icon.svg"));
     },
     /**
@@ -1058,7 +1076,7 @@ export const useMainStore = defineStore({
     async get_remote() {
       // set document data
       // get doc from firebase
-      let active_doc = await getDoc(this.account_ref);
+      let active_doc = await getDoc(this.active_ref);
       _statuslog("📄 Got user doc remote");
       if (active_doc.exists()) {
         this.set_active(active_doc.data());
@@ -1141,21 +1159,20 @@ export const useMainStore = defineStore({
           prefs: { theme: this.get_theme, hide_timeout: false },
         };
       }
+      await this.update_wrapper_acc_doc();
+      // do onboarding
+      new SuccessToast("Created user document; Let's get started", 2000);
+      if (!this.personal_account) {
+        router.push({
+          name: "onboarding",
+          query: {
+            redirect: "/settings?redirect=/portal",
+          },
+        });
+      }
       if (this.is_teacher) {
         await this.create_teacher_doc();
         new SuccessToast("Created user & teacher documents; Let's get started", 2000);
-      } else {
-        await this.update_remote();
-        // do onboarding
-        new SuccessToast("Created user document; Let's get started", 2000);
-        if (!this.personal_account) {
-          router.push({
-            name: "onboarding",
-            query: {
-              redirect: "/settings?redirect=/portal",
-            },
-          });
-        }
       }
     },
     /**
