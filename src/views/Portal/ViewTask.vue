@@ -6,7 +6,7 @@
       </h2>
     </header>
     <div ref="contents" class="overlay_contents">
-      <div v-if="ready">
+      <div v-if="ready" ref="text_contents">
         <div class="spaced_contents">
           <div class="styled_obj">
             <span class="styled_line__label">Class:</span>
@@ -63,7 +63,7 @@
           Information is provided by teachers and volunteer students, and may not always be correct
         </div>
       </div>
-      <img alt="Loading Icon" class="loading_icon" v-else />
+      <img ref="loading_contents" alt="Loading Icon" class="loading_icon" v-else />
     </div>
     <div class="bottom_actions">
       <button class="continue_action" @click="$emit('close')">Close</button>
