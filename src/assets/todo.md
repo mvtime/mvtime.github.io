@@ -111,8 +111,8 @@
 ### Aarush
 
 - Create backend
-  - ML / Algorithms
-    - for what ever we said before
-    - for study suggestions
+  - Algorithms
+    - Class Spread: N/A
   - Send out emails to students thru firebase?
 - Create data for static classes / a cleaner system to integrate them
+    - Structure teacher add/drop class json update algorithm

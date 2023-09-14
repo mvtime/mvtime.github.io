@@ -1,0 +1,1 @@
+For a certain class -> determine subject (class-subject), then find other classes for that grade level in other subjects (grade-subject-classes)
