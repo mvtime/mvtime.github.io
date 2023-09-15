@@ -72,6 +72,7 @@
               class="styled_links_add__path"
               type="url"
               v-model="newlink.path"
+              @blur="fix_newlink_path"
               placeholder="Link URL (http://example.com)"
             />
             <input
@@ -80,7 +81,11 @@
               v-model="newlink.text"
               placeholder="Link Text (what students see)"
             />
-            <button class="styled_links_add__action" @click="add_newlink" :disabled="newlink_ready">
+            <button
+              class="styled_links_add__action"
+              @click="add_newlink"
+              :disabled="newlink_not_ready"
+            >
               Add
             </button>
           </div>
@@ -141,7 +146,7 @@
 
 import { useMainStore } from "@/store";
 import { _statuslog } from "@/common";
-import { ErrorToast } from "@svonk/util";
+import { ErrorToast, WarningToast } from "@svonk/util";
 import smoothReflow from "vue-smooth-reflow";
 
 export default {
@@ -184,9 +189,17 @@ export default {
     type_full() {
       return this.get_type(this.task.type);
     },
-    newlink_ready() {
+    newlink_not_ready() {
       // check if path and text, and also that path is a valid url
-      return !this.newlink.path || !this.newlink.text || !this.newlink.path.startsWith("http");
+      if (!this.newlink.path || !this.newlink.text) {
+        return true;
+      }
+      try {
+        void new URL(this.newlink.path);
+        return false;
+      } catch (err) {
+        return true;
+      }
     },
     class_name() {
       if (!this.classes) return null;
@@ -214,9 +227,7 @@ export default {
     add_newlink() {
       if (!this.task.links) this.task.links = [];
       // add protocol if missing
-      this.newlink.path = this.newlink.path.startsWith("http")
-        ? this.newlink.path
-        : "https://" + this.newlink.path;
+      this.newlink.path = new URL(this.newlink.path).href;
       this.task.links.push(this.newlink);
       this.newlink = {
         text: "",
@@ -224,6 +235,10 @@ export default {
       };
     },
     create_task() {
+      if (!this.newlink_not_ready) {
+        new WarningToast("Don't forget to to click the 'Add' button to add your link!", 2000);
+        return;
+      }
       this.loading = true;
       this.store
         .create_task(this.task, this.task_classes)
@@ -236,10 +251,21 @@ export default {
           new ErrorToast("Couldn't create task", err, 2000);
         });
     },
-  },
-  remove_link(link) {
-    this.task.links = this.task.links.filter((l) => l.path !== link.path);
-    this.newlink = link;
+    remove_link(link) {
+      this.task.links = this.task.links.filter((l) => l.path !== link.path);
+      this.newlink = link;
+    },
+    fix_newlink_path() {
+      if (this.newlink.path && this.newlink.path.includes(".")) {
+        try {
+          this.newlink.path = new URL(this.newlink.path).href;
+        } catch (err) {
+          // add protocol if missing
+          this.newlink.path = "https://" + this.newlink.path;
+          this.fix_newlink_path();
+        }
+      }
+    },
   },
 };
 </script>

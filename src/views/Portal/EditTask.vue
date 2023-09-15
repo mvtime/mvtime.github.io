@@ -63,6 +63,7 @@
                 class="styled_links_add__path"
                 type="url"
                 v-model="newlink.path"
+                @blur="fix_newlink_path"
                 placeholder="Link URL (http://example.com)"
               />
               <input
@@ -74,7 +75,7 @@
               <button
                 class="styled_links_add__action"
                 @click="add_newlink"
-                :disabled="newlink_ready"
+                :disabled="newlink_not_ready"
               >
                 Add
               </button>
@@ -166,7 +167,7 @@ export default {
     type_full() {
       return this.types[this.task.type] || this.task.type || "Task";
     },
-    newlink_ready() {
+    newlink_not_ready() {
       // check if path and text, and also that path is a valid url
       return !this.newlink.path || !this.newlink.text || !this.newlink.path.startsWith("http");
     },
@@ -201,9 +202,7 @@ export default {
     add_newlink() {
       if (!this.task.links) this.task.links = [];
       // add protocol if missing
-      this.newlink.path = this.newlink.path.startsWith("http")
-        ? this.newlink.path
-        : "https://" + this.newlink.path;
+      this.newlink.path = new URL(this.newlink.path).href;
       this.task.links.push(this.newlink);
       this.newlink = {
         text: "",
@@ -211,6 +210,10 @@ export default {
       };
     },
     async update_task() {
+      if (!this.newlink_not_ready) {
+        new WarningToast("Don't forget to to click the 'Add' button to add your link!", 2000);
+        return;
+      }
       this.loading = true;
       this.store
         .update_task(this.task.ref, this.task)
@@ -277,6 +280,17 @@ export default {
     remove_link(link) {
       this.task.links = this.task.links.filter((l) => l.path !== link.path);
       this.newlink = link;
+    },
+    fix_newlink_path() {
+      if (this.newlink.path && this.newlink.path.includes(".")) {
+        try {
+          this.newlink.path = new URL(this.newlink.path).href;
+        } catch (err) {
+          // add protocol if missing
+          this.newlink.path = "https://" + this.newlink.path;
+          this.fix_newlink_path();
+        }
+      }
     },
   },
 };

@@ -1,5 +1,5 @@
 <template>
-  <main class="calendar" @drag="check_leave">
+  <main class="calendar" @drag="check_leave" :class="{ calendar_fullpage: fullpage }">
     <!-- use LoadingCover component when is_ready -->
     <LoadingCover v-if="!is_ready" class="calendar_loading" covering="Calendar Tasks" />
     <!-- calendar content -->
@@ -26,11 +26,13 @@
       </nav>
     </div>
     <div
-      class="calendar_days_container"
+      class="calendar_days_container hidescroll"
       :style="{
         '--color-dragging': (drag.task && drag.task.color) || (drag.class && drag.class.color),
         '--color-dragging-alt':
-          ((drag.task && drag.task.color) || (drag.class && drag.class.color)) + '80',
+          (drag.task && drag.task.color) || (drag.class && drag.class.color)
+            ? (drag.task && drag.task.color) || (drag.class && drag.class.color) + '80'
+            : null,
       }"
     >
       <div
@@ -174,6 +176,7 @@ export default {
   props: {
     filtered_classes: { Array, default: () => [] },
     dragging_class: { Object, default: () => null },
+    fullpage: { Boolean, default: false },
   },
   emits: ["taskclick", "mounted"],
   data() {
@@ -466,6 +469,34 @@ main.calendar {
   main.calendar {
     border: 3px solid var(--color-on-bg);
     box-shadow: none;
+  }
+}
+@media (min-width: 600px) {
+  main.calendar.calendar_fullpage {
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    top: 0;
+    left: 0;
+    position: fixed;
+    max-width: unset;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    overflow-y: hidden;
+  }
+
+  main.calendar.calendar_fullpage .calendar_days_container {
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+  }
+  main.calendar.calendar_fullpage .calendar_days_container::before {
+    display: none;
+  }
+  main.calendar.calendar_fullpage .calendar_days {
+    position: relative;
+    grid-template-rows: var(--height-calendar-weekday-label) repeat(6, minmax(100px, 1fr));
   }
 }
 .calendar_header {
