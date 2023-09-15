@@ -1,514 +1,514 @@
 [
-    {
-        "Name": "Comp\/World Lit",
-        "Grade Level (Multiple)": "10"
-    },
-    {
-        "Name": "AP Eng Lang & Comp",
-        "Grade Level (Multiple)": "10"
-    },
-    {
-        "Name": "American Lit Survey",
-        "Grade Level (Multiple)": "11"
-    },
-    {
-        "Name": "American Lit Honors",
-        "Grade Level (Multiple)": "11"
-    },
-    {
-        "Name": "Philosophy in Lit.",
-        "Grade Level (Multiple)": "12"
-    },
-    {
-        "Name": "Lit Culture & Society (ERWC)",
-        "Grade Level (Multiple)": "12"
-    },
-    {
-        "Name": "AP Eng Lit & Comp",
-        "Grade Level (Multiple)": "12"
-    },
-    {
-        "Name": "French I",
-        "Grade Level (Multiple)": "9"
-    },
-    {
-        "Name": "French II",
-        "Grade Level (Multiple)": "10"
-    },
-    {
-        "Name": "French III",
-        "Grade Level (Multiple)": "10,11"
-    },
-    {
-        "Name": "French III H",
-        "Grade Level (Multiple)": "10,11"
-    },
-    {
-        "Name": "French V Honors",
-        "Grade Level (Multiple)": "11,12"
-    },
-    {
-        "Name": "AP French Language & Culture",
-        "Grade Level (Multiple)": "11,12"
-    },
-    {
-        "Name": "Japanese I",
-        "Grade Level (Multiple)": "9"
-    },
-    {
-        "Name": "Japanese II",
-        "Grade Level (Multiple)": "10"
-    },
-    {
-        "Name": "Japanese III",
-        "Grade Level (Multiple)": "10,11"
-    },
-    {
-        "Name": "Japanese III H",
-        "Grade Level (Multiple)": "10,11"
-    },
-    {
-        "Name": "Japanese IV",
-        "Grade Level (Multiple)": "11,12"
-    },
-    {
-        "Name": "AP Japanese Language & Culture",
-        "Grade Level (Multiple)": "11,12"
-    },
-    {
-        "Name": "Mandarin Chinese I",
-        "Grade Level (Multiple)": "9"
-    },
-    {
-        "Name": "Mandarin Chinese II",
-        "Grade Level (Multiple)": "10"
-    },
-    {
-        "Name": "Mandarin Chinese III",
-        "Grade Level (Multiple)": "10,11"
-    },
-    {
-        "Name": "Mandarin Chinese IV",
-        "Grade Level (Multiple)": "10,11,12"
-    },
-    {
-        "Name": "Mandarin Chinese IVH",
-        "Grade Level (Multiple)": "10,11,12"
-    },
-    {
-        "Name": "AP Chinese Language & Culture",
-        "Grade Level (Multiple)": "10,11,12"
-    },
-    {
-        "Name": "Spanish I",
-        "Grade Level (Multiple)": "9"
-    },
-    {
-        "Name": "Spanish II",
-        "Grade Level (Multiple)": "10"
-    },
-    {
-        "Name": "Spanish II Honors",
-        "Grade Level (Multiple)": "10"
-    },
-    {
-        "Name": "Spanish III",
-        "Grade Level (Multiple)": "11,12"
-    },
-    {
-        "Name": "Spanish III Honors",
-        "Grade Level (Multiple)": "11,12"
-    },
-    {
-        "Name": "Spanish III H for Span. Spk",
-        "Grade Level (Multiple)": "10,11"
-    },
-    {
-        "Name": "Spanish IV",
-        "Grade Level (Multiple)": "11,12"
-    },
-    {
-        "Name": "AP Spanish Language & Culture",
-        "Grade Level (Multiple)": "11,12"
-    },
-    {
-        "Name": "AP Spanish Literature & Culture",
-        "Grade Level (Multiple)": "11,12"
-    },
-    {
-        "Name": "Algebra 1",
-        "Grade Level (Multiple)": "9,10"
-    },
-    {
-        "Name": "Algebra 1 Enh",
-        "Grade Level (Multiple)": "9,10"
-    },
-    {
-        "Name": "Algebra II",
-        "Grade Level (Multiple)": "9,10"
-    },
-    {
-        "Name": "Algebra II H",
-        "Grade Level (Multiple)": "9,10"
-    },
-    {
-        "Name": "AP Calculus AB",
-        "Grade Level (Multiple)": "11,12"
-    },
-    {
-        "Name": "AP Calculus BC",
-        "Grade Level (Multiple)": "11,12"
-    },
-    {
-        "Name": "AP Statistics",
-        "Grade Level (Multiple)": "12"
-    },
-    {
-        "Name": "Calculus",
-        "Grade Level (Multiple)": "11"
-    },
-    {
-        "Name": "Geometry",
-        "Grade Level (Multiple)": "9"
-    },
-    {
-        "Name": "Geometry Honors",
-        "Grade Level (Multiple)": "9"
-    },
-    {
-        "Name": "Math Mastery",
-        "Grade Level (Multiple)": "9"
-    },
-    {
-        "Name": "Multi Var Calc H",
-        "Grade Level (Multiple)": "12"
-    },
-    {
-        "Name": "Statistics",
-        "Grade Level (Multiple)": "11,12"
-    },
-    {
-        "Name": "Trig Math Analysis",
-        "Grade Level (Multiple)": "10,11"
-    },
-    {
-        "Name": "Trig Math Analysis ",
-        "Grade Level (Multiple)": "10,11"
-    },
-    {
-        "Name": "AP Biology",
-        "Grade Level (Multiple)": "11,12"
-    },
-    {
-        "Name": "AP Chemistry",
-        "Grade Level (Multiple)": "11,12"
-    },
-    {
-        "Name": "AP Environmental Sci.",
-        "Grade Level (Multiple)": "11,12"
-    },
-    {
-        "Name": "AP Physics 1",
-        "Grade Level (Multiple)": "11,12"
-    },
-    {
-        "Name": "AP PhysC: Mech",
-        "Grade Level (Multiple)": "12"
-    },
-    {
-        "Name": "AP Phys C:E&Mgn",
-        "Grade Level (Multiple)": "12"
-    },
-    {
-        "Name": "Environmental Science",
-        "Grade Level (Multiple)": "10"
-    },
-    {
-        "Name": "Biology",
-        "Grade Level (Multiple)": "9"
-    },
-    {
-        "Name": "Biology Honors",
-        "Grade Level (Multiple)": "9"
-    },
-    {
-        "Name": "Anatomy & Physiology",
-        "Grade Level (Multiple)": "11"
-    },
-    {
-        "Name": "Chemistry",
-        "Grade Level (Multiple)": "9"
-    },
-    {
-        "Name": "Chemistry H",
-        "Grade Level (Multiple)": "9"
-    },
-    {
-        "Name": "Physics",
-        "Grade Level (Multiple)": "11"
-    },
-    {
-        "Name": "AP European History",
-        "Grade Level (Multiple)": "10"
-    },
-    {
-        "Name": "AP Macro",
-        "Grade Level (Multiple)": "12"
-    },
-    {
-        "Name": "AP US Gov",
-        "Grade Level (Multiple)": "12"
-    },
-    {
-        "Name": "AP Psychology",
-        "Grade Level (Multiple)": "10"
-    },
-    {
-        "Name": "AP US History",
-        "Grade Level (Multiple)": "11"
-    },
-    {
-        "Name": "AP World History",
-        "Grade Level (Multiple)": "10"
-    },
-    {
-        "Name": "Cntmp Wld Issues",
-        "Grade Level (Multiple)": "10"
-    },
-    {
-        "Name": "Civics\/Econ",
-        "Grade Level (Multiple)": "12"
-    },
-    {
-        "Name": "Social Justice",
-        "Grade Level (Multiple)": "10"
-    },
-    {
-        "Name": "US History",
-        "Grade Level (Multiple)": "11"
-    },
-    {
-        "Name": "World Studies",
-        "Grade Level (Multiple)": "9"
-    },
-    {
-        "Name": "Health Education",
-        "Grade Level (Multiple)": "10"
-    },
-    {
-        "Name": "Health & Wellness",
-        "Grade Level (Multiple)": "10"
-    },
-    {
-        "Name": "Positive Psycholog",
-        "Grade Level (Multiple)": "10"
-    },
-    {
-        "Name": "AP Computer Sci",
-        "Grade Level (Multiple)": "10,11"
-    },
-    {
-        "Name": "Architectural Design",
-        "Grade Level (Multiple)": "9,10"
-    },
-    {
-        "Name": "Advanced Comp. Science",
-        "Grade Level (Multiple)": "11,12"
-    },
-    {
-        "Name": "Engineering Tech I",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Engineering Tech II",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Computer Sci ",
-        "Grade Level (Multiple)": "9,10"
-    },
-    {
-        "Name": "App & Game Design",
-        "Grade Level (Multiple)": "10,11"
-    },
-    {
-        "Name": "Personal Finance",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Acting I",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Acting II",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Acting I",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Chamber Choir",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Chamber Orchestra",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Folklorico ",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Jazz Dance",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Jazz Band",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Marching Band PE",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Orchestra",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Stagecraft l",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Stagecraft ll",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Symphonic Band",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Wind Ensemble",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "World Dance",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Exploring Music",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "AP Studio Art 2D",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "AP Studio Art 3D",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "AP Studio Art Drawing",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Art Survey",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Digital Art & Imaging",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Ceramics I",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Commercial Art",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Drawing I",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Drawing II",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Painting I",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Photography I",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Photography II",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Publication Design",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "AVID Sophomore",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "AVID Junior",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "AVID Senior",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Ambassadors",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Journalism",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Am Lit",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Design I",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Design II",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Film Prod I",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Film Prod II",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Digital Media I",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Digital Media II",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Animation I",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "Animation II",
-        "Grade Level (Multiple)": null
-    },
-    {
-        "Name": "English 4",
-        "Grade Level (Multiple)": null
-    }
+  {
+    "title": "Comp/World Lit",
+    "grades": [10]
+  },
+  {
+    "title": "AP Eng Lang & Comp",
+    "grades": [10]
+  },
+  {
+    "title": "American Lit Survey",
+    "grades": [11]
+  },
+  {
+    "title": "American Lit Honors",
+    "grades": [11]
+  },
+  {
+    "title": "Philosophy in Lit.",
+    "grades": [12]
+  },
+  {
+    "title": "Lit Culture & Society (ERWC)",
+    "grades": [12]
+  },
+  {
+    "title": "AP Eng Lit & Comp",
+    "grades": [12]
+  },
+  {
+    "title": "French I",
+    "grades": [9]
+  },
+  {
+    "title": "French II",
+    "grades": [10]
+  },
+  {
+    "title": "French III",
+    "grades": [10, 11]
+  },
+  {
+    "title": "French III H",
+    "grades": [10, 11]
+  },
+  {
+    "title": "French V Honors",
+    "grades": [11, 12]
+  },
+  {
+    "title": "AP French Language & Culture",
+    "grades": [11, 12]
+  },
+  {
+    "title": "Japanese I",
+    "grades": [9]
+  },
+  {
+    "title": "Japanese II",
+    "grades": [10]
+  },
+  {
+    "title": "Japanese III",
+    "grades": [10, 11]
+  },
+  {
+    "title": "Japanese III H",
+    "grades": [10, 11]
+  },
+  {
+    "title": "Japanese IV",
+    "grades": [11, 12]
+  },
+  {
+    "title": "AP Japanese Language & Culture",
+    "grades": [11, 12]
+  },
+  {
+    "title": "Mandarin Chinese I",
+    "grades": [9]
+  },
+  {
+    "title": "Mandarin Chinese II",
+    "grades": [10]
+  },
+  {
+    "title": "Mandarin Chinese III",
+    "grades": [10, 11]
+  },
+  {
+    "title": "Mandarin Chinese IV",
+    "grades": [10, 11, 12]
+  },
+  {
+    "title": "Mandarin Chinese IVH",
+    "grades": [10, 11, 12]
+  },
+  {
+    "title": "AP Chinese Language & Culture",
+    "grades": [10, 11, 12]
+  },
+  {
+    "title": "Spanish I",
+    "grades": [9]
+  },
+  {
+    "title": "Spanish II",
+    "grades": [10]
+  },
+  {
+    "title": "Spanish II Honors",
+    "grades": [10]
+  },
+  {
+    "title": "Spanish III",
+    "grades": [11, 12]
+  },
+  {
+    "title": "Spanish III Honors",
+    "grades": [11, 12]
+  },
+  {
+    "title": "Spanish III H for Span. Spk",
+    "grades": [10, 11]
+  },
+  {
+    "title": "Spanish IV",
+    "grades": [11, 12]
+  },
+  {
+    "title": "AP Spanish Language & Culture",
+    "grades": [11, 12]
+  },
+  {
+    "title": "AP Spanish Literature & Culture",
+    "grades": [11, 12]
+  },
+  {
+    "title": "Algebra 1",
+    "grades": [9, 10]
+  },
+  {
+    "title": "Algebra 1 Enh",
+    "grades": [9, 10]
+  },
+  {
+    "title": "Algebra II",
+    "grades": [9, 10]
+  },
+  {
+    "title": "Algebra II H",
+    "grades": [9, 10]
+  },
+  {
+    "title": "AP Calculus AB",
+    "grades": [11, 12]
+  },
+  {
+    "title": "AP Calculus BC",
+    "grades": [11, 12]
+  },
+  {
+    "title": "AP Statistics",
+    "grades": [12]
+  },
+  {
+    "title": "Calculus",
+    "grades": [11]
+  },
+  {
+    "title": "Geometry",
+    "grades": [9]
+  },
+  {
+    "title": "Geometry Honors",
+    "grades": [9]
+  },
+  {
+    "title": "Math Mastery",
+    "grades": [9]
+  },
+  {
+    "title": "Multi Var Calc H",
+    "grades": [12]
+  },
+  {
+    "title": "Statistics",
+    "grades": [11, 12]
+  },
+  {
+    "title": "Trig Math Analysis",
+    "grades": [10, 11]
+  },
+  {
+    "title": "Trig Math Analysis ",
+    "grades": [10, 11]
+  },
+  {
+    "title": "AP Biology",
+    "grades": [11, 12]
+  },
+  {
+    "title": "AP Chemistry",
+    "grades": [11, 12]
+  },
+  {
+    "title": "AP Environmental Sci.",
+    "grades": [11, 12]
+  },
+  {
+    "title": "AP Physics 1",
+    "grades": [11, 12]
+  },
+  {
+    "title": "AP PhysC: Mech",
+    "grades": [12]
+  },
+  {
+    "title": "AP Phys C:E&Mgn",
+    "grades": [12]
+  },
+  {
+    "title": "Environmental Science",
+    "grades": [10]
+  },
+  {
+    "title": "Biology",
+    "grades": [9]
+  },
+  {
+    "title": "Biology Honors",
+    "grades": [9]
+  },
+  {
+    "title": "Anatomy & Physiology",
+    "grades": [11]
+  },
+  {
+    "title": "Chemistry",
+    "grades": [9]
+  },
+  {
+    "title": "Chemistry H",
+    "grades": [9]
+  },
+  {
+    "title": "Physics",
+    "grades": [11]
+  },
+  {
+    "title": "AP European History",
+    "grades": [10]
+  },
+  {
+    "title": "AP Macro",
+    "grades": [12]
+  },
+  {
+    "title": "AP US Gov",
+    "grades": [12]
+  },
+  {
+    "title": "AP Psychology",
+    "grades": [10]
+  },
+  {
+    "title": "AP US History",
+    "grades": [11]
+  },
+  {
+    "title": "AP World History",
+    "grades": [10]
+  },
+  {
+    "title": "Cntmp Wld Issues",
+    "grades": [10]
+  },
+  {
+    "title": "Civics/Econ",
+    "grades": [12]
+  },
+  {
+    "title": "Social Justice",
+    "grades": [10]
+  },
+  {
+    "title": "US History",
+    "grades": [11]
+  },
+  {
+    "title": "World Studies",
+    "grades": [9]
+  },
+  {
+    "title": "Health Education",
+    "grades": [10]
+  },
+  {
+    "title": "Health & Wellness",
+    "grades": [10]
+  },
+  {
+    "title": "Positive Psycholog",
+    "grades": [10]
+  },
+  {
+    "title": "AP Computer Sci",
+    "grades": [10, 11]
+  },
+  {
+    "title": "Architectural Design",
+    "grades": [9, 10]
+  },
+  {
+    "title": "Advanced Comp. Science",
+    "grades": [11, 12]
+  },
+  {
+    "title": "Engineering Tech I",
+    "open": true
+  },
+  {
+    "title": "Engineering Tech II",
+    "open": true
+  },
+  {
+    "title": "Computer Sci ",
+    "grades": [9, 10]
+  },
+  {
+    "title": "App & Game Design",
+    "grades": [10, 11]
+  },
+  {
+    "title": "Personal Finance",
+    "open": true
+  },
+  {
+    "title": "Acting I",
+    "open": true
+  },
+  {
+    "title": "Acting II",
+    "open": true
+  },
+  {
+    "title": "Acting I",
+    "open": true
+  },
+  {
+    "title": "Chamber Choir",
+    "open": true
+  },
+  {
+    "title": "Chamber Orchestra",
+    "open": true
+  },
+  {
+    "title": "Folklorico ",
+    "open": true
+  },
+  {
+    "title": "Jazz Dance",
+    "open": true
+  },
+  {
+    "title": "Jazz Band",
+    "open": true
+  },
+  {
+    "title": "Marching Band PE",
+    "open": true
+  },
+  {
+    "title": "Orchestra",
+    "open": true
+  },
+  {
+    "title": "Stagecraft l",
+    "open": true
+  },
+  {
+    "title": "Stagecraft ll",
+    "open": true
+  },
+  {
+    "title": "Symphonic Band",
+    "open": true
+  },
+  {
+    "title": "Wind Ensemble",
+    "open": true
+  },
+  {
+    "title": "World Dance",
+    "open": true
+  },
+  {
+    "title": "Exploring Music",
+    "open": true
+  },
+  {
+    "title": "AP Studio Art 2D",
+    "open": true
+  },
+  {
+    "title": "AP Studio Art 3D",
+    "open": true
+  },
+  {
+    "title": "AP Studio Art Drawing",
+    "open": true
+  },
+  {
+    "title": "Art Survey",
+    "open": true
+  },
+  {
+    "title": "Digital Art & Imaging",
+    "open": true
+  },
+  {
+    "title": "Ceramics I",
+    "open": true
+  },
+  {
+    "title": "Commercial Art",
+    "open": true
+  },
+  {
+    "title": "Drawing I",
+    "open": true
+  },
+  {
+    "title": "Drawing II",
+    "open": true
+  },
+  {
+    "title": "Painting I",
+    "open": true
+  },
+  {
+    "title": "Photography I",
+    "open": true
+  },
+  {
+    "title": "Photography II",
+    "open": true
+  },
+  {
+    "title": "Publication Design",
+    "open": true
+  },
+  {
+    "title": "AVID Sophomore",
+    "open": true
+  },
+  {
+    "title": "AVID Junior",
+    "open": true
+  },
+  {
+    "title": "AVID Senior",
+    "open": true
+  },
+  {
+    "title": "Ambassadors",
+    "open": true
+  },
+  {
+    "title": "Journalism",
+    "open": true
+  },
+  {
+    "title": "Am Lit",
+    "open": true
+  },
+  {
+    "title": "Design I",
+    "open": true
+  },
+  {
+    "title": "Design II",
+    "open": true
+  },
+  {
+    "title": "Film Prod I",
+    "open": true
+  },
+  {
+    "title": "Film Prod II",
+    "open": true
+  },
+  {
+    "title": "Digital Media I",
+    "open": true
+  },
+  {
+    "title": "Digital Media II",
+    "open": true
+  },
+  {
+    "title": "Animation I",
+    "open": true
+  },
+  {
+    "title": "Animation II",
+    "open": true
+  },
+  {
+    "title": "English 4",
+    "open": true
+  }
 ]
