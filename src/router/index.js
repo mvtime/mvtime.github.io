@@ -276,7 +276,7 @@ const router = createRouter({
         },
         {
           path: "/portal/add/ref/:ref?",
-          name: "joinclass",
+          name: "refclass",
           component: () => import("../views/Portal/AddClass.vue"),
           meta: {
             page_title: "Join from Reference",

@@ -29,9 +29,9 @@
             v-for="class_obj in classes"
             :value="class_obj.id"
             :key="class_obj.id"
-            :disabled="class_obj.is_joined"
+            :disabled="class_obj.is_joined && !adding"
           >
-            <span v-if="class_obj.is_joined">[JOINED]</span>
+            <span v-if="class_obj.is_joined && !adding">[JOINED]</span>
             P{{ class_obj.period }} - {{ class_obj.name }}
           </option>
           <option v-if="teacher_email && !classes" value="" disabled hidden selected>
@@ -54,7 +54,11 @@
         </div>
       </div>
       <div class="overlay_contents_text" v-if="class_obj">
-        {{ class_obj && class_obj.is_joined ? "You've already joined" : "You'll be joining" }}
+        {{
+          class_obj && class_obj.is_joined && !adding
+            ? "You've already joined"
+            : "You'll be joining"
+        }}
         <a
           class="class_name button_pointer_text"
           :href="`/view/${cleaned_ref}`"
@@ -86,8 +90,11 @@
       <button
         class="continue_action"
         @click="add_class"
-        :disabled="!teacher_email || !class_id || (class_obj && class_obj.is_joined)"
-        :class="{ loading_bg: adding || (is_join && loading) }"
+        :disabled="!teacher_email || !class_id || (class_obj && class_obj.is_joined && !adding)"
+        :class="{
+          loading_bg: adding || (is_join && loading),
+          alt_bg: !teacher_email || !class_id || (class_obj && class_obj.is_joined && !adding),
+        }"
       >
         Add Class
       </button>
@@ -163,7 +170,7 @@ export default {
       return useMainStore();
     },
     is_join() {
-      return this.$route?.name == "joinclass" || this.$route?.name == "codeclass";
+      return this.$route?.name == "refclass" || this.$route?.name == "codeclass";
     },
   },
   methods: {

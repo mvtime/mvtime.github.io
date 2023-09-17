@@ -86,11 +86,22 @@
           this.$route.params.ref &&
           this.$route.params.ref.split('~')[0] == store.active_doc.email.replace('@mvla.net', '')
         "
+        :disabled="!ready"
         @click="edit_class"
       >
         Edit
       </button>
-      <button class="share_action" @click="share_class" :disabled="!ready">Share</button>
+      <button class="share_action primary_styled" @click="share_class" :disabled="!ready">
+        Share
+      </button>
+      <button
+        class="edit_action primary_styled"
+        v-if="joinable"
+        :disabled="!ready"
+        @click="join_class"
+      >
+        Join
+      </button>
     </div>
   </main>
 </template>
@@ -132,6 +143,22 @@ export default {
     text() {
       return this.class_obj?.description && converter.makeHtml(this.class_obj?.description);
     },
+    class_ref() {
+      if (!this.$route.params.ref) {
+        return null;
+      }
+      let [_email, _id] = this.$route.params.ref.split("~");
+      _email += "@mvla.net";
+      return [_email, _id].join("/");
+    },
+    joinable() {
+      return (
+        this.store.user &&
+        this.class_obj &&
+        // and not already joined
+        !this.store?.active_doc?.classes?.includes(this.class_ref)
+      );
+    },
   },
   mounted() {
     this.$smoothReflow({
@@ -168,6 +195,14 @@ export default {
     edit_class() {
       this.$router.push({
         name: "editclass",
+        params: {
+          ref: this.$route?.params?.ref,
+        },
+      });
+    },
+    join_class() {
+      this.$router.push({
+        name: "refclass",
         params: {
           ref: this.$route?.params?.ref,
         },
