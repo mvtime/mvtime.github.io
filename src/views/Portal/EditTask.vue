@@ -10,7 +10,7 @@
           }}{{ original.name ? ` "${original.name}"` : "" }} in
           <a
             class="class_name button_pointer_text"
-            :href="`/class/${task._class.ref}`"
+            :href="`/view/${task._class.ref}`"
             @click="
               $event.preventDefault();
               $router.push($event.target.getAttribute('href'));
@@ -277,7 +277,7 @@ export default {
           }
         })
         .catch((err) => {
-          new ErrorToast("Error getting task", 1500);
+          new ErrorToast("Error getting task", err, 1500);
           _statuslog("⚠ Error getting task", err);
           this.$emit("close");
         });

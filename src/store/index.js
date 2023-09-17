@@ -12,12 +12,14 @@ import {
   setDoc,
   getDoc,
   getDocs,
-  query,
-  // where,
   addDoc,
   writeBatch,
   updateDoc,
   deleteDoc,
+  query,
+  where,
+  // orderBy,
+  // limit,
   // arrayRemove,
 } from "firebase/firestore";
 import CryptoJS from "crypto-js";
@@ -1327,9 +1329,9 @@ export const useMainStore = defineStore({
        * @file store/index.js
        */
       let classes_subcollection = collection(doc(db, "classes", email), "classes");
-      let classes_subcollection_query_snapshot = await getDocs(query(classes_subcollection));
+      let classes_subcollection_snapshot = await getDocs(classes_subcollection);
       _statuslog("📄 Got classes subcollection from email");
-      classes_subcollection_query_snapshot.forEach((class_doc) => {
+      classes_subcollection_snapshot.forEach((class_doc) => {
         let class_data = class_doc.data();
         class_data.id = class_doc.id;
         // if user already in class, change name to "[JOINED] name"
@@ -1385,7 +1387,7 @@ export const useMainStore = defineStore({
     async create_class(class_obj) {
       _statuslog("🔨 Creating class", class_obj);
       if (!this.is_teacher) {
-        new ErrorToast("You need to be a teacher to create a class", 2000);
+        new WarningToast("You need to be a teacher to create a class", 2000);
         return;
       }
       if (!class_obj.name || !class_obj.period) return; // handled in disabled attr of button, failsafe for db
@@ -1634,7 +1636,7 @@ export const useMainStore = defineStore({
         _email += ORG_DOMAIN;
         let class_doc = await getDoc(doc(db, "classes", _email, "classes", _id));
         _statuslog("📄 Got class doc");
-        if (!class_doc.exists()) return Promise.reject();
+        if (!class_doc.exists()) return Promise.reject("Class doesn't exist");
         let class_data = class_doc.data();
         _statuslog("📚 Got class data");
         return Promise.resolve(class_data);
@@ -1642,6 +1644,53 @@ export const useMainStore = defineStore({
         return Promise.reject(err);
       }
     },
+    /**
+     * @function upcoming_from_ref
+     * @description Get the next 4 upcoming task objects for a given class reference
+     * @param {String} ref
+     * @param {Object} class_obj
+     */
+    async upcoming_from_ref(class_ref, class_doc) {
+      try {
+        if (!class_ref) {
+          throw "No class ref provided";
+        }
+        if (!class_doc) {
+          class_doc = await this.class_from_ref(class_ref);
+        }
+        let [_email, _id] = class_ref.split("/");
+        _email += ORG_DOMAIN;
+        let class_tasks_ref = collection(db, "classes", _email, "classes", _id, "tasks");
+        // use where to get tasks with a date greater than or equal to today, then order by date, then limit to 4
+        let class_tasks_query = query(class_tasks_ref, where("type", "!=", "note"));
+        let class_tasks_snapshot = await getDocs(class_tasks_query);
+        _statuslog("📄 Got upcoming tasks snapshot");
+        class_tasks_snapshot = class_tasks_snapshot.docs.filter((task) => {
+          return new Date(task.data().date).getTime() >= new Date().getTime();
+        });
+        class_tasks_snapshot.sort((a, b) => {
+          return new Date(a.data().date).getTime() - new Date(b.data().date).getTime();
+        });
+        // limit to 4
+        class_tasks_snapshot = class_tasks_snapshot.slice(0, 4);
+        let upcoming_tasks = [];
+        class_tasks_snapshot.forEach((task) => {
+          upcoming_tasks.push({
+            ...task.data(),
+            ref: [...class_ref.split("/"), task.id].join("~"),
+            date: new Date(task.data().date),
+            color: class_doc.color,
+            class_id: [_email, _id].join("/"),
+            class_name: `P${class_doc.period} - ${class_doc.name}`,
+          });
+        });
+        _statuslog("📚 Got upcoming tasks");
+        return Promise.resolve(upcoming_tasks);
+      } catch (err) {
+        return Promise.reject(err);
+      }
+    },
+
     /**
      * @function show_timeout
      * @description Show a popup saying that the session has timed out

@@ -12,7 +12,7 @@
         <a
           class="classes_container_class"
           :ref="class_obj.ref"
-          :href="'/class/' + clean_ref(class_obj.ref)"
+          :href="'/view/' + clean_ref(class_obj.ref)"
           v-for="class_obj of classes"
           :draggable="store.is_teacher && class_obj.email == this.store.user.email"
           @dragstart="

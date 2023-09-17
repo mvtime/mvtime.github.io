@@ -31,6 +31,9 @@ export default {
       required: true,
     },
   },
+  created() {
+    console.log(this.task);
+  },
   computed: {
     type_full() {
       return {

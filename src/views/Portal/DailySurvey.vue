@@ -102,7 +102,7 @@ export default {
         if (this.store.done_daily_survey) {
           window.onbeforeunload = null;
           this.$emit("close");
-          new SuccessToast("Looks like you already completed the survey!", 2000);
+          new SuccessToast("Thanks for completing the survey!", 2000);
         }
       },
       deep: true,

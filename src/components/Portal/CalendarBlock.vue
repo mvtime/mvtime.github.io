@@ -444,8 +444,7 @@ main.calendar,
   }
 }
 @media (min-width: /* [desktop size] */ 1270px) and (max-height: 800px) {
-  main.calendar,
-  .calendar_width {
+  main.calendar {
     background-color: var(--color-calendar-alt);
   }
 }

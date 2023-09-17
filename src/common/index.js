@@ -33,6 +33,7 @@ function _statuslog() {
   }
 }
 try {
+  console._log = console.log;
   console.log = _statuslog;
 } catch (err) {
   _statuslog("⚠ Couldn't override console.log", err);

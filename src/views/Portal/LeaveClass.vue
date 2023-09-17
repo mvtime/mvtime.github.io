@@ -7,7 +7,7 @@
       Are you sure you want to leave
       <a
         class="class_name button_pointer_text"
-        :href="`/class/${this.$route.params.ref}`"
+        :href="`/view/${this.$route.params.ref}`"
         @click="
           $event.preventDefault();
           $router.push($event.target.getAttribute('href'));

@@ -57,7 +57,7 @@
         {{ class_obj && class_obj.is_joined ? "You've already joined" : "You'll be joining" }}
         <a
           class="class_name button_pointer_text"
-          :href="`/class/${cleaned_ref}`"
+          :href="`/view/${cleaned_ref}`"
           @click="
             $event.preventDefault();
             $router.push($event.target.getAttribute('href'));

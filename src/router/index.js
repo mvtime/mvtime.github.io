@@ -33,14 +33,28 @@ const router = createRouter({
           },
           children: [
             // view task
-
             {
               // specify param "ref" in the route
-              path: "/view/:ref?",
-              name: "viewtaskalt",
+              path: "/view/:ref([^~]+~[^~]+~[^~]+)",
+              name: "publicviewtask",
               component: () => import("@/views/Portal/ViewTask.vue"),
               meta: {
                 page_title: "View Task",
+                theme_color: {
+                  light: "#bfbfbf",
+                  dark: "#0d0d0d",
+                },
+                requiresAuth: false,
+              },
+            },
+            // view class
+            {
+              // specify param "ref" in the route
+              path: "/view/:ref([^~]+~[^~]+)",
+              name: "viewclass",
+              component: () => import("@/views/Portal/ViewClass.vue"),
+              meta: {
+                page_title: "View Class",
                 theme_color: {
                   light: "#bfbfbf",
                   dark: "#0d0d0d",
@@ -75,7 +89,7 @@ const router = createRouter({
                 },
                 requiresAuth: false,
                 // change later to instead have custom action
-                block_close: true,
+                // block_close: true,
                 close_path: "/",
                 blockStandardRedirect: true,
               },
@@ -330,7 +344,7 @@ const router = createRouter({
         },
         {
           // specify param "ref" in the route
-          path: "/portal/edit/:ref?",
+          path: "/portal/edit/t/:ref?",
           name: "edit",
           component: () => import("../views/Portal/EditTask.vue"),
           meta: {
@@ -345,7 +359,7 @@ const router = createRouter({
         },
         {
           // specify param "ref" in the route
-          path: "/portal/edit/class/:ref?",
+          path: "/portal/edit/c/:ref?",
           name: "editclass",
           component: () => import("../views/Portal/EditClass.vue"),
           meta: {

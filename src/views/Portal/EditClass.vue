@@ -9,7 +9,7 @@
           You're editing
           <a
             class="class_name button_pointer_text"
-            :href="`/class/${this.$route.params.ref}`"
+            :href="`/view/${this.$route.params.ref}`"
             @click="
               $event.preventDefault();
               $router.push($event.target.getAttribute('href'));
@@ -191,7 +191,7 @@ export default {
             navigator.clipboard.writeText(url.href);
             new WarningToast("Sharing not supported, copied link to clipboard", 2000);
           } else {
-            new ErrorToast("Sharing not supported", 2000);
+            new WarningToast("Sharing and copying not supported, sorry", 2000);
           }
           this.loading_share = false;
         })

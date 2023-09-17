@@ -9,7 +9,7 @@
       This action is irreversible, and will permanently remove it from
       <a
         class="class_name button_pointer_text"
-        :href="`/class/${class_obj.ref}`"
+        :href="`/view/${class_obj.ref}`"
         @click="
           $event.preventDefault();
           $router.push($event.target.getAttribute('href'));
@@ -108,7 +108,7 @@ export default {
           this.$emit("close");
         })
         .catch((err) => {
-          new ErrorToast(`Error removing ${this.type}`, 3000);
+          new ErrorToast(`Error removing ${this.type}`, err, 3000);
           _statuslog("⚠ Error removing task", err);
           this.loading = false;
         });

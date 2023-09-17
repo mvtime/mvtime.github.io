@@ -15,7 +15,7 @@
               <!-- TODO: add /class page -->
               <a
                 class="class_name button_pointer_text"
-                :href="`/class/${task._class.ref}`"
+                :href="`/view/${task._class.ref}`"
                 @click="
                   $event.preventDefault();
                   $router.push($event.target.getAttribute('href'));
@@ -167,7 +167,7 @@ export default {
         navigator.clipboard.writeText(url.href);
         new WarningToast("Sharing not supported, copied link to clipboard", 2000);
       } else {
-        new ErrorToast("Sharing not supported", 2000);
+        new WarningToast("Sharing and copying not supported, sorry", 2000);
       }
     },
     edit_task() {
@@ -175,7 +175,7 @@ export default {
       this.$router.push({
         name: "edit",
         params: {
-          ref: this.task.ref.split("/").join("~"),
+          ref: this.$route?.params?.ref,
         },
       });
     },
@@ -209,7 +209,7 @@ export default {
           }
         })
         .catch((err) => {
-          new ErrorToast("Error getting task", 1500);
+          new ErrorToast("Error getting task", err, 1500);
           _statuslog("⚠ Error getting task", err);
           this.$emit("close");
         });
