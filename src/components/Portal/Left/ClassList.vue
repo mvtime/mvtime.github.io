@@ -26,8 +26,8 @@
           "
           :key="class_obj.name"
           @click="
-            $event.preventDefault();
             $emit('toggle_filtered_class', class_obj.id);
+            $event.preventDefault();
           "
           :style="{ '--color-class': class_obj.color, '--color-class-alt': class_obj.color + '40' }"
           :class="{
@@ -49,6 +49,7 @@
               } else {
                 leave_class(class_obj);
               }
+              $event.preventDefault();
               $event.stopPropagation();
             "
           >
