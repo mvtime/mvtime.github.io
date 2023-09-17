@@ -627,7 +627,7 @@ export const useMainStore = defineStore({
       }
       if (!this.account_doc) {
         await this.create_doc();
-        console.log("created doc", this.account_doc);
+        _statuslog("📄 Dreated doc", this.account_doc);
       }
       try {
         let linked_doc = await this.doc_from_uid(uid);
@@ -1672,7 +1672,7 @@ export const useMainStore = defineStore({
           return new Date(a.data().date).getTime() - new Date(b.data().date).getTime();
         });
         // limit to 4
-        class_tasks_snapshot = class_tasks_snapshot.slice(0, 4);
+        class_tasks_snapshot = class_tasks_snapshot.slice(0, 6);
         let upcoming_tasks = [];
         class_tasks_snapshot.forEach((task) => {
           upcoming_tasks.push({

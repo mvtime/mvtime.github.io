@@ -37,7 +37,7 @@
             <span class="styled_line__separator"></span>
             <span class="styled_line__value" v-html="text || 'Not Provided'"> </span>
           </div>
-          <div class="styled_obj upcoming_section">
+          <div class="styled_obj upcoming_section" ref="upcoming">
             <span class="styled_line__label">Upcoming:</span>
             <span class="styled_line__separator"></span>
             <span
@@ -178,7 +178,6 @@ export default {
         return;
       }
       this.loading_upcoming = true;
-
       this.store
         .upcoming_from_ref(this.$route.params.ref.split("~").join("/"), this.class_obj)
         .then((upcoming) => {
@@ -286,6 +285,6 @@ export default {
   padding-left: 0;
 }
 .upcoming_section > .styled_line__separator {
-  height: calc(100% - 2 * var(--padding-overlay-input) + 5px);
+  height: calc(100% - (var(--height-overlay-input) - 18px) + 5px);
 }
 </style>
