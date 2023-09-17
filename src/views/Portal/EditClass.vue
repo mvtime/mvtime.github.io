@@ -7,13 +7,18 @@
       <div v-if="ready">
         <div class="overlay_contents_text">
           You're editing
-          <span
+          <a
             class="class_name button_pointer_text"
+            :href="`/class/${this.$route.params.ref}`"
+            @click="
+              $event.preventDefault();
+              $router.push($event.target.getAttribute('href'));
+            "
             :style="{
               '--color-class': original.color,
               '--color-class-alt': original.color + '2d',
             }"
-            >{{ `P${original.period} - ${original.name}` }}</span
+            >{{ `P${original.period} - ${original.name}` }}</a
           >
         </div>
         <div class="inputs_row">
@@ -56,7 +61,7 @@
             $emit('close');
           }
         "
-        :disabled="(ready && loading_share) || is_owned"
+        :disabled="(ready && loading_share) || !is_owned"
         :class="{ loading_bg: loading_share && ready }"
       >
         {{ ready ? "Share" : "Close" }}
@@ -71,7 +76,7 @@
         :disabled="!ready || !changed || !class_obj.name || !class_obj.period"
         :class="{ loading_bg: loading }"
       >
-        Save class
+        Save
       </button>
     </div>
   </main>

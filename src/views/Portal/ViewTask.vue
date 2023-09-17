@@ -15,7 +15,11 @@
               <!-- TODO: add /class page -->
               <a
                 class="class_name button_pointer_text"
-                :_href="`/class/${task._class.ref}`"
+                :href="`/class/${task._class.ref}`"
+                @click="
+                  $event.preventDefault();
+                  $router.push($event.target.getAttribute('href'));
+                "
                 :style="{
                   '--color-class': task._class.color,
                   '--color-class-alt': task._class.color + '2d',

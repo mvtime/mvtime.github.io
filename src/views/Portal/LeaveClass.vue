@@ -5,13 +5,18 @@
     </header>
     <div class="overlay_contents overlay_contents_text" ref="contents">
       Are you sure you want to leave
-      <span
+      <a
         class="class_name button_pointer_text"
+        :href="`/class/${this.$route.params.ref}`"
+        @click="
+          $event.preventDefault();
+          $router.push($event.target.getAttribute('href'));
+        "
         :style="{
           '--color-class': class_obj.color,
           '--color-class-alt': class_obj.color + '2d',
         }"
-        >{{ `P${class_obj.period} - ${class_obj.name}` }}</span
+        >{{ `P${class_obj.period} - ${class_obj.name}` }}</a
       >? <br /><br />
       You'll need to use the
       <span class="button_pointer_text">Join Class</span> button in the left sidebar to join it

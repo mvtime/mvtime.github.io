@@ -369,6 +369,25 @@ export const useMainStore = defineStore({
         return active_doc_theme ? active_doc_theme : "light";
       }
     },
+    /**
+     * @function get_loaded_classes
+     * @description Get the classes that have been loaded for the loaded_email, and set the .is_joined property on each
+     * @returns {Array} Array of classes that have been loaded for the loaded_email
+     * @default []
+     * @see {@link loaded_classes}
+     * @see {@link loaded_email}
+     * @see {@link fetch_classes_by_email}
+     */
+    get_loaded_classes() {
+      if (!this.loaded_classes || !this.loaded_classes.length) return [];
+      let classes = this.loaded_classes;
+      return classes.map((class_obj) => {
+        class_obj.is_joined = this.active_doc?.classes?.includes(
+          [this.loaded_email, class_obj?.id].join("/")
+        );
+        return class_obj;
+      });
+    },
   },
   /** The actions to manipulate the store state */
   actions: {
@@ -1314,9 +1333,8 @@ export const useMainStore = defineStore({
         let class_data = class_doc.data();
         class_data.id = class_doc.id;
         // if user already in class, change name to "[JOINED] name"
-        if (this.active_doc?.classes.includes([email, class_doc.id].join("/"))) {
-          class_data.is_joined = true;
-        }
+        class_data.is_joined = this.active_doc?.classes.includes([email, class_doc.id].join("/"));
+
         classes.push(class_data);
       });
       classes.sort((a, b) => {
@@ -1326,9 +1344,6 @@ export const useMainStore = defineStore({
         return a.period - b.period;
       });
       this.loaded_classes = classes;
-      // } else {
-      //    this.loaded_classes = null;
-      // }
 
       this.loaded_email = email;
     },

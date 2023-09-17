@@ -8,13 +8,18 @@
         <div class="overlay_contents_text change_text">
           Change the details of your {{ task.type || "task"
           }}{{ original.name ? ` "${original.name}"` : "" }} in
-          <span
+          <a
             class="class_name button_pointer_text"
+            :href="`/class/${task._class.ref}`"
+            @click="
+              $event.preventDefault();
+              $router.push($event.target.getAttribute('href'));
+            "
             :style="{
               '--color-class': class_obj.color,
               '--color-class-alt': class_obj.color + '2d',
             }"
-            >{{ `P${class_obj.period} - ${class_obj.name}` }}</span
+            >{{ `P${class_obj.period} - ${class_obj.name}` }}</a
           >
         </div>
         <div class="inputs_row">

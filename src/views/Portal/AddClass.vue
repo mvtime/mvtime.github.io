@@ -7,7 +7,7 @@
       <div class="overlay_contents_text">
         <span v-if="is_join"
           >{{ store.loaded_email == teacher_email ? "Loaded" : "Loading" }} from your teacher's
-          class code</span
+          class {{ $route.params.code ? "code" : "ref" }}</span
         >
         <span v-else>Join a new class</span>
       </div>
@@ -55,13 +55,18 @@
       </div>
       <div class="overlay_contents_text" v-if="class_obj">
         {{ class_obj && class_obj.is_joined ? "You've already joined" : "You'll be joining" }}
-        <span
+        <a
           class="class_name button_pointer_text"
+          :href="`/class/${cleaned_ref}`"
+          @click="
+            $event.preventDefault();
+            $router.push($event.target.getAttribute('href'));
+          "
           :style="{
             '--color-class': class_obj.color,
             '--color-class-alt': class_obj.color + '2d',
           }"
-          >{{ `P${class_obj.period} - ${class_obj.name}` }}</span
+          >{{ `P${class_obj.period} - ${class_obj.name}` }}</a
         >
       </div>
       <div v-if="class_obj" class="overlay_contents_text">
@@ -124,11 +129,21 @@ export default {
     }
     // if ref is provided, set email and class_id
     this.use_ref();
+    if (
+      !this.is_join &&
+      this.store.loaded_email &&
+      this.store.get_loaded_classes.some((class_obj) => !class_obj.is_joined)
+    ) {
+      this.teacher_email = this.store.loaded_email;
+    }
   },
   computed: {
     class_obj() {
       if (!this.classes) return false;
       return this.classes.find((class_obj) => class_obj.id === this.class_id) || false;
+    },
+    cleaned_ref() {
+      return this.teacher_email.replace("@mvla.net", "") + "~" + this.class_id;
     },
     loading() {
       return this.store.loaded_email !== this.teacher_email;
@@ -137,7 +152,7 @@ export default {
       if (!this.teacher_email) {
         return null;
       } else if (this.teacher_email === this.store.loaded_email) {
-        return this.store.loaded_classes;
+        return this.store.get_loaded_classes;
       }
       // commit store fetch_classes_by_email with teacher_email
       this.store.fetch_classes_by_email(this.teacher_email);
@@ -188,9 +203,7 @@ export default {
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
 
-        let found =
-          this.store.loaded_classes &&
-          this.store.loaded_classes.find((class_obj) => class_obj.id === _id);
+        let found = this.store?.get_loaded_classes?.find((class_obj) => class_obj.id === _id);
         if (found) {
           this.class_id = _id;
           if (found.is_joined) {
