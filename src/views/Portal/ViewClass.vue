@@ -95,12 +95,20 @@
         Share
       </button>
       <button
-        class="edit_action primary_styled"
+        class="join_action primary_styled"
         v-if="joinable"
         :disabled="!ready"
         @click="join_class"
       >
         Join
+      </button>
+      <button
+        class="leave_action primary_styled"
+        v-else-if="store.user && class_obj"
+        :disabled="!ready"
+        @click="leave_class"
+      >
+        Leave
       </button>
     </div>
   </main>
@@ -203,6 +211,14 @@ export default {
     join_class() {
       this.$router.push({
         name: "refclass",
+        params: {
+          ref: this.$route?.params?.ref,
+        },
+      });
+    },
+    leave_class() {
+      this.$router.push({
+        name: "leave",
         params: {
           ref: this.$route?.params?.ref,
         },
