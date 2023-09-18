@@ -51,7 +51,7 @@ const router = createRouter({
             {
               // specify param "ref" in the route
               path: "/view/:ref([^~]+~[^~]+)",
-              name: "viewclass",
+              name: "publicviewclass",
               component: () => import("@/views/Portal/ViewClass.vue"),
               meta: {
                 page_title: "View Class",
@@ -339,7 +339,21 @@ const router = createRouter({
               light: "#b5b5b5",
               dark: "#0d0d0d",
             },
-            requiresAuth: false,
+            requiresAuth: true,
+          },
+        },
+        {
+          // specify param "ref" in the route
+          path: "/portal/view/:ref([^~]+~[^~]+)",
+          name: "viewclass",
+          component: () => import("../views/Portal/ViewClass.vue"),
+          meta: {
+            page_title: "View Class",
+            theme_color: {
+              light: "#b5b5b5",
+              dark: "#0d0d0d",
+            },
+            requiresAuth: true,
           },
         },
         {

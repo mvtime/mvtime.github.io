@@ -318,9 +318,10 @@ export default {
   cursor: pointer;
   text-align: center;
   user-select: none;
+  transition: letter-spacing 0.15s ease-out;
 }
 .upcoming_section .loading_clickable:hover {
-  text-decoration: underline;
+  letter-spacing: 0.04em;
 }
 .upcoming_section .loading_bg {
   height: calc(50px + 2 * var(--padding-overlay-input));

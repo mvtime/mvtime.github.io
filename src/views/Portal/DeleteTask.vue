@@ -12,7 +12,7 @@
         :href="`/view/${class_obj.ref}`"
         @click="
           $event.preventDefault();
-          $router.push($event.target.getAttribute('href'));
+          $router.push('/portal' + $event.target.getAttribute('href'));
         "
         :style="{
           '--color-class': class_obj.color,
