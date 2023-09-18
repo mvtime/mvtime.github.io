@@ -9,7 +9,14 @@
           >{{ store.loaded_email == teacher_email ? "Loaded" : "Loading" }} from your teacher's
           class {{ $route.params.code ? "code" : "ref" }}</span
         >
-        <span v-else>Join a new class</span>
+        <span v-else
+          >Join a class with your teacher's details or
+          <span
+            class="click-action button_pointer_text"
+            @click="$router.push({ name: 'codeenterclass' })"
+            >enter a class code</span
+          >
+        </span>
       </div>
       <div class="inputs_row" v-if="!is_join">
         <input
@@ -195,7 +202,11 @@ export default {
         } catch (err) {
           new ErrorToast("Invalid join code", err, 4000);
           _statuslog("🔥 " + err);
-          this.to_normal_add();
+          if (this.$route?.query?.manual) {
+            this.$router.push({ name: "codeenterclass" });
+          } else {
+            this.to_normal_add();
+          }
           return;
         }
       }
@@ -243,7 +254,7 @@ export default {
   padding: var(--padding-overlay-input);
 }
 #code_ref.code {
-  font-size: 2.5em;
+  font-size: 4em;
 }
 #code_ref.ref {
   font-size: 1.25em;

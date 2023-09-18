@@ -1,6 +1,6 @@
 <template>
   <div class="survey_upcoming survey_part">
-    <div class="tasks_container__empty" v-if="!tasks">
+    <div class="tasks_container__empty" v-if="!tasks || !tasks.length">
       <div class="tasks_container__empty__text overlay_contents_text">No Upcoming Tasks!</div>
     </div>
     <div class="tasks_container" v-else>

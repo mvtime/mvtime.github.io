@@ -31,13 +31,14 @@
   - ~~show upcoming tasks at end of daily surveys~~
   - ~~daily surveys~~
 - Tasks
-  - disallow finish when link still in-progress
-  - store proxy in class doc - load from there for efficiency / read & write count
+  - **store proxy in class doc - load from there for efficiency / read & write count**
   - allow / encourage links to other classes / through selecter?
+  - ~~disallow finish when link still in-progress~~
   - ~~drag tasks on calendar to change date~~
 - Classes
   - add from pre-set list
   - display join code to class
+  - ~~class view page~~
   - ~~make classes editable~~
   - ~~join from code~~
 - Onboarding
@@ -115,4 +116,4 @@
     - Class Spread: N/A
   - Send out emails to students thru firebase?
 - Create data for static classes / a cleaner system to integrate them
-    - Structure teacher add/drop class json update algorithm
+  - Structure teacher add/drop class json update algorithm

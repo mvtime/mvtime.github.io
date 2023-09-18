@@ -288,11 +288,24 @@ const router = createRouter({
           },
         },
         {
-          path: "/portal/add/code/:code?",
+          path: "/portal/add/code/:code",
           name: "codeclass",
           component: () => import("../views/Portal/AddClass.vue"),
           meta: {
             page_title: "Join from Code",
+            theme_color: {
+              light: "#b5b5b5",
+              dark: "#0d0d0d",
+            },
+            requiresAuth: true,
+          },
+        },
+        {
+          path: "/portal/add/code",
+          name: "codeenterclass",
+          component: () => import("../views/Portal/AddCode.vue"),
+          meta: {
+            page_title: "Enter Class Code",
             theme_color: {
               light: "#b5b5b5",
               dark: "#0d0d0d",

@@ -228,6 +228,9 @@ export default {
     did_survey() {
       this.check_and_do_survey();
     },
+    $time() {
+      this.check_and_do_survey();
+    },
     $route() {
       if (this.$route.name != "portal") {
         this.close_right_bar();
