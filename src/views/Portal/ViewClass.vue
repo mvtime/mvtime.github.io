@@ -25,7 +25,10 @@
           <div class="styled_obj">
             <span class="styled_line__label">Period:</span>
             <span class="styled_line__separator"></span>
-            <span class="styled_line__value"> {{ class_obj.period }}</span>
+            <span class="styled_line__value">
+              {{ class_obj.period }} (Schedules
+              {{ schedules[class_obj.period % 2].join(", ") }})</span
+            >
           </div>
           <div class="styled_obj">
             <span class="styled_line__label">Name:</span>
@@ -45,7 +48,6 @@
               class="styled_line__value alt_bg"
               :class="{
                 loading_clickable: !upcoming && !loading_upcoming,
-                'click-action': !upcoming && !loading_upcoming,
                 loading_bg: loading_upcoming,
               }"
             >
@@ -77,6 +79,9 @@
     <div class="bottom_actions">
       <button class="continue_action" @click="$emit('close')">Close</button>
       <div class="flex_spacer"></div>
+      <button class="share_action primary_styled" @click="share_class" :disabled="!ready">
+        Share
+      </button>
       <button
         class="edit_action primary_styled"
         v-if="
@@ -91,24 +96,19 @@
       >
         Edit
       </button>
-      <button class="share_action primary_styled" @click="share_class" :disabled="!ready">
-        Share
-      </button>
       <button
-        class="join_action primary_styled"
-        v-if="joinable"
-        :disabled="!ready"
-        @click="join_class"
-      >
-        Join
-      </button>
-      <button
-        class="leave_action primary_styled"
+        class="join_leave_action primary_styled"
         v-else-if="store.user && class_obj"
         :disabled="!ready"
-        @click="leave_class"
+        @click="
+          if (joinable) {
+            join_class();
+          } else {
+            leave_class();
+          }
+        "
       >
-        Leave
+        {{ joinable ? "Join" : "Leave" }}
       </button>
     </div>
   </main>
@@ -142,6 +142,10 @@ export default {
       ready: false,
       loading_upcoming: false,
       upcoming: null,
+      schedules: [
+        ["A", "G", "C", "D", "and H"],
+        ["A", "G", "B", "E", "and I"],
+      ],
     };
   },
   computed: {
@@ -314,6 +318,9 @@ export default {
   cursor: pointer;
   text-align: center;
   user-select: none;
+}
+.upcoming_section .loading_clickable:hover {
+  text-decoration: underline;
 }
 .upcoming_section .loading_bg {
   height: calc(50px + 2 * var(--padding-overlay-input));
