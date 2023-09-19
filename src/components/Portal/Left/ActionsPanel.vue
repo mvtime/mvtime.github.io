@@ -1,20 +1,22 @@
 <template>
   <div class="teacher_actions">
-    <div
-      v-for="task_type of task_types"
-      :key="task_type[0]"
-      class="teacher_action"
-      @click="
-        $router.push({
-          name: 'newtask',
-          params: { tasktype: task_type[0] },
-        })
-      "
-    >
-      <div class="teacher_action__icon icon__add"></div>
-      <div class="teacher_action__text">
-        <!-- Schedule a  -->
-        {{ task_type[1] }}
+    <div class="teacher_actions__needs_class" v-if="has_classes">
+      <div
+        v-for="task_type of task_types"
+        :key="task_type[0]"
+        class="teacher_action"
+        @click="
+          $router.push({
+            name: 'newtask',
+            params: { tasktype: task_type[0] },
+          })
+        "
+      >
+        <div class="teacher_action__icon icon__add"></div>
+        <div class="teacher_action__text">
+          <!-- Schedule a  -->
+          {{ task_type[1] }}
+        </div>
       </div>
     </div>
 
@@ -26,6 +28,7 @@
 </template>
 
 <script>
+import { useMainStore } from "@/store";
 export default {
   data() {
     return {
@@ -34,6 +37,14 @@ export default {
         ["task", "Schedule a Task or Test"],
       ],
     };
+  },
+  computed: {
+    store() {
+      return useMainStore();
+    },
+    has_classes() {
+      return this.store?.active_doc?.classes?.length > 0;
+    },
   },
 };
 </script>
