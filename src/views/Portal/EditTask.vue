@@ -1,5 +1,5 @@
 <template>
-  <div class="create_task">
+  <div class="edit_task" @keypress="submit_key">
     <header class="modal_header" ref="title">
       <h2 class="header_style modal_header_title">Edit {{ task.type || "task" }} details</h2>
     </header>
@@ -103,10 +103,8 @@
       <button
         class="continue_action"
         :class="{ loading_bg: loading }"
-        @click="update_task"
-        :disabled="
-          !changed || (!task.name && !is_note) || !task.date || (is_note && !task.description)
-        "
+        @click="try_submit"
+        :disabled="not_submittable"
       >
         Save {{ task.type || "task" }}
       </button>
@@ -169,6 +167,14 @@ export default {
     this.get_task();
   },
   computed: {
+    not_submittable() {
+      return (
+        !this.changed ||
+        (!this.task.name && !this.is_note) ||
+        !this.task.date ||
+        (this.is_note && !this.task.description)
+      );
+    },
     type_full() {
       return this.types[this.task.type] || this.task.type || "Task";
     },
@@ -204,6 +210,21 @@ export default {
     },
   },
   methods: {
+    submit_key(e) {
+      if (e.ctrlKey && e.code === "Enter") {
+        e.preventDefault();
+        this.try_submit();
+      }
+    },
+    try_submit() {
+      if (!this.not_submittable) {
+        this.update_task();
+      } else if (!this.changed) {
+        new WarningToast("No changes to submit", 1000);
+      } else {
+        new WarningToast("Please fill out all required fields", 1000);
+      }
+    },
     add_newlink() {
       if (!this.task.links) this.task.links = [];
       // add protocol if missing

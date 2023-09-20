@@ -7,7 +7,7 @@
       <div class="overlay_contents_text">
         <span v-if="is_join"
           >{{ store.loaded_email == teacher_email ? "Loaded" : "Loading" }} from your teacher's
-          class {{ $route.params.code ? "code" : "ref" }}</span
+          class {{ code ? "code" : "ref" }}</span
         >
         <span v-else
           >Join a class with your teacher's details or
@@ -53,11 +53,11 @@
         <div
           id="code_ref"
           class="styled_input"
-          :class="{ code: $route.params.code, ref: $route.params.ref }"
+          :class="{ code: code, ref: $route.params.ref }"
           type="text"
           placeholder="Join Code / Reference"
         >
-          {{ $route.params.code || $route.params.ref || "" }}
+          {{ code || $route.params.ref || "" }}
         </div>
       </div>
       <div class="overlay_contents_text" v-if="class_obj">
@@ -179,6 +179,9 @@ export default {
     is_join() {
       return this.$route?.name == "refclass" || this.$route?.name == "codeclass";
     },
+    code() {
+      return this.$route?.params?.code && this.$route.params?.code.toLowerCase();
+    },
   },
   methods: {
     async add_class() {
@@ -196,9 +199,9 @@ export default {
     },
     async use_ref() {
       let ref = this.$route.params?.ref;
-      if (!ref && this.$route.params?.code) {
+      if (!ref && this.code) {
         try {
-          ref = await this.store.ref_from_code(this.$route.params?.code);
+          ref = await this.store.ref_from_code(this.code);
         } catch (err) {
           new ErrorToast("Invalid join code", err, 4000);
           _statuslog("🔥 " + err);

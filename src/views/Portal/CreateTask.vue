@@ -1,5 +1,5 @@
 <template>
-  <div class="create_task">
+  <div class="create_task" @keypress="submit_key">
     <header class="modal_header">
       <h2 class="header_style modal_header_title">
         <span>Add a{{ is_vowel(type_full[0]) ? "n" : "" }}&MediumSpace;</span>
@@ -119,13 +119,8 @@
       <button
         class="continue_action"
         :class="{ loading_bg: loading }"
-        @click="create_task"
-        :disabled="
-          (!task.name && !is_note) ||
-          !task.date ||
-          !task_classes.length ||
-          (is_note && !task.description)
-        "
+        @click="try_submit"
+        :disabled="!ready"
       >
         Add {{ task.type }}
       </button>
@@ -186,6 +181,14 @@ export default {
     };
   },
   computed: {
+    ready() {
+      return (
+        (this.task.name || this.is_note) &&
+        this.task.date &&
+        this.task_classes.length &&
+        (!this.is_note || this.task.description)
+      );
+    },
     type_full() {
       return this.get_type(this.task.type);
     },
@@ -218,6 +221,19 @@ export default {
     },
   },
   methods: {
+    submit_key(e) {
+      if (e.ctrlKey && e.code === "Enter") {
+        e.preventDefault();
+        this.try_submit();
+      }
+    },
+    try_submit() {
+      if (this.ready) {
+        this.create_task();
+      } else {
+        new WarningToast("Please fill out all required fields", 1000);
+      }
+    },
     get_type(type = this.task.type) {
       return this.types[type] || type;
     },
