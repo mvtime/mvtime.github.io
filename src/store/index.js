@@ -482,11 +482,7 @@ export const useMainStore = defineStore({
       window.localStorage.setItem("MVTT_teacher_mode", !prev);
       let new_text = !prev ? "on" : "off";
       if (this.active_doc) {
-        if (!prev) {
-          this.active_doc.teacher_mode = true;
-        } else {
-          delete this.active_doc.teacher_mode;
-        }
+        this.active_doc.teacher_mode = !prev;
         await this.update_remote();
         _statuslog(`🏫 Remote teacher mode toggled ${new_text}`);
       }
