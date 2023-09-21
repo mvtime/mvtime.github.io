@@ -31,7 +31,7 @@
         '--color-dragging': (drag.task && drag.task.color) || (drag.class && drag.class.color),
         '--color-dragging-alt':
           (drag.task && drag.task.color) || (drag.class && drag.class.color)
-            ? (drag.task && drag.task.color) || (drag.class && drag.class.color) + '80'
+            ? ((drag.task && drag.task.color) || (drag.class && drag.class.color)) + '80'
             : null,
       }"
     >
