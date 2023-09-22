@@ -4,7 +4,15 @@
       <div class="tasks_container__empty__text overlay_contents_text">No Upcoming Tasks!</div>
     </div>
     <div class="tasks_container" v-else>
-      <ExamCard class="tasks_container_task" v-for="task of tasks" :task="task" :key="task.name" />
+      <ExamCard
+        class="tasks_container_task"
+        v-for="task of tasks"
+        :task="task"
+        :key="task.name"
+        :href="`/view/${ref_from(task)}`"
+        target="_blank"
+        @click="$event.preventDefault()"
+      />
     </div>
   </div>
 </template>
@@ -48,6 +56,11 @@ export default {
       };
     },
   },
+  methods: {
+    ref_from(task) {
+      return task.ref.replace("@mvla.net", "").split("/").join("~");
+    },
+  },
   watch: {
     getData() {
       this.$emit("update", this.getData);
@@ -58,6 +71,7 @@ export default {
 <style scoped>
 .tasks_container_task {
   user-select: none;
+  cursor: unset;
 }
 .tasks_container__empty {
   text-align: center;

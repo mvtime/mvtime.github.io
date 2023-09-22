@@ -16,11 +16,6 @@ import {
   writeBatch,
   updateDoc,
   deleteDoc,
-  query,
-  where,
-  // orderBy,
-  // limit,
-  // arrayRemove,
 } from "firebase/firestore";
 import CryptoJS from "crypto-js";
 import { auth, db, authChangeAction, refreshTimeout } from "../firebase";
@@ -507,7 +502,7 @@ export const useMainStore = defineStore({
           let class_tasks = classes[i].tasks;
           class_tasks = class_tasks ? class_tasks : [];
           // add class name and color to each task
-          for (let j = 0; j < class_tasks.length; j++) {
+          for (let j = 0; j < (class_tasks?.length || 0); j++) {
             classes[i].name = classes[i].name ? classes[i].name : "Unnamed Class";
             // check task date type and convert to date object if necessary
             if (typeof class_tasks[j].date == "string") {
@@ -1664,25 +1659,27 @@ export const useMainStore = defineStore({
         }
         let [_email, _id] = class_ref.split("/");
         _email += ORG_DOMAIN;
-        let class_tasks_ref = collection(db, "classes", _email, "classes", _id, "tasks");
-        // use where to get tasks with a date greater than or equal to today, then order by date, then limit to 4
-        let class_tasks_query = query(class_tasks_ref, where("type", "!=", "note"));
-        let class_tasks_snapshot = await getDocs(class_tasks_query);
-        _statuslog("📄 Got upcoming tasks snapshot");
-        class_tasks_snapshot = class_tasks_snapshot.docs.filter((task) => {
-          return new Date(task.data().date).getTime() >= new Date().getTime();
+        let class_snapshot = await getDoc(doc(db, "classes", _email, "classes", _id));
+        if (!class_snapshot.exists()) {
+          throw "Class doesn't exist";
+        }
+        let class_tasks = class_snapshot.data()?.tasks || [];
+        class_tasks = class_tasks.filter((task) => {
+          return task.type != "note" && new Date(task.date).getTime() >= new Date().getTime();
         });
-        class_tasks_snapshot.sort((a, b) => {
-          return new Date(a.data().date).getTime() - new Date(b.data().date).getTime();
+        class_tasks.sort((a, b) => {
+          return new Date(a.date).getTime() - new Date(b.date).getTime();
         });
-        // limit to 4
-        class_tasks_snapshot = class_tasks_snapshot.slice(0, 6);
+        // limit to 6
+        class_tasks = class_tasks.slice(0, 6);
         let upcoming_tasks = [];
-        class_tasks_snapshot.forEach((task) => {
+        class_tasks.forEach((task) => {
+          let task_id = task.id;
+          delete task.id;
           upcoming_tasks.push({
-            ...task.data(),
-            ref: [...class_ref.split("/"), task.id].join("~"),
-            date: new Date(task.data().date),
+            ...task,
+            ref: [...class_ref.split("/"), task_id].join("~"),
+            date: new Date(task.date),
             color: class_doc.color,
             class_id: [_email, _id].join("/"),
             class_name: `P${class_doc.period} - ${class_doc.name}`,

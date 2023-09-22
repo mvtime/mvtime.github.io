@@ -1,5 +1,5 @@
 <template>
-  <div class="task_card" :style="{ '--color-calendar-task': task.color }">
+  <a class="task_card" :style="{ '--color-calendar-task': task.color }">
     <div class="task_card_icon" :title="task.class_name">
       <div class="task_card_icon_container">
         <div class="task_card_icon_container__img"></div>
@@ -19,7 +19,7 @@
         <span class="task_card_details__extended__type">{{ type_full }}</span>
       </div>
     </div>
-  </div>
+  </a>
 </template>
 
 <script>
@@ -57,6 +57,7 @@ export default {
   align-items: stretch;
   height: var(--height-task-card);
   margin: 10px 0;
+  color: inherit !important;
 }
 .task_card,
 .task_card * {

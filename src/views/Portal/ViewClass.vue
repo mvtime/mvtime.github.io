@@ -62,7 +62,11 @@
                     v-for="task in upcoming"
                     :task="task"
                     :key="task.name"
-                    @click="show_task(task.ref)"
+                    :href="`/view/${task.ref}`"
+                    @click="
+                      $event.preventDefault();
+                      show_task(task.ref);
+                    "
                   ></ExamCard>
                 </div>
                 <span v-else>No Upcoming Tasks</span>
@@ -282,7 +286,7 @@ export default {
     },
     show_task(ref) {
       this.$router.push({
-        name: "publicviewtask",
+        name: "viewtask",
         params: {
           ref: ref,
         },

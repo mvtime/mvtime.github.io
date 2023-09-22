@@ -9,7 +9,12 @@
           v-for="task of tasks"
           :task="task"
           :key="task.name"
-          @click="show_task(task)"
+          :href="`/view/${ref_from(task)}`"
+          target="_blank"
+          @click="
+            $event.preventDefault();
+            show_task(task);
+          "
         />
       </div>
       <img v-else class="loading_tasks loading_icon" alt="Loading..." />
@@ -65,9 +70,12 @@ export default {
         name: "viewtask",
         params: {
           // replace all slashes with ~ to avoid router issues
-          ref: task.ref.replace("@mvla.net", "").split("/").join("~"),
+          ref: this.ref_from(task),
         },
       });
+    },
+    ref_from(task) {
+      return task.ref.replace("@mvla.net", "").split("/").join("~");
     },
   },
 };
