@@ -44,7 +44,7 @@ export default {
     getData() {
       return {
         tasks: this.tasks,
-        num: this.tasks.length,
+        num: this.tasks?.length || 0,
       };
     },
   },

@@ -18,7 +18,7 @@
           <div class="action_icon arrow-icon left"></div>
         </button>
         <button class="calendar_action" @click="this_month" title="Current month">
-          <div class="action_icon cal-icon" :class="{ alt: tasks.length }"></div>
+          <div class="action_icon cal-icon" :class="{ alt: tasks && tasks.length }"></div>
         </button>
         <button class="calendar_action" @click="next_month" title="Next month">
           <div class="action_icon arrow-icon right"></div>

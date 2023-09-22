@@ -19,6 +19,7 @@
   - Admin portal
     - create portal based on /portal but with panel in place of calendar
     - ability to fix errors that might impede usability for students
+    - ability to view student surveys in bulk - form-type
     - force reload student sessions to update / quickfix
     - add more protections to teacher mode
 - Student involvement
