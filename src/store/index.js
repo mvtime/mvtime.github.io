@@ -1224,7 +1224,7 @@ export const useMainStore = defineStore({
      */
     async fetch_classes() {
       let run_hash = Math.random().toString(36).substring(7);
-      _statuslog(`📚 Started fetch  | <${run_hash}>`);
+      _statuslog(`📚 Started fetch   | <${run_hash}>`);
       // check for duplicates
       if (!this.active_doc?.classes) return Promise.reject("Waiting for user document to load");
 
@@ -1269,7 +1269,7 @@ export const useMainStore = defineStore({
 
         classes.push(doc_data);
       }
-      _statuslog(`📚 Got class docs | <${run_hash}>`);
+      _statuslog(`📚 Got class docs  | <${run_hash}>`);
       // get tasks for all classes in parallel
 
       classes = classes.map((class_data) => {
@@ -1282,7 +1282,7 @@ export const useMainStore = defineStore({
         });
         return class_data;
       });
-      _statuslog(`📚 Got task docs  | <${run_hash}>`);
+      _statuslog(`📚 Processed tasks | <${run_hash}>`);
 
       // sort classes by period number, then by name
       classes.sort((a, b) => {

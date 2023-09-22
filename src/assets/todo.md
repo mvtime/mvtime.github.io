@@ -31,8 +31,9 @@
   - ~~show upcoming tasks at end of daily surveys~~
   - ~~daily surveys~~
 - Tasks
-  - **store proxy in class doc - load from there for efficiency / read & write count**
   - allow / encourage links to other classes / through selecter?
+  - ~~**process only changed tasks server-side / cancel runs on double changes**~~
+  - ~~**store proxy in class doc - load from there for efficiency / read & write count**~~
   - ~~disallow finish when link still in-progress~~
   - ~~drag tasks on calendar to change date~~
 - Classes
