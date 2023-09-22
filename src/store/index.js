@@ -1271,21 +1271,17 @@ export const useMainStore = defineStore({
       }
       _statuslog(`📚 Got class docs | <${run_hash}>`);
       // get tasks for all classes in parallel
-      await Promise.all(
-        classes.map(async (class_data) => {
-          let tasks = [];
-          let [_email, _id] = class_data.ref.split("/");
-          let class_ref = doc(db, "classes", _email, "classes", _id);
-          let class_tasks = collection(class_ref, "tasks");
-          let class_tasks_snapshot = await getDocs(class_tasks);
-          class_tasks_snapshot.forEach((task) => {
-            let task_data = task.data();
-            task_data.ref = [_email, _id, task.id].join("/");
-            tasks.push(task_data);
-          });
-          class_data.tasks = tasks;
-        })
-      );
+
+      classes = classes.map((class_data) => {
+        let [_email, _id] = class_data.ref.split("/");
+        class_data.tasks = class_data.tasks || [];
+        class_data.tasks = class_data.tasks.map((task) => {
+          task.ref = [_email, _id, task.id].join("/");
+          delete task.id;
+          return task;
+        });
+        return class_data;
+      });
       _statuslog(`📚 Got task docs  | <${run_hash}>`);
 
       // sort classes by period number, then by name
@@ -1635,14 +1631,17 @@ export const useMainStore = defineStore({
      * @param {String} ref The class reference to get the class object from
      * @returns {Promise} A promise that resolves to the class object or rejects with an {String} error
      */
-    async class_from_ref(ref) {
+    async class_from_ref(ref, include_tasks = false) {
       try {
         let [_email, _id] = ref.split("/");
         _email += ORG_DOMAIN;
         let class_doc = await getDoc(doc(db, "classes", _email, "classes", _id));
         _statuslog("📄 Got class doc");
         if (!class_doc.exists()) return Promise.reject("Class doesn't exist");
+
         let class_data = class_doc.data();
+        if (!include_tasks) delete class_data.tasks;
+
         _statuslog("📚 Got class data");
         return Promise.resolve(class_data);
       } catch (err) {
