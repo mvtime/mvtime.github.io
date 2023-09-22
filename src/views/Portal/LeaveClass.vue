@@ -41,9 +41,9 @@
 
 <script>
 /**
- * @file DeleteTask.vue
- * @description Delete task modal that appears when a user tries to delete a task
- * @module views/Portal/DeleteTask
+ * @file LeaveClass.vue
+ * @description Class leave modal that appears when a user tries to leave a class
+ * @module views/Portal/LeaveClass
  */
 import smoothReflow from "vue-smooth-reflow";
 import { useMainStore } from "@/store";

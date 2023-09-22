@@ -1,12 +1,12 @@
 <template>
-  <div class="delete_task">
+  <div class="archive_task">
     <header class="modal_header">
-      <h2 class="header_style modal_header_title">Confirm {{ type }} delete</h2>
+      <h2 class="header_style modal_header_title">Confirm {{ type }} archive</h2>
     </header>
     <div class="overlay_contents overlay_contents_text" ref="contents">
-      Are you sure you want to delete the {{ type }}{{ title ? ` "${title}"` : "" }} you were
+      Are you sure you want to archive the {{ type }}{{ title ? ` "${title}"` : "" }} you were
       editing? <br /><br />
-      This action is irreversible, and will permanently remove it from
+      This action is currently irreversible, and will permanently remove it from
       <a
         class="class_name button_pointer_text"
         :href="`/view/${class_obj.ref}`"
@@ -28,7 +28,7 @@
       <button
         class="continue_action"
         :class="{ loading_bg: loading }"
-        @click="delete_task"
+        @click="archive_task"
         :disabled="!ready"
       >
         Confirm
@@ -39,16 +39,16 @@
 
 <script>
 /**
- * @file DeleteTask.vue
- * @description Delete task modal that appears when a user tries to delete a task
- * @module views/Portal/DeleteTask
+ * @file ArchiveTask.vue
+ * @description Archive task modal that appears when a user tries to archive a task
+ * @module views/Portal/ArchiveTask
  */
 import smoothReflow from "vue-smooth-reflow";
 import { useMainStore } from "@/store";
 import { _statuslog } from "@/common";
 import { ErrorToast, SuccessToast, WarningToast } from "@svonk/util";
 export default {
-  name: "DeleteTask",
+  name: "ArchiveTask",
   emits: ["close"],
   mixins: [smoothReflow],
   data() {
@@ -99,12 +99,12 @@ export default {
     }
   },
   methods: {
-    delete_task() {
+    archive_task() {
       this.loading = true;
       this.store
-        .delete_task(this.ref)
+        .archive_task(this.ref)
         .then(() => {
-          new SuccessToast(`Removed ${this.type}`, 3000);
+          new SuccessToast(`Archived ${this.type}`, 3000);
           this.$emit("close");
         })
         .catch((err) => {

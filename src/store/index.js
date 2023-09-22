@@ -41,8 +41,8 @@ provider.setCustomParameters({
 });
 
 // import router
-import router from "../router";
-function validOrgAccount(userEmail) {
+import router from "@/router";
+function validOrgAcc(userEmail) {
   return userEmail.split("@")[1] == "mvla.net";
 }
 function isIFrame() {
@@ -649,7 +649,7 @@ export const useMainStore = defineStore({
         new WarningToast("This account is already linked!", 2000);
       }
       // exclude empty or mvla emails
-      if (!email || validOrgAccount(email) || !email.includes("@")) {
+      if (!email || validOrgAcc(email) || !email.includes("@")) {
         new WarningToast("Please enter a valid non-mvla email", 2000);
         return;
       }
@@ -933,7 +933,7 @@ export const useMainStore = defineStore({
           }
           if (
             !user.email ||
-            (!validOrgAccount(user.email) &&
+            (!validOrgAcc(user.email) &&
               !(
                 this.personal_account &&
                 (router?.currentRoute?.value?.name == "link" ||
@@ -994,7 +994,7 @@ export const useMainStore = defineStore({
         : signInWithPopup(auth, provider)
       )
         .then(() => {
-          if (!this.user || !this.user.email || !validOrgAccount(this.user.email)) return;
+          if (!this.user || !this.user.email || !validOrgAcc(this.user.email)) return;
           new Toast(
             "Logged in as " + this.user.displayName + "!",
             "default",
@@ -1051,7 +1051,7 @@ export const useMainStore = defineStore({
         : signInWithPopup(auth, personal_provider)
       )
         .then((r) => {
-          if (!r.user || !r.user.email || validOrgAccount(r.user.email)) this.logout();
+          if (!r.user || !r.user.email || validOrgAcc(r.user.email)) this.logout();
           new Toast(
             "Logged in as " + r.user.displayName + "!",
             "default",
@@ -1311,7 +1311,7 @@ export const useMainStore = defineStore({
      */
     async fetch_classes_by_email(email) {
       this.loaded_email = null;
-      if (!email || !validOrgAccount(email)) {
+      if (!email || !validOrgAcc(email)) {
         this.loaded_classes = null;
         this.loaded_email = email;
         return;
@@ -1553,39 +1553,48 @@ export const useMainStore = defineStore({
       }
     },
     /**
-     * @function delete_task
-     * @description Delete an instance of a task from a class (for teachers). Intended to be preformed from the ViewTask Modal
+     * @function archive_task
+     * @description Archive an instance of a task from a class (for teachers). Intended to be preformed from the ViewTask Modal
      * @param {String} task_ref the "email/class_id" String representation of the task ref in firebase
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      * @see {@link create_task}
      * @note This currently only removes the instance of the task being viewed. Could add a secondary modal to allow deletion of multiple instances instead?
      */
-    async delete_task(task_ref) {
+    async archive_task(task_ref) {
       let [_email, _id, task_id] = task_ref.split("/");
       _email += ORG_DOMAIN;
       try {
-        // retrieve class reference
+        // move doc to archive
+        let task_obj = await getDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id));
+        if (!task_obj.exists()) throw "Task doesn't exist";
+
+        task_obj = task_obj?.data();
+        task_obj = { ...task_obj, archived_at: Date.now() };
+
+        let archive_ref = doc(db, "classes", _email, "classes", _id, "archive", task_id);
+        await setDoc(archive_ref, task_obj);
+        _statuslog("📄 Archived task");
 
         // remove the document with the same id as the task from the tasks collection
         await deleteDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id));
 
-        // rerun get_tasks to update local data
+        try {
+          let classes = this.classes;
+          classes.forEach((class_obj) => {
+            if (class_obj.id == [_email, _id].join("/")) {
+              class_obj.tasks = class_obj.tasks.filter((task) => {
+                return task.ref != [_email, _id, task_id].join("/");
+              });
+            }
+          });
+          this.classes = classes;
+          this.get_tasks();
+        } catch (err) {
+          _statuslog("🔥 Error removing task from local", err);
+          throw err;
+        }
       } catch (err) {
         return Promise.reject(err);
-      }
-      try {
-        let classes = this.classes;
-        classes.forEach((class_obj) => {
-          if (class_obj.id == [_email, _id].join("/")) {
-            class_obj.tasks = class_obj.tasks.filter((task) => {
-              return task.ref != [_email, _id, task_id].join("/");
-            });
-          }
-        });
-        this.classes = classes;
-        this.get_tasks();
-      } catch (err) {
-        _statuslog("🔥 Error removing task from local", err);
       }
 
       return Promise.resolve();

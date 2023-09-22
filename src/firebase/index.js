@@ -54,6 +54,7 @@ function authChangeAction(user) {
 }
 
 function setupSnapshot(uid) {
+  _statuslog("⬥ Setting up snapshot");
   if (!uid) {
     _statuslog("⚠ No uid provided to setupSnapshot");
     return;
@@ -131,7 +132,7 @@ function refreshTimeout(delay) {
     // setup snapshot and pull data
     setupSnapshot(store.personal_account ? store.account_doc?.linked_to : store.user.uid);
     // get class data / tasks again if "/portal" in path (check w/ router)
-    if (router.currentRoute.value && router.currentRoute.value.path.startsWith("/portal")) {
+    if (router.currentRoute.value && router.currentRoute.value.name == "portal") {
       _statuslog("⬥ Refreshing class data");
       store.fetch_classes();
     }

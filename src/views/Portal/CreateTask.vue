@@ -73,7 +73,7 @@
               type="url"
               v-model="newlink.path"
               @blur="fix_newlink_path"
-              placeholder="Link URL (http://example.com)"
+              placeholder="Link URL (https://example.com)"
             />
             <input
               class="styled_links_add__text"

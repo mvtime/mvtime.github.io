@@ -94,11 +94,11 @@
       <button class="close_action" @click="$emit('close')">Cancel</button>
       <div class="flex_spacer"></div>
       <button
-        class="delete_action primary_styled"
-        @click="delete_task"
+        class="archive_action primary_styled"
+        @click="archive_task"
         :disabled="!ready || loading"
       >
-        Delete
+        Archive
       </button>
       <button
         class="continue_action"
@@ -260,9 +260,9 @@ export default {
           new ErrorToast("Couldn't create task", err, 2000);
         });
     },
-    delete_task() {
+    archive_task() {
       this.$router.push({
-        name: "delete",
+        name: "archive",
         params: {
           type: this.task.type,
           ref: this.$route.params.ref,

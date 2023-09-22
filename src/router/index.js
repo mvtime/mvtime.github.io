@@ -401,11 +401,11 @@ const router = createRouter({
         },
         {
           // specify param "ref" in the route
-          path: "/portal/delete/:type?/:ref?",
-          name: "delete",
-          component: () => import("../views/Portal/DeleteTask.vue"),
+          path: "/portal/archive/:type?/:ref?",
+          name: "archive",
+          component: () => import("../views/Portal/ArchiveTask.vue"),
           meta: {
-            page_title: "Confirm Task Delete",
+            page_title: "Confirm Task Archive",
             theme_color: {
               light: "#b5b5b5",
               dark: "#0d0d0d",
