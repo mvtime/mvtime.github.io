@@ -896,7 +896,7 @@ main.calendar {
 }
 
 /* on small devices, show as a list instead of a calendar */
-@media (max-width: 600px) {
+@media (max-width: 630px) {
   .calendar_days_container::before {
     display: none;
   }
