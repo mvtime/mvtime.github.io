@@ -157,7 +157,7 @@ export default {
       return this.classes.find((class_obj) => class_obj.id === this.class_id) || false;
     },
     cleaned_ref() {
-      return this.teacher_email.replace("@mvla.net", "") + "~" + this.class_id;
+      return this.store.path_to_ref(this.teacher_email, this.class_id);
     },
     loading() {
       return this.store.loaded_email !== this.teacher_email;
@@ -217,7 +217,7 @@ export default {
       if (ref && this.is_join) {
         _statuslog("🔍 Attempting to use class join ref", ref);
         let [_email, _id] = ref.split("~");
-        _email += "@mvla.net";
+        _email += this.store.ORG_DOMAIN;
         this.teacher_email = _email;
         this.store.fetch_classes_by_email(_email);
         while (this.store.loaded_email !== this.teacher_email) {

@@ -173,8 +173,7 @@ export default {
       this.$router.push({
         name: "viewtask",
         params: {
-          // replace all slashes with ~ to avoid router issues
-          ref: task.ref.replace("@mvla.net", "").split("/").join("~"),
+          ref: this.store.path_to_ref(task.ref),
         },
       });
     },

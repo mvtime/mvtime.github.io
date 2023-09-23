@@ -6,8 +6,8 @@
     <div class="overlay_contents">
       <div v-if="!store.is_teacher">
         <div class="overlay_contents_text">
-          You can link a personal (non-mvla.net) account to access MVTT when not signed into your
-          school account below!
+          You can link a personal (non-{{ this.store.ORG_DOMAIN.substring(1) }}) account to access
+          MVTT when not signed into your school account below!
         </div>
         <div class="inputs_row">
           <div class="styled_input styled_links_box">

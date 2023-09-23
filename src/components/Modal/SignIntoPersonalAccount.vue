@@ -1,7 +1,8 @@
 <template>
   <div class="personal_prompt">
     <div class="overlay_contents_text">
-      If you're signed into an mvla.net account, you should have been signed out automatically
+      If you're signed into an {{ store.ORG_DOMAIN.substring(1) }} account, you should have been
+      signed out automatically
     </div>
     <div class="inputs_row">
       <button class="primary_styled styled_input" @click="sign_into_personal" :disabled="ready">
@@ -26,7 +27,7 @@ export default {
   methods: {
     logout_if_org() {
       // sign out
-      if (this.store?.user?.email?.includes("mvla.net")) {
+      if (this.store?.user?.email?.includes(this.store.ORG_DOMAIN)) {
         this.store.logout();
       }
     },
@@ -41,7 +42,8 @@ export default {
         this.$emit("skip");
       } else {
         // otherwise check status
-        this.ready = this.store.user?.email && !this.store.user.email.includes("mvla.net");
+        this.ready =
+          this.store.user?.email && !this.store.user.email.includes(this.store.ORG_DOMAIN);
         this.$emit("status", !!this.ready);
       }
     },

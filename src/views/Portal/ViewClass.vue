@@ -88,13 +88,7 @@
       </button>
       <button
         class="edit_action primary_styled"
-        v-if="
-          store.is_teacher &&
-          store.user &&
-          class_obj &&
-          this.$route.params.ref &&
-          this.$route.params.ref.split('~')[0] == store.active_doc.email.replace('@mvla.net', '')
-        "
+        v-if="editable"
         :disabled="!ready"
         @click="edit_class"
       >
@@ -159,20 +153,22 @@ export default {
     text() {
       return this.class_obj?.description && converter.makeHtml(this.class_obj?.description);
     },
-    class_ref() {
-      if (!this.$route.params.ref) {
-        return null;
-      }
-      let [_email, _id] = this.$route.params.ref.split("~");
-      _email += "@mvla.net";
-      return [_email, _id].join("/");
-    },
     joinable() {
       return (
         this.store.user &&
         this.class_obj &&
         // and not already joined
-        !this.store?.active_doc?.classes?.includes(this.class_ref)
+        !this.store?.active_doc?.classes?.includes(this.store.ref_to_path(this.$route.params.ref))
+      );
+    },
+    editable() {
+      return (
+        this.store.is_teacher &&
+        this.store.user &&
+        this.class_obj &&
+        this.$route.params.ref &&
+        this.$route.params.ref.split("~")[0] ==
+          this.store.active_doc.email.replace(this.store.ORG_DOMAIN, "")
       );
     },
   },

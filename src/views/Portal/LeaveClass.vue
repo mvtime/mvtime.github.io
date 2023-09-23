@@ -76,7 +76,7 @@ export default {
       this.$emit("close");
     } else {
       let [_email, _id] = this.ref.split("~");
-      _email += "@mvla.net";
+      _email += this.store.ORG_DOMAIN;
       this.ref = [_email, _id].join("/");
       if (this.ref.split("/").length !== 2) {
         new WarningToast("Couldn't find that class", 2000);

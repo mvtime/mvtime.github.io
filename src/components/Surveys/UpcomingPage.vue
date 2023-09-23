@@ -9,7 +9,7 @@
         v-for="task of tasks"
         :task="task"
         :key="task.name"
-        :href="`/view/${ref_from(task)}`"
+        :href="`/view/${store.path_to_ref(task.ref)}`"
         target="_blank"
         @click="$event.preventDefault()"
       />
@@ -32,33 +32,13 @@ export default {
       return useMainStore();
     },
     tasks() {
-      if (!this.store.tasks) return [];
-      let now = Date.now(); // new Date().setHours(0, 0, 0, 0);
-      // 8 hours in ms (show today's tasks as upcoming until 8AM)
-      let morning = 8 * 60 * 60 * 1000;
-      return this.store.tasks
-        .filter((task) => {
-          return (
-            task.type != "note" && (task?.date?.getTime ? task.date.getTime() : 0) >= now - morning
-          );
-        })
-        .sort((a, b) => {
-          if (a.date < b.date) return -1;
-          if (a.date > b.date) return 1;
-          return 0;
-        })
-        .slice(0, 4);
+      return this.store.upcoming.slice(0, 4);
     },
     getData() {
       return {
         tasks: this.tasks,
         num: this.tasks?.length || 0,
       };
-    },
-  },
-  methods: {
-    ref_from(task) {
-      return task.ref.replace("@mvla.net", "").split("/").join("~");
     },
   },
   watch: {

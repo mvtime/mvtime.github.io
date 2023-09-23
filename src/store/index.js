@@ -22,23 +22,21 @@ import { auth, db, authChangeAction, refreshTimeout } from "../firebase";
 import { signInWithPopup, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
 const provider = new GoogleAuthProvider();
 const isElectron = navigator?.userAgent?.toLowerCase()?.indexOf(" electron/") > -1;
-
 const ORG_DOMAIN = "@mvla.net";
-
 // add email and name to provider
 provider.addScope("email");
 provider.addScope("profile");
 auth.useDeviceLanguage();
-// constrict to only mvla.net emails
+// constrict to only ORG_DOMAIN emails
 provider.setCustomParameters({
   login_hint: "username" + ORG_DOMAIN,
-  // hd: "mvla.net",
+  // hd: ORG_DOMAIN,
 });
 
 // import router
 import router from "@/router";
 function validOrgAcc(userEmail) {
-  return userEmail.split("@")[1] == "mvla.net";
+  return userEmail?.split("@")[1] == ORG_DOMAIN.substring(1);
 }
 function isIFrame() {
   try {
@@ -188,6 +186,14 @@ export const useMainStore = defineStore({
   /** The getters to get data that's based off of the store state, but requires manipulation */
   getters: {
     /**
+     * @function ORG_DOMAIN
+     * @description Get the domain of the organization (@domain.tld)
+     * @returns {String} The domain of the organization
+     */
+    ORG_DOMAIN() {
+      return ORG_DOMAIN;
+    },
+    /**
      * @function linked_accounts
      * @description Get all linked accounts from active_doc.linked
      * @returns {Array} Array of linked account emails
@@ -197,6 +203,31 @@ export const useMainStore = defineStore({
       if (!this.user || !this.active_doc) return [];
       // get all linked accounts from doc.linked
       return this.active_doc.linked || [];
+    },
+    /**
+     * @function upcoming
+     * @description Get the next # of upcoming tasks (after 8AM today)
+     * @returns {Array} Array of upcoming tasks
+     * @default []
+     * @see {@link tasks}
+     * @note Doesn't include notes
+     */
+    upcoming() {
+      if (!this.tasks) return [];
+      let now = Date.now(); // new Date().setHours(0, 0, 0, 0);
+      // 8 hours in ms (show today's tasks as upcoming until 8AM)
+      let morning = 8 * 60 * 60 * 1000;
+      return this.tasks
+        .filter((task) => {
+          return (
+            task.type != "note" && (task?.date?.getTime ? task.date.getTime() : 0) >= now - morning
+          );
+        })
+        .sort((a, b) => {
+          if (a.date < b.date) return -1;
+          if (a.date > b.date) return 1;
+          return 0;
+        });
     },
     /**
      * @function non_recent_signin
@@ -235,7 +266,7 @@ export const useMainStore = defineStore({
      * @default false
      */
     is_teacher() {
-      // check if email is a teacher email (ends in ORG_DOMAIN) && has letters in the first part
+      // check if email is a teacher email (ends in this.ORG_DOMAIN) && has letters in the first part
       if (!this.user) return false;
       if (
         this.active_doc?.teacher_mode == true ||
@@ -258,7 +289,7 @@ export const useMainStore = defineStore({
 
       let email = this.user.email;
       let [first, last] = email.split("@");
-      if (last == "mvla.net" && !/\d/.test(first)) {
+      if ("@" + last == this.ORG_DOMAIN && !/\d/.test(first)) {
         _statuslog("🏫 Teacher mode enabled for non-student district account");
         return true;
       } else {
@@ -389,6 +420,38 @@ export const useMainStore = defineStore({
   /** The actions to manipulate the store state */
   actions: {
     /**
+     * @function path_to_ref
+     * @description Convert a path to a ref (email~class_id?~task_id)
+     * @param {String} path The path to convert
+     * @returns {String} The ref (email~class_id?~task_id)
+     * @default null
+     */
+    path_to_ref() {
+      //join all args with "/" and let path equal that
+      let path = [...arguments].join("/");
+      if (!path.length) return null;
+      let [_email, _id, task_id] = path.split("/");
+      if (!_email || !_id) return null;
+      _email = _email.split("@")[0];
+      return task_id ? `${_email}~${_id}~${task_id}` : `${_email}~${_id}`;
+    },
+    /**
+     * @function ref_to_path
+     * @description Convert a ref to a path (email/class_id?/task_id)
+     * @param {String} path The path to convert
+     * @returns {String} The ref (email/class_id?/task_id)
+     * @default null
+     */
+    ref_to_path() {
+      //join all args with "/" and let path equal that
+      let ref = [...arguments].join("~");
+      if (!ref.length) return null;
+      let [_email, _id, task_id] = ref.split("~");
+      if (!_email || !_id) return null;
+      _email += this.ORG_DOMAIN;
+      return task_id ? `${_email}/${_id}/${task_id}` : `${_email}/${_id}`;
+    },
+    /**
      * @function code_from_ref_helper
      * @param {String} ref ref in email/uid format
      * @returns {String} 6-character code from ref
@@ -407,13 +470,13 @@ export const useMainStore = defineStore({
     async code_from_ref(ref) {
       try {
         if (!ref) return Promise.reject("No ref provided");
-        // fix ref to be in email@mvla.net/uid
+        // fix ref to be in email@ORG_DOMAIN/uid
         // - fix for different formats
         ref = ref.split("~").join("/");
         // - remove domain from email and re-add
         let [_email, _id] = ref.split("/");
         if (!_email || !_id) return Promise.reject("Invalid ref");
-        _email = _email.split("@")[0] + ORG_DOMAIN;
+        _email = _email.split("@")[0] + this.ORG_DOMAIN;
         ref = _email + "/" + _id;
 
         // get code
@@ -449,15 +512,8 @@ export const useMainStore = defineStore({
         const code_doc = await getDoc(code_ref);
         _statuslog("🔗 Got code doc", code_doc.data());
         if (!code_doc.exists()) throw "Code doesn't exist";
-
-        let ref = code_doc.data().ref;
+        let ref = this.path_to_ref(code_doc.data()?.ref);
         if (!ref) throw "Code doesn't have ref";
-
-        // fix ref to use url email(without domain)~uid format
-        let [_email, _id] = ref.split("/");
-        if (!_email || !_id) throw "Invalid ref";
-        _email = _email.split("@")[0];
-        ref = _email + "~" + _id;
         return Promise.resolve(ref);
       } catch (err) {
         return Promise.reject(err);
@@ -1195,7 +1251,7 @@ export const useMainStore = defineStore({
      * @see {@link is_teacher}
      */
     async create_teacher_doc() {
-      // create teacher doc under (classes/teacher_email+ORG_DOMAIN) with sub-collection (classes)
+      // create teacher doc under (classes/teacher_email+this.ORG_DOMAIN) with sub-collection (classes)
       let teacher_ref = doc(db, "classes", this.active_doc.email || this.user.email);
       await setDoc(teacher_ref, {
         name: this.active_doc.name || this.user.displayName,
@@ -1470,7 +1526,7 @@ export const useMainStore = defineStore({
     async update_class(class_ref, class_obj) {
       try {
         let [_email, _id] = class_ref.split("/");
-        _email += ORG_DOMAIN;
+        _email += this.ORG_DOMAIN;
         // update the document with the same id as the class from the classes collection
         await updateDoc(doc(db, "classes", _email, "classes", _id), class_obj);
         _statuslog("📝 Updated remote class");
@@ -1507,8 +1563,8 @@ export const useMainStore = defineStore({
         delete task_obj.class_id;
         delete task_obj.ref;
         let [_email, _id, task_id] = task_ref.split("/");
-        if (!_email.includes(ORG_DOMAIN)) {
-          _email += ORG_DOMAIN;
+        if (!_email.includes(this.ORG_DOMAIN)) {
+          _email += this.ORG_DOMAIN;
         }
         // update the document with the same id as the task from the tasks collection
         await updateDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id), task_obj);
@@ -1553,7 +1609,7 @@ export const useMainStore = defineStore({
      */
     async archive_task(task_ref) {
       let [_email, _id, task_id] = task_ref.split("/");
-      _email += ORG_DOMAIN;
+      _email += this.ORG_DOMAIN;
       try {
         // move doc to archive
         let task_obj = await getDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id));
@@ -1599,7 +1655,7 @@ export const useMainStore = defineStore({
     async task_from_ref(ref) {
       try {
         let [_email, _id, task_id] = ref.split("/");
-        _email += ORG_DOMAIN;
+        _email += this.ORG_DOMAIN;
         let class_doc = await getDoc(doc(db, "classes", _email, "classes", _id));
         let class_data = class_doc.data();
         _statuslog("📚 Got class from ref");
@@ -1613,7 +1669,7 @@ export const useMainStore = defineStore({
           ref: ref,
           class_id: [_email, _id].join("/"),
           class_name: `P${class_data.period} - ${class_data.name}`,
-          _class: { ...class_data, ref: [_email.split(ORG_DOMAIN)[0], _id].join("~") },
+          _class: { ...class_data, ref: [_email.split(this.ORG_DOMAIN)[0], _id].join("~") },
         };
         return Promise.resolve(task_data);
       } catch (err) {
@@ -1629,7 +1685,7 @@ export const useMainStore = defineStore({
     async class_from_ref(ref, include_tasks = false) {
       try {
         let [_email, _id] = ref.split("/");
-        _email += ORG_DOMAIN;
+        _email += this.ORG_DOMAIN;
         let class_doc = await getDoc(doc(db, "classes", _email, "classes", _id));
         _statuslog("📄 Got class doc");
         if (!class_doc.exists()) return Promise.reject("Class doesn't exist");
@@ -1658,7 +1714,7 @@ export const useMainStore = defineStore({
           class_doc = await this.class_from_ref(class_ref);
         }
         let [_email, _id] = class_ref.split("/");
-        _email += ORG_DOMAIN;
+        _email += this.ORG_DOMAIN;
         let class_snapshot = await getDoc(doc(db, "classes", _email, "classes", _id));
         if (!class_snapshot.exists()) {
           throw "Class doesn't exist";

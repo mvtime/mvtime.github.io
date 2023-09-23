@@ -78,7 +78,7 @@
           store.is_teacher &&
           store.user &&
           task &&
-          task.ref.split('/')[0] == store.active_doc.email.replace('@mvla.net', '')
+          task.ref.split('/')[0] == store.active_doc.email.replace(store.ORG_DOMAIN, '')
         "
         @click="edit_task"
       >

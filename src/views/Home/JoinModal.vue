@@ -65,7 +65,7 @@ export default {
   },
   computed: {
     contents_ready() {
-      // filled out name and email ending in @mvla.net
+      // filled out name
       if (this.page == "form") {
         return this.form.name.length >= 2 && this.form.grade != "";
       } else {

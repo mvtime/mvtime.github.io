@@ -68,7 +68,7 @@ export default {
       if (!this.ref) return {};
       let classes = this.store?.classes,
         [_email, _id] = this.ref.split("/");
-      let email = _email + "@mvla.net",
+      let email = _email + this.store.ORG_DOMAIN,
         class_id = [email, _id].join("/");
       if (!classes || !email || !_id || !class_id) return {};
       let class_obj = classes.find((class_obj) => class_obj.id === class_id) || {};
