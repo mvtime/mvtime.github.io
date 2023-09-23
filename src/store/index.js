@@ -1611,19 +1611,9 @@ export const useMainStore = defineStore({
       let [_email, _id, task_id] = task_ref.split("/");
       _email += this.ORG_DOMAIN;
       try {
-        // move doc to archive
-        let task_obj = await getDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id));
-        if (!task_obj.exists()) throw "Task doesn't exist";
-
-        task_obj = task_obj?.data();
-        task_obj = { ...task_obj, archived_at: Date.now() };
-
-        let archive_ref = doc(db, "classes", _email, "classes", _id, "archive", task_id);
-        await setDoc(archive_ref, task_obj);
-        _statuslog("📄 Archived task");
-
         // remove the document with the same id as the task from the tasks collection
         await deleteDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id));
+        _statuslog("📄 Archived task");
 
         try {
           let classes = this.classes;
