@@ -1,4 +1,4 @@
-/** Imperfect helper for _statusLog() */
+/** Imperfect helper for _status.log() */
 function getFirstNonStandardCharacter(str) {
   try {
     const match = str.match(
@@ -9,9 +9,8 @@ function getFirstNonStandardCharacter(str) {
     return null;
   }
 }
-
 /** Log function, takes any number of arguments. If the first character is nonstandard and followed by a space, it'll use that as a tag */
-function _statuslog() {
+function _log() {
   if (arguments.length == 0) return;
   let args = Array.from(arguments);
   let extras = [
@@ -27,15 +26,44 @@ function _statuslog() {
     args[0] = args[0].substring(2).trimStart();
   }
   try {
-    console.info(...extras, ...args);
+    console[this || tone](...extras, ...args);
   } catch (err) {
-    console.log(...extras, ...args);
+    console._log("⚠ Couldn't override console.log", err);
+    console._log(...extras, ...args);
   }
 }
 try {
   console._log = console.log;
-  console.log = _statuslog;
+  console.log = _log;
 } catch (err) {
-  _statuslog("⚠ Couldn't override console.log", err);
+  _log("⚠ Couldn't override console.log", err);
 }
-export { _statuslog };
+
+let tone = "info";
+const _status = {
+  toned: _log,
+  print: _log,
+  log: _log.bind("log"),
+  info: _log.bind("info"),
+  debug: _log.bind("debug"),
+  warn: _log.bind("warn"),
+  error: _log.bind("error"),
+
+  _getTone: () => {
+    return tone;
+  },
+  _setTone: (new_tone) => {
+    tone = new_tone;
+  },
+  _resetTone: () => {
+    tone = "info";
+  },
+};
+const _statuslog = _log.bind("info");
+try {
+  window._status = _status;
+  _log("🔧 Initialized logger");
+} catch (err) {
+  _log("⚠ Couldn't set window._status", err);
+}
+export { _statuslog, _log, _status };
