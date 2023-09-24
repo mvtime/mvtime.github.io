@@ -79,8 +79,8 @@ const _status = {
 const _statuslog = _log.bind("info");
 try {
   window._status = _status;
-  _log("🔧 Initialized logger");
+  _status.log("🔧 Initialized logger");
 } catch (err) {
-  _log("⚠ Couldn't set window._status", err);
+  _status.log("⚠ Couldn't set window._status", err);
 }
 export { _statuslog, _status };
