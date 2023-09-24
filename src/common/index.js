@@ -26,7 +26,7 @@ function _log() {
     args[0] = args[0].substring(2).trimStart();
   }
   try {
-    console[this || tone](...extras, ...args);
+    console[this](...extras, ...args);
   } catch (err) {
     console.log("⚠ Couldn't override console.log", err);
     console.log(...extras, ...args);
@@ -35,8 +35,7 @@ function _log() {
 
 let tone = "info";
 const _status = {
-  toned: _log,
-  print: _log,
+  print: _log.bind(tone),
   log: _log.bind("log"),
   info: _log.bind("info"),
   debug: _log.bind("debug"),
@@ -60,4 +59,4 @@ try {
 } catch (err) {
   _log("⚠ Couldn't set window._status", err);
 }
-export { _statuslog, _log, _status };
+export { _statuslog, _status };
