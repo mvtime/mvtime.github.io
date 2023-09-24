@@ -150,13 +150,18 @@ export default {
   },
   watch: {
     // listen for any changes to store
-    store: {
+    "store.done_join_form": {
+      handler() {
+        this.check_store_and_close();
+      },
+      deep: true,
+    },
+    "store.user": {
       handler() {
         if (!this.store?.user) {
           this.$router.push({ name: "home", query: { redirect: this.$route.query?.redirect } });
           return;
         }
-        this.check_store_and_close();
       },
       deep: true,
     },
