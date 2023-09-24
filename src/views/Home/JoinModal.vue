@@ -152,6 +152,10 @@ export default {
     // listen for any changes to store
     store: {
       handler() {
+        if (!this.store?.user) {
+          this.$router.push({ name: "home", query: { redirect: this.$route.query?.redirect } });
+          return;
+        }
         this.check_store_and_close();
       },
       deep: true,
