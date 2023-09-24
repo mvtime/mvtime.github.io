@@ -33,7 +33,7 @@ function confirm_unfinished() {
   return "You haven't finished the task yet, and might lose progress. Are you sure you want to close the tab?";
 }
 import ModalVue from "./Modal.vue";
-import { _statuslog } from "@/common";
+import { _status } from "@/common";
 export default {
   name: "ModalFromPages",
   emits: ["finish", "skip"],
@@ -95,7 +95,7 @@ export default {
       ) {
         this.page_index = page_index;
       } else {
-        _statuslog(`⏵ ModalFromPages: page index ${page_index} invalid`);
+        _status.log(`⏵ ModalFromPages: page index ${page_index} invalid`);
       }
     },
     next_page() {

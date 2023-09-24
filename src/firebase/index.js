@@ -28,7 +28,7 @@ export { app, auth, db, analytics, authChangeAction, refreshTimeout };
 
 // handle auth updates (user login/logout) and set user data in store
 import { useMainStore } from "../store";
-import { _statuslog } from "@/common";
+import { _status } from "@/common";
 import router from "@/router";
 auth.onAuthStateChanged((user) => {
   authChangeAction(user);
@@ -54,9 +54,9 @@ function authChangeAction(user) {
 }
 
 function setupSnapshot(uid) {
-  _statuslog("⬥ Setting up snapshot");
+  _status.log("⬥ Setting up snapshot");
   if (!uid) {
-    _statuslog("⚠ No uid provided to setupSnapshot");
+    _status.warn("⚠ No uid provided to setupSnapshot");
     return;
   }
   const store = useMainStore();
@@ -66,10 +66,10 @@ function setupSnapshot(uid) {
     { includeMetadataChanges: true },
     (listening_doc) => {
       if (listening_doc.metadata.hasPendingWrites) {
-        _statuslog("⬥ Snapshot from local changes");
+        _status.log("⬥ Snapshot from local changes");
         return;
       }
-      _statuslog("⏷ Snapshot from remote");
+      _status.log("⏷ Snapshot from remote");
       // check if doc exists
       if (!listening_doc.exists()) {
         store.create_doc();
@@ -87,7 +87,7 @@ function setupSnapshot(uid) {
       // store.fetch_classes();
     },
     (err) => {
-      _statuslog("⚠ Couldn't get snapshot from remote", err);
+      _status.error("⚠ Couldn't get snapshot from remote", err);
     }
   );
   subscribed = true;
@@ -103,7 +103,7 @@ function unsubscribe(show_prompt) {
   }
   if (unsub) {
     unsub();
-    _statuslog("⬥ Unsubscribed from remote changes");
+    _status.log("⬥ Unsubscribed from remote changes");
   }
   subscribed = false;
 }
@@ -120,7 +120,7 @@ function msToText(ms) {
 
 function startTimeout(delay = 1000 * 60 * 5) {
   return setTimeout(() => {
-    _statuslog(`⬥ Page unused for ${msToText(delay)}, removing onSnapshot listener`);
+    _status.log(`⬥ Page unused for ${msToText(delay)}, removing onSnapshot listener`);
     unsubscribe(true);
   }, delay);
 }
@@ -133,10 +133,10 @@ function refreshTimeout(delay) {
     setupSnapshot(store.personal_account ? store.account_doc?.linked_to : store.user.uid);
     // get class data / tasks again if "/portal" in path (check w/ router)
     if (router.currentRoute.value && router.currentRoute.value.path.startsWith("/portal")) {
-      _statuslog("⬥ Refreshing class data");
+      _status.log("⬥ Refreshing class data");
       store.fetch_classes();
     }
-    _statuslog("⬥ Resubscribed to remote changes");
+    _status.log("⬥ Resubscribed to remote changes");
   }
   clearTimeout(timeout);
   timeout = startTimeout(delay);

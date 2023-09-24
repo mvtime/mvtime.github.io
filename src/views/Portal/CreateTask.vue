@@ -140,7 +140,7 @@
  */
 
 import { useMainStore } from "@/store";
-import { _statuslog } from "@/common";
+import { _status } from "@/common";
 import { ErrorToast, WarningToast } from "@svonk/util";
 import smoothReflow from "vue-smooth-reflow";
 
@@ -263,7 +263,7 @@ export default {
         })
         .catch((err) => {
           this.loading = false;
-          _statuslog(`📃 Couldn't create ${this.task.type || "task"}:`, err);
+          _status.error(`📃 Couldn't create ${this.task.type || "task"}:`, err);
           new ErrorToast("Couldn't create task", err, 2000);
         });
     },

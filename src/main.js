@@ -3,7 +3,7 @@ import { createPinia } from "pinia";
 import App from "@/App.vue";
 import router from "@/router";
 import { placeholderToast /*Popup*/ } from "@svonk/util";
-import { _statuslog } from "@/common";
+import { _status } from "@/common";
 // create instances of app requisites
 const pinia = createPinia();
 const app = createApp(App);
@@ -37,7 +37,7 @@ watch(
 // when window.localStorage.MVTT_teacher_mode changes, reload
 window.addEventListener("storage", (e) => {
   if (e.key === "MVTT_teacher_mode") {
-    _statuslog("🏫 Detected teacher mode change, reloading");
+    _status.log("🏫 Detected teacher mode change, reloading");
     window.location.reload();
   }
 });

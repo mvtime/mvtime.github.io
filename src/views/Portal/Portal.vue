@@ -106,7 +106,7 @@ import OverlayWrapper from "@/components/Modal/OverlayWrapper.vue";
 import { useMainStore } from "@/store";
 import { WarningToast } from "@svonk/util";
 import "@/assets/style/overlay.css";
-import { _statuslog } from "../../common";
+import { _status } from "../../common";
 export default {
   name: "AppPortal",
   components: {
@@ -206,7 +206,7 @@ export default {
   },
   /** Preform Join Form & Daily Survey completion checks on load */
   mounted() {
-    _statuslog("🏗 Portal mounted");
+    _status.log("🏗 Portal mounted");
     this.check_and_do_join();
     this.check_and_do_survey();
     this.store
@@ -219,7 +219,7 @@ export default {
         this.loaded = true;
       })
       .catch((err) => {
-        _statuslog("🔥 Couldn't fetch classes", err);
+        _status.error("🔥 Couldn't fetch classes", err);
       });
   },
   /** Preform same checks as mounted, but if any of the completion statuses could've changed on page switch or data load */

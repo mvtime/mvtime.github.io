@@ -94,7 +94,7 @@
 import { useMainStore } from "@/store";
 import smoothReflow from "vue-smooth-reflow";
 import { WarningToast, SuccessToast, ErrorToast } from "@svonk/util";
-import { _statuslog } from "@/common";
+import { _status } from "@/common";
 export default {
   name: "EditClassView",
   emits: ["close"],
@@ -149,7 +149,7 @@ export default {
         })
         .catch((err) => {
           new WarningToast("Something went wrong updating the class", 2500);
-          _statuslog("🔥Couldn't update class", this.ref, err);
+          _status.error("🔥Couldn't update class", this.ref, err);
           this.loading = false;
         });
     },
@@ -164,7 +164,7 @@ export default {
         })
         .catch((err) => {
           new WarningToast("Couldn't find that class", 2000);
-          _statuslog("🔥Couldn't find class for edit", this.ref, err);
+          _status.error("🔥Couldn't find class for edit", this.ref, err);
           this.$emit("close");
         });
     },
@@ -186,7 +186,7 @@ export default {
                 url: url.href,
               })
               .then(() => new SuccessToast("Opened share dialog", 1000))
-              .catch((err) => _statuslog("Error sharing", err));
+              .catch((err) => _status.error("🔥 Error sharing", err));
           } else if (navigator.clipboard) {
             navigator.clipboard.writeText(url.href);
             new WarningToast("Sharing not supported, copied link to clipboard", 2000);
@@ -197,7 +197,7 @@ export default {
         })
         .catch((err) => {
           new ErrorToast("Something went wrong getting the code", err?.message || err, 2000);
-          _statuslog("🔥Couldn't get code", this.ref, err);
+          _status.error("🔥 Couldn't get code", this.ref, err);
           this.loading_share = false;
         });
     },

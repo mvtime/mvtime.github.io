@@ -50,7 +50,7 @@
 import { useMainStore } from "@/store";
 import "@/assets/style/overlay.css";
 import { WarningToast } from "@svonk/util";
-import { _statuslog } from "@/common";
+import { _status } from "@/common";
 export default {
   emits: ["close"],
   data() {
@@ -118,10 +118,10 @@ export default {
           this.$router.replace({ name: "join", query: { redirect: "/portal/onboarding" } });
         }
         this.page = "auth";
-        _statuslog("📝 Saving join form:", this.form);
+        _status.log("📝 Saving join form:", this.form);
         // trigger auth if needed
         if (!this.store?.user) {
-          _statuslog("🔑 Triggering auth");
+          _status.log("🔑 Triggering auth");
           // trigger auth, and once done, save form data and close
           this.store
             .login()
@@ -130,7 +130,7 @@ export default {
               this.check_store_and_close();
             })
             .catch((err) => {
-              _statuslog("💾 Error logging in:", err);
+              _status.error("💾 Error logging in:", err);
               new WarningToast("Couldn't complete authentication; " + err, 2000);
               this.page = "form";
             });

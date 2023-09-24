@@ -45,7 +45,7 @@
  */
 import smoothReflow from "vue-smooth-reflow";
 import { useMainStore } from "@/store";
-import { _statuslog } from "@/common";
+import { _status } from "@/common";
 import { ErrorToast, SuccessToast, WarningToast } from "@svonk/util";
 export default {
   name: "ArchiveTask",
@@ -109,7 +109,7 @@ export default {
         })
         .catch((err) => {
           new ErrorToast(`Error removing ${this.type}`, err, 3000);
-          _statuslog("⚠ Error removing task", err);
+          _status.error("⚠ Error removing task", err);
           this.loading = false;
         });
     },

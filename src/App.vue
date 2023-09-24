@@ -51,7 +51,7 @@ import OverlayWrapper from "@/components/Modal/OverlayWrapper.vue";
 import LogoutModal from "@/components/Modal/LogoutModal.vue";
 import { useMainStore } from "@/store";
 import $ from "jquery";
-import { _statuslog } from "@/common";
+import { _status } from "@/common";
 export default {
   name: "App",
   components: {
@@ -107,7 +107,7 @@ export default {
 
         // if outlink, open in new tab as "/to/{encoded href}"
         e.preventDefault();
-        _statuslog(`🔗 Opening outlink in a new tab | "${url.href}"`);
+        _status.log(`🔗 Opening outlink in a new tab | "${url.href}"`);
         window.open("/to/" + encodeURIComponent(url.href), "_blank");
       }
     });

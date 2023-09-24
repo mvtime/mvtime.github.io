@@ -2,7 +2,7 @@
 
 // setup Pinia store
 import { defineStore } from "pinia";
-import { _statuslog } from "@/common";
+import { _status } from "@/common";
 import { Toast, ErrorToast, cleanError, WarningToast, SuccessToast } from "@svonk/util";
 
 // get firebase requirements
@@ -59,17 +59,17 @@ export const useMainStore = defineStore({
     let local = window.localStorage.getItem("MVTT_app_state");
     if (local && local != "undefined" && local != "null") {
       try {
-        _statuslog("↻ State from local storage");
+        _status.log("↻ State from local storage");
         state = JSON.parse(local);
         state.paused = false;
         state.logout_prompt = false;
         return state;
       } catch (err) {
-        _statuslog("⟳ Error parsing local storage state", err);
+        _status.warn("⟳ Error parsing local storage state", err);
       }
     }
     // if no local storage, set up store
-    _statuslog("🔨 Setting up store from scratch");
+    _status.log("🔨 Setting up store from scratch");
     /** Set default store state */
     return (state = {
       /**
@@ -275,22 +275,22 @@ export const useMainStore = defineStore({
         if (this.active_doc?.teacher_mode == true || this.active_doc?.teacher_mode == null) {
           window.localStorage.setItem("MVTT_teacher_mode", true);
           if (this.personal_account) {
-            _statuslog("🏫 No teacher mode for personal account");
+            _status.log("🏫 No teacher mode for personal account");
             return false;
           } else {
-            _statuslog("🏫 Local teacher mode");
+            _status.log("🏫 Local teacher mode");
             return true;
           }
         } else {
           window.localStorage.setItem("MVTT_teacher_mode", false);
-          _statuslog("🏫 Teacher mode disabled locally to reflect remote changes");
+          _status.log("🏫 Teacher mode disabled locally to reflect remote changes");
         }
       }
 
       let email = this.user.email;
       let [first, last] = email.split("@");
       if ("@" + last == this.ORG_DOMAIN && !/\d/.test(first)) {
-        _statuslog("🏫 Teacher mode enabled for non-student district account");
+        _status.log("🏫 Teacher mode enabled for non-student district account");
         return true;
       } else {
         return false;
@@ -510,7 +510,7 @@ export const useMainStore = defineStore({
         // get ref from code doc
         const code_ref = doc(db, "codes", code);
         const code_doc = await getDoc(code_ref);
-        _statuslog("🔗 Got code doc", code_doc.data());
+        _status.log("🔗 Got code doc", code_doc.data());
         if (!code_doc.exists()) throw "Code doesn't exist";
         let ref = this.path_to_ref(code_doc.data()?.ref);
         if (!ref) throw "Code doesn't have ref";
@@ -535,9 +535,9 @@ export const useMainStore = defineStore({
       if (this.active_doc) {
         this.active_doc.teacher_mode = !prev;
         await this.update_remote();
-        _statuslog(`🏫 Remote teacher mode toggled ${new_text}`);
+        _status.log(`🏫 Remote teacher mode toggled ${new_text}`);
       }
-      _statuslog(`🏫 Local teacher mode toggled ${new_text}`);
+      _status.log(`🏫 Local teacher mode toggled ${new_text}`);
       new SuccessToast(`Teacher mode toggled ${new_text}`, 2000);
     },
 
@@ -650,12 +650,12 @@ export const useMainStore = defineStore({
         if (!uid) throw "No account uid provided";
         // get user document from uid
         let linked_doc = await getDoc(doc(db, "users", uid));
-        _statuslog("🔗 Got linking account's document");
+        _status.log("🔗 Got linking account's document");
         if (!linked_doc.exists()) throw "Account doesn't exist or you haven't been added yet";
         let linked_doc_data = linked_doc.data();
         return Promise.resolve(linked_doc_data);
       } catch (err) {
-        _statuslog("🔗 Couldn't get linking account's document", err);
+        _status.warn("🔗 Couldn't get linking account's document", err);
         return Promise.reject(err);
       }
     },
@@ -674,7 +674,7 @@ export const useMainStore = defineStore({
       }
       if (!this.account_doc) {
         await this.create_doc();
-        _statuslog("📄 Dreated doc", this.account_doc);
+        _status.log("📄 Dreated doc", this.account_doc);
       }
       try {
         let linked_doc = await this.doc_from_uid(uid);
@@ -744,14 +744,14 @@ export const useMainStore = defineStore({
         ) {
           await new Promise((resolve) => setTimeout(resolve, (2 ^ checks) * 2000));
           email_doc = await getDoc(email_doc_ref);
-          _statuslog("📧 Checked email doc");
+          _status.log("📧 Checked email doc");
           checks++;
         }
         if (
           !email_doc.data()?.delivery?.info?.accepted?.includes(email) ||
           email_doc.data()?.delivery?.attempts == 0
         ) {
-          _statuslog("📧 Email failed to send", email_doc.data());
+          _status.log("📧 Email failed to send", email_doc.data());
           throw "Email failed to send";
         }
 
@@ -951,11 +951,11 @@ export const useMainStore = defineStore({
     async remove_class(class_id) {
       try {
         await this.remove_class_id_helper(class_id);
-        _statuslog("🗑️ Removed class from user's doc: " + class_id);
+        _status.log("🗑️ Removed class from user's doc: " + class_id);
         new SuccessToast("Left class", 2000);
         return Promise.resolve();
       } catch (err) {
-        _statuslog("🔥 Error removing class from user's doc: " + err);
+        _status.log("🔥 Error removing class from user's doc: " + err);
         new ErrorToast("Couldn't leave class", err, 2000);
         return Promise.reject(err);
       }
@@ -971,7 +971,7 @@ export const useMainStore = defineStore({
      * @see {@link personal_account}
      */
     set_user(user) {
-      _statuslog("🔑 Setting user");
+      _status.log("🔑 Setting user");
       // load user doc to check .personal_account
       getDoc(doc(db, "users", user.uid))
         .then((userDoc) => {
@@ -1006,7 +1006,7 @@ export const useMainStore = defineStore({
           }
           // if teacher, setup this.teacher refs
           if (this.is_teacher) {
-            _statuslog("🏫 In teacher mode");
+            _status.log("🏫 In teacher mode");
             this.teacher.doc_ref = doc(db, "classes", this.user.email);
             this.teacher.collection_ref = collection(this.teacher.doc_ref, "classes");
           }
@@ -1021,7 +1021,7 @@ export const useMainStore = defineStore({
         .catch((err) => {
           auth.signOut();
           new WarningToast("Something went wrong loading your user data", 2000);
-          _statuslog("🔥 Error loading user data: " + err);
+          _status.log("🔥 Error loading user data: " + err);
         });
     },
     /**
@@ -1052,7 +1052,7 @@ export const useMainStore = defineStore({
             2000,
             require("@svonk/util/assets/info-unlocked-icon.svg")
           );
-          _statuslog("🔑 Logged in as " + this.user.displayName);
+          _status.log("🔑 Logged in as " + this.user.displayName);
           authChangeAction(this.user);
           if (
             !router.currentRoute?.value?.query?.redirect &&
@@ -1109,7 +1109,7 @@ export const useMainStore = defineStore({
             2000,
             require("@svonk/util/assets/info-unlocked-icon.svg")
           );
-          _statuslog("🔑 Logged in as " + r.user.displayName);
+          _status.log("🔑 Logged in as " + r.user.displayName);
           authChangeAction(r.user);
           return Promise.resolve();
         })
@@ -1145,12 +1145,12 @@ export const useMainStore = defineStore({
       // set document data
       // get doc from firebase
       let active_doc = await getDoc(this.active_ref);
-      _statuslog("📄 Got user doc remote");
+      _status.log("📄 Got user doc remote");
       if (active_doc.exists()) {
         this.set_active(active_doc.data());
       } else if (this.personal_account) {
         // linked account doesn't exist
-        _statuslog("🔗 Linked account doesn't exist, removing it and going home");
+        _status.log("🔗 Linked account doesn't exist, removing it and going home");
         new WarningToast("Linked account doesn't exist, removing it and going home", 2000);
         this.account_doc.linked_to = null;
         await this.update_wrapper_acc_doc();
@@ -1173,7 +1173,7 @@ export const useMainStore = defineStore({
     async update_remote() {
       // update remote doc
       await setDoc(this.active_ref, this.active_doc, { merge: true });
-      _statuslog("⏶ Pushed changes to remote");
+      _status.log("⏶ Pushed changes to remote");
     },
     /**
      * @function update_wrapper_acc_doc
@@ -1210,7 +1210,7 @@ export const useMainStore = defineStore({
      * @see {@link get_remote}
      */
     async create_doc() {
-      _statuslog("📄 User document doesn't exist, creating new one...");
+      _status.log("📄 User document doesn't exist, creating new one...");
       new WarningToast("User document doesn't exist, creating new one...", 2000);
       this.account_doc = {
         name: this.user.displayName,
@@ -1275,7 +1275,7 @@ export const useMainStore = defineStore({
      */
     async fetch_classes() {
       let run_hash = Math.random().toString(36).substring(7);
-      _statuslog(`📚 Started fetch   | <${run_hash}>`);
+      _status.log(`📚 Started fetch   | <${run_hash}>`);
       // check for duplicates
       if (!this.active_doc?.classes) return Promise.reject("Waiting for user document to load");
 
@@ -1288,7 +1288,7 @@ export const useMainStore = defineStore({
         }
         await this.update_remote();
         new WarningToast("Removed duplicate classes", 2000);
-        _statuslog("📚 Removed duplicate classes");
+        _status.log("📚 Removed duplicate classes");
       }
 
       // get all classes' data and combine into an array
@@ -1320,7 +1320,7 @@ export const useMainStore = defineStore({
 
         classes.push(doc_data);
       }
-      _statuslog(`📚 Got class docs  | <${run_hash}>`);
+      _status.log(`📚 Got class docs  | <${run_hash}>`);
       // get tasks for all classes in parallel
 
       classes = classes.map((class_data) => {
@@ -1333,7 +1333,7 @@ export const useMainStore = defineStore({
         });
         return class_data;
       });
-      _statuslog(`📚 Processed tasks | <${run_hash}>`);
+      _status.log(`📚 Processed tasks | <${run_hash}>`);
 
       // sort classes by period number, then by name
       classes.sort((a, b) => {
@@ -1364,7 +1364,7 @@ export const useMainStore = defineStore({
         return;
       }
       //let classes_maindoc = await getDoc(doc(db, "classes", email));
-      _statuslog("📄 Getting classes from email");
+      _status.log("📄 Getting classes from email");
       //if (classes_maindoc.exists()) {
       let classes = [];
       /**
@@ -1373,7 +1373,7 @@ export const useMainStore = defineStore({
        */
       let classes_subcollection = collection(doc(db, "classes", email), "classes");
       let classes_subcollection_snapshot = await getDocs(classes_subcollection);
-      _statuslog("📄 Got classes subcollection from email");
+      _status.log("📄 Got classes subcollection from email");
       classes_subcollection_snapshot.forEach((class_doc) => {
         let class_data = class_doc.data();
         class_data.id = class_doc.id;
@@ -1428,7 +1428,7 @@ export const useMainStore = defineStore({
      * @see {@link teacher}
      */
     async create_class(class_obj) {
-      _statuslog("🔨 Creating class", class_obj);
+      _status.log("🔨 Creating class", class_obj);
       if (!this.is_teacher) {
         new WarningToast("You need to be a teacher to create a class", 2000);
         return;
@@ -1447,7 +1447,7 @@ export const useMainStore = defineStore({
         let class_doc_ref = await addDoc(this.teacher.collection_ref, class_obj);
         // add class to user doc;
         new SuccessToast(`Created class "${class_obj.name}"`, 2000);
-        _statuslog("🏫 class_doc_ref", class_doc_ref);
+        _status.log("🏫 class_doc_ref", class_doc_ref);
         await this.add_class(
           this.active_doc.email || this.user.email,
           class_doc_ref.id,
@@ -1529,7 +1529,7 @@ export const useMainStore = defineStore({
         _email += this.ORG_DOMAIN;
         // update the document with the same id as the class from the classes collection
         await updateDoc(doc(db, "classes", _email, "classes", _id), class_obj);
-        _statuslog("📝 Updated remote class");
+        _status.log("📝 Updated remote class");
         let classes = this.classes;
         // update local version of class in classes
         const classIndex = classes.findIndex(
@@ -1538,7 +1538,7 @@ export const useMainStore = defineStore({
         if (classIndex !== -1) {
           // Update the class object within the classes array
           classes[classIndex] = { ...classes[classIndex], ...class_obj, _proxy: true };
-          _statuslog("📝 Updated local class");
+          _status.log("📝 Updated local class");
         }
 
         // show changes
@@ -1568,7 +1568,7 @@ export const useMainStore = defineStore({
         }
         // update the document with the same id as the task from the tasks collection
         await updateDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id), task_obj);
-        _statuslog("📝 Updated remote task");
+        _status.log("📝 Updated remote task");
         let classes = this.classes;
         // update local version of task in classes
         let class_id = [_email, _id].join("/");
@@ -1585,7 +1585,7 @@ export const useMainStore = defineStore({
               class_id: class_id,
               _proxy: true,
             };
-            _statuslog("📝 Updated local task");
+            _status.log("📝 Updated local task");
           }
         }
 
@@ -1613,7 +1613,7 @@ export const useMainStore = defineStore({
       try {
         // remove the document with the same id as the task from the tasks collection
         await deleteDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id));
-        _statuslog("📄 Archived task");
+        _status.log("📄 Archived task");
 
         try {
           let classes = this.classes;
@@ -1627,7 +1627,7 @@ export const useMainStore = defineStore({
           this.classes = classes;
           this.get_tasks();
         } catch (err) {
-          _statuslog("🔥 Error removing task from local", err);
+          _status.error("🔥 Error removing task from local", err);
           throw err;
         }
       } catch (err) {
@@ -1648,11 +1648,11 @@ export const useMainStore = defineStore({
         _email += this.ORG_DOMAIN;
         let class_doc = await getDoc(doc(db, "classes", _email, "classes", _id));
         let class_data = class_doc.data();
-        _statuslog("📚 Got class from ref");
+        _status.log("📚 Got class from ref");
 
         let task_doc = await getDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id));
         if (!task_doc.exists()) return Promise.resolve(null);
-        _statuslog("📄 Got task from ref");
+        _status.log("📄 Got task from ref");
         let task_data = task_doc.data();
         task_data = {
           ...task_data,
@@ -1677,13 +1677,13 @@ export const useMainStore = defineStore({
         let [_email, _id] = ref.split("/");
         _email += this.ORG_DOMAIN;
         let class_doc = await getDoc(doc(db, "classes", _email, "classes", _id));
-        _statuslog("📄 Got class doc");
+        _status.log("📄 Got class doc");
         if (!class_doc.exists()) return Promise.reject("Class doesn't exist");
 
         let class_data = class_doc.data();
         if (!include_tasks) delete class_data.tasks;
 
-        _statuslog("📚 Got class data");
+        _status.log("📚 Got class data");
         return Promise.resolve(class_data);
       } catch (err) {
         return Promise.reject(err);
@@ -1731,7 +1731,7 @@ export const useMainStore = defineStore({
             class_name: `P${class_doc.period} - ${class_doc.name}`,
           });
         });
-        _statuslog("📚 Got upcoming tasks");
+        _status.log("📚 Got upcoming tasks");
         return Promise.resolve(upcoming_tasks);
       } catch (err) {
         return Promise.reject(err);
@@ -1746,7 +1746,7 @@ export const useMainStore = defineStore({
      * @see {@link refresh_timeout}
      */
     show_timeout() {
-      _statuslog(
+      _status.log(
         "🕒 Showing timeout" +
           (this.account_doc?.prefs?.hide_timeout ? " | Hidden locally due to prefs" : "")
       );
@@ -1763,7 +1763,7 @@ export const useMainStore = defineStore({
     hide_timeout() {
       if (this.paused) {
         if (!this.account_doc?.prefs?.hide_timeout) {
-          _statuslog("🕒 Hiding timeout");
+          _status.log("🕒 Hiding timeout");
         }
         this.paused = false;
       }

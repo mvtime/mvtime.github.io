@@ -122,7 +122,7 @@
  */
 
 import { WarningToast, ErrorToast, SuccessToast } from "@svonk/util";
-import { _statuslog } from "@/common";
+import { _status } from "@/common";
 import { useMainStore } from "@/store";
 import smoothReflow from "vue-smooth-reflow";
 import showdown from "showdown";
@@ -196,7 +196,7 @@ export default {
             url: url.href,
           })
           .then(() => new SuccessToast("Opened share dialog", 1000))
-          .catch((err) => _statuslog("Error sharing", err));
+          .catch((err) => _status.error("🔥 Error sharing", err));
       } else if (navigator.clipboard) {
         navigator.clipboard.writeText(url.href);
         new WarningToast("Sharing not supported, copied link to clipboard", 2000);
@@ -241,7 +241,7 @@ export default {
         })
         .catch((err) => {
           new WarningToast("Couldn't get upcoming tasks", 2000);
-          _statuslog("⚠ Couldn't get upcoming tasks", err);
+          _status.error("⚠ Couldn't get upcoming tasks", err);
           this.loading_upcoming = false;
         });
     },
@@ -276,7 +276,7 @@ export default {
         })
         .catch((err) => {
           new ErrorToast("Error getting class", err, 1500);
-          _statuslog("⚠ Error getting class", err);
+          _status.error("⚠ Error getting class", err);
           this.$emit("close");
         });
     },

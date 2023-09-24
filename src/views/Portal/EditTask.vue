@@ -124,7 +124,7 @@
  */
 
 import { useMainStore } from "@/store";
-import { _statuslog } from "@/common";
+import { _status } from "@/common";
 import { ErrorToast, WarningToast } from "@svonk/util";
 import smoothReflow from "vue-smooth-reflow";
 
@@ -256,7 +256,7 @@ export default {
         })
         .catch((err) => {
           this.loading = false;
-          _statuslog(`📃 Couldn't create ${this.task.type || "task"}:`, err);
+          _status.error(`📃 Couldn't create ${this.task.type || "task"}:`, err);
           new ErrorToast("Couldn't create task", err, 2000);
         });
     },
@@ -288,7 +288,7 @@ export default {
         .then((task) => {
           if (!task) {
             new WarningToast("Couldn't find that task", 2000);
-            _statuslog("⚠ Couldn't find task");
+            _status.warn("⚠ Couldn't find task");
             this.$emit("close");
           } else {
             this.task = task;
@@ -299,7 +299,7 @@ export default {
         })
         .catch((err) => {
           new ErrorToast("Error getting task", err, 1500);
-          _statuslog("⚠ Error getting task", err);
+          _status.error("⚠ Error getting task", err);
           this.$emit("close");
         });
     },

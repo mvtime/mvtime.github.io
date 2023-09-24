@@ -166,7 +166,7 @@
 <script>
 import { useMainStore } from "@/store";
 import LoadingCover from "@/components/LoadingCover.vue";
-import { _statuslog } from "@/common";
+import { _status } from "@/common";
 import { ErrorToast, SuccessToast } from "@svonk/util";
 export default {
   name: "CalendarBlock",
@@ -189,7 +189,7 @@ export default {
     };
   },
   mounted() {
-    _statuslog("📅 Calendar mounted");
+    _status.log("📅 Calendar mounted");
     this.$emit("mounted");
     this.tasks = this.store.tasks;
   },
@@ -209,14 +209,14 @@ export default {
           this.drag.to = null;
         }
       } catch (err) {
-        _statuslog("🔥 Couldn't check if mouse left calendar", err);
+        _status.error("🔥 Couldn't check if mouse left calendar", err);
       }
     },
     // drag:
     drop_class() {
       if (this.drag?.class && this.drag?.to) {
         // open task add with class and date
-        _statuslog("📅 Dropped class on calendar day");
+        _status.log("📅 Dropped class on calendar day");
         this.$router.push({
           name: "newtask",
           query: {
@@ -257,12 +257,12 @@ export default {
               }to ${to.toLocaleDateString()}`,
               2000
             );
-            _statuslog("📅 Moved task date");
+            _status.log("📅 Moved task date");
             this.drag = {};
           })
           .catch((err) => {
             new ErrorToast("Couldn't update task", err, 2000);
-            _statuslog("🔥 Couldn't update task", err);
+            _status.error("🔥 Couldn't update task", err);
             this.drag = {};
           });
         // } else if (this.drag.to && this.drag.class) {
@@ -392,14 +392,14 @@ export default {
     "store.classes": {
       handler(a, b) {
         if (a.length != b.length && this.is_ready) {
-          _statuslog("📦 Classes array length changed, calendar updating tasks");
+          _status.log("📦 Classes array length changed, calendar updating tasks");
           this.store
             .fetch_classes()
             .then(() => {
               this.run_get_tasks();
             })
             .catch((err) => {
-              _statuslog("🔥 Couldn't fetch classes", err);
+              _status.error("🔥 Couldn't fetch classes", err);
             });
         }
       },

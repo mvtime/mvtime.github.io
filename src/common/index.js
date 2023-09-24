@@ -28,15 +28,9 @@ function _log() {
   try {
     console[this || tone](...extras, ...args);
   } catch (err) {
-    console._log("⚠ Couldn't override console.log", err);
-    console._log(...extras, ...args);
+    console.log("⚠ Couldn't override console.log", err);
+    console.log(...extras, ...args);
   }
-}
-try {
-  console._log = console.log;
-  console.log = _log;
-} catch (err) {
-  _log("⚠ Couldn't override console.log", err);
 }
 
 let tone = "info";

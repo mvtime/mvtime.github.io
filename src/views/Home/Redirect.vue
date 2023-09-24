@@ -20,7 +20,7 @@
 
 import Modal from "@/components/Modal/Modal.vue";
 import { WarningToast, SuccessToast } from "@svonk/util";
-import { _statuslog } from "@/common";
+import { _status } from "@/common";
 export default {
   name: "RedirectView",
   components: {
@@ -46,7 +46,7 @@ export default {
         this.open();
       }
     } catch {
-      _statuslog("Couldn not verify path domain is not MVTT");
+      _status.log("Couldn not verify path domain is not MVTT");
     }
   },
   computed: {
