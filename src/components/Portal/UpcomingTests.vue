@@ -55,7 +55,7 @@ export default {
         name: "viewtask",
         params: {
           // replace all slashes with ~ to avoid router issues
-          ref: this.ref_from(task),
+          ref: this.store.path_to_ref(task.ref),
         },
       });
     },
