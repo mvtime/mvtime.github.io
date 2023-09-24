@@ -73,6 +73,9 @@ main.download {
 main.download .download_header {
   max-width: 600px;
 }
+main.download .button_pointer_text {
+  line-height: 1;
+}
 main.download > hr {
   width: 100%;
   margin: 20px 0;
