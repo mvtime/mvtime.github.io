@@ -9,7 +9,13 @@ function getFirstNonStandardCharacter(str) {
     return null;
   }
 }
-/** Log function, takes any number of arguments. If the first character is nonstandard and followed by a space, it'll use that as a tag */
+/**
+ * @function _log
+ * @description Log function, takes any number of arguments. If the first character is nonstandard and followed by a space, it'll use that as a tag
+ * @param {any} args - Any number of arguments
+ * @note This function is not exported, but is used by _status. It should be used with a tone through a bind, like _log.bind("info")
+ * @example _log("Hello world!");
+ * */
 function _log() {
   if (arguments.length == 0) return;
   let args = Array.from(arguments);
@@ -34,6 +40,19 @@ function _log() {
 }
 
 let tone = "info";
+/**
+ * @type {Object} _status
+ * @property {Function} print - Prints a message to the console with the current tone
+ * @property {Function} log - Logs a message to the console
+ * @property {Function} info - Logs an info message to the console
+ * @property {Function} debug - Logs a debug message to the console
+ * @property {Function} warn - Logs a warning message to the console
+ * @property {Function} error - Logs an error message to the console
+ * @property {Function} _getTone - Gets the current tone
+ * @property {Function} _setTone - Sets the current tone
+ * @property {Function} _resetTone - Resets the current tone to "info"
+ * @example _status.log("Hello world!");
+ */
 const _status = {
   print: _log.bind(tone),
   log: _log.bind("log"),
@@ -52,6 +71,11 @@ const _status = {
     tone = "info";
   },
 };
+/**
+ * @type {Function} _statuslog
+ * @description A bound version of _log with the tone set to "info"
+ * @example _statuslog("Hello world!");
+ * */
 const _statuslog = _log.bind("info");
 try {
   window._status = _status;
