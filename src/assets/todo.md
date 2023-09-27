@@ -52,6 +52,8 @@
   - ~~join modal~~
 - Emails
   - setup cloud functions to send daily(?) emails
+  - ~~setup cloud functions to send task change/create/archive emails~~
+  - ~~setup cloud functions to send weekly emails~~
   - ~~link personal account email~~
   - ~~email template~~
   - ~~setup email server~~

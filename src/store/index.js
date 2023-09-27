@@ -1562,6 +1562,7 @@ export const useMainStore = defineStore({
       try {
         delete task_obj.class_id;
         delete task_obj.ref;
+        delete task_obj._class;
         let [_email, _id, task_id] = task_ref.split("/");
         if (!_email.includes(this.ORG_DOMAIN)) {
           _email += this.ORG_DOMAIN;
