@@ -99,7 +99,7 @@
  */
 
 import { WarningToast, ErrorToast, SuccessToast } from "@svonk/util";
-import { _status } from "@/common";
+import { _status, compatDateObj } from "@/common";
 import { useMainStore } from "@/store";
 import smoothReflow from "vue-smooth-reflow";
 import showdown from "showdown";
@@ -120,7 +120,7 @@ export default {
       return useMainStore();
     },
     date() {
-      let date = new Date(this.task?.date);
+      let date = compatDateObj(this.task?.date);
       if (isNaN(date.getTime())) return;
       // read it as being in the current timezone
       date = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
@@ -162,7 +162,7 @@ export default {
             url: url.href,
           })
           .then(() => new SuccessToast("Opened share dialog", 1000))
-          .catch((err) => _status.log("Error sharing", err));
+          .catch((err) => _status.error("Error sharing", err));
       } else if (navigator.clipboard) {
         navigator.clipboard.writeText(url.href);
         new WarningToast("Sharing not supported, copied link to clipboard", 2000);

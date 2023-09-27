@@ -83,4 +83,17 @@ try {
 } catch (err) {
   _status.log("⚠ Couldn't set window._status", err);
 }
-export { _statuslog, _status };
+
+/* Fixes for safari date handling (convert date strings to acceptable format) */
+/**
+ * @function compatDateObj
+ * @description Converts a date string to a Date object (in a format that Safari can handle)
+ * @param {String} date
+ * @returns
+ */
+function compatDateObj(date) {
+  if (typeof date != "string") return date;
+  return new Date(date.replace(/-/g, "/"));
+}
+
+export { _statuslog, _status, compatDateObj };

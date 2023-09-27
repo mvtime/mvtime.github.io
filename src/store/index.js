@@ -2,7 +2,7 @@
 
 // setup Pinia store
 import { defineStore } from "pinia";
-import { _status } from "@/common";
+import { _status, compatDateObj } from "@/common";
 import { Toast, ErrorToast, cleanError, WarningToast, SuccessToast } from "@svonk/util";
 
 // get firebase requirements
@@ -566,7 +566,7 @@ export const useMainStore = defineStore({
               class_tasks[j].date = class_tasks[j].date.split("T")[0];
               let [year, month, day] = class_tasks[j].date.split("-");
               class_tasks[j].date = `${month}-${day}-${year}`;
-              class_tasks[j].date = new Date(class_tasks[j].date);
+              class_tasks[j].date = compatDateObj(class_tasks[j].date);
               class_tasks[j].date = isNaN(class_tasks[j].date) ? null : class_tasks[j].date;
             }
             // set color from parent class color
@@ -1712,10 +1712,10 @@ export const useMainStore = defineStore({
         }
         let class_tasks = class_snapshot.data()?.tasks || [];
         class_tasks = class_tasks.filter((task) => {
-          return task.type != "note" && new Date(task.date).getTime() >= new Date().getTime();
+          return task.type != "note" && compatDateObj(task.date).getTime() >= new Date().getTime();
         });
         class_tasks.sort((a, b) => {
-          return new Date(a.date).getTime() - new Date(b.date).getTime();
+          return compatDateObj(a.date).getTime() - compatDateObj(b.date).getTime();
         });
         // limit to 6
         class_tasks = class_tasks.slice(0, 6);
@@ -1726,7 +1726,7 @@ export const useMainStore = defineStore({
           upcoming_tasks.push({
             ...task,
             ref: [...class_ref.split("/"), task_id].join("~"),
-            date: new Date(task.date),
+            date: compatDateObj(task.date),
             color: class_doc.color,
             class_id: [_email, _id].join("/"),
             class_name: `P${class_doc.period} - ${class_doc.name}`,

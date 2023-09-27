@@ -124,7 +124,7 @@
  */
 
 import { useMainStore } from "@/store";
-import { _status } from "@/common";
+import { _status, compatDateObj } from "@/common";
 import { ErrorToast, WarningToast } from "@svonk/util";
 import smoothReflow from "vue-smooth-reflow";
 
@@ -197,7 +197,7 @@ export default {
       return JSON.stringify(this.task) !== JSON.stringify(this.original);
     },
     date() {
-      let date = new Date(this.task?.date);
+      let date = compatDateObj(this.task?.date);
       if (isNaN(date.getTime())) return;
       // read it as being in the current timezone
       date = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);

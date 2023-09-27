@@ -89,10 +89,10 @@
               }
             "
           >
-            <span class="calendar_day_date__short"> {{ new Date(day.date).getDate() }}</span>
+            <span class="calendar_day_date__short"> {{ day.date.getDate() }}</span>
             <span class="calendar_day_date__long" style="display: none">
               {{
-                new Date(day.date).toLocaleDateString("en-US", {
+                day.date.toLocaleDateString("en-US", {
                   weekday: "long",
                   month: "long",
                   day: "numeric",
@@ -166,7 +166,7 @@
 <script>
 import { useMainStore } from "@/store";
 import LoadingCover from "@/components/LoadingCover.vue";
-import { _status } from "@/common";
+import { _status, compatDateObj } from "@/common";
 import { ErrorToast, SuccessToast } from "@svonk/util";
 export default {
   name: "CalendarBlock",
@@ -288,7 +288,7 @@ export default {
     get_day_tasks(day) {
       return this.tasks
         .filter((task) => {
-          const task_date = new Date(task.date);
+          const task_date = compatDateObj(task.date);
           return (
             this.day_matches(task_date, day) &&
             (!this.filtered_classes.length || this.filtered_classes.includes(task.class_id))
@@ -327,7 +327,7 @@ export default {
   computed: {
     tasks_loaded_month() {
       return this.tasks.some((task) => {
-        const task_date = new Date(task.date);
+        const task_date = compatDateObj(task.date);
         return (
           // get tasks from the current month and next month
           true || task_date
@@ -339,7 +339,7 @@ export default {
     },
     days() {
       const days = [];
-      const today = new Date(new Date().toISOString().split("T")[0]);
+      const today = compatDateObj(new Date().toISOString().split("T")[0]);
       const this_date = this.loaded_month.getTime();
       function get_this_date() {
         return new Date(this_date);
