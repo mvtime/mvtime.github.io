@@ -1,6 +1,4 @@
-# Changes
-
-## General Purpose / Goal
+# General Purpose / Goal
 
 - Crowdsource data from students
   - lower teacher inclusion / necessary involvement
@@ -8,15 +6,24 @@
   - we're not trying to win any design contests, but we want people to want to use it
 - Help student health
   - study resources from data, better planning
-- ~~Collect student wellness data~~
-  - ~~will allow us to show its usefulness~~
+- Collect student wellness data
+  - will allow us to show its usefulness
+  - what led us to start MVTT in the first place, advocating for student health
+
+# Changes
 
 ## Working on Now / Planned Soon (Sander)
 
+- Mobile Interface
+  - pages on mobile instead of sidebars
+- Studying
+  - system for studying/working on tasks
+  - ability to mark tasks as done--by signature?
 - Admin / Contact
   - Add/implement analytics
   - Send messages from w/i the app using mail system
     - user will receive a copy
+  - District portal
   - Admin portal
     - create portal based on /portal but with panel in place of calendar
     - ability to fix errors that might impede usability for students
@@ -33,22 +40,27 @@
   - ~~show upcoming tasks at end of daily surveys~~
   - ~~daily surveys~~
 - Tasks
-  - allow / encourage links to other classes / through selecter?
+  - fixes on edit page
+  - auto-suggested task types based on title
+  - auto-suggested link names based on domain
+  - allow / encourage links to other classes / through selecter
+  - allowed outlink domains set by district?
   - ~~**process only changed tasks server-side / cancel runs on double changes**~~
   - ~~**store proxy in class doc - load from there for efficiency / read & write count**~~
   - ~~disallow finish when link still in-progress~~
   - ~~drag tasks on calendar to change date~~
 - Classes
   - add from pre-set list
+    - setup from json / claim pre-set class feature (cloud?)
   - display join code to class
   - ~~class view page~~
   - ~~make classes editable~~
   - ~~join from code~~
 - Onboarding
   - ui tutorial
-  - better logout prompt
   - large modal type for intro - better video support
     - fill screen on small devices
+  - ~~better logout prompt~~
   - ~~add first class~~
   - ~~join modal~~
 - Emails
@@ -61,6 +73,7 @@
   - ~~send from firebase doc~~
 - Accounts
   - create email prefs screen
+  - fix linking feature
   - ~~finish personal account connection~~
   - ~~create prefs screen~~
   - ~~allow connected personal / non-school email~~
@@ -88,31 +101,29 @@
   - setup from pre-defined classes, add your own
   - where to find everything
   - ~~join form -> add classes~~
-- Make art assets
-  - implement transitions
-    - between pages
-    - ~~for modals~~
-  - implement animations
-    - lottiefiles?
-    - ~~loading imgs~~
-  - ~~Create promotional materials~~
-    - ~~update og:img~~
-    - ~~create public/img/promo imgs~~
-  - ~~Create contact page~~
-    - ~~fun lighthearted art stuff~~
+- Create studying / prep pages
+  - really use the data/info that we have, let them create study schedules for themselves
+  - automatic / algorithm-driven suggestions?
 - Create survey / check-in modal
   - add graphics / illustrations (on weekly at least)
   - time-based variations
     - on mondays, more in-depth, before first use
     - ~~during the week, short non-intrusive~~
 - Better prefs
-  - ~~save theme under prefs, rather than its own key~~
   - setup email prefs in onboarding
+  - ~~save theme under prefs, rather than its own key~~
   - ~~add the option to trust another email / oauth account with access to your account~~
     - ~~good for phones and such, save to prefs of the acc, then check either request oauth is student, or request oauth is in student prefs.trusted~~
-- Create studying / prep pages
-  - really use the data/info that we have, let them create study schedules for themselves
-  - automatic / algorithm-driven suggestions?
+- ~~Make art assets~~
+  - ~~implement animations~~
+    - ~~loading imgs~~
+  - ~~implement transitions~~
+    - ~~for modals~~
+  - ~~Create promotional materials~~
+    - ~~update og:img~~
+    - ~~create public/img/promo imgs~~
+  - ~~Create contact page~~
+    - ~~fun lighthearted art stuff~~
 
 ### Aarush
 
@@ -120,5 +131,6 @@
   - Algorithms
     - Class Spread: N/A
   - Send out emails to students thru firebase?
-- Create data for static classes / a cleaner system to integrate them
+- a cleaner system to integrate classes
   - Structure teacher add/drop class json update algorithm
+- ~~Create data for static classes~~

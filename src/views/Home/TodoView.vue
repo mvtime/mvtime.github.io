@@ -68,7 +68,9 @@ main.todo > hr {
   font-family: Lato, Inter, sans-serif;
   width: 100%;
   max-width: 1000px;
+  cursor: default;
 }
+
 .todo_placeholder {
   display: flex;
   align-items: center;
@@ -78,5 +80,18 @@ main.todo > hr {
 h3.secondary_home_text {
   font-size: 20px;
   line-height: 32px;
+}
+</style>
+<style>
+.todo_body ul ul > li:has(> del) {
+  opacity: 0.5;
+  scale: 0.8;
+  transform-origin: -1em;
+  line-height: 1.15em;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.todo_body ul > li:hover {
+  opacity: 1;
 }
 </style>
