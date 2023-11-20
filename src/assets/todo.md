@@ -14,6 +14,7 @@
 ## Working on Now / Planned Soon (Sander)
 
 - Admin / Contact
+  - Add/implement analytics
   - Send messages from w/i the app using mail system
     - user will receive a copy
   - Admin portal

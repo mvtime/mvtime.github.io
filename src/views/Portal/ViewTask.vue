@@ -48,7 +48,7 @@
               v-html="task.description ? text : 'Not Provided'"
             ></span>
           </div>
-          <div class="styled_obj links_obj" v-if="task.links">
+          <div class="styled_obj links_obj" v-if="task.links && task.links.length">
             <span class="styled_line__label">Links:</span>
             <span class="styled_line__separator"></span>
             <span class="styled_line__value styled_line_links">
