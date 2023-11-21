@@ -87,8 +87,9 @@
           <span>Session timeout popup {{ show_timeout ? "enabled" : "disabled" }}</span>
         </div>
         <div class="pause_popup_section__details">
-          The popup helps conserve local and network resources. If you're planning to have MVTT open
-          on the side, or don't want it to get in the way, you can toggle it above.
+          The popup helps conserve local and network resources. To have MVTT open on the side
+          without it getting in the way, you can toggle it above, though you may then have to reload
+          to get the newest data
         </div>
       </div>
       <div class="overlay_contents_text overlay_contents_section">
