@@ -160,6 +160,31 @@ h2.header_style.modal_header_title {
 .overlay_contents_text {
   font-size: 14px;
 }
+
+/* overlay sections */
+.overlay_contents_section:not(:first-child)::before {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 60%;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  border-top: solid var(--thickness-overlay-section-separator)
+    var(--color-overlay-section-separator);
+}
+.overlay_contents_section {
+  position: relative;
+  width: 100%;
+  padding: calc(var(--padding-overlay) / 1.5) 0;
+}
+.overlay_contents_section:first-child {
+  padding-top: 0;
+}
+.overlay_contents_section:last-child {
+  padding-bottom: 0;
+}
+
 .overlay_title {
   font-size: 18px;
   font-weight: 600;
@@ -292,6 +317,7 @@ select.styled_obj {
   text-overflow: hidden;
   white-space: nowrap;
   text-align: center;
+  cursor: default;
   line-height: 25px;
 }
 .styled_line_links__link:hover,

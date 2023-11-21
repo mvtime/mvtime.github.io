@@ -4,12 +4,12 @@
       <h2 class="header_style modal_header_title">Account Preferences</h2>
     </header>
     <div class="overlay_contents">
-      <div v-if="!store.is_teacher">
+      <div v-if="!store.is_teacher" class="overlay_contents_section">
         <div class="overlay_contents_text">
           You can link a personal (non-{{ this.store.ORG_DOMAIN.substring(1) }}) account to access
           MVTT when not signed into your school account below!
         </div>
-        <div class="inputs_row">
+        <div class="inputs_row linked_accounts_row">
           <div class="styled_input styled_links_box">
             <div class="styled_links_display">
               <span
@@ -58,7 +58,7 @@
           </div>
         </div>
       </div>
-      <div v-if="!store.personal_account" class="overlay_contents_text">
+      <div v-if="!store.personal_account" class="overlay_contents_text overlay_contents_section">
         Click
         <span
           class="button_pointer_text click-action"
@@ -75,17 +75,23 @@
           you do not have a teacher email.</span
         >
       </div>
-      <div class="overlay_contents_text pause_popup_section">
-        <ToggleBar
-          class="click-action"
-          :value="show_timeout"
-          @update="update_timeout_option"
-          :loads="true"
-        />
-        &nbsp;
-        <span>Session timeout popup {{ show_timeout ? "enabled" : "disabled" }}</span>
+      <div class="overlay_contents_text overlay_contents_section">
+        <div class="pause_popup_section">
+          <ToggleBar
+            class="click-action"
+            :value="show_timeout"
+            @update="update_timeout_option"
+            :loads="true"
+          />
+          &nbsp;
+          <span>Session timeout popup {{ show_timeout ? "enabled" : "disabled" }}</span>
+        </div>
+        <div class="pause_popup_section__details">
+          The popup helps conserve local and network resources. If you're planning to have MVTT open
+          on the side, or don't want it to get in the way, you can toggle it above.
+        </div>
       </div>
-      <div class="overlay_contents_text">
+      <div class="overlay_contents_text overlay_contents_section">
         To change your theme, use the
         <span
           id="theme_pointer_button"
@@ -95,7 +101,7 @@
           <div class="theme_icon icon"></div>
           Switch Theme
         </span>
-        button on the left sidebar
+        button on the left sidebar or homepage
       </div>
     </div>
     <div class="bottom_actions">
@@ -252,7 +258,7 @@ export default {
   display: inline-flex;
   align-items: center;
   gap: 0.5em;
-  margin-top: 0.75em;
+  /* margin-top: 0.75em; */
 }
 .remove_icon {
   filter: var(--filter-icon);
@@ -271,5 +277,14 @@ export default {
 }
 .styled_line_links {
   gap: 10px;
+}
+.linked_accounts_row {
+  margin-bottom: 0;
+}
+.pause_popup_section__details {
+  margin-top: 0.5em;
+  opacity: 0.8;
+  font-size: 0.9em;
+  line-height: 1.5em;
 }
 </style>
