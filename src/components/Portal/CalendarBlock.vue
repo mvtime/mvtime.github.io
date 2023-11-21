@@ -1,11 +1,15 @@
 <template>
-  <main class="calendar" @drag="check_leave" :class="{ calendar_fullpage: fullpage }">
-    <!-- use LoadingCover component when is_ready -->
+  <main
+    class="calendar portal_main_block"
+    @drag="check_leave"
+    :class="{ calendar_fullpage: fullpage }"
+  >
+    <!-- use LoadingCover component when waiting for ready -->
     <LoadingCover v-if="!is_ready" class="calendar_loading" covering="Calendar Tasks" />
     <!-- calendar content -->
-    <div class="calendar_header">
+    <div class="calendar_header portal_main_block_header">
       <div
-        class="calendar_date"
+        class="calendar_date portal_main_block_title"
         :title="
           'Currently viewing ' +
           loaded_month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
@@ -13,17 +17,26 @@
       >
         {{ loaded_month.toLocaleDateString("en-US", { month: "long", year: "numeric" }) }}
       </div>
-      <nav class="calendar_actions">
-        <button class="calendar_action" @click="prev_month" title="Previous month">
-          <div class="action_icon arrow-icon left"></div>
+      <div class="portal_main_block_actions_wrapper">
+        <nav class="portal_main_block_actions">
+          <button class="portal_main_block_action" @click="prev_month" title="Previous month">
+            <div class="action_icon arrow-icon left"></div>
+          </button>
+          <button class="portal_main_block_action" @click="this_month" title="Current month">
+            <div class="action_icon cal-icon" :class="{ alt: tasks && tasks.length }"></div>
+          </button>
+          <button class="portal_main_block_action" @click="next_month" title="Next month">
+            <div class="action_icon arrow-icon right"></div>
+          </button>
+        </nav>
+        <button
+          class="portal_main_block_action portal_main_block_action_alt"
+          @click="swap_to_study"
+          title="View study portal"
+        >
+          <div class="action_icon todo-icon"></div>
         </button>
-        <button class="calendar_action" @click="this_month" title="Current month">
-          <div class="action_icon cal-icon" :class="{ alt: tasks && tasks.length }"></div>
-        </button>
-        <button class="calendar_action" @click="next_month" title="Next month">
-          <div class="action_icon arrow-icon right"></div>
-        </button>
-      </nav>
+      </div>
     </div>
     <div
       class="calendar_days_container hidescroll"
@@ -164,6 +177,7 @@
 </template>
 
 <script>
+import "@/assets/style/portal_main.css";
 import { useMainStore } from "@/store";
 import LoadingCover from "@/components/LoadingCover.vue";
 import { _status, compatDateObj } from "@/common";
@@ -194,6 +208,9 @@ export default {
     this.tasks = this.store.tasks;
   },
   methods: {
+    swap_to_study() {
+      this.$router.push({ name: "study" });
+    },
     check_leave(e) {
       // check if the mouse has left the calendar using drag event
       try {
@@ -414,62 +431,8 @@ export default {
   },
 };
 </script>
-<style>
-main.calendar,
-.calendar_width {
-  max-width: 750px;
-}
-@media (max-width: /* [desktop size] */ 1270px) {
-  main.calendar,
-  .calendar_width {
-    max-width: 1000px;
-  }
-}
-@media (max-width: /* [desktop size] */ 1270px) and (min-height: 725px) and (max-height: 1100px) {
-  main.calendar,
-  .calendar_width {
-    max-width: calc(130vh - 50px);
-  }
-}
-@media (min-height: 900px) and (max-height: 1200px) {
-  main.calendar,
-  .calendar_width {
-    max-width: calc(100vh - 150px);
-  }
-}
-@media (min-height: 1200px) {
-  main.calendar,
-  .calendar_width {
-    max-width: 1300px;
-  }
-}
-@media (min-width: /* [desktop size] */ 1270px) and (max-height: 800px) {
-  main.calendar {
-    background-color: var(--color-calendar-alt);
-  }
-}
-</style>
+
 <style scoped>
-main.calendar {
-  width: 100%;
-  margin: 0 auto;
-  box-sizing: border-box;
-  padding: var(--padding-calendar);
-  padding-top: calc(var(--padding-calendar) * 1.5 + var(--size-calendar-header));
-  position: relative;
-  /* style */
-  background-color: var(--color-calendar);
-  border-radius: var(--radius-calendar);
-  box-shadow: var(--shadow-highlight);
-  /* overflow for loading */
-  overflow: hidden;
-}
-@media (min-width: /* [desktop size] */ 1270px) and (max-height: 1200px) {
-  main.calendar {
-    border: 3px solid var(--color-on-bg);
-    box-shadow: none;
-  }
-}
 @media (min-width: 600px) {
   main.calendar.calendar_fullpage {
     border: none;
@@ -498,85 +461,7 @@ main.calendar {
     grid-template-rows: var(--height-calendar-weekday-label) repeat(6, minmax(100px, 1fr));
   }
 }
-.calendar_header {
-  position: absolute;
-  top: calc(var(--padding-calendar) / 2);
-  right: calc(var(--padding-calendar) / 2);
-  height: var(--size-calendar-header);
-  width: calc(100% - var(--padding-calendar));
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: space-between;
-  align-items: stretch;
-}
-.calendar_date {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-on-calendar);
-  background-color: var(--color-calendar-header);
-  border-radius: calc(var(--radius-calendar) / 2);
-  padding: 0 calc(var(--padding-calendar) / 2);
-  display: flex;
-  flex-shrink: 0;
-  justify-content: center;
-  align-items: center;
-  user-select: none;
-}
-.calendar_actions {
-  display: flex;
-  flex-flow: row nowrap;
-  flex-grow: 0;
-  flex-basis: calc(3 * var(--size-calendar-header));
-  flex-shrink: 0;
-  justify-content: center;
-  align-items: center;
-  box-sizing: border-box;
-  height: 100%;
-  border-radius: calc(var(--radius-calendar) / 2);
-  overflow: hidden;
-}
 
-.calendar_actions > .calendar_action {
-  height: var(--size-calendar-header);
-  width: var(--size-calendar-header);
-  background-color: var(--color-calendar-header);
-  border: none;
-  padding: 0;
-}
-.calendar_actions > .calendar_action:hover {
-  background-color: var(--color-calendar-header-hover);
-}
-.calendar_actions > .calendar_action > div {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  filter: var(--filter-icon);
-  /* img */
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-}
-.calendar_action .arrow-icon.left {
-  background-image: url(@/assets/img/general/portal/arrow-left.png);
-  background-image: url(@/assets/img/general/portal/arrow-left.svg);
-}
-
-.calendar_action .cal-icon {
-  background-image: url(@/assets/img/general/portal/cal-icon.png);
-  background-image: url(@/assets/img/general/portal/cal-icon.svg);
-}
-.calendar_action .cal-icon.alt {
-  background-image: url(@/assets/img/general/portal/cal-icon-alt.png);
-  background-image: url(@/assets/img/general/portal/cal-icon-alt.svg);
-}
-.calendar_actions .arrow-icon.right {
-  background-image: url(@/assets/img/general/portal/arrow-right.png);
-  background-image: url(@/assets/img/general/portal/arrow-right.svg);
-}
 /* days list */
 .calendar_days_container {
   width: 100%;
@@ -929,15 +814,6 @@ main.calendar {
     width: unset;
     padding: 0.25rem 0.5rem;
   }
-  .calendar_date {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: block;
-    text-align: center;
-    line-height: var(--size-calendar-header);
-    height: var(--size-calendar-header);
-  }
   .calendar_day_date__short {
     display: none;
   }
@@ -974,29 +850,6 @@ main.calendar {
     height: unset;
     min-height: var(--height-calendar-task);
     flex-basis: 70px;
-  }
-  /* header */
-  main.calendar {
-    padding: calc(var(--padding-calendar) - var(--spacing-calendar-day));
-  }
-  .calendar_header {
-    position: unset;
-    flex-flow: row wrap;
-    justify-content: stretch;
-    align-items: stretch;
-    height: unset;
-    margin: 0;
-    width: 100%;
-  }
-  .calendar_header > * {
-    flex-basis: 100px;
-    flex-shrink: 1;
-    flex-grow: 1;
-    width: 100%;
-    margin: var(--spacing-calendar-day);
-  }
-  .calendar_actions > .calendar_action {
-    flex-grow: 1;
   }
 }
 </style>

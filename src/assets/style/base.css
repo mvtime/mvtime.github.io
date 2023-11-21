@@ -32,6 +32,10 @@ body,
   --size-calendar-day-date: 20px;
   --padding-calendar-task: 5px;
   --height-calendar-task: 25px;
+  /* study page vars */
+  --padding-study-class: 10px;
+  --gap-study-class: 8px;
+  --gap-study-checkbox: 5px;
   /* task card */
   --height-task-card: 40px;
   --padding-task-card-icon: 5px;

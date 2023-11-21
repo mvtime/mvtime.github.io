@@ -53,7 +53,20 @@
         </header>
         <!-- calendar -->
         <!-- on mounted, if this.loaded, run run_get_tasks -->
+
+        <StudyBlock
+          v-if="is_study"
+          :filtered_classes="filtered_classes"
+          @taskclick="show_task($event)"
+          ref="study"
+          @mounted="
+            if (loaded) {
+              $refs.study.run_get_tasks();
+            }
+          "
+        />
         <CalendarBlock
+          v-else
           :filtered_classes="filtered_classes"
           @taskclick="show_task($event)"
           ref="calendar"
@@ -77,9 +90,13 @@
     />
     <!-- show overlay only if router-view is active -->
     <OverlayWrapper
-      v-if="$route.name !== 'portal'"
+      v-if="!['portal', 'study'].includes($route.name)"
       v-slot="scope"
-      @close="close_path ? $router.push(close_path) : $router.push('/portal')"
+      @close="
+        close_path
+          ? $router.push(close_path)
+          : $router.push({ name: is_study ? 'study' : 'portal' })
+      "
     >
       <router-view
         class="router_center_view"
@@ -101,6 +118,7 @@
 
 import LeftBar from "@/components/Portal/LeftBar.vue";
 import RightBar from "@/components/Portal/RightBar.vue";
+import StudyBlock from "@/components/Portal/StudyBlock.vue";
 import CalendarBlock from "@/components/Portal/CalendarBlock.vue";
 import OverlayWrapper from "@/components/Modal/OverlayWrapper.vue";
 import { useMainStore } from "@/store";
@@ -112,17 +130,19 @@ export default {
   components: {
     LeftBar,
     RightBar,
+    StudyBlock,
     CalendarBlock,
     OverlayWrapper,
   },
   data() {
     return {
-      /** The classes to include in the CalendarBlock, or include all if empty */
+      /** The classes to include in the Block, or include all if empty */
       filtered_classes: [],
       /** A list of random welcome messages */
       welcomes: ["Welcome", "Hi", "Hello", "Hey", "Howdy"],
       loaded: false,
       dragging_class: null,
+      is_study: this.$route.name == "study",
     };
   },
   computed: {
@@ -177,7 +197,7 @@ export default {
         },
       });
     },
-    /** Toggle on or off a class in the filtered ClassList from showing in the CalendarBlock */
+    /** Toggle on or off a class in the filtered ClassList from showing in the Block */
     toggle_filtered_class(c) {
       if (this.filtered_classes.includes(c)) {
         this.filtered_classes = this.filtered_classes.filter((id) => id !== c);
@@ -213,6 +233,7 @@ export default {
       .fetch_classes()
       .then(() => {
         // run calendar run_get_tasks method
+        if (this.$refs.study) this.$refs.study.run_get_tasks();
         if (this.$refs.calendar) this.$refs.calendar.run_get_tasks();
         this.$refs.RightBar.load();
         this.$refs.LeftBar.load();
@@ -231,6 +252,11 @@ export default {
       this.check_and_do_survey();
     },
     $route() {
+      if (!this.is_study && this.$route.name == "study") {
+        this.is_study = true;
+      } else if (this.$route.name == "portal") {
+        this.is_study = false;
+      }
       if (this.$route.name != "portal") {
         this.close_right_bar();
         this.close_left_bar();

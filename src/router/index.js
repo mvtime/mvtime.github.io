@@ -217,6 +217,19 @@ const router = createRouter({
       },
       children: [
         {
+          path: "/portal/study",
+          name: "study",
+          component: () => import("../views/Portal/Portal.vue"),
+          meta: {
+            page_title: "Study Portal",
+            theme_color: {
+              light: "#b5b5b5",
+              dark: "#0d0d0d",
+            },
+            requiresAuth: true,
+          },
+        },
+        {
           path: "/survey/daily",
           name: "daily",
           component: () => import("../views/Portal/DailySurvey.vue"),
