@@ -230,7 +230,7 @@ const router = createRouter({
           },
         },
         {
-          path: "/survey/daily",
+          path: "/portal/survey/daily",
           name: "daily",
           component: () => import("../views/Portal/DailySurvey.vue"),
           meta: {
@@ -463,6 +463,13 @@ const router = createRouter({
     {
       path: "/settings",
       redirect: "/portal/settings",
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: "/survey/daily",
+      redirect: "/portal/survey/daily",
       meta: {
         requiresAuth: true,
       },
