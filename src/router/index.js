@@ -246,7 +246,7 @@ const router = createRouter({
           },
         },
         {
-          path: "/settings",
+          path: "/portal/settings",
           name: "settings",
           component: () => import("../views/Portal/SettingsModal.vue"),
           meta: {
@@ -455,6 +455,14 @@ const router = createRouter({
     {
       path: "/study",
       redirect: "/portal/study",
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    // redirect any /settings routes to /portal/settings
+    {
+      path: "/settings",
+      redirect: "/portal/settings",
       meta: {
         requiresAuth: true,
       },
