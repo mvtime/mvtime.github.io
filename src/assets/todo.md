@@ -103,6 +103,7 @@
   - ~~join form -> add classes~~
 - Create studying / prep pages
   - really use the data/info that we have, let them create study schedules for themselves
+  - ~~see upcoming assignments and mark them as done~~
   - automatic / algorithm-driven suggestions?
 - Create survey / check-in modal
   - add graphics / illustrations (on weekly at least)

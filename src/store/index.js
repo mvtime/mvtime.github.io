@@ -460,7 +460,6 @@ export const useMainStore = defineStore({
         }
         this.set_active(doc);
         await this.update_remote();
-
         return Promise.resolve();
       } catch (err) {
         return Promise.reject(err);

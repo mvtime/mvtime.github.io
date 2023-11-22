@@ -42,7 +42,7 @@
             <label
               :for="task.ref"
               class="study_list_task_checkbox"
-              title="Mark task as done/undone"
+              :title="'Mark task as ' + (is_finished(task.ref) ? 'unfinished' : 'finished')"
               @click="toggle_finished(task.ref)"
             >
               <div class="study_list_task_checkbox__fixed">

@@ -18,6 +18,7 @@ function getFirstNonStandardCharacter(str) {
  * */
 function _log() {
   if (arguments.length == 0) return;
+  // check for very large messages and warn them in the console with the first 100 characters (make sure this catches the message, even if it's not the first argument, or in a object format)
   let args = Array.from(arguments);
   let extras = [
     `%cMVTT`,
