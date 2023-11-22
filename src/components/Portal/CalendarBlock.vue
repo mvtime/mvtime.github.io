@@ -31,6 +31,7 @@
         </nav>
         <button
           class="portal_main_block_action portal_main_block_action_alt"
+          v-if="!store.is_teacher"
           @click="swap_to_study"
           title="View study portal"
         >
