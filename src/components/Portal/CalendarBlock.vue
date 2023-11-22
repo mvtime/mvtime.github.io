@@ -128,7 +128,8 @@
                 task &&
                 store.is_teacher &&
                 store.user &&
-                task.ref.split('/')[0] == store.active_doc.email
+                task.ref.split('/')[0] == store.active_doc.email &&
+                $route.name != 'study'
               "
               @dragstart="
                 drag = {
