@@ -223,8 +223,8 @@ const router = createRouter({
           meta: {
             page_title: "Study Portal",
             theme_color: {
-              light: "#b5b5b5",
-              dark: "#0d0d0d",
+              light: "#f2f2f2",
+              dark: "#121212",
             },
             requiresAuth: true,
           },
