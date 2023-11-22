@@ -49,9 +49,17 @@
                 <span class="study_list_task_checkbox__dot"></span>
               </div>
             </label>
-            <div class="study_list_task__boxed" :for="task.ref" @click="$emit('taskclick', task)">
+            <a
+              class="study_list_task__boxed"
+              :for="task.ref"
+              @click="
+                $emit('taskclick', task);
+                $event.preventDefault();
+              "
+              :href="'/view/' + store.path_to_ref(task.ref)"
+            >
               {{ task.name }}
-            </div>
+            </a>
           </div>
         </div>
       </div>
