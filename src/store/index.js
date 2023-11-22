@@ -442,8 +442,7 @@ export const useMainStore = defineStore({
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      * @see {@link is_finished}
      */
-    set_finished(finished, ref) {
-      console.log("set_finished", finished, ref);
+    async set_finished(finished, ref) {
       try {
         if (!this.active_doc) throw "No active doc";
         if (!ref) throw "No ref provided";
@@ -459,11 +458,9 @@ export const useMainStore = defineStore({
         } else {
           doc.finished = doc.finished.filter((p) => p != path);
         }
-        if (doc.finished != this.active_doc.finished) {
-          this.set_active(doc);
-          this.update_remote();
-        }
-        _status.log("✅ Set finished", finished, ref);
+        this.set_active(doc);
+        await this.update_remote();
+
         return Promise.resolve();
       } catch (err) {
         return Promise.reject(err);

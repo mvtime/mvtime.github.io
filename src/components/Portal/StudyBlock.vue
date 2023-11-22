@@ -98,7 +98,7 @@ export default {
     },
     filtered_tasks() {
       // select tasks that are in the filtered classes, and within a week of the current date
-      let filtered = this.tasks.filter(
+      let filtered = this.tasks?.filter(
         (task) => !this.filtered_classes.length || this.filtered_classes.includes(task.class_id)
       );
       // sort those with is_finished = false to the top
@@ -147,7 +147,7 @@ export default {
       this.store
         .set_finished(!this.is_finished(ref), ref)
         .then(() => {
-          _status.log("📦 Task finished set");
+          _status.log("📦 Task completion status set");
         })
         .catch((err) => {
           _status.error("🔥 Couldn't set task finished", err);
