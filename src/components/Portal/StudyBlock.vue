@@ -309,7 +309,7 @@ export default {
 }
 
 .study_list_task[finished="true"]
-  .study_list_task_checkbox__fixed:hover
+  .study_list_task_checkbox__fixed:hover:not(.study-list-move)
   .study_list_task_checkbox__dot {
   opacity: 0.6;
 }
@@ -348,15 +348,13 @@ export default {
 }
 
 /* hover and mobile */
-.study_list_task:hover .study_list_task_checkbox,
-.study_list_task.active .study_list_task_checkbox {
+.study_list_task:hover:not(.study-list-move) .study_list_task_checkbox {
   width: var(--height-calendar-task);
   opacity: 1;
   scale: 1;
 }
 
-.study_list_tasks .study_list_task:hover .study_list_task__boxed,
-.study_list_tasks .study_list_task.active .study_list_task__boxed {
+.study_list_tasks .study_list_task:hover:not(.study-list-move) .study_list_task__boxed {
   margin-left: var(--gap-study-checkbox);
 }
 
