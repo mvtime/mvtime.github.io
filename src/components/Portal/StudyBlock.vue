@@ -16,7 +16,12 @@
         </button>
       </div>
     </div>
-    <div class="study_list_group" :class="{ filtered: filtered_classes.length }">
+    <transition-group
+      name="study-group"
+      class="study_list_group"
+      tag="div"
+      :class="{ filtered: filtered_classes.length }"
+    >
       <div
         class="study_list"
         v-for="list in arranged"
@@ -32,7 +37,7 @@
           >{{ list[0].class_name }}</a
         >
         <hr class="study_list__separator" />
-        <div class="study_list_tasks">
+        <transition-group class="study_list_tasks" name="study-list" tag="div">
           <div
             class="study_list_task"
             v-for="task in list"
@@ -61,9 +66,9 @@
               {{ task.name }}
             </a>
           </div>
-        </div>
+        </transition-group>
       </div>
-    </div>
+    </transition-group>
   </main>
 </template>
 
@@ -191,6 +196,12 @@ export default {
 </script>
 
 <style scoped>
+/* list animations */
+.study-group-move,
+.study_list:not(.study-group-move) .study-list-move {
+  transition: transform 0.2s ease-out;
+}
+/* main */
 .study_name {
   max-width: fit-content;
 }
