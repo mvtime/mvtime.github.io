@@ -298,7 +298,8 @@ export default {
   width: 80%;
   opacity: 0.75;
   background-color: var(--color-class);
-  transition: width 0.15s ease-in-out, height 0.15s ease-in-out, opacity 0.15s ease-in-out;
+  transition: width 0.15s ease-in-out, height 0.15s ease-in-out, opacity 0.15s ease-in-out,
+    border-radius 0.15s ease-in-out;
 }
 /* active state */
 .study_list_task[finished="true"] .study_list_task_checkbox__dot {
