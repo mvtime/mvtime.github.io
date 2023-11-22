@@ -255,9 +255,11 @@ export default {
 
 .study_list_tasks .study_list_task .study_list_task_checkbox {
   height: var(--height-calendar-task);
+  opacity: 0;
   width: 0;
+  scale: 0;
   border-radius: 5px;
-  transition: width 0.15s ease-in-out;
+  transition: width 0.15s ease-in-out, opacity 0.125s 0.025s ease-in-out, scale 0.15s ease-in-out;
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;
@@ -292,8 +294,10 @@ export default {
   opacity: 0.4;
 }
 
-.study_list_task_checkbox.checked .study_list_task_checkbox__fixed {
-  opacity: 1;
+.study_list_task[finished="true"]
+  .study_list_task_checkbox__fixed:hover
+  .study_list_task_checkbox__dot {
+  opacity: 0.6;
 }
 
 .study_list_tasks .study_list_task .study_list_task__boxed {
@@ -333,6 +337,8 @@ export default {
 .study_list_task:hover .study_list_task_checkbox,
 .study_list_task.active .study_list_task_checkbox {
   width: var(--height-calendar-task);
+  opacity: 1;
+  scale: 1;
 }
 
 .study_list_tasks .study_list_task:hover .study_list_task__boxed,
@@ -343,6 +349,8 @@ export default {
 @media (max-width: 630px) {
   .study_list_tasks .study_list_task .study_list_task_checkbox {
     width: var(--height-calendar-task);
+    opacity: 1;
+    scale: 1;
   }
 
   .study_list_tasks .study_list_task .study_list_task__boxed {
