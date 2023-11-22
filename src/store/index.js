@@ -416,9 +416,59 @@ export const useMainStore = defineStore({
         return class_obj;
       });
     },
+    /**
+     * @function finished_tasks
+     * @description return all the finished tasks
+     * @returns {Boolean} If the task is finished or not
+     * @default false
+     * @see {@link set_finished}
+     */
+    finished_tasks() {
+      try {
+        if (!this.active_doc) throw "No active doc";
+        return this.active_doc.finished || [];
+      } catch (err) {
+        _status.warn("🔗 Couldn't get finished tasks", err);
+      }
+    },
   },
   /** The actions to manipulate the store state */
   actions: {
+    /**
+     * @function set_finished
+     * @description set a task with the given ref to finished in the finished array of the active doc (remove if finished is false, add path if finished is true)
+     * @param {Boolean} finished The finished status to set
+     * @param {String} ref The ref of the task to check
+     * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
+     * @see {@link is_finished}
+     */
+    set_finished(finished, ref) {
+      console.log("set_finished", finished, ref);
+      try {
+        if (!this.active_doc) throw "No active doc";
+        if (!ref) throw "No ref provided";
+        // let path = this.ref_to_path(ref);
+        let path = ref;
+        let doc = this.active_doc;
+        if (!doc.finished) {
+          doc.finished = [];
+        }
+        // if finished, add to finished array, else remove from finished array
+        if (finished) {
+          doc.finished.push(path);
+        } else {
+          doc.finished = doc.finished.filter((p) => p != path);
+        }
+        if (doc.finished != this.active_doc.finished) {
+          this.set_active(doc);
+          this.update_remote();
+        }
+        _status.log("✅ Set finished", finished, ref);
+        return Promise.resolve();
+      } catch (err) {
+        return Promise.reject(err);
+      }
+    },
     /**
      * @function path_to_ref
      * @description Convert a path to a ref (email~class_id?~task_id)
@@ -630,11 +680,16 @@ export const useMainStore = defineStore({
      * @param {Object} data The document data to replace the active document (account_doc or linked_doc) with
      */
     set_active(data) {
-      if (!data) return;
-      if (this.personal_account) {
-        this.linked_account_doc = data;
-      } else {
-        this.account_doc = data;
+      try {
+        if (!data) throw "No data provided";
+        if (this.personal_account) {
+          this.linked_account_doc = data;
+        } else {
+          this.account_doc = data;
+        }
+        return Promise.resolve();
+      } catch (err) {
+        return Promise.reject(err);
       }
     },
     /**

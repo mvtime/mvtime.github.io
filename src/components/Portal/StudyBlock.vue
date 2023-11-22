@@ -39,7 +39,12 @@
             :key="task.ref"
             :finished="is_finished(task.ref)"
           >
-            <label for="task.ref" class="study_list_task_checkbox" title="Mark task as done/undone">
+            <label
+              :for="task.ref"
+              class="study_list_task_checkbox"
+              title="Mark task as done/undone"
+              @click="toggle_finished(task.ref)"
+            >
               <div class="study_list_task_checkbox__fixed">
                 <span class="study_list_task_checkbox__dot"></span>
               </div>
@@ -98,8 +103,8 @@ export default {
       );
       // sort those with is_finished = false to the top
       filtered.sort((a, b) => {
-        let a_finished = this.is_finished(a.ref);
-        let b_finished = this.is_finished(b.ref);
+        let a_finished = this.store.finished_tasks.includes(a.ref);
+        let b_finished = this.store.finished_tasks.includes(b.ref);
         if (a_finished && !b_finished) return 1;
         if (!a_finished && b_finished) return -1;
         return 0;
@@ -114,7 +119,17 @@ export default {
         if (!arranged[task.class_id]) arranged[task.class_id] = [];
         arranged[task.class_id].push(task);
       }
-      return arranged;
+      // create an array of arrays, order by the period value of each class
+      let arranged_array = [];
+      for (let class_id in arranged) {
+        arranged_array.push(arranged[class_id]);
+      }
+      arranged_array.sort((a, b) => {
+        let a_class = this.classes[a[0].class_id];
+        let b_class = this.classes[b[0].class_id];
+        return a_class.period - b_class.period;
+      });
+      return arranged_array;
     },
   },
   methods: {
@@ -126,9 +141,17 @@ export default {
       this.is_ready = true;
     },
     is_finished(ref) {
-      //   return this.store.tasks[ref].finished;
-      void ref;
-      return false;
+      return this.store.finished_tasks.includes(ref);
+    },
+    toggle_finished(ref) {
+      this.store
+        .set_finished(!this.is_finished(ref), ref)
+        .then(() => {
+          _status.log("📦 Task finished set");
+        })
+        .catch((err) => {
+          _status.error("🔥 Couldn't set task finished", err);
+        });
     },
   },
   // watch for store.classes change
@@ -179,6 +202,8 @@ export default {
 
 .study_list_group:not(:empty) {
   display: flex;
+  align-content: flex-start;
+  justify-content: flex-start;
   flex-flow: column wrap;
   gap: 10px;
   max-height: 450px;
@@ -194,6 +219,8 @@ export default {
   flex-flow: column nowrap;
   gap: var(--gap-study-class);
   flex: 1 1 160px;
+  width: 50%;
+  max-width: 300px;
 }
 .study_list .study_list__name {
   font-size: 0.8rem;
@@ -322,6 +349,8 @@ export default {
   }
   .study_list {
     flex: 1 1 auto;
+    max-width: unset;
+    width: 100%;
   }
   .study_list_group {
     margin-top: var(--gap-study-class);
