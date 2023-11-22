@@ -16,7 +16,7 @@
         </button>
       </div>
     </div>
-    <div class="study_list_group">
+    <div class="study_list_group" :class="{ filtered: filtered_classes.length }">
       <div
         class="study_list"
         v-for="list in arranged"
@@ -206,6 +206,9 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.study_list_group.filtered:empty::before {
+  content: "No upcoming tasks found in selected classes";
 }
 
 .study_list_group:not(:empty) {
