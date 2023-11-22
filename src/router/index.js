@@ -451,6 +451,14 @@ const router = createRouter({
         requiresAuth: true,
       },
     },
+    // redirect any /study routes to /portal/study
+    {
+      path: "/study",
+      redirect: "/portal/study",
+      meta: {
+        requiresAuth: true,
+      },
+    },
   ],
   parseQuery: (query) => require("qs").parse(query),
 });
