@@ -1,7 +1,9 @@
 <template>
-  <main class="portal">
+  <main class="portal" :page="page">
     <LeftBar
       ref="LeftBar"
+      :class="{ paged: page == 'left' }"
+      :paged="page == 'left'"
       @toggle_filtered_class="toggle_filtered_class"
       @clear_filters="filtered_classes = []"
       @close_right_bar="close_right_bar"
@@ -81,6 +83,8 @@
     </div>
     <RightBar
       ref="RightBar"
+      :class="{ paged: page == 'right' }"
+      :paged="page == 'right'"
       @close_left_bar="close_left_bar"
       @mounted="
         if (loaded) {
@@ -88,6 +92,23 @@
         }
       "
     />
+    <!-- show bottom nav bar if on device 600px wide or lower -->
+
+    <nav class="portal_mobile_nav" v-if="width <= 600">
+      <button
+        class="portal_mobile_nav_page"
+        :class="{ active: page == tab }"
+        v-for="tab in ['left', 'block', 'right']"
+        :key="tab"
+        @click="page = tab"
+      >
+        <span
+          class="portal_mobile_nav_page__icon"
+          :class="{ alt: page == tab }"
+          :src="`portal-${tab}-icon`"
+        ></span>
+      </button>
+    </nav>
     <!-- show overlay only if router-view is active -->
     <OverlayWrapper
       v-if="!['portal', 'study'].includes($route.name)"
@@ -143,9 +164,14 @@ export default {
       loaded: false,
       dragging_class: null,
       is_study: this.$route.name == "study",
+      page: "block",
     };
   },
   computed: {
+    /** The width of the page */
+    width() {
+      return window.innerWidth;
+    },
     /** The path to redirect to when closing an overlay, if active */
     close_path() {
       return this.$route?.query?.redirect || this.$route?.meta?.close_path;
@@ -245,6 +271,11 @@ export default {
   },
   /** Preform same checks as mounted, but if any of the completion statuses could've changed on page switch or data load */
   watch: {
+    width(before, after) {
+      if (after <= 600 && before > 600) {
+        this.page = "block";
+      }
+    },
     did_survey() {
       this.check_and_do_survey();
     },
@@ -313,7 +344,7 @@ main.portal .portal_sidebar {
     top: calc(50% - 400px);
   }
 }
-@media (min-width: /* [desktop size] */ 1270px) and (max-height: 1200px) {
+@media (min-width: /* [desktop size] */ 1270px) and (max-height: 1200px), (max-width: 600px) {
   main.portal .portal_sidebar {
     border-radius: 0px !important;
     box-shadow: none !important;
@@ -346,7 +377,7 @@ main.portal .portal_sidebar {
   .portal_sidebar.right-bar {
     right: 0;
   }
-  main.portal .portal_sidebar:not(.active) {
+  main.portal .portal_sidebar:not(.active):not(.paged) {
     cursor: pointer;
   }
 
@@ -400,6 +431,9 @@ header.portal_info {
   .portal_content__spaced {
     justify-content: start;
   }
+  .portal_content {
+    padding: var(--padding-portal-mobile);
+  }
 }
 .portal_info,
 .portal_info > div {
@@ -420,14 +454,73 @@ header.portal_info {
     position: fixed;
     top: 0;
   }
-  .portal_content {
-    --padding-portal: 20px 30px;
-  }
 }
 @media (max-width: 340px) {
   main.portal .portal_sidebar {
     min-width: calc(100% - 40px);
   }
+}
+@media (max-width: 600px) {
+  main.portal .portal_sidebar {
+    width: 100%;
+    height: calc(100% - var(--height-portal-mobile-nav));
+    max-height: calc(100% - var(--height-portal-mobile-nav));
+    top: 0;
+    left: 0;
+    right: 0;
+    transition: transform 0.3s ease-out, border-radius 0.3s ease-out, top 0.3s ease-out,
+      height 0.3s ease-out, max-height 0.3s ease-out, left 0.3s ease-out, right 0.3s ease-out;
+    border-radius: 0 !important;
+  }
+  main.portal .portal_sidebar.left-bar {
+    transform: translateX(-100%);
+  }
+  main.portal .portal_sidebar.right-bar {
+    transform: translateX(100%);
+  }
+  main.portal[page="left"] .portal_sidebar.left-bar,
+  main.portal[page="right"] .portal_sidebar.right-bar {
+    transform: translateX(0);
+  }
+  main.portal .portal_content {
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out, filter 0.3s ease-out;
+  }
+  main.portal:not([page="block"]) .portal_content {
+    transform: scale(0.9);
+    opacity: 0.7;
+    filter: blur(3px);
+  }
+  /* layout */
+  main.portal {
+    flex-flow: column nowrap;
+  }
+  main.portal .portal_content {
+    position: unset;
+  }
+}
+
+/* mobile nav */
+.portal_mobile_nav {
+  height: var(--height-portal-mobile-nav);
+  flex: 0 0 var(--height-portal-mobile-nav);
+  width: 100%;
+  background: var(--color-bg);
+  border-top: 3px solid var(--color-on-bg);
+  /* layout */
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: stretch;
+  align-items: stretch;
+}
+.portal_mobile_nav .portal_mobile_nav_page {
+  flex: 1 1 33%;
+  /* style */
+  border: none;
+  background: none;
+  /* layout */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 /* print media */
 @media print {
@@ -436,6 +529,44 @@ header.portal_info {
   }
   main.portal .portal_content {
     padding: 0;
+  }
+}
+
+/* icons */
+.portal_mobile_nav_page__icon {
+  height: 40px;
+  width: 40px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: var(--filter-icon);
+  /* transition */
+  transition: opacity 0.2s ease-out, scale 0.2s ease-out;
+  scale: 1;
+  opacity: 0.5;
+}
+.portal_mobile_nav_page__icon.alt {
+  opacity: 1;
+  scale: 1.2;
+}
+.portal_mobile_nav_page__icon[src="portal-left-icon"] {
+  background-image: url(@/assets/img/general/portal/nav/left.png);
+  background-image: url(@/assets/img/general/portal/nav/left.svg);
+}
+.portal_mobile_nav_page__icon[src="portal-block-icon"] {
+  background-image: url(@/assets/img/general/portal/nav/block.png);
+  background-image: url(@/assets/img/general/portal/nav/block.svg);
+}
+
+.portal_mobile_nav_page__icon[src="portal-right-icon"] {
+  background-image: url(@/assets/img/general/portal/nav/right.png);
+  background-image: url(@/assets/img/general/portal/nav/right.svg);
+}
+</style>
+<style>
+@media (max-width: 600px) {
+  main.portal .sidebar_toggle {
+    display: none;
   }
 }
 </style>

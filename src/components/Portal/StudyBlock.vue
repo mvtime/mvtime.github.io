@@ -472,8 +472,10 @@ export default {
     max-width: unset;
     width: 100%;
   }
-  .study_list_group {
-    margin-top: var(--gap-study-class);
+  @media (max-width: 450px) {
+    .portal_main_block_title.study_name {
+      display: none;
+    }
   }
 }
 </style>

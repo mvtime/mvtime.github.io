@@ -37,6 +37,12 @@ export default {
     ClassList,
     ActionsPanel,
   },
+  props: {
+    paged: {
+      type: Boolean,
+      default: false,
+    },
+  },
   emits: ["close_right_bar", "set_class", "mounted", "dragclass"],
   data() {
     return {
@@ -71,6 +77,11 @@ export default {
       this.loading = false;
     },
   },
+  watch: {
+    paged() {
+      if (this.paged) this.sidebar_open = true;
+    },
+  },
 };
 </script>
 
@@ -91,7 +102,7 @@ export default {
     transform: translate(calc(-100% + 25px));
   }
   /* prevent accidental clicks when hovering over collapsed sidebar */
-  main.portal .portal_sidebar:not(.active) * {
+  main.portal .portal_sidebar:not(.active):not(.paged) * {
     pointer-events: none !important;
     user-select: none !important;
   }

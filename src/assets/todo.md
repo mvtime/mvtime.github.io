@@ -14,11 +14,11 @@
 
 ## Working on Now / Planned Soon (Sander)
 
-- Mobile Interface
-  - pages on mobile instead of sidebars
 - Studying
   - system for studying/working on tasks
-  - ability to mark tasks as done--by signature?
+  - track task completion based on hash
+  - ~~ability to mark tasks as done~~
+  - ~~notes on tasks~~
 - Admin / Contact
   - Add/implement analytics
   - Send messages from w/i the app using mail system
@@ -78,6 +78,8 @@
   - ~~create prefs screen~~
   - ~~allow connected personal / non-school email~~
     - ~~settings from portal / email links~~
+- ~~Mobile Interface~~
+  - ~~pages on mobile instead of sidebars~~
 - ~~Non-User-Facing~~
   - ~~cleanup code / write docs~~
     ~~Tasks / Calendar Objects~~

@@ -17,12 +17,14 @@ body,
   /* portal */
   --radius-calendar: 15px;
   --padding-portal: 60px;
+  --padding-portal-mobile: 20px 30px;
   /* sidebar */
   --radius-sidebar: 20px;
   --padding-sidebar: 20px;
   --size-sidebar-button: 35px;
   --width-sidebar-button-showing: 140px;
   /* calendar page vars */
+  --margin-calendar-header: 10px;
   --padding-calendar: 20px;
   --gap-calendar-header: 10px;
   --size-calendar-header: 30px;
@@ -69,6 +71,8 @@ body,
   --padding-sentiment-option: 20px;
   --margin-sentiment-option: 5px;
   --radius-sentiment-option: 5px;
+  /* mobile portal nav */
+  --height-portal-mobile-nav: 80px;
 }
 /* light theme colors for the project */
 body,

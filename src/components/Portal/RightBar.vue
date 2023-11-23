@@ -26,6 +26,12 @@ export default {
     SidebarToggle,
     UpcomingTests,
   },
+  props: {
+    paged: {
+      type: Boolean,
+      default: false,
+    },
+  },
   emits: ["close_left_bar", "mounted"],
   data() {
     return {
@@ -52,6 +58,11 @@ export default {
     },
     load() {
       this.loading = false;
+    },
+  },
+  watch: {
+    paged() {
+      if (this.paged) this.sidebar_open = true;
     },
   },
 };
@@ -98,7 +109,7 @@ export default {
     transform: translate(calc(100% - 25px));
   }
   /* prevent accidental clicks when hovering over collapsed sidebar */
-  main.portal .portal_sidebar:not(.active) * {
+  main.portal .portal_sidebar:not(.active):not(.paged) * {
     pointer-events: none !important;
     user-select: none !important;
   }
