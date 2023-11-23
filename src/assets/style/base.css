@@ -87,6 +87,7 @@ body,
   --color-footer-text: #222;
   --color-link: #45818e;
   --color-theme: #f5c14b;
+  --color-select: #f5c24b80;
   --color-theme-alt: #f5c14b40;
   --color-theme-accent: #000;
   --color-theme-accent-border: #4c4c4c;
@@ -169,6 +170,7 @@ body:has(#themed_body[_theme="dark"]) {
   --color-footer: #3a3a3a;
   --color-footer-text: #ddd;
   --color-link: #178ca7;
+  --color-select: #f5c14b;
   --color-action: #f5c14b;
   --color-on-action: #000;
   --filter-icon: invert(1) hue-rotate(180deg);
@@ -373,6 +375,6 @@ img.loading_icon {
   filter: brightness(0.75) drop-shadow(0px 0px 3px #00000060);
 }
 ::selection {
-  background: var(--color-theme);
+  background: var(--color-select);
   color: var(--color-theme-accent);
 }
