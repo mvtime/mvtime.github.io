@@ -24,7 +24,10 @@
           title="View Calendar"
           @click="swap_to_calendar"
         >
-          <div class="action_icon cal-icon"></div>
+          <div
+            class="action_icon cal-icon"
+            :class="{ alt: store.upcoming && store.upcoming.length }"
+          ></div>
         </button>
       </div>
     </div>
