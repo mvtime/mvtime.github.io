@@ -507,7 +507,6 @@ header.portal_info {
   background: var(--color-bg);
   border-top: 3px solid var(--color-on-bg);
   /* layout */
-  display: flex;
   flex-flow: row nowrap;
   justify-content: stretch;
   align-items: stretch;
@@ -567,6 +566,9 @@ header.portal_info {
 @media (max-width: 600px) {
   main.portal .sidebar_toggle {
     display: none;
+  }
+  main.portal .portal_mobile_nav {
+    display: flex;
   }
 }
 </style>
