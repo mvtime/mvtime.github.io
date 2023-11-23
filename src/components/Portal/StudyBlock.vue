@@ -34,7 +34,8 @@
         <a
           class="study_list__name"
           :href="'/view/' + store.path_to_ref(classes[list[0].class_id].ref)"
-          >{{ list[0].class_name }}</a
+        >
+          {{ list[0].class_name }}</a
         >
         <hr class="study_list__separator" />
         <transition-group class="study_list_tasks" name="study-list" tag="div">
@@ -63,7 +64,7 @@
               "
               :href="'/view/' + store.path_to_ref(task.ref)"
             >
-              {{ task.name }}
+              <span class="study_list_task__name__text">{{ task.name }}</span>
             </a>
             <span class="study_list_task__date study_list_task__boxed">{{
               (task.date &&
@@ -277,6 +278,8 @@ export default {
   opacity: 0;
   width: 0;
   scale: 0;
+  flex-shrink: 0;
+  flex-grow: 0;
   border-radius: 5px;
   transition: width 0.15s ease-in-out, opacity 0.125s 0.025s ease-in-out, scale 0.15s ease-in-out;
   display: flex;
@@ -329,7 +332,6 @@ export default {
   font-size: 0.8rem;
   font-weight: 600;
   border-radius: 5px;
-  text-align: center;
   height: var(--height-calendar-task);
   display: flex;
   flex-flow: row nowrap;
@@ -340,6 +342,15 @@ export default {
   transition: margin-left 0.15s ease-in-out;
   cursor: pointer;
 }
+
+.study_list_tasks .study_list_task .study_list_task__name__text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  display: inline-block;
+}
+
 .study_list_tasks .study_list_task .study_list_task__date {
   margin-left: var(--gap-study-checkbox);
   flex: 0 0 4em;
