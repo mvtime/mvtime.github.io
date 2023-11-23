@@ -337,28 +337,41 @@ export default {
   flex-flow: row nowrap;
   justify-content: center;
   align-items: center;
+  transition: margin-left 0.15s ease-in-out, padding 0.15s ease-in-out, width 0.15s ease-in-out;
 }
+
+.study_list_tasks .study_list_task .study_list_task__date {
+  margin-left: var(--gap-study-checkbox);
+  flex-shrink: 0;
+  flex-grow: 0;
+  width: 4em;
+  opacity: 0.6;
+  user-select: none;
+  cursor: default;
+  white-space: nowrap;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: clip;
+}
+
+.study_list_tasks .study_list_task[finished="true"] .study_list_task__boxed.study_list_task__date {
+  opacity: 0;
+  padding: var(--padding-calendar-task) 0;
+  width: 0;
+  margin-left: 0;
+}
+
 .study_list_tasks .study_list_task .study_list_task__name {
-  transition: margin-left 0.15s ease-in-out;
   cursor: pointer;
 }
 
-.study_list_tasks .study_list_task .study_list_task__name__text {
+.study_list_tasks .study_list_task .study_list_task__name .study_list_task__name__text {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 100%;
   display: inline-block;
 }
-
-.study_list_tasks .study_list_task .study_list_task__date {
-  margin-left: var(--gap-study-checkbox);
-  flex: 0 0 4em;
-  opacity: 0.6;
-  user-select: none;
-  cursor: default;
-}
-
 .study_list_tasks .study_list_task:not([finished="true"]) .study_list_task__boxed {
   filter: var(--filter-calendar-task);
   padding: var(--padding-calendar-task);
