@@ -7,6 +7,18 @@
         Upcoming<span class="desktop_only_text">&nbsp;Assignments</span>
       </div>
       <div class="portal_main_block_actions_wrapper">
+        <nav class="portal_main_block_actions portal_main_block_actions_freeform">
+          <button
+            class="portal_main_block_action portal_main_block_action_freeform portal_main_block_action__text"
+            @click="days = length[0]"
+            :title="length[2]"
+            v-for="length in lengths"
+            :key="length[0]"
+            :class="{ active: days == length[0] }"
+          >
+            {{ length[1] }}
+          </button>
+        </nav>
         <button
           class="portal_main_block_action portal_main_block_action_alt"
           title="View Calendar"
@@ -96,12 +108,19 @@ export default {
     return {
       tasks: [],
       is_ready: false,
+      days: 7,
+      lengths: [
+        [1, "Day", "Tasks today"],
+        [7, "Week", "Tasks in the next month"],
+        [31, "Month", "Tasks in the next year"],
+        [Number.MAX_SAFE_INTEGER, "All", "All upcoming tasks"],
+      ],
     };
   },
   mounted() {
     _status.log("👓 Study page mounted");
     this.$emit("mounted");
-    this.tasks = this.store.upcoming;
+    this.tasks = this.store.tasks;
   },
   computed: {
     store() {
@@ -116,10 +135,28 @@ export default {
       return classes;
     },
     filtered_tasks() {
-      // select tasks that are in the filtered classes, and within a week of the current date
+      // select tasks that are in the filtered classes, and within the selected time period
       let filtered = this.tasks?.filter(
         (task) => !this.filtered_classes.length || this.filtered_classes.includes(task.class_id)
       );
+      const now = Date.now(); // new Date().setHours(0, 0, 0, 0);
+      // 8 hours in ms (show today's tasks as upcoming until 8AM)
+      const morning = 8 * 60 * 60 * 1000;
+      filtered = filtered
+        .filter((task) => {
+          const diff = task?.date?.getTime ? task.date.getTime() : 0;
+          return (
+            task.type != "note" &&
+            diff >= now - morning &&
+            diff <= now + this.days * 24 * 60 * 60 * 1000
+          );
+        })
+        .sort((a, b) => {
+          if (a.date < b.date) return -1;
+          if (a.date > b.date) return 1;
+          return 0;
+        });
+
       // sort those with is_finished = false to the top
       filtered.sort((a, b) => {
         let a_finished = this.store.finished_tasks.includes(a.ref);
@@ -156,7 +193,7 @@ export default {
       this.$router.push({ name: "portal" });
     },
     run_get_tasks() {
-      this.tasks = this.store.upcoming;
+      this.tasks = this.store.tasks;
       this.is_ready = true;
     },
     is_finished(ref) {
@@ -193,7 +230,7 @@ export default {
     },
     "store.tasks": {
       handler() {
-        this.tasks = this.store.upcoming;
+        this.tasks = this.store.tasks;
       },
       deep: true,
     },
@@ -211,6 +248,9 @@ export default {
 .study_name {
   max-width: fit-content;
 }
+.study_list_group {
+  padding: var(--spacing-calendar-day);
+}
 .study_list_group:empty::before {
   content: "No upcoming tasks found";
   color: var(--text-color);
@@ -218,7 +258,7 @@ export default {
   opacity: 0.5;
   text-align: center;
   width: 100%;
-  height: 100px;
+  height: 100%;
   padding-bottom: calc(var(--padding-calendar) * 0.5 + var(--size-calendar-header));
   display: flex;
   align-items: center;
@@ -236,6 +276,10 @@ export default {
   gap: 10px;
   max-height: 450px;
   height: 70vh;
+}
+.study_list_group:empty {
+  max-height: 70vh;
+  height: 450px;
 }
 
 .study_list {
@@ -295,13 +339,18 @@ export default {
   height: var(--height-calendar-task);
   min-width: var(--height-calendar-task);
   display: flex;
-  flex-flow: row nowrap;
+  /* flex-flow: row nowrap;
   justify-content: center;
-  align-items: center;
+  align-items: center; */
+  position: relative;
 }
 
 .study_list_task_checkbox__dot {
   border-radius: 5px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   height: 80%;
   width: 80%;
   opacity: 0.75;

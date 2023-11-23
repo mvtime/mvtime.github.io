@@ -88,9 +88,9 @@ main.portal_main_block {
 
 .portal_main_block_actions_wrapper {
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: row wrap;
   justify-content: flex-end;
-  align-items: stretch;
+  align-items: flex-start;
   gap: 10px;
 }
 .portal_main_block_actions {
@@ -102,9 +102,18 @@ main.portal_main_block {
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
-  height: 100%;
+  height: var(--size-calendar-header);
   border-radius: calc(var(--radius-calendar) / 2);
   overflow: hidden;
+}
+.portal_main_block_actions.portal_main_block_actions_freeform {
+  flex: 0 1 auto;
+  height: unset;
+}
+@media (max-width: 299px) {
+  .portal_main_block_actions.portal_main_block_actions_freeform {
+    flex-wrap: wrap;
+  }
 }
 
 .portal_main_block_action {
@@ -114,10 +123,27 @@ main.portal_main_block {
   border: none;
   padding: 0;
 }
-.portal_main_block_action_alt {
+.portal_main_block_action.portal_main_block_action_freeform {
+  width: unset;
+  padding: 0 calc(var(--padding-calendar) / 2);
+}
+.portal_main_block_action.portal_main_block_action_alt {
   border-radius: calc(var(--radius-calendar) / 2);
 }
-.portal_main_block_action:hover {
+
+.portal_main_block_action__text {
+  font-size: 0.9em;
+  font-weight: 600;
+  color: var(--color-on-calendar);
+  user-select: none;
+}
+
+.portal_main_block_action__text.active {
+  color: var(--color-on-calendar-alt);
+}
+
+.portal_main_block_action:hover,
+.portal_main_block_action.active {
   background-color: var(--color-calendar-header-hover);
 }
 .portal_main_block_action > div {
@@ -165,13 +191,14 @@ main.portal_main_block {
     height: unset;
     margin: 0;
     width: 100%;
+    gap: var(--gap-calendar-header);
+    margin-bottom: var(--margin-calendar-header);
   }
   .portal_main_block_header > * {
     flex-basis: 100px;
     flex-shrink: 1;
     flex-grow: 1;
     width: 100%;
-    margin: var(--spacing-calendar-day);
   }
   .portal_main_block_title {
     white-space: nowrap;

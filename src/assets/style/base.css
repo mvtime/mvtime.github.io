@@ -24,6 +24,7 @@ body,
   --width-sidebar-button-showing: 140px;
   /* calendar page vars */
   --padding-calendar: 20px;
+  --gap-calendar-header: 10px;
   --size-calendar-header: 30px;
   --gap-calendar-day: 5px;
   --radius-calendar-day: 5px;

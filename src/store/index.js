@@ -214,9 +214,9 @@ export const useMainStore = defineStore({
      */
     upcoming() {
       if (!this.tasks) return [];
-      let now = Date.now(); // new Date().setHours(0, 0, 0, 0);
+      const now = Date.now(); // new Date().setHours(0, 0, 0, 0);
       // 8 hours in ms (show today's tasks as upcoming until 8AM)
-      let morning = 8 * 60 * 60 * 1000;
+      const morning = 8 * 60 * 60 * 1000;
       return this.tasks
         .filter((task) => {
           return (
