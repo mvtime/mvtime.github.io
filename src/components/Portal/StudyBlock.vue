@@ -251,9 +251,6 @@ export default {
 .study_name {
   max-width: fit-content;
 }
-.study_list_group {
-  padding: var(--spacing-calendar-day);
-}
 .study_list_group:empty::before {
   content: "No upcoming tasks found";
   color: var(--text-color);
@@ -451,6 +448,9 @@ export default {
 }
 
 @media (max-width: 630px) {
+  .study_list_group {
+    padding: var(--spacing-calendar-day);
+  }
   .study_list_tasks .study_list_task .study_list_task_checkbox {
     width: var(--height-calendar-task);
     opacity: 1;
