@@ -337,7 +337,8 @@ export default {
   flex-flow: row nowrap;
   justify-content: center;
   align-items: center;
-  transition: margin-left 0.15s ease-in-out, padding 0.15s ease-in-out, width 0.15s ease-in-out;
+  transition: margin-left 0.15s ease-in-out, padding 0.15s ease-in-out, width 0.15s ease-out,
+    opacity 0.15s ease-out;
 }
 
 .study_list_tasks .study_list_task .study_list_task__date {
