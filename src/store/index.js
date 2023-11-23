@@ -431,9 +431,64 @@ export const useMainStore = defineStore({
         _status.warn("🔗 Couldn't get finished tasks", err);
       }
     },
+    /**
+     * @function notes
+     * @description return all the notes in a dictionary with the ref as the key
+     * @returns {Object} Dictionary of notes with refs as keys
+     * @default {}
+     */
+    notes() {
+      try {
+        if (!this.active_doc) throw "No active doc";
+        return this.active_doc.notes || {};
+      } catch (err) {
+        _status.warn("🔗 Couldn't get notes", err);
+        return {};
+      }
+    },
   },
   /** The actions to manipulate the store state */
   actions: {
+    /**
+     * @function note_for
+     * @description Get the note for the given ref
+     * @param {String} note The note to set
+     * @param {String} ref The ref of the task to get the note for
+     * @returns {String} The note for the given ref
+     * @see {@link set_note}
+     * @see {@link notes}
+     */
+    note_for(ref) {
+      return (this.notes && this.notes[this.ref_to_path(ref)]) || null;
+    },
+    /**
+     * @function set_note
+     * @description set a task with the given path to have a note in the keyed "notes" property of the active doc (remove if value is falsey, add note if truthy)
+     * @param {String} note The note to set
+     * @param {String} ref The ref of the task to set the note for
+     * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
+     * @see {@link note_for}
+     * @see {@link notes}
+     */
+    async set_note(note, ref) {
+      try {
+        if (!this.active_doc) throw "No active doc";
+        if (!ref) throw "No ref provided";
+        let path = this.ref_to_path(ref);
+        let doc = this.active_doc;
+        if (!doc.notes) {
+          doc.notes = {};
+        }
+
+        doc.notes[path] = note || null;
+
+        this.set_active(doc);
+        await this.update_remote();
+        return Promise.resolve();
+      } catch (err) {
+        return Promise.reject(err);
+      }
+    },
     /**
      * @function set_finished
      * @description set a task with the given ref to finished in the finished array of the active doc (remove if finished is false, add path if finished is true)

@@ -249,15 +249,14 @@ export default {
           this.$router.push({
             name: "viewtask",
             params: {
-              type: this.task.type,
               ref: this.$route.params.ref,
             },
           });
         })
         .catch((err) => {
           this.loading = false;
-          _status.error(`📃 Couldn't create ${this.task.type || "task"}:`, err);
-          new ErrorToast("Couldn't create task", err, 2000);
+          _status.error(`📃 Couldn't save changes to ${this.task.type || "task"}:`, err);
+          new ErrorToast(`Couldn't edit ${this.task.type || "task"}`, err, 2000);
         });
     },
     archive_task() {

@@ -62,6 +62,12 @@
               >
             </span>
           </div>
+
+          <div class="styled_obj" v-if="note && task.type != 'note'">
+            <span class="styled_line__label">Your Notes:</span>
+            <span class="styled_line__separator"></span>
+            <span class="styled_line__value md md_contents" v-html="note || 'None Yet'"></span>
+          </div>
         </div>
         <div class="overlay_contents_text">
           Information is provided by teachers and volunteer students, and may not always be correct
@@ -72,6 +78,13 @@
     <div class="bottom_actions">
       <button class="continue_action" @click="$emit('close')">Close</button>
       <div class="flex_spacer"></div>
+      <button
+        class="edit_action primary_styled"
+        v-if="!store.is_teacher && store.user && task && task.type != 'note'"
+        @click="notes_task"
+      >
+        Notes
+      </button>
       <button
         class="edit_action primary_styled"
         v-if="
@@ -137,6 +150,12 @@ export default {
         this.task.description
       );
     },
+    note() {
+      const ref = this.$route?.params?.ref;
+      if (!this.task || !ref) return;
+      const note = this.store.note_for(ref);
+      return note && converter.makeHtml(note);
+    },
   },
   mounted() {
     this.$smoothReflow({
@@ -174,6 +193,15 @@ export default {
       // this.$emit("close");
       this.$router.push({
         name: "edit",
+        params: {
+          ref: this.$route?.params?.ref,
+        },
+      });
+    },
+    notes_task() {
+      // this.$emit("close");
+      this.$router.push({
+        name: "notes",
         params: {
           ref: this.$route?.params?.ref,
         },

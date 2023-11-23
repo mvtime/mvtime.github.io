@@ -356,6 +356,20 @@ const router = createRouter({
         },
         {
           // specify param "ref" in the route
+          path: "/portal/notes/:ref?",
+          name: "notes",
+          component: () => import("../views/Portal/NotesTask.vue"),
+          meta: {
+            page_title: "Your Task Notes",
+            theme_color: {
+              light: "#b5b5b5",
+              dark: "#0d0d0d",
+            },
+            requiresAuth: true,
+          },
+        },
+        {
+          // specify param "ref" in the route
           path: "/portal/view/:ref?",
           name: "viewtask",
           component: () => import("../views/Portal/ViewTask.vue"),

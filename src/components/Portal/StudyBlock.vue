@@ -55,7 +55,7 @@
               </div>
             </label>
             <a
-              class="study_list_task__boxed"
+              class="study_list_task__name study_list_task__boxed"
               :for="task.ref"
               @click="
                 $emit('taskclick', task);
@@ -65,6 +65,11 @@
             >
               {{ task.name }}
             </a>
+            <span class="study_list_task__date study_list_task__boxed">{{
+              (task.date &&
+                task.date.toLocaleDateString(undefined, { month: "numeric", day: "numeric" })) ||
+              "Invalid Date"
+            }}</span>
           </div>
         </transition-group>
       </div>
@@ -326,12 +331,21 @@ export default {
   border-radius: 5px;
   text-align: center;
   height: var(--height-calendar-task);
-  cursor: pointer;
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;
   align-items: center;
+}
+.study_list_tasks .study_list_task .study_list_task__name {
   transition: margin-left 0.15s ease-in-out;
+  cursor: pointer;
+}
+.study_list_tasks .study_list_task .study_list_task__date {
+  margin-left: var(--gap-study-checkbox);
+  flex: 0 0 4em;
+  opacity: 0.6;
+  user-select: none;
+  cursor: default;
 }
 
 .study_list_tasks .study_list_task:not([finished="true"]) .study_list_task__boxed {
