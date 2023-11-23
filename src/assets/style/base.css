@@ -103,6 +103,7 @@ body,
   --color-on-calendar: #b6b6b6;
   --color-calendar-header: #e8e8e8;
   --color-calendar-header-hover: #d9d9d9;
+  --color-on-calendar-header-alt: #464646;
   /* calendar day */
   --color-calendar-day: #f0f0f0;
   --color-calendar-day-today: #ffe8b3;
@@ -183,7 +184,8 @@ body:has(#themed_body[_theme="dark"]) {
   --color-calendar-alt: #212121;
   --color-on-calendar: #707070;
   --color-calendar-header: #2b2b2b;
-  --color-calendar-header-hover: #333333;
+  --color-calendar-header-hover: #3b3b3b;
+  --color-on-calendar-header-alt: #f1f1f1;
   --color-calendar-day: #2b2b2b;
   --color-calendar-day-today: #3d3a33;
   --color-calendar-date: #55555560;

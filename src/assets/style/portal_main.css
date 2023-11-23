@@ -139,7 +139,7 @@ main.portal_main_block {
 }
 
 .portal_main_block_action__text.active {
-  color: var(--color-on-calendar-alt);
+  color: var(--color-on-calendar-header-alt);
 }
 
 .portal_main_block_action:hover,
