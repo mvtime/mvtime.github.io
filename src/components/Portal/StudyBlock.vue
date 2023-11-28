@@ -478,4 +478,13 @@ export default {
     }
   }
 }
+@media (max-width: /* [desktop size] */ 1270px) {
+  .study_list_group:not(:empty) {
+    flex-flow: row wrap;
+  }
+  .study_list {
+    max-width: 160px;
+    flex-shrink: 0;
+  }
+}
 </style>

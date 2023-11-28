@@ -259,6 +259,7 @@ export default {
       this.store
         .create_task(this.task, this.task_classes)
         .then(() => {
+          //! router to new task view?
           this.$emit("close");
         })
         .catch((err) => {
