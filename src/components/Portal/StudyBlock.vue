@@ -499,7 +499,7 @@ export default {
     flex-flow: row wrap;
   }
   .study_list {
-    max-width: 50%;
+    max-width: 33.33%;
     min-height: 120px;
     flex-shrink: 0;
   }
