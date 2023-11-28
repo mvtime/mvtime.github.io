@@ -483,7 +483,7 @@ export default {
     flex-flow: row wrap;
   }
   .study_list {
-    max-width: 160px;
+    max-width: 240px;
     flex-shrink: 0;
   }
 }
