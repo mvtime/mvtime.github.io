@@ -276,7 +276,23 @@ export default {
   gap: 10px;
   max-height: 450px;
   height: 70vh;
+  overflow-y: auto;
 }
+.study_list_group:not(:empty)::-webkit-scrollbar-corner {
+  display: none;
+}
+.study_list_group:not(:empty)::-webkit-scrollbar {
+  background: var(--color-calendar);
+}
+
+.study_list_group:not(:empty)::-webkit-scrollbar-thumb {
+  width: 8px;
+  height: 8px;
+  background: var(--color-calendar-header);
+  border-radius: 10px;
+  border: 4px solid var(--color-calendar);
+}
+
 .study_list_group:empty {
   max-height: 70vh;
   height: 450px;
@@ -483,7 +499,8 @@ export default {
     flex-flow: row wrap;
   }
   .study_list {
-    max-width: 240px;
+    max-width: 50%;
+    min-height: 120px;
     flex-shrink: 0;
   }
 }
