@@ -84,7 +84,7 @@ export default {
   border-radius: 10px;
   padding: 10px;
   padding-left: 0px;
-  transition: background-color 0.1s ease-out;
+  /* transition: background-color 0.1s ease-out; */
 }
 .teacher_actions .teacher_action[disabled="true"] {
   cursor: not-allowed;
