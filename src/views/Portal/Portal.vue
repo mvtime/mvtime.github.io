@@ -94,7 +94,7 @@
     />
     <!-- show bottom nav bar if on device 600px wide or lower -->
 
-    <nav class="portal_mobile_nav" v-if="width <= 600">
+    <nav class="portal_mobile_nav">
       <button
         class="portal_mobile_nav_page"
         :class="{ active: page == tab }"
@@ -510,6 +510,8 @@ header.portal_info {
   flex-flow: row nowrap;
   justify-content: stretch;
   align-items: stretch;
+  /* mobile only */
+  display: none;
 }
 .portal_mobile_nav .portal_mobile_nav_page {
   flex: 1 1 33%;
