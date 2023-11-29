@@ -494,7 +494,7 @@ export default {
     }
   }
 }
-@media (max-width: /* [desktop size] */ 1270px) {
+@media (max-width: /* [desktop size] */ 1270px) and (min-width: 600px) {
   .study_list_group:not(:empty) {
     flex-flow: row wrap;
   }
