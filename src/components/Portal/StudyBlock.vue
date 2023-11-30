@@ -513,6 +513,7 @@ export default {
   .study_list {
     max-width: 33.33%;
     min-height: 120px;
+    flex-basis: auto;
     flex-shrink: 0;
   }
 }
