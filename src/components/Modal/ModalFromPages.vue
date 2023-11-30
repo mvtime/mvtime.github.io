@@ -27,7 +27,6 @@
  * @property {Array} pages - An array of page objects, each with a title (String) and content (Component) or html (String), and most importantly a @update and @status emit.
  * @emits {Array} finish - Emitted when the user has finished all pages, with an array of responses from each page.
  */
-window.onbeforeunload = confirm_unfinished;
 function confirm_unfinished() {
   // message irrelevant for most browsers, but nice to have
   return "You haven't finished the task yet, and might lose progress. Are you sure you want to close the tab?";
@@ -109,6 +108,11 @@ export default {
         },
       };
       if (this.can_continue && this.page_index < this.pages.length - 1) {
+        // add unload listener to prevent accidental closing if previous page is 1st
+        if (this.page_index == 0) {
+          window.onbeforeunload = confirm_unfinished;
+        }
+
         // switch to next page
         this.page_index++;
       } else if (this.can_continue) {
