@@ -1,7 +1,9 @@
 <template>
   <div class="upcoming_tasks">
     <div v-if="(tasks && tasks.length) || loading" class="upcoming_tasks__not_empty">
-      <h5>Upcoming</h5>
+      <h5>
+        <router-link :to="{ name: 'study' }" class="upcoming_tasks__title">Upcoming</router-link>
+      </h5>
       <hr class="upcoming_tasks_hr" />
       <div class="tasks_container" v-if="tasks && tasks.length">
         <ExamCard
@@ -88,6 +90,9 @@ h5 {
   letter-spacing: 0.015rem;
   line-height: 27px;
   text-align: center;
+}
+.upcoming_tasks__title {
+  color: inherit;
 }
 .upcoming_tasks_hr {
   margin: 5px 0;
