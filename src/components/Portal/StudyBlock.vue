@@ -142,9 +142,10 @@ export default {
       let filtered = this.tasks?.filter(
         (task) => !this.filtered_classes.length || this.filtered_classes.includes(task.class_id)
       );
-      const now = Date.now(); // new Date().setHours(0, 0, 0, 0);
+      const now = Date.now();
       // 16 hours in ms (show today's tasks as upcoming until 4PM)
       const morning = 16 * 60 * 60 * 1000;
+
       filtered = filtered
         .filter((task) => {
           const diff = task?.date?.getTime ? task.date.getTime() : 0;
