@@ -495,13 +495,19 @@ export default {
   }
 }
 @media (max-width: /* [desktop size] */ 1270px) and (min-width: 600px) {
-  .study_list_group:not(:empty) {
-    flex-flow: row wrap;
-  }
   .study_list {
     max-width: 33.33%;
     min-height: 120px;
     flex-shrink: 0;
+  }
+}
+@media (max-width: 800px) and (min-width: 600px) {
+  .study_list_group:not(:empty) {
+    flex-flow: row wrap;
+  }
+  .study_list {
+    flex-basis: 33.33%;
+    max-width: calc(50% - 5px);
   }
 }
 </style>
