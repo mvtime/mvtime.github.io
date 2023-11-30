@@ -1755,6 +1755,7 @@ export const useMainStore = defineStore({
         _email += this.ORG_DOMAIN;
         let class_doc = await getDoc(doc(db, "classes", _email, "classes", _id));
         let class_data = class_doc.data();
+        delete class_data.tasks;
         _status.log("📚 Got class from ref");
 
         let task_doc = await getDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id));

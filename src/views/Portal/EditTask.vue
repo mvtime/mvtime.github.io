@@ -230,6 +230,7 @@ export default {
       // add protocol if missing
       this.newlink.path = new URL(this.newlink.path).href;
       this.task.links.push(this.newlink);
+      this.task.links = [...new Set(this.task.links)];
       this.newlink = {
         text: "",
         path: "",
@@ -291,7 +292,8 @@ export default {
             this.$emit("close");
           } else {
             this.task = task;
-            this.original = { ...task };
+            // set original to be unconnected copy of task
+            this.original = JSON.parse(JSON.stringify(task));
             this.ready = true;
             this.loading = false;
           }
