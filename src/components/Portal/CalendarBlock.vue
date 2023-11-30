@@ -35,7 +35,10 @@
           @click="swap_to_study"
           title="View study portal"
         >
-          <div class="action_icon todo-icon"></div>
+          <div
+            class="action_icon todo-icon"
+            :class="{ alt: store.upcoming && store.upcoming.length }"
+          ></div>
         </button>
       </div>
     </div>

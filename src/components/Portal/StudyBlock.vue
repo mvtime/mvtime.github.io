@@ -79,7 +79,7 @@
               "
               :href="'/view/' + store.path_to_ref(task.ref)"
             >
-              <span class="study_list_task__name__text">{{ task.name }}</span>
+              <span class="study_list_task__name__text">{{ prefixed_name(task) }}</span>
             </a>
             <span class="study_list_task__date study_list_task__boxed">{{
               (task.date &&
@@ -118,6 +118,17 @@ export default {
         [31, "Month", "Tasks in the next year"],
         [Number.MAX_SAFE_INTEGER, "All", "All upcoming tasks"],
       ],
+      prefixes: {
+        note: "",
+        task: "Complete ",
+        // socratic: "",
+        test: "Study for ",
+        // summative: "",
+        // midterm: "",
+        project: "Prepare ",
+        quiz: "Study for ",
+        exam: "Study for ",
+      },
     };
   },
   mounted() {
@@ -193,6 +204,9 @@ export default {
     },
   },
   methods: {
+    prefixed_name(task) {
+      return this.prefixes[task.type] + task.name;
+    },
     swap_to_calendar() {
       this.$router.push({ name: "portal" });
     },
