@@ -353,6 +353,7 @@ export default {
   opacity: 0;
   width: 0;
   scale: 0;
+  transform-origin: center center;
   flex-shrink: 0;
   flex-grow: 0;
   border-radius: 5px;
@@ -370,9 +371,6 @@ export default {
   height: var(--height-calendar-task);
   min-width: var(--height-calendar-task);
   display: flex;
-  /* flex-flow: row nowrap;
-  justify-content: center;
-  align-items: center; */
   position: relative;
 }
 
@@ -401,6 +399,12 @@ export default {
   .study_list_task_checkbox__fixed:hover:not(.study-list-move)
   .study_list_task_checkbox__dot {
   opacity: 0.6;
+}
+
+.study_list_task_checkbox__fixed:hover:not(.study-list-move) .study_list_task_checkbox__dot {
+  height: 12px;
+  width: 12px;
+  border-radius: 4px;
 }
 
 .study_list_tasks .study_list_task .study_list_task__boxed {
