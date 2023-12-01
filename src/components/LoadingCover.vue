@@ -5,8 +5,9 @@
     <div class="loading_cover__overlay"></div>
     <div class="loading_cover__content">
       <div class="loading_cover__content__icon">
+        <img class="loading_icon" />
         <!-- svg with max width 400px, min of 100, otherwise 33%, height auto -->
-        <svg
+        <!-- <svg
           viewBox="0 0 100 20"
           :style="{
             width: 'calc(33% + 100px)',
@@ -83,7 +84,7 @@
               />
             </circle>
           </g>
-        </svg>
+        </svg> -->
       </div>
       <slot />
     </div>
@@ -125,7 +126,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: var(--color-overlay);
+  background-color: var(--color-loading-overlay, var(--color-overlay));
   backdrop-filter: var(--bg-filter-loading);
   z-index: 2047;
 }
