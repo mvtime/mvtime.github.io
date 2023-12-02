@@ -40,11 +40,11 @@
   - ~~show upcoming tasks at end of daily surveys~~
   - ~~daily surveys~~
 - Tasks
-  - fixes on edit page
   - auto-suggested task types based on title
   - auto-suggested link names based on domain
-  - allow / encourage links to other classes / through selecter
+  - allow / encourage links to other classes / through selector
   - allowed outlink domains set by district?
+  - ~~fixes on edit page~~
   - ~~**process only changed tasks server-side / cancel runs on double changes**~~
   - ~~**store proxy in class doc - load from there for efficiency / read & write count**~~
   - ~~disallow finish when link still in-progress~~

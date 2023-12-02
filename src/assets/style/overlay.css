@@ -38,6 +38,7 @@
   display: flex;
   flex-flow: column nowrap;
   z-index: 7;
+  overflow: hidden;
 }
 .overlay_center_view > .router_center_view > *:not(.nopad),
 .overlay_center_view > .router_center_view .pad_overlay {

@@ -227,17 +227,20 @@ h3.secondary_home_text {
 .theme_button:active {
   width: calc(var(--width-sidebar-button-showing));
 }
-.theme_icon {
+.theme_icon,
+.themed_icon {
   height: 100%;
   width: var(--size-sidebar-button);
   filter: var(--filter-icon);
-  background-image: url(@/assets/img/general/portal/theme/light.png);
-  background-image: url(@/assets/img/general/portal/theme/light.svg);
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
   user-select: none;
   pointer-events: none;
+}
+.theme_icon {
+  background-image: url(@/assets/img/general/portal/theme/light.png);
+  background-image: url(@/assets/img/general/portal/theme/light.svg);
 }
 [_theme="dark"] .theme_icon {
   background-image: url(@/assets/img/general/portal/theme/dark.png);

@@ -230,6 +230,19 @@ const router = createRouter({
           },
         },
         {
+          path: "/portal/statistics",
+          name: "stats",
+          component: () => import("../views/Portal/StatsModal.vue"),
+          meta: {
+            page_title: "View Statistics",
+            theme_color: {
+              light: "#b5b5b5",
+              dark: "#0d0d0d",
+            },
+            requiresAuth: true,
+          },
+        },
+        {
           path: "/portal/survey/daily",
           name: "daily",
           component: () => import("../views/Portal/DailySurvey.vue"),

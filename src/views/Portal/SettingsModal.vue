@@ -104,6 +104,18 @@
         </span>
         button on the left sidebar or homepage
       </div>
+      <div class="overlay_contents_text overlay_contents_section">
+        To see how you've been feeling,
+        <span
+          id="stats_pointer_button"
+          class="button_pointer_text button_pointer_icon click-action"
+          @click="$router.push({ name: 'stats' })"
+        >
+          <div class="stats_icon themed_icon icon"></div>
+          View your stats
+        </span>
+        and get an insight into your mental health and productivity
+      </div>
     </div>
     <div class="bottom_actions">
       <button v-if="!store.personal_account" class="back_action" @click="$emit('close')">
@@ -287,5 +299,9 @@ export default {
   opacity: 0.8;
   font-size: 0.9em;
   line-height: 1.5em;
+}
+.stats_icon {
+  background-image: url(@/assets/img/general/portal/stats.png);
+  background-image: url(@/assets/img/general/portal/stats.svg);
 }
 </style>

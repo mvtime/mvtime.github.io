@@ -41,6 +41,9 @@ export default {
       };
     },
   },
+  mounted() {
+    this.$emit("update", this.getData);
+  },
   watch: {
     getData() {
       this.$emit("update", this.getData);
