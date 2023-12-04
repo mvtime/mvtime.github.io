@@ -48,50 +48,7 @@
             :series="graphs"
             width="100%"
             height="100%"
-            :options="{
-              xaxis: {
-                type: 'datetime',
-                labels: {
-                  show: false,
-                },
-                categories: surveys.map((survey) => survey.data.time),
-              },
-              yaxis: {
-                labels: {
-                  show: false,
-                },
-                // scale from 0 to 5
-                min: 0,
-                max: 5,
-                tickAmount: 5,
-                decimalsInFloat: 0,
-              },
-              legend: {
-                show: true,
-                showForSingleSeries: true,
-              },
-              theme: {
-                mode: store.theme,
-              },
-              chart: {
-                background: 'var(--color-overlay-input)',
-                fontFamily: 'inherit',
-                toolbar: {
-                  show: false,
-                },
-              },
-              stroke: {
-                curve: 'smooth',
-                width: 3,
-              },
-              tooltip: {
-                enabled: true,
-                // don't show the label below the axis, but do show it in the tooltip
-                x: {
-                  format: 'ddd MMM d',
-                },
-              },
-            }"
+            :options="options"
           ></apexchart>
           <!-- <div class="stats_view"></div> -->
         </div>
@@ -123,11 +80,11 @@ export default {
       can_update: true,
       min_delay: 1000 * 15,
       surveys: [],
-      active: ["stress", "sentiment"],
+      active: ["mood", "stress"],
       filters: [
         {
-          name: "Stress Level",
-          filter: "stress",
+          name: "Mood",
+          filter: "mood",
           data: {
             index: 1,
             range: {
@@ -143,8 +100,8 @@ export default {
           },
         },
         {
-          name: "Mood",
-          filter: "sentiment",
+          name: "Stress",
+          filter: "stress",
           data: {
             index: 2,
             range: {
@@ -155,7 +112,7 @@ export default {
               return ((data.sentiment * 5) / 100 - 1) * (5 / 4);
             },
             label(data) {
-              return data.sentiment + "%";
+              return (data.sentiment * 5) / 100 + "/5";
             },
           },
         },
@@ -202,8 +159,92 @@ export default {
         });
       return graphs;
     },
+    options() {
+      let self = this;
+      return {
+        xaxis: {
+          type: "datetime",
+          labels: {
+            show: false,
+          },
+          tooltip: {
+            enabled: false,
+          },
+          categories: this.surveys.map((survey) => survey.data.time),
+        },
+        yaxis: {
+          labels: {
+            show: false,
+          },
+          // scale from 0 to 5
+          min: -1,
+          max: 6,
+          tickAmount: 5,
+          decimalsInFloat: 0,
+        },
+        legend: {
+          show: true,
+          showForSingleSeries: true,
+        },
+        theme: {
+          mode: this.store.theme,
+        },
+        chart: {
+          background: "var(--color-overlay-input)",
+          fontFamily: "inherit",
+          toolbar: {
+            show: false,
+          },
+        },
+        grid: {
+          show: false,
+        },
+        stroke: {
+          //   curve: "smooth",
+          width: 3,
+        },
+        tooltip: {
+          custom: function (series, seriesIndex, dataPointIndex, w) {
+            // use the vue method to get the html w/ custom_tooltip, escaping the options
+            console.log(series, seriesIndex, dataPointIndex, w);
+            return self.custom_tooltip(series, seriesIndex, dataPointIndex, w);
+          },
+          enabled: true,
+          // don't show the label below the axis, but do show it in the tooltip
+          x: {
+            format: "ddd MMM d",
+          },
+        },
+      };
+    },
   },
   methods: {
+    custom_tooltip(args) {
+      //w.config.series[seriesIndex].labels[dataPointIndex]
+      let base = `<div class="apexcharts-tooltip-title" style="font-family: inherit; font-size: 12px;">${new Date(
+        this.surveys[args.dataPointIndex].data.time
+      ).toLocaleDateString(undefined, {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+      })}</div>`;
+      for (let index in this.graphs) {
+        let series = this.graphs[index];
+        base += `<div class="apexcharts-tooltip-series-group apexcharts-active" style="order: 1; display: flex;">
+                <span class="apexcharts-tooltip-marker" style="background-color: ${
+                  args.w.globals.colors[index]
+                }"></span>
+                <div class="apexcharts-tooltip-text" style="font-family: inherit; font-size: 12px;">
+                    <div class="apexcharts-tooltip-y-group"><span class="apexcharts-tooltip-text-y-label">${
+                      series.name
+                    }: </span><span class="apexcharts-tooltip-text-y-value">${
+          series.labels[args.dataPointIndex]
+        }</span></div>
+                </div></div>`;
+      }
+      base += `</div>`;
+      return base;
+    },
     try_update() {
       if (this.can_update) {
         this.update(true);
