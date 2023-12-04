@@ -27,7 +27,6 @@
             {{ tag.name }}
           </button>
         </div>
-        <span class="flex_spacer"></span>
         <button
           class="stats_view_control__refresh"
           @click="
@@ -165,7 +164,7 @@ export default {
         xaxis: {
           type: "datetime",
           labels: {
-            show: false,
+            // show: false,
           },
           tooltip: {
             enabled: false,
@@ -363,6 +362,8 @@ export default {
   margin-bottom: calc(var(--padding-overlay-input) / 2);
   display: flex;
   flex-flow: row wrap;
+  justify-content: space-between;
+  gap: 5px;
 }
 .stats_view_controls {
   height: 30px;

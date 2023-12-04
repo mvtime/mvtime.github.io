@@ -490,10 +490,17 @@ export const useMainStore = defineStore({
      * @see {@link save_daily_survey}
      * @see {@link done_daily_survey}
      */
-    get_cached_surveys(dates, force_refresh = false) {
+    async get_cached_surveys(dates, force_refresh = false) {
       try {
+        const processed_ref = doc(
+          db,
+          "processed_surveys",
+          this.personal_account ? this.account_doc.linked_to : this.user.uid
+        );
         // check if active doc has survey data for the given dates, and if so, return it
-        const current = this.active_doc?.surveys || [];
+        const current_get = await getDoc(processed_ref);
+
+        const current = current_get.exists() ? current_get.data()?.list || [] : [];
         // get array of all the dates by mapping
         const current_dates = current?.map((e) => e.date);
         // check if current_dates includes all the dates
@@ -509,19 +516,12 @@ export const useMainStore = defineStore({
         else {
           if (force_refresh) _status.log("📊 Forcing refresh of surveys");
           // use get_surveys to get the data
-          return this.get_surveys(dates)
-            .then((surveys) => {
-              // add the surveys to the active doc
-              let new_doc = { ...this.active_doc };
-              new_doc.surveys = surveys;
-              this.set_active(new_doc);
-              this.update_remote();
-              _status.log("📊 Got surveys from server");
-              return Promise.resolve(surveys);
-            })
-            .catch((err) => {
-              throw err;
-            });
+          const surveys = await this.get_surveys(dates);
+
+          // add the surveys to the active doc
+          await setDoc(processed_ref, { list: surveys, updated: Date.now() }, { merge: true });
+          _status.log("📊 Got surveys from server");
+          return Promise.resolve(surveys);
         }
       } catch (err) {
         return Promise.reject(err);
