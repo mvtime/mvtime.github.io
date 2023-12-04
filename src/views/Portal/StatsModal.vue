@@ -5,8 +5,8 @@
     </header>
     <div class="overlay_contents" ref="contents">
       <div class="overlay_contents_text">
-        The daily surveys you have completed are displayed below. To view your individual responses,
-        click on the data point.
+        The daily surveys you have completed are displayed below.
+        <!-- To view your individual responses, click on the data point. -->
       </div>
       <br />
       <nav class="stats_view_controls_wrapper">
