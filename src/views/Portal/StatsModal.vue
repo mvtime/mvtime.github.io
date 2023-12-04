@@ -205,8 +205,7 @@ export default {
         },
         tooltip: {
           custom: function (series, seriesIndex, dataPointIndex, w) {
-            // use the vue method to get the html w/ custom_tooltip, escaping the options
-            console.log(series, seriesIndex, dataPointIndex, w);
+            // use the vue method to get the html w/ custom_tooltip
             return self.custom_tooltip(series, seriesIndex, dataPointIndex, w);
           },
           enabled: true,
