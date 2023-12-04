@@ -145,6 +145,8 @@ body,
   /* overlay inputs */
   --color-overlay-input: #dedede;
   --color-on-overlay-input: #000;
+  --color-overlay-input-alt: #e8e8e8;
+  --color-on-overlay-input-alt: #aaaaaa;
   --color-overlay-input-active: #d9d9d9;
   --color-on-overlay-input-active: #464646;
   --color-placeholder: #00000087;
@@ -224,6 +226,8 @@ body:has(#themed_body[_theme="dark"]) {
   --color-overlay-input: #2b2b2b;
   --color-overlay-input-active: #3d3d3d;
   --color-on-overlay-input: #fff;
+  --color-overlay-input-alt: #2b2b2b;
+  --color-on-overlay-input-alt: #707070;
   --color-overlay-input-active: #3b3b3b;
   --color-on-overlay-input-active: #e9e9e9;
   --color-placeholder: #ffffff87;

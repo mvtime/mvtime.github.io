@@ -36,8 +36,8 @@ export default {
     },
     getData() {
       return {
-        tasks: this.tasks,
-        num: this.tasks?.length || 0,
+        tasks: this.store.upcoming,
+        num: this.store.upcoming?.length || 0,
       };
     },
   },

@@ -12,42 +12,88 @@
       <nav class="stats_view_controls_wrapper">
         <div class="stats_view_controls">
           <button
-            @click="filter = tag.filter"
+            @click="
+              if (active.includes(tag.filter) && active.length > 1) {
+                active.splice(active.indexOf(tag.filter), 1);
+              } else {
+                active.push(tag.filter);
+              }
+            "
             class="stats_view_control__option"
             v-for="tag in filters"
             :key="tag.filter"
-            :class="{ active: filter == tag.filter }"
+            :class="{ active: active.includes(tag.filter) && is_ready }"
           >
             {{ tag.name }}
           </button>
         </div>
         <span class="flex_spacer"></span>
-        <button class="stats_view_control__refresh" @click="update">Update</button>
+        <button
+          class="stats_view_control__refresh"
+          @click="
+            if (is_ready) {
+              try_update();
+            }
+          "
+          :class="{ disabled: !can_update || !is_ready }"
+        >
+          Update
+        </button>
       </nav>
       <div class="stats_view_container alt_bg" :class="{ loading_bg: !is_ready }">
-        <div
-          class="stats_view_wrapper"
-          v-if="surveys.length"
-          :style="{
-            '--w-scale-stat': width_entry,
-            '--h-scale-stat': height_mark,
-          }"
-        >
-          <div class="stats_view">
-            <div
-              class="stats_view__entry"
-              v-for="survey in surveys"
-              :key="survey.id"
-              :style="{
-                '--y-stat':
-                  filters[filter].data.scale(
-                    survey.data.responses[filters[filter].data.index].data
-                  ) - filters[filter].data.range.from,
-                '--x-stat': survey.data.index,
-              }"
-              @click="open_survey(survey)"
-            ></div>
-          </div>
+        <div class="stats_view_wrapper" v-if="surveys.length">
+          <apexchart
+            class="stats_view"
+            type="line"
+            :series="graphs"
+            width="100%"
+            height="100%"
+            :options="{
+              xaxis: {
+                type: 'datetime',
+                labels: {
+                  show: false,
+                },
+                categories: surveys.map((survey) => survey.data.time),
+              },
+              yaxis: {
+                labels: {
+                  show: false,
+                },
+                // scale from 0 to 5
+                min: 0,
+                max: 5,
+                tickAmount: 5,
+                decimalsInFloat: 0,
+              },
+              legend: {
+                show: true,
+                showForSingleSeries: true,
+              },
+              theme: {
+                mode: store.theme,
+              },
+              chart: {
+                background: 'var(--color-overlay-input)',
+                fontFamily: 'inherit',
+                toolbar: {
+                  show: false,
+                },
+              },
+              stroke: {
+                curve: 'smooth',
+                width: 3,
+              },
+              tooltip: {
+                enabled: true,
+                // don't show the label below the axis, but do show it in the tooltip
+                x: {
+                  format: 'ddd MMM d',
+                },
+              },
+            }"
+          ></apexchart>
+          <!-- <div class="stats_view"></div> -->
         </div>
       </div>
       <br />
@@ -66,17 +112,20 @@
 
 <script>
 import { useMainStore } from "@/store";
-import { ErrorToast } from "@svonk/util";
+import { ErrorToast, WarningToast } from "@svonk/util";
+import { _status } from "../../common";
 export default {
   name: "StatsModal",
   emits: ["close"],
   data() {
     return {
       is_ready: false,
+      can_update: true,
+      min_delay: 1000 * 15,
       surveys: [],
-      filter: "stress",
-      filters: {
-        stress: {
+      active: ["stress", "sentiment"],
+      filters: [
+        {
           name: "Stress Level",
           filter: "stress",
           data: {
@@ -86,11 +135,14 @@ export default {
               to: 3,
             },
             scale(data) {
-              return { positive: 3, neutral: 2, negative: 1 }[data.sentiment];
+              return ({ positive: 3, neutral: 2, negative: 1 }[data.sentiment] - 1) * (5 / 2);
+            },
+            label(data) {
+              return data.sentiment.charAt(0).toUpperCase() + data.sentiment.slice(1);
             },
           },
         },
-        sentiment: {
+        {
           name: "Mood",
           filter: "sentiment",
           data: {
@@ -100,11 +152,14 @@ export default {
               to: 5,
             },
             scale(data) {
-              return (data.sentiment * 5) / 100;
+              return ((data.sentiment * 5) / 100 - 1) * (5 / 4);
+            },
+            label(data) {
+              return data.sentiment + "%";
             },
           },
         },
-        upcoming: {
+        {
           name: "Workload",
           filter: "upcoming",
           data: {
@@ -114,12 +169,14 @@ export default {
               to: 6,
             },
             scale(data) {
-              console.log("workload", data);
-              return Math.min(data.num || data.tasks?.length || 0, 6);
+              return Math.min(data.num || data.tasks?.length || 0, 10) / 2;
+            },
+            label(data) {
+              return (data.num || data.tasks?.length || 0) + " tasks";
             },
           },
         },
-      },
+      ],
     };
   },
   computed: {
@@ -129,27 +186,33 @@ export default {
     completed() {
       return this.store?.active_doc?.done_surveys || [];
     },
-    width_entry() {
-      // percentage of width each datapoint will occupy
-      const digits = 4;
-      // use E scientific notation with exponent as number of digits
-      return Math.max(
-        0.0,
-        Math.round(Math.pow(10, digits) / this.surveys.length) / Math.pow(10, digits)
-      );
-    },
-    height_mark() {
-      // percentage of height each scale increment will occupy
-      const digits = 4;
-      const filter_data = this.filters[this.filter].data;
-      // use E scientific notation with exponent as number of digits
-      return (
-        Math.round(Math.pow(10, digits) / (filter_data.range.to - filter_data.range.from)) /
-        Math.pow(10, digits)
-      );
+    graphs() {
+      let graphs = this.filters
+        .filter((f) => this.active.includes(f.filter))
+        .map((f) => {
+          return {
+            name: f.name,
+            data: this.surveys.map((survey) => {
+              return f.data.scale(survey.data.responses[f.data.index].data);
+            }),
+            labels: this.surveys.map((survey) => {
+              return f.data.label(survey.data.responses[f.data.index].data);
+            }),
+          };
+        });
+      return graphs;
     },
   },
   methods: {
+    try_update() {
+      if (this.can_update) {
+        this.update(true);
+        _status.log("Manualling refreshing survey data");
+      } else {
+        new WarningToast("Please wait before updating again", 2000);
+        _status.warn("Blocked quick refresh of survey data ");
+      }
+    },
     process(data) {
       this.surveys = data.filter((survey) => !survey.error);
       // map index onto surveys
@@ -158,23 +221,31 @@ export default {
       });
       this.is_ready = true;
     },
-    update() {
+    update(force = false) {
       this.is_ready = false;
+      this.can_update = false;
+      this.last_update = Date.now();
       this.surveys = [];
       this.store
-        .get_surveys(this.completed)
+        .get_cached_surveys(this.completed, force)
         .then((data) => {
           this.process(data);
+          // set a timeout to allow the user to update again
+          setTimeout(() => {
+            this.can_update = true;
+          }, this.min_delay);
         })
         .catch((err) => {
           new ErrorToast("Failed to get statistics", err, 5000);
           this.is_ready = true;
+          this.can_update = true;
         });
     },
   },
   mounted() {
     this.update();
   },
+  created() {},
 };
 </script>
 
@@ -185,12 +256,10 @@ export default {
   color: var(--color-on-overlay-input);
   border: none;
   border-radius: var(--radius-overlay-input);
-  overflow-x: auto;
+  /* overflow-x: auto; */
 }
 .stats_view_container {
-  /* set 1em to equal 1% height */
-  font-size: 200px;
-  height: 200px;
+  height: 250px;
 }
 
 /* scrollbar */
@@ -226,7 +295,8 @@ export default {
 }
 /* entry wrapper */
 .stats_view_container > .stats_view_wrapper {
-  padding: var(--padding-overlay-input);
+  padding: calc(var(--padding-overlay-input) - 5px) calc(var(--padding-overlay-input) - 10px);
+  padding-bottom: var(--padding-overlay-input);
   height: 100%;
   min-width: 100%;
   width: fit-content;
@@ -266,8 +336,8 @@ export default {
 .stats_view_control__refresh {
   flex: 0 1 auto;
   height: 30px;
-  background: var(--color-overlay-input);
-  color: var(--color-on-overlay-action-disabled);
+  background: var(--color-overlay-input-alt);
+  color: var(--color-on-overlay-input-alt);
   border: none;
   padding: 0 var(--padding-overlay-input);
   font-size: 0.9em;
@@ -277,8 +347,11 @@ export default {
 .stats_view_control__refresh {
   border-radius: var(--radius-overlay-input);
 }
+.stats_view_control__refresh.disabled {
+  cursor: not-allowed;
+}
 .stats_view_controls > button.active,
-.stats_view_control__refresh {
+.stats_view_control__refresh:not(.disabled) {
   background: var(--color-overlay-input-active);
   color: var(--color-on-overlay-input);
 }

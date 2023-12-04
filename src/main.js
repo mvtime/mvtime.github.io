@@ -2,6 +2,7 @@ import { createApp, watch } from "vue";
 import { createPinia } from "pinia";
 import App from "@/App.vue";
 import router from "@/router";
+import VueApexCharts from "vue3-apexcharts";
 import { placeholderToast /*Popup*/ } from "@svonk/util";
 import { _status } from "@/common";
 // create instances of app requisites
@@ -10,6 +11,7 @@ const app = createApp(App);
 // setup app requisites
 app.use(router);
 app.use(pinia);
+app.use(VueApexCharts);
 //* setup image loading
 // const loadimage = require("@/assets/img/placeholder/load_dark.gif");
 // const errorimage = require("@/assets/img/placeholder/error_dark.png");
