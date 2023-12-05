@@ -177,9 +177,9 @@ export default {
             show: false,
           },
           // scale from 0 to 5
-          min: -1,
-          max: 6,
-          tickAmount: 5,
+          min: -0.5,
+          max: 5.5,
+          tickAmount: 10,
           decimalsInFloat: 0,
         },
         legend: {
@@ -195,6 +195,8 @@ export default {
           toolbar: {
             show: false,
           },
+          width: "100%",
+          height: "100%",
         },
         grid: {
           show: false,
@@ -336,6 +338,7 @@ export default {
 .stats_view_container > .stats_view_wrapper {
   padding: calc(var(--padding-overlay-input) - 5px) calc(var(--padding-overlay-input) - 10px);
   padding-bottom: var(--padding-overlay-input);
+  padding-top: 0;
   height: 100%;
   min-width: 100%;
   width: fit-content;
