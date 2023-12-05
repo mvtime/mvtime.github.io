@@ -503,6 +503,7 @@ export const useMainStore = defineStore({
         const current = current_get.exists() ? current_get.data()?.list || [] : [];
         // get array of all the dates by mapping
         const current_dates = current?.map((e) => e.date);
+        const errored_dates = current?.filter((e) => e.error)?.map((e) => e.date) || [];
         // check if current_dates includes all the dates
         const all_dates = dates.every((e) => current_dates.includes(e));
 
@@ -515,13 +516,28 @@ export const useMainStore = defineStore({
         // if not, get the survey data for the given dates, and save it to the active doc
         else {
           if (force_refresh) _status.log("📊 Forcing refresh of surveys");
-          // use get_surveys to get the data
-          const surveys = await this.get_surveys(dates);
+          // identify which dates are missing if !force_refresh
+          const added_dates = force_refresh
+            ? dates
+            : dates.filter((e) => !current_dates.includes(e) || errored_dates.includes(e));
+          // use get_surveys to get the ungotten data
+          const added_surveys = await this.get_surveys(added_dates);
+          // add the new surveys to the current surveys without doubling up, keep them in order
+          let new_surveys = [];
+          for (let date of dates) {
+            if (added_dates.includes(date)) {
+              // add the new survey
+              new_surveys.push(added_surveys[added_dates.indexOf(date)]);
+            } else {
+              // add the old survey
+              new_surveys.push(current[current_dates.indexOf(date)]);
+            }
+          }
 
           // add the surveys to the active doc
-          await setDoc(processed_ref, { list: surveys, updated: Date.now() }, { merge: true });
+          await setDoc(processed_ref, { list: new_surveys, updated: Date.now() }, { merge: true });
           _status.log("📊 Got surveys from server");
-          return Promise.resolve(surveys);
+          return Promise.resolve(new_surveys);
         }
       } catch (err) {
         return Promise.reject(err);
@@ -1047,7 +1063,13 @@ export const useMainStore = defineStore({
       try {
         // wait for user login
         if (!this.user) await this.login_promise();
-        let survey_ref = doc(db, "survey", "daily", today, this.user.uid);
+        let survey_ref = doc(
+          db,
+          "survey",
+          "daily",
+          today,
+          this.personal_account ? this.account_doc?.linked_to : this.user.uid
+        );
         let response_obj = {
           time: new Date().getTime(),
           responses: responses,

@@ -27,7 +27,7 @@
             {{ tag.name }}
           </button>
         </div>
-        <button
+        <!-- <button
           class="stats_view_control__refresh"
           @click="
             if (is_ready) {
@@ -37,7 +37,7 @@
           :class="{ disabled: !can_update || !is_ready }"
         >
           Update
-        </button>
+        </button> -->
       </nav>
       <div class="stats_view_container alt_bg" :class="{ loading_bg: !is_ready }">
         <div class="stats_view_wrapper" v-if="surveys.length">
@@ -160,6 +160,7 @@ export default {
     },
     options() {
       let self = this;
+      let theme = this.store.theme;
       return {
         xaxis: {
           type: "datetime",
@@ -169,7 +170,7 @@ export default {
           tooltip: {
             enabled: false,
           },
-          categories: this.surveys.map((survey) => survey.data.time),
+          categories: self.surveys.map((survey) => survey.data.time),
         },
         yaxis: {
           labels: {
@@ -186,7 +187,7 @@ export default {
           showForSingleSeries: true,
         },
         theme: {
-          mode: this.store.theme,
+          mode: theme,
         },
         chart: {
           background: "var(--color-overlay-input)",
@@ -218,7 +219,6 @@ export default {
   },
   methods: {
     custom_tooltip(args) {
-      //w.config.series[seriesIndex].labels[dataPointIndex]
       let base = `<div class="apexcharts-tooltip-title" style="font-family: inherit; font-size: 12px;">${new Date(
         this.surveys[args.dataPointIndex].data.time
       ).toLocaleDateString(undefined, {
@@ -362,7 +362,8 @@ export default {
   margin-bottom: calc(var(--padding-overlay-input) / 2);
   display: flex;
   flex-flow: row wrap;
-  justify-content: space-between;
+  /* justify-content: space-between; */
+  justify-content: flex-start;
   gap: 5px;
 }
 .stats_view_controls {
@@ -384,6 +385,18 @@ export default {
   font-size: 0.9em;
   font-weight: 600;
   user-select: none;
+}
+@media (max-width: 500px) {
+  .stats_view_controls_wrapper,
+  .stats_view_controls_wrapper > .stats_view_controls {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: stretch;
+    width: 100%;
+  }
+  .stats_view_controls > button {
+    flex: 1 0 auto;
+  }
 }
 .stats_view_control__refresh {
   border-radius: var(--radius-overlay-input);
