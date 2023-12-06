@@ -116,7 +116,7 @@ export default {
           },
         },
         {
-          name: "Workload",
+          name: "Work",
           filter: "upcoming",
           data: {
             index: 4,
@@ -373,6 +373,7 @@ export default {
   height: 30px;
   display: flex;
   flex-flow: row nowrap;
+  gap: 2px;
   border-radius: var(--radius-overlay-input);
   overflow: hidden;
   width: fit-content;
