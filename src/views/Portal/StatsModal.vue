@@ -152,14 +152,14 @@ export default {
             },
             scale(data) {
               void data;
-              return data.input ? -0.5 : -1000;
+              return data.input ? -0.8 : -1000;
             },
             label(data) {
               // first 20 chars
               return data.input
-                ? data.input.length > 23
-                  ? data.input.slice(0, 20) + "..."
-                  : data.input
+                ? data.input.length > 20
+                  ? `"${data.input.slice(0, 18)}...`
+                  : `"${data.input}"`
                 : "None";
             },
           },
