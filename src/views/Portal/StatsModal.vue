@@ -38,9 +38,17 @@
         >
           Update
         </button> -->
+        <span class="flex_spacer"></span>
+        <button
+          class="stats_view_control__toggle"
+          @click="toolbar = !toolbar"
+          :class="{ disabled: !is_ready }"
+        >
+          {{ toolbar ? "Less" : "More" }}
+        </button>
       </nav>
       <div class="stats_view_container alt_bg" :class="{ loading_bg: !is_ready }">
-        <div class="stats_view_wrapper" v-if="surveys.length">
+        <div class="stats_view_wrapper" v-if="surveys.length" :class="{ toolbar: toolbar }">
           <apexchart
             class="stats_view"
             type="line"
@@ -77,6 +85,7 @@ export default {
     return {
       is_ready: false,
       can_update: true,
+      toolbar: false,
       min_delay: 1000 * 15,
       surveys: [],
       active: ["mood", "stress"],
@@ -193,7 +202,7 @@ export default {
           background: "var(--color-overlay-input)",
           fontFamily: "inherit",
           toolbar: {
-            show: false,
+            show: self.toolbar,
           },
           width: "100%",
           height: "100%",
@@ -203,6 +212,7 @@ export default {
         },
         stroke: {
           //   curve: "smooth",
+          curve: "straight",
           width: 3,
         },
         tooltip: {
@@ -338,11 +348,14 @@ export default {
 .stats_view_container > .stats_view_wrapper {
   padding: calc(var(--padding-overlay-input) - 5px) calc(var(--padding-overlay-input) - 10px);
   padding-bottom: var(--padding-overlay-input);
-  padding-top: 0;
   height: 100%;
   min-width: 100%;
   width: fit-content;
 }
+.stats_view_container > .stats_view_wrapper:not(.toolbar) {
+  padding-top: 0;
+}
+
 .stats_view_container > .stats_view_wrapper > .stats_view {
   height: 100%;
   min-width: 100%;
@@ -379,7 +392,8 @@ export default {
   width: fit-content;
 }
 .stats_view_controls > button,
-.stats_view_control__refresh {
+.stats_view_control__refresh,
+.stats_view_control__toggle {
   flex: 0 1 auto;
   height: 30px;
   background: var(--color-overlay-input-alt);
@@ -401,15 +415,22 @@ export default {
   .stats_view_controls > button {
     flex: 1 0 auto;
   }
+  .stats_view_control__toggle,
+  .stats_view_controls_wrapper > .flex_spacer {
+    display: none;
+  }
 }
-.stats_view_control__refresh {
+.stats_view_control__refresh,
+.stats_view_control__toggle {
   border-radius: var(--radius-overlay-input);
 }
-.stats_view_control__refresh.disabled {
+.stats_view_control__refresh.disabled,
+.stats_view_control__toggle.disabled {
   cursor: not-allowed;
 }
 .stats_view_controls > button.active,
-.stats_view_control__refresh:not(.disabled) {
+.stats_view_control__refresh:not(.disabled),
+.stats_view_control__toggle:not(.disabled) {
   background: var(--color-overlay-input-active);
   color: var(--color-on-overlay-input);
 }
