@@ -24,6 +24,9 @@ export default {
       response: this.load?.input || "",
     };
   },
+  mounted() {
+    this.$refs.textarea.focus();
+  },
   methods: {
     check_key(e) {
       // add newline at cursor if enter pressed with shift instead of submitting
@@ -35,6 +38,10 @@ export default {
           this.response.substring(0, start) +
           "\n" +
           this.response.substring(end, this.response.length);
+        e.stopPropagation();
+      }
+      // also exclude right and left arrow keys
+      else if (e.key == "ArrowRight" || e.key == "ArrowLeft") {
         e.stopPropagation();
       }
     },
