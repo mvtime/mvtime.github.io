@@ -82,9 +82,23 @@ export default {
       return !this.page.content || this.page.is_notification || this.curr_done;
     },
   },
+  mounted() {
+    window.addEventListener("keydown", this.arrow);
+  },
+  beforeUnmount() {
+    window.removeEventListener("keydown", this.arrow);
+  },
   methods: {
     set_done() {
       this.curr_done = this.responses[this.page_index]?.done || false;
+    },
+    arrow(event) {
+      // catch arrow keys to switch pages
+      if (event.key == "ArrowLeft") {
+        this.switch_to(this.page_index - 1);
+      } else if (event.key == "ArrowRight") {
+        this.switch_to(this.page_index + 1);
+      }
     },
     switch_to(page_index) {
       // switch to page at index, as long as it is before the current, or already completed

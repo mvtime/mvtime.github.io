@@ -1,6 +1,6 @@
 <template>
   <div class="survey_outof5 survey_part">
-    <div class="sentiments_container">
+    <div class="sentiments_container" ref="sentiments_container">
       <div
         class="sentiment_option"
         :class="{ active: sentiment == num }"
@@ -38,6 +38,24 @@ export default {
       return {
         sentiment: (100 * this.sentiment) / 5,
       };
+    },
+  },
+  mounted() {
+    window.addEventListener("keydown", this.check_key);
+  },
+  beforeUnmount() {
+    window.removeEventListener("keydown", this.check_key);
+  },
+  methods: {
+    check_key(e) {
+      // if number within sentiments, set sentiment
+      const num = Number(e.key);
+      if (this.sentiments.includes(num)) {
+        e.preventDefault();
+        this.sentiment = num;
+        this.$refs.sentiments_container.children[num - 1].focus();
+        e.stopPropagation();
+      }
     },
   },
   watch: {

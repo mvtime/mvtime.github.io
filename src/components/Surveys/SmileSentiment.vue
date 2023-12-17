@@ -1,6 +1,6 @@
 <template>
   <div class="survey_sentiment survey_part">
-    <div class="sentiments_container">
+    <div class="sentiments_container" ref="sentiments_container">
       <!-- use assets/img/general/survey smile sentiment icons -->
       <div
         class="sentiment_option"
@@ -49,6 +49,24 @@ export default {
       return {
         sentiment: this.sentiment,
       };
+    },
+  },
+  mounted() {
+    window.addEventListener("keydown", this.check_key);
+  },
+  beforeUnmount() {
+    window.removeEventListener("keydown", this.check_key);
+  },
+  methods: {
+    check_key(e) {
+      // if key within sentiments length, set sentiment
+      const num = Number(e.key);
+      if (num && num <= this.sentiments.length) {
+        e.preventDefault();
+        this.sentiment = this.sentiments[num - 1];
+        this.$refs.sentiments_container.children[num - 1].focus();
+        e.stopPropagation();
+      }
     },
   },
   watch: {

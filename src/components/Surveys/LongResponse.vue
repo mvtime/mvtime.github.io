@@ -1,6 +1,8 @@
 <template>
   <div class="survey_long survey_part">
     <textarea
+      ref="textarea"
+      @keydown="check_key"
       class="survey_long__textarea styled_input styled_textarea styled_obj"
       placeholder="Type your response here..."
       v-model="response"
@@ -22,9 +24,24 @@ export default {
       response: this.load?.input || "",
     };
   },
+  methods: {
+    check_key(e) {
+      // add newline at cursor if enter pressed with shift instead of submitting
+      if (e.key == "Enter" && e.shiftKey) {
+        e.preventDefault();
+        const start = this.$refs.textarea.selectionStart;
+        const end = this.$refs.textarea.selectionEnd;
+        this.response =
+          this.response.substring(0, start) +
+          "\n" +
+          this.response.substring(end, this.response.length);
+        e.stopPropagation();
+      }
+    },
+  },
   computed: {
     can_continue() {
-      return this.sentiment != 0;
+      return true;
     },
     getData() {
       return {
