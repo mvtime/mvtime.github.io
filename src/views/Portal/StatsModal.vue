@@ -290,9 +290,13 @@ export default {
     process(data) {
       this.surveys = data.filter((survey) => !survey.error);
       // map index onto surveys
-      this.surveys.forEach((survey, index) => {
-        survey.data.index = index;
-      });
+      try {
+        this.surveys.forEach((survey, index) => {
+          survey.data.index = index;
+        });
+      } catch {
+        throw "Failed to map indices onto survey data";
+      }
       this.is_ready = true;
     },
     update(force = false) {
@@ -319,7 +323,6 @@ export default {
   mounted() {
     this.update();
   },
-  created() {},
 };
 </script>
 

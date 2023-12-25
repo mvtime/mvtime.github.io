@@ -212,11 +212,6 @@ export default {
       if (event.ctrlKey || this.$route.name != "study") return;
       if (event.key == "c") {
         this.swap_to_calendar();
-        // } else if (
-        //   Number(event.key) &&
-        //   Number(event.key) != 0
-        // ) {
-        //   this.days = Number(event.key);
       } else {
         let length = this.lengths.find((item) => item[3] == event.key);
         if (length) {
