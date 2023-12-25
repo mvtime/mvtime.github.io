@@ -19,13 +19,17 @@
       </div>
       <div class="portal_main_block_actions_wrapper">
         <nav class="portal_main_block_actions">
-          <button class="portal_main_block_action" @click="prev_month" title="Previous month">
+          <button
+            class="portal_main_block_action"
+            @click="prev_month"
+            title="Previous month (Left)"
+          >
             <div class="action_icon arrow-icon left"></div>
           </button>
-          <button class="portal_main_block_action" @click="this_month" title="Current month">
+          <button class="portal_main_block_action" @click="this_month" title="Current month (Home)">
             <div class="action_icon cal-icon" :class="{ alt: tasks && tasks.length }"></div>
           </button>
-          <button class="portal_main_block_action" @click="next_month" title="Next month">
+          <button class="portal_main_block_action" @click="next_month" title="Next month (Right)">
             <div class="action_icon arrow-icon right"></div>
           </button>
         </nav>
@@ -33,7 +37,7 @@
           class="portal_main_block_action portal_main_block_action_alt"
           v-if="!store.is_teacher || true"
           @click="swap_to_study"
-          title="View study portal"
+          title="View study portal (s)"
         >
           <div
             class="action_icon todo-icon"
@@ -211,8 +215,33 @@ export default {
     _status.log("📅 Calendar mounted");
     this.$emit("mounted");
     this.tasks = this.store.tasks;
+    window.addEventListener("keydown", this.handle_key);
+  },
+  beforeUnmount() {
+    window.removeEventListener("keydown", this.handle_key);
   },
   methods: {
+    handle_key(event) {
+      if (event.ctrlKey || this.$route.name != "portal") return;
+      if (event.key == "s") {
+        this.swap_to_study();
+      } else {
+        // use arrow keys for month navigation and home to return to current month, shift as modifier moves in years
+        const shift = event.shiftKey;
+        let action = () => {};
+        if (event.key == "ArrowLeft") {
+          action = this.prev_month;
+        } else if (event.key == "ArrowRight") {
+          action = this.next_month;
+        } else if (event.key == "Home") {
+          this.this_month();
+          return;
+        }
+        for (let i = 0; i < (shift ? 12 : 1); i++) {
+          action();
+        }
+      }
+    },
     swap_to_study() {
       this.$router.push({ name: "study" });
     },

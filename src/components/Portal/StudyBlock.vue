@@ -11,7 +11,7 @@
           <button
             class="portal_main_block_action portal_main_block_action_freeform portal_main_block_action__text"
             @click="days = length[0]"
-            :title="length[2]"
+            :title="`${length[2]} (${length[3]})`"
             v-for="length in lengths"
             :key="length[0]"
             :class="{ active: days == length[0] }"
@@ -21,7 +21,7 @@
         </nav>
         <button
           class="portal_main_block_action portal_main_block_action_alt"
-          title="View Calendar"
+          title="View Calendar (c)"
           @click="swap_to_calendar"
         >
           <div
@@ -113,10 +113,10 @@ export default {
       is_ready: false,
       days: 7,
       lengths: [
-        [1, "Day", "Tasks today"],
-        [7, "Week", "Tasks in the next month"],
-        [31, "Month", "Tasks in the next year"],
-        [Number.MAX_SAFE_INTEGER, "All", "All upcoming tasks"],
+        [1, "Day", "Tasks today", "d"],
+        [7, "Week", "Tasks in the next week", "w"],
+        [31, "Month", "Tasks in the next month", "m"],
+        [Number.MAX_SAFE_INTEGER, "All", "All upcoming tasks", "a"],
       ],
       prefixes: {
         note: "",
@@ -135,6 +135,10 @@ export default {
     _status.log("👓 Study page mounted");
     this.$emit("mounted");
     this.tasks = this.store.tasks;
+    window.addEventListener("keydown", this.handle_key);
+  },
+  beforeUnmount() {
+    window.removeEventListener("keydown", this.handle_key);
   },
   computed: {
     store() {
@@ -204,6 +208,22 @@ export default {
     },
   },
   methods: {
+    handle_key(event) {
+      if (event.ctrlKey || this.$route.name != "study") return;
+      if (event.key == "c") {
+        this.swap_to_calendar();
+        // } else if (
+        //   Number(event.key) &&
+        //   Number(event.key) != 0
+        // ) {
+        //   this.days = Number(event.key);
+      } else {
+        let length = this.lengths.find((item) => item[3] == event.key);
+        if (length) {
+          this.days = length[0];
+        }
+      }
+    },
     prefixed_name(task) {
       return this.prefixes[task.type] + task.name;
     },
