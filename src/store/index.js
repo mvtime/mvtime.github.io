@@ -218,17 +218,18 @@ export const useMainStore = defineStore({
       const now = Date.now(); // new Date().setHours(0, 0, 0, 0);
       // 8 hours in ms (show today's tasks as upcoming until 8AM)
       const morning = 8 * 60 * 60 * 1000;
-      return this.tasks
-        .filter((task) => {
-          return (
-            task.type != "note" && (task?.date?.getTime ? task.date.getTime() : 0) >= now - morning
-          );
-        })
-        .sort((a, b) => {
-          if (a.date < b.date) return -1;
-          if (a.date > b.date) return 1;
-          return 0;
-        });
+      let upcoming = this.tasks.filter((task) => {
+        return (
+          task.type != "note" && (task?.date?.getTime ? task.date.getTime() : 0) >= now - morning
+        );
+      });
+      upcoming.sort((a, b) => {
+        console.log(a.date, b.date);
+        if (a.date < b.date) return -1;
+        if (a.date > b.date) return 1;
+        return 0;
+      });
+      return upcoming;
     },
     /**
      * @function upcoming_todo

@@ -111,6 +111,7 @@ export default {
   cursor: pointer;
   user-select: none;
   margin: 0;
+  transform-origin: top center;
 }
 .upcoming_tasks {
   margin: auto 0;
