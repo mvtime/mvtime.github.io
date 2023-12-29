@@ -5,7 +5,12 @@
         <router-link :to="{ name: 'study' }" class="upcoming_tasks__title">Upcoming</router-link>
       </h5>
       <hr class="upcoming_tasks_hr" />
-      <div class="tasks_container" v-if="tasks && tasks.length">
+      <transition-group
+        class="tasks_container"
+        v-if="tasks && tasks.length"
+        name="upcoming-group"
+        tag="div"
+      >
         <ExamCard
           class="tasks_container_task"
           v-for="task of tasks"
@@ -18,7 +23,7 @@
             show_task(task);
           "
         />
-      </div>
+      </transition-group>
       <img v-else class="loading_tasks loading_icon" alt="Loading..." />
     </div>
     <div v-else class="upcoming_tasks__empty">
@@ -47,7 +52,7 @@ export default {
       return useMainStore();
     },
     tasks() {
-      return this.store.upcoming.slice(0, 6);
+      return this.store.upcoming_todo.slice(0, 6);
     },
   },
   methods: {
@@ -65,9 +70,47 @@ export default {
 };
 </script>
 <style scoped>
+/* list transitions */
+.upcoming-group-move {
+  transition: transform 0.2s ease-out;
+}
+.upcoming-group-enter-active {
+  animation: slide-in 0.2s ease-out;
+}
+.upcoming-group-leave-active {
+  animation: slide-out 0.2s ease-out;
+}
+/* enter and leave animations */
+@keyframes slide-in {
+  0% {
+    scale: 0.8;
+    opacity: 0;
+    margin-bottom: -50px;
+  }
+  100% {
+    scale: 1;
+    opacity: 1;
+    margin-bottom: 0;
+  }
+}
+@keyframes slide-out {
+  0% {
+    scale: 1;
+    opacity: 1;
+    margin-bottom: 0;
+  }
+  100% {
+    scale: 0.8;
+    opacity: 0;
+    margin-bottom: -50px;
+  }
+}
+
+/* other styles */
 .tasks_container_task {
   cursor: pointer;
   user-select: none;
+  margin: 0;
 }
 .upcoming_tasks {
   margin: auto 0;
@@ -79,6 +122,17 @@ export default {
   justify-content: center;
   flex-basis: 200px;
   flex-shrink: 1;
+}
+.tasks_container {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 10px;
+  margin-top: 10px;
+  max-height: calc(40px * 6 + 10px * 5);
+}
+.tasks_container_task {
+  flex: 0 0 40px;
+  height: 40px;
 }
 .upcoming_tasks__not_empty {
   flex-shrink: 1;

@@ -3,7 +3,7 @@
     <div class="sidebar_overflow">
       <div class="auth-action can-logout doprompt">Log Out</div>
       <div class="flex_spacer"></div>
-      <UpcomingTests :loading="loading" />
+      <UpcomingTasks :loading="loading" />
       <div class="flex_spacer"></div>
     </div>
     <button
@@ -19,12 +19,12 @@
 
 <script>
 import SidebarToggle from "@/components/Portal/SidebarToggle.vue";
-import UpcomingTests from "@/components/Portal/UpcomingTests.vue";
+import UpcomingTasks from "@/components/Portal/UpcomingTasks.vue";
 export default {
   name: "RightBar",
   components: {
     SidebarToggle,
-    UpcomingTests,
+    UpcomingTasks,
   },
   props: {
     paged: {

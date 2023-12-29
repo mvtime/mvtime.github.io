@@ -32,12 +32,12 @@ export default {
       return useMainStore();
     },
     tasks() {
-      return this.store.upcoming.slice(0, 4);
+      return this.store.upcoming_todo.slice(0, 4);
     },
     getData() {
       return {
-        tasks: this.store.upcoming,
-        num: this.store.upcoming?.length || 0,
+        tasks: this.store.upcoming_todo,
+        num: this.store.upcoming_todo?.length || 0,
       };
     },
   },

@@ -206,10 +206,11 @@ export const useMainStore = defineStore({
     },
     /**
      * @function upcoming
-     * @description Get the next # of upcoming tasks (after 8AM today)
+     * @description et the upcoming tasks (after 8AM today)
      * @returns {Array} Array of upcoming tasks
      * @default []
      * @see {@link tasks}
+     * @see {@link upcoming_todo}
      * @note Doesn't include notes
      */
     upcoming() {
@@ -228,6 +229,19 @@ export const useMainStore = defineStore({
           if (a.date > b.date) return 1;
           return 0;
         });
+    },
+    /**
+     * @function upcoming_todo
+     * @description Get the upcoming tasks (after 8AM today) that havent been marked as done
+     * @returns {Array} Array of upcoming tasks
+     * @default []
+     * @see {@link tasks}
+     * @see {@link upcoming}
+     * @note Doesn't include notes
+     */
+    upcoming_todo() {
+      if (!this.upcoming) return [];
+      return this.upcoming.filter((task) => !this.finished_tasks?.includes(task.ref));
     },
     /**
      * @function non_recent_signin

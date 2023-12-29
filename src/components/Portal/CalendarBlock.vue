@@ -41,7 +41,7 @@
         >
           <div
             class="action_icon todo-icon"
-            :class="{ alt: store.upcoming && store.upcoming.length }"
+            :class="{ alt: store.upcoming_todo && store.upcoming_todo.length }"
           ></div>
         </button>
       </div>
