@@ -224,7 +224,6 @@ export const useMainStore = defineStore({
         );
       });
       upcoming.sort((a, b) => {
-        console.log(a.date, b.date);
         if (a.date < b.date) return -1;
         if (a.date > b.date) return 1;
         return 0;
