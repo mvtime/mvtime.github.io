@@ -277,6 +277,34 @@ export default {
 .study_list:not(.study-group-move) .study-list-move {
   transition: transform 0.2s ease-out;
 }
+.study-group-enter-active {
+  animation: scale-in 0.15s ease-out;
+}
+.study-group-leave-active {
+  animation: scale-out 0.15s ease-in;
+  /* transform-origin: left center; */
+}
+/* enter and leave animations */
+@keyframes scale-in {
+  0% {
+    scale: 0.9;
+    opacity: 0;
+  }
+  100% {
+    scale: 1;
+    opacity: 1;
+  }
+}
+@keyframes scale-out {
+  0% {
+    scale: 1;
+    opacity: 1;
+  }
+  100% {
+    scale: 0.8;
+    opacity: 0;
+  }
+}
 /* main */
 .study_name {
   max-width: fit-content;
