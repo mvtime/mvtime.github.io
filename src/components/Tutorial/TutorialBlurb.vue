@@ -176,8 +176,8 @@ export default {
           exists: false,
           fake_y: window.innerHeight / 2 - (this.$refs?.dialog?.offsetHeight || 200) / 2,
           fake_x: window.innerWidth / 2 - 350 / 2,
-          top: 0,
-          left: 0,
+          top: window.innerHeight / 2,
+          left: window.innerWidth / 2,
           width: 0,
           height: 0,
         };
