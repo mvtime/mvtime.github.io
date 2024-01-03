@@ -160,10 +160,11 @@ export default {
     tutorial_nav(change) {
       const click = this.tutorial?.options?.click_on_complete;
       if (change > 0 && click) {
-        console.log("clicking", click == true ? this.tutorial.el : click);
         $(click == true ? this.tutorial.el : click).click();
       }
-      this.tutorial_page += change;
+      if (this.tutorial_page + change >= 0 && (!this.tutorial.disable_prev || change > 0)) {
+        this.tutorial_page += change;
+      }
     },
     refreshTimeout() {
       if (this.store) {

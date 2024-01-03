@@ -113,6 +113,7 @@ export default {
     this.$smoothReflow({
       el: this.$refs.title,
       hideOverflow: true,
+      childTransitions: true,
     });
     window.addEventListener("keydown", this.next_key);
     window.addEventListener("resize", this.track_flush);
@@ -222,6 +223,10 @@ export default {
   transition-duration: 0.3s;
   transition-timing-function: ease-in-out;
   transition-property: left, top, height;
+}
+.tutorialblurb .overlay_contents,
+.tutorialblurb .modal_header {
+  transition: height 0.2s ease-out;
 }
 
 /* shade */
