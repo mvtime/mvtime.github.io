@@ -185,8 +185,10 @@ export default {
       return this.track;
     },
     next_key(e) {
-      if (e.key === "Enter" || e.key === " ") {
+      if (e.key === "Enter" || e.key === " " || e.key === "ArrowRight") {
         this.$emit("next");
+      } else if (e.key === "Escape" || e.key === "ArrowLeft") {
+        this.$emit("skip");
       }
       // disable page interaction
       e.preventDefault();

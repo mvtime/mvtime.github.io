@@ -2,7 +2,7 @@
   {
     "el": ".portal_info",
     "title": "Let's get started!",
-    "html": "At the top of the portal, you'll find some common info, like the date, who you're signed in as, and what type of account you have",
+    "html": "At the top of the portal, you'll find some common info, like the date, who you're signed in as, and what type of account you have. <br><br> You can click 'Next,' or use space / enter / the arrow keys to continue.",
     "options": { "reclick": ".calendar" }
   },
 
