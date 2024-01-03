@@ -20,13 +20,13 @@
   },
   {
     "el": ".calendar .portal_main_block_actions",
-    "title": "Calendar Controls",
+    "title": "Calendar Pages",
     "html": "These buttons allow you to navigate between pages of the calendar. You'll be able to click the center one to return to today's date.",
     "options": { "radius": "15px" }
   },
   {
     "el": ".calendar .portal_main_block_action_alt",
-    "title": "Page Controls",
+    "title": "Portal Pages",
     "html": "This button lets you switch between the calendar and the task list. <br><br> You might see a yellow-hued dot here, indicating that you have unfinished tasks coming up soon!",
     "options": { "radius": "15px", "click_on_complete": true }
   },
@@ -46,6 +46,7 @@
   {
     "el": ".study .portal_main_block_actions",
     "title": "Study Timeframes",
+    "html": "These buttons allow you to change the timeframe of the study page. By default, it'll be set to the 'Week' view, but you can also select 'Day,' 'Month,' or 'All.' <br><br> Hint: hover over the buttons to see their keyboard shortcuts!",
     "options": {
       "radius": "15px",
       "click_on_complete": ".portal_main_block_actions_wrapper > nav > button:last-child"
@@ -53,7 +54,7 @@
   },
   {
     "el": ".study .portal_main_block_action_alt",
-    "title": "Page Controls",
+    "title": "Portal Pages",
     "html": "This button lets you switch between the calendar and the task list. <br><br> You might see a yellow-hued dot here, indicating that you have unfinished tasks coming up soon!",
     "options": {
       "radius": "15px",
@@ -138,6 +139,7 @@
     "title": "That's all for now!",
     "html": "Thanks for taking the tour! <br><br> If you have any questions, feel free to reach out to us by visiting the contact page (try using the title in the left sidebar to get to it from the homepage)! <br><br> In the meantime though, let's get you started by adding a class!",
     "options": {
+      "reclick": "null-filler",
       "click_on_complete": ".left-bar .class_list .classes_container_class__add_class"
     }
   }
