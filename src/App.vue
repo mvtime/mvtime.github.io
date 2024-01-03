@@ -9,7 +9,11 @@
     @focus="refreshTimeout"
   >
     <router-view></router-view>
-    <OverlayWrapper v-if="do_timeout && (store.paused || animating)" ref="overlay">
+    <OverlayWrapper
+      v-if="do_timeout && (store.paused || animating)"
+      ref="overlay"
+      class="pause_modal_overlay"
+    >
       <main class="pause_modal router_center_view" ref="pause_modal">
         <header class="modal_header">
           <h2 class="header_style modal_header_title">Session paused</h2>
@@ -36,6 +40,22 @@
     >
       <LogoutModal class="router_center_view" @close="scope.close" />
     </OverlayWrapper>
+
+    <!-- test tutorial blurb -->
+    <TutorialBlurb
+      v-if="show_tutorial"
+      :title="tutorial.title"
+      :options="tutorial.options"
+      :html="
+        tutorial.html ||
+        '<i style=text-align:center;width:100%;display:block>Not much to see here!</i>'
+      "
+      :button_text="tutorial.next_text"
+      :skip_text="tutorial.prev_text"
+      :trackel="tutorial.el"
+      @next="tutorial_nav(1)"
+      @skip="tutorial_nav(-1)"
+    />
   </main>
 </template>
 
@@ -52,17 +72,22 @@ import LogoutModal from "@/components/Modal/LogoutModal.vue";
 import { useMainStore } from "@/store";
 import $ from "jquery";
 import { _status } from "@/common";
+// tutorial
+import tutorial_pages from "@/components/Tutorial/tutorial.json";
+import TutorialBlurb from "@/components/Tutorial/TutorialBlurb.vue";
 export default {
   name: "App",
   components: {
     OverlayWrapper,
     LogoutModal,
+    TutorialBlurb,
   },
   data() {
     return {
       platform: "",
       isElectron: false,
       animating: false,
+      tutorial_page: 0,
     };
   },
   computed: {
@@ -77,6 +102,17 @@ export default {
     },
     theme() {
       return this.store.get_theme;
+    },
+    show_tutorial() {
+      return this.tutorial_page < tutorial_pages.length;
+    },
+    tutorial() {
+      const page = tutorial_pages[this.tutorial_page];
+      return {
+        ...page,
+        prev_text: this.tutorial_page && !page.disable_prev ? "Back" : "",
+        next_text: this.tutorial_page == tutorial_pages.length - 1 ? "Finish" : "Next",
+      };
     },
   },
   mounted() {
@@ -121,6 +157,14 @@ export default {
     this.isDarkMode = storedTheme === "dark" || (storedTheme === null && systemTheme === "dark");
   },
   methods: {
+    tutorial_nav(change) {
+      const click = this.tutorial?.options?.click_on_complete;
+      if (change > 0 && click) {
+        console.log("clicking", click == true ? this.tutorial.el : click);
+        $(click == true ? this.tutorial.el : click).click();
+      }
+      this.tutorial_page += change;
+    },
     refreshTimeout() {
       if (this.store) {
         this.store.refresh_timeout();
@@ -170,5 +214,8 @@ main.parent {
 }
 .pause_modal {
   width: 350px !important;
+}
+.pause_modal_overlay {
+  z-index: 3000;
 }
 </style>

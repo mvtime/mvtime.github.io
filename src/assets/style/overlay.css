@@ -26,9 +26,11 @@
 }
 .overlay_center_view > .router_center_view {
   width: 100%;
-  /* height: 100%; */
   max-width: 450px;
   max-height: 500px;
+}
+.overlay_center_view > .router_center_view,
+.modaltype {
   background-color: var(--color-bg);
   box-shadow: var(--shadow-overlay-highlight);
   border-radius: var(--radius-overlay);
@@ -41,6 +43,7 @@
   overflow: hidden;
 }
 .overlay_center_view > .router_center_view > *:not(.nopad),
+.modaltype > *:not(.nopad),
 .overlay_center_view > .router_center_view .pad_overlay {
   padding: var(--padding-overlay);
 }
@@ -55,7 +58,8 @@
     padding-right: calc(var(--padding-overlay) * 3);
   }
 }
-.overlay_center_view > .router_center_view .bottom_actions {
+.overlay_center_view > .router_center_view .bottom_actions,
+.modaltype .bottom_actions {
   display: flex;
   flex-flow: row nowrap;
   justify-content: flex-end;

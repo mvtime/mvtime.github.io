@@ -208,11 +208,11 @@ export default {
     },
     /** Close / minimize the left sidebar on small screens */
     close_left_bar() {
-      this.$refs.LeftBar.close_sidebar();
+      this.$refs.LeftBar?.close_sidebar();
     },
     /** Close / minimize the right sidebar on small screens */
     close_right_bar() {
-      this.$refs.RightBar.close_sidebar();
+      this.$refs.RightBar?.close_sidebar();
     },
     /** Show a task in the ViewTask ModalVue */
     show_task(task) {
