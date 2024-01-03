@@ -56,8 +56,10 @@
  * @property {String} submit_text - The text to display on the continue button.
  * @property {String} skip_text - The text to display on the skip button.
  *  */
+import { SuccessToast } from "@svonk/util";
 import smoothReflow from "vue-smooth-reflow";
 import $ from "jquery";
+import { useMainStore } from "@/store";
 export default {
   name: "TutorialBlurb",
   emits: ["next", "skip"],
@@ -79,7 +81,6 @@ export default {
     },
     // element to track position of (jquery string)
     trackel: {
-      type: String,
       required: true,
     },
     skippable: {
@@ -101,6 +102,7 @@ export default {
   data() {
     return {
       track: null,
+      done_welcome: false,
     };
   },
   mixins: [smoothReflow],
@@ -127,6 +129,11 @@ export default {
     window.removeEventListener("resize", this.track_flush);
     window.removeEventListener("scroll", this.track_flush);
     window.clearInterval(this.track_flush);
+  },
+  computed: {
+    store() {
+      return useMainStore();
+    },
   },
   methods: {
     track_fn() {
@@ -169,6 +176,10 @@ export default {
             dialog.rail_pad,
             Math.min(dialog.w - dialog.rail_pad, track.blurb_x)
           );
+          if (!this.done_welcome) {
+            new SuccessToast("Welcome to MVTT, let's get you comfortable!", 3500);
+            this.done_welcome = true;
+          }
           return track;
         }
       } else if (this.trackel == null) {
@@ -198,9 +209,18 @@ export default {
       e.stopPropagation();
     },
     track_flush() {
-      this.track = this.track_fn();
-      if (this.options?.reclick) {
-        $(this.options.reclick).click();
+      if (!this.store.done_tutorial) {
+        this.track = this.track_fn();
+        if (this.options?.reclick) {
+          $(this.options.reclick).click();
+        }
+        if (
+          this.options?.pagename &&
+          this.$route.name != this.options.pagename &&
+          this.$route.path.startsWith("/portal")
+        ) {
+          this.$router.push({ name: this.options.pagename });
+        }
       }
     },
   },

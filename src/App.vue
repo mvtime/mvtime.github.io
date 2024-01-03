@@ -45,6 +45,7 @@
     <TutorialBlurb
       v-if="show_tutorial"
       :title="tutorial.title"
+      :key="'tutorial'"
       :options="tutorial.options"
       :html="
         tutorial.html ||
@@ -75,6 +76,7 @@ import { _status } from "@/common";
 // tutorial
 import tutorial_pages from "@/components/Tutorial/tutorial.json";
 import TutorialBlurb from "@/components/Tutorial/TutorialBlurb.vue";
+import { SuccessToast, ErrorToast } from "@svonk/util";
 export default {
   name: "App",
   components: {
@@ -104,7 +106,7 @@ export default {
       return this.store.get_theme;
     },
     show_tutorial() {
-      return this.tutorial_page < tutorial_pages.length;
+      return !this.store.done_tutorial && tutorial_pages && this.store;
     },
     tutorial() {
       const page = tutorial_pages[this.tutorial_page];
@@ -162,7 +164,17 @@ export default {
       if (change > 0 && click) {
         $(click == true ? this.tutorial.el : click).click();
       }
-      if (this.tutorial_page + change >= 0 && (!this.tutorial.disable_prev || change > 0)) {
+
+      if (this.tutorial_page == tutorial_pages.length - 1) {
+        this.store
+          .finish_tutorial()
+          .then(() => {
+            new SuccessToast("Tutorial completed!", 2000);
+          })
+          .catch((err) => {
+            new ErrorToast("Couldn't complete tutorial", err, 3000);
+          });
+      } else if (this.tutorial_page + change >= 0 && (!this.tutorial.disable_prev || change > 0)) {
         this.tutorial_page += change;
       }
     },

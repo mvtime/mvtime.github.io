@@ -319,9 +319,20 @@ export const useMainStore = defineStore({
      * @note Returns true if user is a teacher, since we're not tracking data for them
      */
     done_daily_survey() {
+      if (!this.done_tutorial) return true;
       if (!this.active_doc) return false;
       // if (this.is_teacher) return true;
       return this.active_doc?.done_surveys && this.active_doc.done_surveys?.includes(today);
+    },
+    /**
+     * @function done_tutorial
+     * @description Check if user has completed the tutorial
+     * @returns {Boolean} if the user / proxy for the user has completed the tutorial
+     * @default false
+     */
+    done_tutorial() {
+      if (!this.account_doc) return false;
+      return this.account_doc?.done_tutorial;
     },
     /**
      * @function done_join_form
@@ -1060,6 +1071,21 @@ export const useMainStore = defineStore({
           this.account_doc.join_form = responses;
         }
         await this.update_remote();
+        return Promise.resolve();
+      } catch (err) {
+        return Promise.reject(err);
+      }
+    },
+    /**
+     * @function finish_tutorial
+     * @description Set the user's tutorial status to finished
+     * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
+     * @see {@link done_tutorial}
+     */
+    async finish_tutorial() {
+      try {
+        if (!this.user || !this.account_doc) throw "No doc to save tutorial status to";
+        await this.update_wrapper_with_merge({ done_tutorial: true });
         return Promise.resolve();
       } catch (err) {
         return Promise.reject(err);

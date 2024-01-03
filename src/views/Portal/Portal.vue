@@ -98,6 +98,7 @@
       <button
         class="portal_mobile_nav_page"
         :class="{ active: page == tab }"
+        :id="'portal_mobile__' + tab"
         v-for="tab in ['left', 'block', 'right']"
         :key="tab"
         @click="page = tab"

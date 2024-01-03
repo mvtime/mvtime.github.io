@@ -3,26 +3,29 @@
     "el": ".portal_info",
     "title": "Let's get started!",
     "html": "At the top of the portal, you'll find some common info, like the date, who you're signed in as, and what type of account you have. <br><br> You can click 'Next,' or use space / enter / the arrow keys to continue.",
-    "options": { "reclick": ".calendar, .study .action_icon.cal-icon" }
+    "options": {
+      "reclick": ".calendar, .study .action_icon.cal-icon, #portal_mobile__block",
+      "pagename": "portal"
+    }
   },
 
   {
     "el": ".calendar",
     "title": "The Calendar",
     "html": "The calendar shows you all of your upcoming tasks, which you can click to expand. <br><br> If you're a teacher, your calendar will include extra features, and will allow you to drag and drop classes to create new tasks.",
-    "options": { "radius": "25px" }
+    "options": { "radius": "25px", "pagename": "portal" }
   },
   {
     "el": ".calendar_header",
     "title": "Calendar Controls",
     "html": "The bar at the top of the calendar allows you to change the view, and navigate to different dates. <br><br> Let's take a look what it can do!",
-    "options": { "radius": "15px" }
+    "options": { "radius": "15px", "pagename": "portal" }
   },
   {
     "el": ".calendar .portal_main_block_actions",
     "title": "Calendar Pages",
     "html": "These buttons allow you to navigate between pages of the calendar. You'll be able to click the center one to return to today's date.",
-    "options": { "radius": "15px" }
+    "options": { "radius": "15px", "pagename": "portal" }
   },
   {
     "el": ".calendar .portal_main_block_action_alt",
@@ -41,7 +44,7 @@
     "el": ".study_header",
     "title": "Study Controls",
     "html": "The bar at the top of the study page allows you to customize your study session. <br><br> Let's take a look what it can do!",
-    "options": { "radius": "15px" }
+    "options": { "radius": "15px", "pagename": "study" }
   },
   {
     "el": ".study .portal_main_block_actions",
@@ -49,7 +52,8 @@
     "html": "These buttons allow you to change the timeframe of the study page. By default, it'll be set to the 'Week' view, but you can also select 'Day,' 'Month,' or 'All.' <br><br> Hint: hover over the buttons to see their keyboard shortcuts!",
     "options": {
       "radius": "15px",
-      "click_on_complete": ".portal_main_block_actions_wrapper > nav > button:last-child"
+      "click_on_complete": ".portal_main_block_actions_wrapper > nav > button:last-child",
+      "pagename": "study"
     }
   },
   {
@@ -58,7 +62,8 @@
     "html": "This button lets you switch between the calendar and the task list. <br><br> You might see a yellow-hued dot here, indicating that you have unfinished tasks coming up soon!",
     "options": {
       "radius": "15px",
-      "click_on_complete": ".study .portal_main_block_action_alt, .right-bar"
+      "click_on_complete": ".study .portal_main_block_action_alt, .right-bar",
+      "pagename": "study"
     }
   },
   {
@@ -66,29 +71,35 @@
     "el": ".right-bar",
     "title": "Right Sidebar",
     "html": "The right sidebar shows you some quick info about your upcoming tasks, as well as access to more materials and account switching. <br><br> On smaller screens, you can open the sidebar by hovering at the side of the display and clicking the protruding section, or on mobile tapping the arrows in the bottom nav bar.",
-    "options": { "radius": "25px 0 0 25px", "padding": 0, "reclick": ".right-bar" }
+    "options": {
+      "radius": "25px 0 0 25px",
+      "padding": 0,
+      "reclick": ".right-bar, #portal_mobile__right",
+      "pagename": "portal"
+    }
   },
   {
     "el": ".right-bar .auth-action.can-logout",
     "title": "Logout Button",
     "html": "Click here to logout of your account. <br><br> If you're having issues with your portal, logging in and out can sometimes help.",
-    "options": { "reclick": ".right-bar" }
+    "options": { "reclick": ".right-bar, #portal_mobile__right", "pagename": "portal" }
   },
   {
     "el": ".right-bar .upcoming_tasks",
     "title": "Upcoming Tasks",
     "html": "This section shows you your upcoming tasks, which you can click to expand. <br><br> It'll only show up to 6 tasks, sorted by soonest due date.",
-    "options": { "reclick": ".right-bar" }
+    "options": { "reclick": ".right-bar, #portal_mobile__right", "pagename": "portal" }
   },
   {
     "el": ".right-bar .settings_button",
     "title": "Account Preferences",
     "html": "You can click here to change your account preferences, like toggling teacher mode, adding linked accounts, disabling the session timeout, switching themes, and viewing your survey statistics! <br><br> Next, let's take a look at the other sidebar",
     "options": {
-      "reclick": ".right-bar",
-      "click_on_complete": ".left-bar",
+      "reclick": ".right-bar, #portal_mobile__right",
+      "click_on_complete": ".left-bar, #portal_mobile__left",
       "radius": "17px",
-      "padding": 5
+      "padding": 5,
+      "pagename": "portal"
     }
   },
   {
@@ -96,14 +107,20 @@
     "el": ".left-bar",
     "title": "Left Sidebar",
     "html": "The left sidebar gives you access to your tasks, classes, and other materials. <br><br> If you're a teacher, you'll find your controls to create classes and tasks here.",
-    "options": { "radius": "0 25px 25px 0", "padding": 0 }
+    "options": {
+      "radius": "0 25px 25px 0",
+      "padding": 0,
+      "pagename": "portal",
+      "reclick": ".left-bar, #portal_mobile__left"
+    }
   },
   {
     "el": ".left-bar .branding-title",
     "title": "Well, we *are* MVTT",
     "html": "Clicking the MVTT logo will take you back to the portal home page",
     "options": {
-      "reclick": ".left-bar"
+      "reclick": ".left-bar, #portal_mobile__left",
+      "pagename": "portal"
     }
   },
   {
@@ -111,7 +128,8 @@
     "title": "Class List",
     "html": "Once you've joined some classes, you'll see them listed here. <br><br> Clicking on a class will filter your calendar and study pages to only show tasks from filtered (clicked) classes.",
     "options": {
-      "reclick": ".left-bar"
+      "reclick": ".left-bar, #portal_mobile__left",
+      "pagename": "portal"
     }
   },
   {
@@ -119,9 +137,10 @@
     "title": "Adding Classes",
     "html": "Click here to add a class to your account. <br><br> You can join with a class code provided by your teacher, or by entering their email and selecting from a dropdown of all their classes.",
     "options": {
-      "reclick": ".left-bar",
+      "reclick": ".left-bar, #portal_mobile__left",
       "padding": 5,
-      "radius": "10px"
+      "radius": "10px",
+      "pagename": "portal"
     }
   },
   {
@@ -129,9 +148,11 @@
     "title": "Theme Toggle",
     "html": "It doesn't all have to be work! <br><br> Click here to switch between the light and dark modes. This'll sync across your devices!",
     "options": {
-      "reclick": ".left-bar",
+      "reclick": ".left-bar, #portal_mobile__left",
       "radius": "17px",
-      "padding": 5
+      "padding": 5,
+      "pagename": "portal",
+      "click_on_complete": "#portal_mobile__block"
     }
   },
   {
