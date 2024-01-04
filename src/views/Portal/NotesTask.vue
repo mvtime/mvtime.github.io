@@ -36,10 +36,8 @@
       <img alt="Loading Icon" class="loading_icon" v-else />
     </div>
     <div class="bottom_actions">
-      <button class="close_action click_escape" @click="$emit('close')">Close</button>
-      <div class="flex_spacer"></div>
       <button
-        class="back_action primary_styled"
+        class="back_action click_escape"
         :class="{ loading_bg: loading }"
         v-if="ready"
         :disabled="loading"
@@ -47,6 +45,8 @@
       >
         View
       </button>
+      <button v-else class="close_action click_escape" @click="$emit('close')">Close</button>
+      <div class="flex_spacer"></div>
       <button
         class="continue_action click_ctrlenter"
         :class="{ loading_bg: loading }"

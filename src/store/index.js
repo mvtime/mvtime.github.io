@@ -1893,6 +1893,7 @@ export const useMainStore = defineStore({
         let [_email, _id, task_id] = ref.split("/");
         _email += this.ORG_DOMAIN;
         let class_doc = await getDoc(doc(db, "classes", _email, "classes", _id));
+        if (!class_doc.exists()) return Promise.resolve(null);
         let class_data = class_doc.data();
         delete class_data.tasks;
         _status.log("📚 Got class from ref");
