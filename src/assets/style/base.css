@@ -136,6 +136,7 @@ body,
   --color-loading-overlay: #00000060;
   --shadow-overlay-highlight: 0 0 20px #00000030;
   --color-overlay: #00000040;
+  --color-tutorial-overlay: #00000040;
   --color-overlay-action: #242325;
   --color-on-overlay-action: #fff;
   --color-overlay-action-disabled: #dedede;
@@ -216,6 +217,7 @@ body:has(#themed_body[_theme="dark"]) {
   --color-loading-overlay: #1c1c1caa;
   --shadow-overlay-highlight: 0 0 1px 2px #00000020, 0 0 10px #00000020;
   --color-overlay: #00000040;
+  --color-tutorial-overlay: #000000aa;
   --color-overlay-action: #433922;
   --color-on-overlay-action: #fff;
   --color-overlay-action-disabled: #2b2b2b;

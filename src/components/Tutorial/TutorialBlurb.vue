@@ -1,5 +1,5 @@
 <template>
-  <div class="tutorialblurb_group" v-if="!trackel || track">
+  <div class="tutorialblurb_group" v-if="!trackel || track" :class="{ tutorial_end: is_end }">
     <div
       class="tutorialblurb__overlay"
       :style="{
@@ -134,6 +134,9 @@ export default {
     store() {
       return useMainStore();
     },
+    is_end() {
+      return this.options?.end;
+    },
   },
   methods: {
     track_fn() {
@@ -197,6 +200,7 @@ export default {
       return this.track;
     },
     next_key(e) {
+      e.preventDefault();
       if (this.track) {
         if (e.key === "Enter" || e.key === " " || e.key === "ArrowRight") {
           this.$emit("next");
@@ -204,8 +208,6 @@ export default {
           this.$emit("skip");
         }
       }
-      // disable page interaction
-      e.preventDefault();
       e.stopPropagation();
     },
     track_flush() {
@@ -231,6 +233,13 @@ export default {
     $route() {
       this.track_flush();
     },
+    options() {
+      if (this.options?.end) {
+        setTimeout(() => {
+          this.$emit("next");
+        }, 250);
+      }
+    },
   },
 };
 </script>
@@ -246,6 +255,17 @@ export default {
   transition-timing-function: ease-in-out;
   transition-property: left, top, height;
 }
+.tutorial_end .tutorialblurb__overlay {
+  animation: hide_bg 0.25s ease forwards;
+}
+@keyframes hide_bg {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
 .tutorialblurb .overlay_contents,
 .tutorialblurb .modal_header {
   transition: height 0.2s ease-out;
@@ -257,7 +277,7 @@ export default {
   background-color: rgba(0, 0, 0, 0);
   z-index: 2047;
   border-radius: 5px;
-  box-shadow: 0 0 0 calc(100vw + 100vh) var(--color-overlay);
+  box-shadow: 0 0 0 calc(100vw + 100vh) var(--color-tutorial-overlay);
   /* defaults */
   top: 50%;
   left: 50%;

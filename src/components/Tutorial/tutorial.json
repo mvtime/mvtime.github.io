@@ -160,6 +160,18 @@
     "title": "That's all for now!",
     "html": "Thanks for taking the tour! <br><br> If you have any questions, feel free to reach out to us by visiting the contact page (try using the title in the left sidebar to get to it from the homepage)! <br><br> In the meantime though, let's get you started by adding a class!",
     "options": {
+      "next_text": "Finish",
+      "reclick": "null-filler",
+      "click_on_complete": ".left-bar .class_list .classes_container_class__add_class"
+    }
+  },
+  {
+    "el": null,
+    "title": "That's all for now!",
+    "html": "Thanks for taking the tour! <br><br> If you have any questions, feel free to reach out to us by visiting the contact page (try using the title in the left sidebar to get to it from the homepage)! <br><br> In the meantime though, let's get you started by adding a class!",
+    "options": {
+      "next_text": "Finish",
+      "end": true,
       "reclick": "null-filler",
       "click_on_complete": ".left-bar .class_list .classes_container_class__add_class"
     }

@@ -114,7 +114,9 @@ export default {
       return {
         ...page,
         prev_text: this.tutorial_page && !page.disable_prev ? "Back" : "",
-        next_text: this.tutorial_page == tutorial_pages.length - 1 ? "Finish" : "Next",
+        next_text:
+          page.options?.next_text ||
+          (this.tutorial_page == tutorial_pages.length - 1 ? "Finish" : "Next"),
       };
     },
   },
