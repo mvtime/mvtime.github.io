@@ -56,6 +56,7 @@
       :trackel="tutorial.el"
       @next="tutorial_nav(1)"
       @skip="tutorial_nav(-1)"
+      @vnode-unmounted="tutorial_page = 0"
     />
   </main>
 </template>
@@ -167,7 +168,7 @@ export default {
 
       if (this.tutorial_page == tutorial_pages.length - 1) {
         this.store
-          .finish_tutorial()
+          .finish_tutorial(true)
           .then(() => {
             new SuccessToast("Tutorial completed!", 2000);
           })

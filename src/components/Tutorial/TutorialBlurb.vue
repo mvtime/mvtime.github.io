@@ -151,7 +151,7 @@ export default {
           const dialog = {
             w: 350,
             h: (this.$refs?.dialog?.offsetHeight || 200) + 7,
-            offset: 25,
+            offset: screen.w <= 600 ? 172 : 20,
             rail_pad: 20,
           };
           // get element data

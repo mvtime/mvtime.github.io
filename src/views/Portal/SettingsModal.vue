@@ -116,6 +116,20 @@
         </span>
         and get an insight into your mental health and productivity
       </div>
+      <div class="overlay_contents_text overlay_contents_section">
+        Feeling lost? Try
+        <span
+          class="button_pointer_text click-action"
+          @click="
+            changed = true;
+            store.finish_tutorial(false).then(() => {
+              $emit('close');
+            });
+          "
+        >
+          redoing the tutorial </span
+        >.
+      </div>
     </div>
     <div class="bottom_actions">
       <button v-if="!store.personal_account" class="back_action" @click="$emit('close')">

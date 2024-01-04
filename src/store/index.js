@@ -1082,10 +1082,11 @@ export const useMainStore = defineStore({
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      * @see {@link done_tutorial}
      */
-    async finish_tutorial() {
+    async finish_tutorial(new_val) {
       try {
         if (!this.user || !this.account_doc) throw "No doc to save tutorial status to";
-        await this.update_wrapper_with_merge({ done_tutorial: true });
+        this.account_doc.done_tutorial = new_val;
+        await this.update_wrapper_with_merge({ done_tutorial: new_val });
         return Promise.resolve();
       } catch (err) {
         return Promise.reject(err);
