@@ -87,7 +87,11 @@ function setupSnapshot(uid) {
       // store.fetch_classes();
     },
     (err) => {
-      _status.error("⚠ Couldn't get snapshot from remote", err);
+      if (err.code == "permission-denied") {
+        _status.warn("⚠ Permission denied for snapshot, likely from logging out");
+      } else {
+        _status.error("⚠ Couldn't get snapshot from remote", err);
+      }
     }
   );
   subscribed = true;

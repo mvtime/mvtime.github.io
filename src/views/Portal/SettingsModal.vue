@@ -9,6 +9,11 @@
           You can link a personal (non-{{ this.store.ORG_DOMAIN.substring(1) }}) account to access
           MVTT when not signed into your school account below!
         </div>
+        <div class="overlay_contents_text" v-if="store.personal_account">
+          <br />
+          You're currently signed in using a personal account. You can unlink it, or link more
+          emails, through your main account.
+        </div>
         <div class="inputs_row linked_accounts_row">
           <div class="styled_input styled_links_box">
             <div class="styled_links_display">
@@ -37,7 +42,7 @@
               </div>
             </div>
             <hr class="styled_links_separator" />
-            <div class="styled_links_add">
+            <div class="styled_links_add" :class="{ links_personal: store.personal_account }">
               <input
                 class="styled_links_add__text"
                 type="email"
@@ -311,6 +316,11 @@ export default {
 }
 .linked_accounts_row {
   margin-bottom: 0;
+}
+/* make space for new button text */
+.links_personal .styled_links_add__text {
+  flex-basis: 0;
+  width: 20px;
 }
 .pause_popup_section__details {
   margin-top: 0.5em;
