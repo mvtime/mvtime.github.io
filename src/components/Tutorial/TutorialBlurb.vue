@@ -174,7 +174,7 @@ export default {
           track.fake_x = Math.max(screen.pad, Math.min(screen.w - dialog.w - screen.pad, track.x));
           track.fake_y = Math.max(screen.pad, Math.min(screen.h - dialog.h - screen.pad, track.y));
 
-          // check if covering the element and move off to the side
+          // if covering the element
           if (
             track.fake_x + dialog.w > track.left &&
             track.fake_x < track.left + track.width &&
@@ -185,19 +185,21 @@ export default {
             track.blurb_x = dialog.offset;
             track.fake_y = window.innerHeight / 2 - (this.$refs?.dialog?.offsetHeight || 200) / 2;
             track.fake_x = window.innerWidth / 2 - 350 / 2;
-          } else {
-            // offset position for the pointer on top of the dialogue from side to side
+          }
+          // offset position for the pointer on top of the dialogue from side to side
+          else {
             track.blurb_x = track.x - track.fake_x + dialog.offset;
-            // limit the blurb to the width of the dialogue
             track.blurb_x = Math.max(
               dialog.rail_pad,
               Math.min(dialog.w - dialog.rail_pad, track.blurb_x)
             );
           }
+          // do prompt on tutorial ready and elements showing
           if (!this.done_welcome) {
             new SuccessToast("Welcome to MVTT, let's get you comfortable!", 3500);
             this.done_welcome = true;
           }
+
           return track;
         }
       } else if (this.trackel == null) {
