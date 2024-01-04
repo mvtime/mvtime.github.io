@@ -73,11 +73,11 @@ h3.secondary_home_text {
   transition: var(--transition-click-action);
   transform-origin: center;
 }
-.click-action:hover
+main.parent:not(.simplified) .click-action:hover
 /* ,.click-action-inline:hover  */ {
   transform: scale(1.05);
 }
-.click-action:active
+main.parent:not(.simplified) .click-action:active
 /* ,.click-action-inline:active */ {
   transform: scale(0.95);
 }
@@ -100,12 +100,22 @@ h3.secondary_home_text {
 .small-action-btn.linked {
   background-image: url(@/assets/img/general/user-linked.png);
 }
-
+/* google branding for login */
+.small-action-btn.oauth {
+  background-color: #fff;
+  background-image: url(@/assets/img/general/oauth.png);
+  background-image: url(@/assets/img/general/oauth.svg);
+}
 /* override toast min width */
 @media (min-width: 500px) {
   .toast {
     width: unset;
     max-width: unset;
+  }
+}
+@media (max-width: 500px) {
+  #themed_body.parent {
+    --footer-height: 60px;
   }
 }
 /* fix toast text alignment */
@@ -167,13 +177,13 @@ h3.secondary_home_text {
   height: 25px;
   transform: translateY(25%);
 }
-.button_pointer_icon.click-action {
+main.parent:not(.simplified) .button_pointer_icon.click-action {
   transform: scale(1) translateY(25%);
 }
-.button_pointer_icon.click-action:hover {
+main.parent:not(.simplified) .button_pointer_icon.click-action:hover {
   transform: scale(1.05) translateY(25%);
 }
-.button_pointer_icon.click-action:active {
+main.parent:not(.simplified) .button_pointer_icon.click-action:active {
   transform: scale(0.95) translateY(25%);
 }
 .button_pointer_icon .icon {

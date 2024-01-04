@@ -406,7 +406,12 @@ img.loading_icon {
   --shadow-overlay-highlight: none;
   --bg-filter-loading: none;
 }
-#themed_body.parent.simplified .click-action {
+#themed_body.parent.simplified *,
+#themed_body.parent.simplified *::before,
+#themed_body.parent.simplified *::after {
+  backdrop-filter: none !important;
+}
+#themed_body.parent.simplified .click-action:not(.button_pointer_icon) {
   scale: unset !important;
   transform: unset !important;
 }

@@ -630,6 +630,7 @@ export default {
   z-index: 6;
   opacity: 1;
 }
+
 .calendar_day.calendar_day__drag_class_to:not(.calendar_day__drag_from)::before {
   content: "+";
 }
@@ -775,7 +776,6 @@ export default {
   opacity: 0;
   z-index: 2;
   transition: opacity 0.2s ease-out;
-  /* backdrop-filter: blur(3px); */
 }
 .calendar_day_task:hover .calendar_day_task_editable,
 .calendar_day_task:active .calendar_day_task_editable,

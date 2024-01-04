@@ -1,8 +1,18 @@
 <template>
   <footer>
     <p>
-      <span>&copy; 2022-2023 MVHS Test Tracker.&nbsp;</span>
-      <span>Website by <a href="https://svonk.me/">Sander Vonk</a></span>
+      <span
+        >&copy; 2022-2023
+        <span class="desktop_only_text">MV Test Tracker</span>
+        <span class="mobile_only_text">MVTT</span>.&nbsp;</span
+      >
+      &ThickSpace;<span>Website by <a href="https://svonk.me/">Sander Vonk</a>.</span>
+      <!-- Required OAuth legal pages -->
+      <span
+        >&ThickSpace; Legal:
+        <span><router-link to="/legal/privacy">Privacy Policy</router-link>,&MediumSpace;</span>
+        <span><router-link to="/legal/terms">Terms of Service</router-link></span>
+      </span>
     </p>
   </footer>
 </template>
@@ -25,7 +35,7 @@ footer p {
   background-color: var(--color-footer);
   color: var(--color-footer-text);
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: row wrap;
   align-items: center;
   justify-content: center;
   height: 100%;
