@@ -1,7 +1,18 @@
 <template>
   <div class="right-bar portal_sidebar" :class="{ active: sidebar_open }" @click="show_if_inactive">
     <div class="sidebar_overflow">
-      <div class="auth-action can-logout doprompt">Log Out</div>
+      <div class="sidebar_first_block">
+        <div class="linked_acc_icon" v-if="store && store.personal_account">
+          <img
+            class="linked_acc_icon__img"
+            width="24"
+            height="24"
+            src="@/assets/img/general/user-linked.png"
+            alt="Linked Account"
+          />
+        </div>
+        <div class="auth_logout auth-action can-logout doprompt">Log Out</div>
+      </div>
       <div class="flex_spacer"></div>
       <UpcomingTasks :loading="loading" />
       <div class="flex_spacer"></div>
@@ -20,6 +31,7 @@
 <script>
 import SidebarToggle from "@/components/Portal/SidebarToggle.vue";
 import UpcomingTasks from "@/components/Portal/UpcomingTasks.vue";
+import { useMainStore } from "@/store";
 export default {
   name: "RightBar",
   components: {
@@ -38,6 +50,11 @@ export default {
       sidebar_open: false,
       loading: true,
     };
+  },
+  computed: {
+    store() {
+      return useMainStore();
+    },
   },
   mounted() {
     this.$emit("mounted");
@@ -69,6 +86,26 @@ export default {
 </script>
 
 <style scoped>
+.sidebar_first_block {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: stretch;
+  margin-bottom: var(--padding-sidebar);
+  gap: 5px;
+}
+/* display image at 24x24px size */
+.linked_acc_icon {
+  flex: 0 0 30px;
+  height: 30px;
+  width: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.auth_logout {
+  flex: 1 1 auto;
+}
 .right-bar {
   border-radius: var(--radius-sidebar) 0 0 var(--radius-sidebar);
 }

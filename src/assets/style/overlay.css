@@ -126,6 +126,7 @@ h2.header_style.modal_header_title {
 .inputs_row,
 .spaced_contents {
   margin: var(--padding-overlay) 0;
+  gap: calc(var(--padding-overlay) / 2);
   display: flex;
   flex-flow: row nowrap;
   justify-content: stretch;
@@ -135,7 +136,6 @@ h2.header_style.modal_header_title {
 .styled_obj {
   /* spacing */
   margin: 0;
-  margin-right: calc(var(--padding-overlay) / 2);
   /* sizing */
   height: var(--height-overlay-input);
   padding: 0 var(--padding-overlay-input);
@@ -210,16 +210,12 @@ select.styled_obj {
 .spaced_contents > * {
   margin: 0;
   width: 100%;
-  margin-bottom: calc(var(--padding-overlay) / 2);
   /* sizing */
   flex-basis: var(--height-overlay-input);
   height: unset;
   flex-shrink: 0;
   padding: calc((var(--height-overlay-input) - 18px) / 2) var(--padding-overlay-input);
   line-height: 18px;
-}
-.spaced_contents > *:last-child {
-  margin-bottom: 0;
 }
 .styled_line__label {
   opacity: 0.7;
@@ -246,8 +242,9 @@ select.styled_obj {
   padding-top: 10px;
   padding-bottom: 10px;
 }
-.styled_obj.styled_textarea {
-  margin: calc(var(--padding-overlay) / 2) 0;
+.styled_obj.styled_textarea,
+.styled_input.styled_textarea {
+  margin: calc(0px - var(--padding-overlay) / 2) 0;
   padding-top: 10px;
   padding-bottom: 10px;
 }
@@ -270,6 +267,7 @@ select.styled_obj {
   flex-flow: row wrap;
   flex-grow: 1;
   overflow: hidden;
+  gap: calc(var(--margin-overlay-link) * 1.5);
 }
 .styled_line_links__link {
   display: block;
@@ -277,7 +275,6 @@ select.styled_obj {
   height: var(--height-overlay-link);
   line-height: var(--height-overlay-link);
   background-color: var(--color-overlay-link);
-  margin: var(--margin-overlay-link);
   border-radius: var(--radius-overlay-link);
   /* overflow */
   text-align: center;
@@ -350,13 +347,9 @@ hr.styled_links_separator {
   flex-flow: row wrap;
   align-items: stretch;
   justify-content: stretch;
+  gap: calc(var(--padding-overlay) / 2);
 }
-.styled_links_add__path {
-  margin-bottom: calc(var(--padding-overlay) / 2);
-}
-.styled_links_add__text {
-  margin-right: calc(var(--padding-overlay) / 2);
-}
+
 .styled_links_add input,
 .styled_links_add button {
   flex-grow: 1;

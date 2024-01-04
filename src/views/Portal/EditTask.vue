@@ -344,11 +344,6 @@ export default {
 .input_task__date {
   margin-right: 0;
 }
-.styled_input.task_description {
-  margin: calc(var(--padding-overlay) / 2) 0;
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
 .styled_input.input_task__date {
   margin-right: 0;
 }
