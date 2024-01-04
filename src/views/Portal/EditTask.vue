@@ -358,9 +358,6 @@ select.type_dropdown {
 .type_dropdown__option {
   font-size: 14px;
 }
-.spaced_contents {
-  margin-top: 0;
-}
 .loading_icon {
   max-height: 150px;
   min-width: 100%;

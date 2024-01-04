@@ -244,9 +244,12 @@ select.styled_obj {
 }
 .styled_obj.styled_textarea,
 .styled_input.styled_textarea {
-  margin: calc(0px - var(--padding-overlay) / 2) 0;
   padding-top: 10px;
   padding-bottom: 10px;
+}
+.flex-break + .styled_obj.styled_textarea,
+.flex-break + .styled_input.styled_textarea {
+  margin: calc(0px - var(--padding-overlay) / 2) 0;
 }
 .inputs_row .flex-break {
   flex-basis: 100%;

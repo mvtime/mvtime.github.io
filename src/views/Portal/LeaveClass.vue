@@ -107,9 +107,6 @@ export default {
 </script>
 
 <style scoped>
-.spaced_contents {
-  margin-top: 0;
-}
 .loading_icon {
   max-height: 150px;
   min-width: 100%;
