@@ -37,6 +37,7 @@
         />
         <input
           type="date"
+          ref="date"
           class="styled_input input_task__date"
           v-model="task.date"
           :style="{ maxWidth: is_note ? '100%' : null }"
@@ -152,6 +153,11 @@ export default {
     this.$smoothReflow({
       el: this.$refs.contents,
     });
+    if (!this.$route?.params?.tasktype) {
+      this.$refs.type.focus();
+    } else {
+      this.$refs.date.focus();
+    }
   },
   data() {
     return {
