@@ -15,7 +15,7 @@
       <div class="overlay_contents__html" v-if="html" v-html="html"></div>
     </div>
     <div class="bottom_actions">
-      <button class="close_action" v-if="skippable" @click="$emit('skip')">
+      <button class="close_action click_escape" v-if="skippable" @click="$emit('skip')">
         {{ skip_text || (progress && progress.current > 1 ? "Abandon" : "Close") }}
       </button>
       <div class="progress_display" v-if="progress && progress.total > 1">
@@ -32,7 +32,11 @@
         </span>
       </div>
       <div class="flex_spacer"></div>
-      <button class="continue_action" @click="continue_action" :disabled="!can_continue">
+      <button
+        class="continue_action click_ctrlenter"
+        @click="continue_action"
+        :disabled="!can_continue"
+      >
         {{ button_text }}
       </button>
     </div>
@@ -69,10 +73,6 @@ export default {
       el: this.$refs.title,
       hideOverflow: true,
     });
-    window.addEventListener("keydown", this.submit_key);
-  },
-  beforeUnmount() {
-    window.removeEventListener("keydown", this.submit_key);
   },
   emits: ["open", "update", "status", "skip"],
   data() {
@@ -134,14 +134,6 @@ export default {
     skip_text: {
       type: String,
       required: false,
-    },
-  },
-  methods: {
-    submit_key(e) {
-      if (this.can_continue && e.code === "Enter") {
-        e.preventDefault();
-        this.continue_action();
-      }
     },
   },
   computed: {

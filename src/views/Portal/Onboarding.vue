@@ -42,9 +42,13 @@
       </div>
     </div>
     <div class="bottom_actions">
-      <button class="back_action" @click="$emit('close')">Skip</button>
+      <button class="back_action click_escape" @click="$emit('close')">Skip</button>
       <div class="flex_spacer"></div>
-      <button class="continue_action" @click="add_class" :disabled="!teacher_email || !class_id">
+      <button
+        class="continue_action click_ctrlenter"
+        @click="add_class"
+        :disabled="!teacher_email || !class_id"
+      >
         Add Class
       </button>
     </div>

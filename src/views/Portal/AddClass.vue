@@ -92,7 +92,7 @@
       </div>
     </div>
     <div class="bottom_actions">
-      <button class="close_action" @click="$emit('close')">Close</button>
+      <button class="close_action click_escape" @click="$emit('close')">Close</button>
       <div class="flex_spacer"></div>
       <button
         class="continue_action"

@@ -23,12 +23,12 @@
       again.
     </div>
     <div class="bottom_actions">
-      <button class="close_action" @click="$emit('close')">
+      <button class="close_action click_escape" @click="$emit('close')">
         {{ ready ? "Cancel" : "Close" }}
       </button>
       <div class="flex_spacer"></div>
       <button
-        class="leave_class"
+        class="leave_class click_ctrlenter"
         :class="{ loading_bg: loading }"
         @click="leave_class"
         :disabled="!ready"

@@ -133,6 +133,7 @@ export default {
     this.store.paused = false;
     this.store.logout_prompt = false;
     window.addEventListener("focus", this.refreshTimeout);
+    window.addEventListener("keydown", this.global_keydown);
 
     // catch href clicks to open as "/to/{encoded href}"
     this.$refs.app.addEventListener("click", (e) => {
@@ -153,6 +154,10 @@ export default {
       }
     });
   },
+  beforeUnmount() {
+    window.removeEventListener("focus", this.refreshTimeout);
+    window.removeEventListener("keydown", this.global_keydown);
+  },
   created() {
     // do dark mode from local storage, then from store (if logged in)
     const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -162,6 +167,23 @@ export default {
     this.isDarkMode = storedTheme === "dark" || (storedTheme === null && systemTheme === "dark");
   },
   methods: {
+    global_keydown(e) {
+      if (!e.shiftKey) {
+        let el;
+        if (e.key == "Escape" && !e.ctrlKey) {
+          el = $(".click_escape");
+          if (!el.length) return;
+        } else if (e.key == "Enter" && e.ctrlKey) {
+          el = $(".click_ctrlenter");
+        }
+        if (!el) return;
+        el = el.not("[disabled]").not(".disabled").filter(":visible");
+        if (!el || !el.length) return;
+        $(el).first().click();
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    },
     tutorial_nav(change) {
       const click = this.tutorial?.options?.click_on_complete;
       if (change > 0 && click) {

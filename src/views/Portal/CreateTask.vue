@@ -1,5 +1,5 @@
 <template>
-  <div class="create_task" @keypress="submit_key">
+  <div class="create_task">
     <header class="modal_header">
       <h2 class="header_style modal_header_title">
         <span>Add a{{ is_vowel(type_full[0]) ? "n" : "" }}&MediumSpace;</span>
@@ -114,10 +114,10 @@
       </div>
     </div>
     <div class="bottom_actions">
-      <button class="close_action" @click="$emit('close')">Close</button>
+      <button class="close_action click_escape" @click="$emit('close')">Close</button>
       <div class="flex_spacer"></div>
       <button
-        class="continue_action"
+        class="continue_action click_ctrlenter"
         :class="{ loading_bg: loading }"
         @click="try_submit"
         :disabled="!ready"
@@ -221,12 +221,6 @@ export default {
     },
   },
   methods: {
-    submit_key(e) {
-      if (e.ctrlKey && e.code === "Enter") {
-        e.preventDefault();
-        this.try_submit();
-      }
-    },
     try_submit() {
       if (this.ready) {
         this.create_task();

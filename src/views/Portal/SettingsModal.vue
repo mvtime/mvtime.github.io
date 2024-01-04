@@ -132,12 +132,16 @@
       </div>
     </div>
     <div class="bottom_actions">
-      <button v-if="!store.personal_account" class="back_action" @click="$emit('close')">
+      <button
+        v-if="!store.personal_account"
+        class="back_action click_escape"
+        @click="$emit('close')"
+      >
         {{ changed || loading ? "Cancel" : "Close" }}
       </button>
       <div class="flex_spacer"></div>
       <button
-        class="continue_action"
+        class="continue_action click_ctrlenter"
         :class="{ loading_bg: loading }"
         :disabled="!store.personal_account && !changed && !store.is_teacher"
         @click="

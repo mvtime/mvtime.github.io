@@ -2,7 +2,7 @@
   <div class="teacher_actions">
     <div
       :disabled="!has_classes"
-      :title="has_classes ? '' : 'Please create a class first'"
+      :title="has_classes ? `${task_type[1]} (${task_type[2]})` : 'Please create a class first'"
       v-for="task_type of task_types"
       :key="task_type[0]"
       class="teacher_action"
@@ -38,10 +38,16 @@ export default {
   data() {
     return {
       task_types: [
-        ["note", "Add a Note"],
-        ["task", "Schedule a Task or Test"],
+        ["note", "Add a Note", "n"],
+        ["task", "Schedule a Task or Test", "t"],
       ],
     };
+  },
+  mounted() {
+    window.addEventListener("keydown", this.keydown);
+  },
+  beforeUnmount() {
+    window.removeEventListener("keydown", this.keydown);
   },
   computed: {
     store() {
@@ -52,6 +58,17 @@ export default {
     },
   },
   methods: {
+    keydown(e) {
+      if (this.task_types.map((t) => t[2]).includes(e.key) && this.has_classes) {
+        const task_type = this.task_types.find((t) => t[2] == e.key);
+        this.$router.push({
+          name: "newtask",
+          params: { tasktype: task_type[0] },
+        });
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    },
     warn_missing_class() {
       new WarningToast("Please create a class first", 2000);
     },

@@ -35,7 +35,7 @@
       </div>
     </div>
     <div class="bottom_actions">
-      <button v-if="page == 'form'" class="close_action" @click="$emit('close')">
+      <button v-if="page == 'form'" class="close_action click_escape" @click="$emit('close')">
         {{ page == "form" && form.name == "" && form.grade == "" ? "Close" : "Cancel" }}
       </button>
       <div class="flex_spacer"></div>

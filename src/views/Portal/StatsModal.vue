@@ -67,9 +67,18 @@
       </div>
     </div>
     <div class="bottom_actions">
-      <!-- <button class="close_action" @click="$emit('close')">Close</button> -->
+      <button
+        class="close_action click_escape"
+        @click="
+          $router.push({
+            name: 'settings',
+          })
+        "
+      >
+        Back
+      </button>
       <div class="flex_spacer"></div>
-      <button class="continue_action" @click="$emit('close')">Close</button>
+      <button class="continue_action click_ctrlenter" @click="$emit('close')">Close</button>
     </div>
   </main>
 </template>

@@ -62,7 +62,7 @@
           }
         "
         :disabled="(ready && loading_share) || !is_owned"
-        :class="{ loading_bg: loading_share && ready }"
+        :class="{ loading_bg: loading_share && ready, click_escape: !ready }"
       >
         {{ ready ? "Share" : "Close" }}
       </button>
@@ -71,7 +71,7 @@
         Leave
       </button>
       <button
-        class="continue_action"
+        class="continue_action click_ctrlenter"
         @click="update_class"
         :disabled="!ready || !changed || !class_obj.name || !class_obj.period"
         :class="{ loading_bg: loading }"

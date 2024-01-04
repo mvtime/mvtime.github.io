@@ -81,7 +81,7 @@
       <img ref="loading_contents" alt="Loading Icon" class="loading_icon" v-else />
     </div>
     <div class="bottom_actions">
-      <button class="continue_action" @click="$emit('close')">Close</button>
+      <button class="close_action click_escape" @click="$emit('close')">Close</button>
       <div class="flex_spacer"></div>
       <button class="share_action primary_styled" @click="share_class" :disabled="!ready">
         Share
@@ -98,6 +98,7 @@
         class="join_leave_action primary_styled"
         v-else-if="store.user && class_obj"
         :disabled="!ready"
+        :class="{ click_escape: joinable }"
         @click="
           if (joinable) {
             join_class();

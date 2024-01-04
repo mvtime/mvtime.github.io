@@ -32,11 +32,11 @@
           <div class="overlay_contents__html" v-if="html" v-html="html"></div>
         </div>
         <div class="bottom_actions">
-          <button class="close_action" v-if="skippable" @click="$emit('skip')">
+          <button class="close_action click_escape" v-if="skippable" @click="$emit('skip')">
             {{ skip_text }}
           </button>
           <div class="flex_spacer"></div>
-          <button class="continue_action" @click="$emit('next')">
+          <button class="continue_action click_ctrlenter" @click="$emit('next')">
             {{ button_text }}
           </button>
         </div>
@@ -204,7 +204,7 @@ export default {
       if (this.track) {
         if (e.key === "Enter" || e.key === " " || e.key === "ArrowRight") {
           this.$emit("next");
-        } else if (e.key === "Escape" || e.key === "ArrowLeft") {
+        } else if (e.key === "ArrowLeft") {
           this.$emit("skip");
         }
       }

@@ -1,5 +1,5 @@
 <template>
-  <div class="edit_task" @keypress="submit_key">
+  <div class="edit_task">
     <header class="modal_header" ref="title">
       <h2 class="header_style modal_header_title">
         {{ original_note ? "Update" : "Add" }} {{ task.type || "task" }} notes
@@ -36,7 +36,7 @@
       <img alt="Loading Icon" class="loading_icon" v-else />
     </div>
     <div class="bottom_actions">
-      <button class="close_action" @click="$emit('close')">Close</button>
+      <button class="close_action click_escape" @click="$emit('close')">Close</button>
       <div class="flex_spacer"></div>
       <button
         class="back_action primary_styled"
@@ -48,7 +48,7 @@
         View
       </button>
       <button
-        class="continue_action"
+        class="continue_action click_ctrlenter"
         :class="{ loading_bg: loading }"
         @click="try_submit"
         :disabled="not_submittable"
@@ -125,12 +125,6 @@ export default {
     },
   },
   methods: {
-    submit_key(e) {
-      if (e.ctrlKey && e.code === "Enter") {
-        e.preventDefault();
-        this.try_submit();
-      }
-    },
     try_submit() {
       if (!this.not_submittable) {
         this.update_note();

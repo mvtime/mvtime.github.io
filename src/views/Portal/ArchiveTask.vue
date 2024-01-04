@@ -22,8 +22,10 @@
       >.
     </div>
     <div class="bottom_actions">
-      <button v-if="ready" class="close_action" @click="edit_task">Continue Editing</button>
-      <button v-else class="close_action" @click="$emit('close')">Close</button>
+      <button v-if="ready" class="close_action click_escape" @click="edit_task">
+        Continue Editing
+      </button>
+      <button v-else class="close_action click_escape" @click="$emit('close')">Close</button>
       <div class="flex_spacer"></div>
       <button
         class="continue_action"
