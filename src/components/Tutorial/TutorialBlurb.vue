@@ -263,6 +263,9 @@ export default {
 </script>
 
 <style>
+.parent.simplified .tutorialblurb_group * {
+  transition: none !important;
+}
 .tutorialblurb_wrapper {
   position: absolute;
   z-index: 2048;

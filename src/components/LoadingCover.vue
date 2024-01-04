@@ -1,5 +1,3 @@
-// Path: LoadingCover.vue
-
 <template>
   <div class="loading_cover" :title="'Loading ' + covering">
     <div class="loading_cover__overlay"></div>
@@ -129,6 +127,9 @@ export default {
   background-color: var(--color-loading-overlay, var(--color-overlay));
   backdrop-filter: var(--bg-filter-loading);
   z-index: 2047;
+}
+.parent.simplified .loading_cover__overlay {
+  background-color: var(--color-calendar);
 }
 .loading_cover__content {
   z-index: 2048;

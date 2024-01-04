@@ -284,6 +284,10 @@ export default {
   animation: scale-out 0.15s ease-in;
   /* transform-origin: left center; */
 }
+.parent.simplified .study_list_group * {
+  transition: none !important;
+  animation: none !important;
+}
 /* enter and leave animations */
 @keyframes scale-in {
   0% {

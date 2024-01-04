@@ -194,6 +194,14 @@ export const useMainStore = defineStore({
       return ORG_DOMAIN;
     },
     /**
+     * @function simplified
+     * @description Get if the user is using a simplified view (true) or not (false)
+     * @returns {Boolean} If the user is using a simplified view
+     */
+    simplified() {
+      return this.account_doc?.prefs?.simplified || false;
+    },
+    /**
      * @function linked_accounts
      * @description Get all linked accounts from active_doc.linked
      * @returns {Array} Array of linked account emails
@@ -394,11 +402,11 @@ export const useMainStore = defineStore({
       // get local
       let local_theme = this.theme || window.localStorage.getItem("theme");
       // get userdoc theme
-      let active_doc_theme = this.active_doc?.prefs?.theme;
+      let account_doc_theme = this.account_doc?.prefs?.theme;
       // set new to system by default
       let new_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
       // if not userdoc theme, use local theme, and set userdoc theme to local theme
-      if (!active_doc_theme) {
+      if (!account_doc_theme) {
         if (local_theme) {
           // set to local if local exists
           new_theme = local_theme;
@@ -406,20 +414,18 @@ export const useMainStore = defineStore({
           // set to system if local doesn't exist, and set update local
           window.localStorage.setItem("theme", new_theme);
         }
-        if (this.active_doc) {
-          let new_doc = { ...this.active_doc };
-          new_doc.prefs = { ...new_doc.prefs, theme: new_theme };
-          this.set_active(new_doc);
-          this.update_remote();
+        if (this.account_doc) {
+          this.account_doc.prefs = { ...this.account_doc.prefs, theme: new_theme };
+          this.update_wrapper_acc_doc();
         }
         return local_theme || "light";
       }
       // if userdoc theme, use userdoc theme, and set local theme to userdoc theme
       else {
-        if (local_theme != active_doc_theme) {
-          window.localStorage.setItem("theme", active_doc_theme);
+        if (local_theme != account_doc_theme) {
+          window.localStorage.setItem("theme", account_doc_theme);
         }
-        return active_doc_theme ? active_doc_theme : "light";
+        return account_doc_theme ? account_doc_theme : "light";
       }
     },
     /**
@@ -474,6 +480,25 @@ export const useMainStore = defineStore({
   },
   /** The actions to manipulate the store state */
   actions: {
+    /**
+     * @function set_account_pref
+     * @description Set a preference in the account doc
+     * @param {String} pref The preference to set
+     * @param {String} value The value to set the preference to
+     * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
+     */
+    async set_account_pref(pref, value) {
+      try {
+        if (!this.account_ref) throw "No account doc";
+        if (!pref) throw "No pref provided";
+        await this.update_wrapper_with_merge({
+          prefs: { ...this.active_doc.prefs, [pref]: value },
+        });
+        return Promise.resolve();
+      } catch (err) {
+        return Promise.reject(err);
+      }
+    },
     /**
      * @function get_surveys
      * @description Get the survey data for the given dates for this user
@@ -1142,20 +1167,24 @@ export const useMainStore = defineStore({
     async toggle_theme() {
       this.theme = this.get_theme == "light" ? "dark" : "light";
       window.localStorage.setItem("theme", this.theme);
-      if (this.active_doc) {
-        // update
-        let new_doc = { ...this.active_doc };
-        new_doc.prefs = { ...new_doc.prefs, theme: this.theme };
+      if (this.account_doc) {
+        this.account_doc.prefs = { ...this.account_doc.prefs, theme: this.theme };
         // fixes for legacy
-        delete new_doc.theme;
+        delete this.account_doc.theme;
         // commit changes
-        this.set_active(new_doc);
-        await this.update_remote();
+        await this.update_wrapper_acc_doc();
       }
       new SuccessToast(`Switched to ${this.theme} theme`, 2000);
       // trigger theme update
       this.theme = this.get_theme;
     },
+    /**
+     * @function set pref
+     * @description Set a preference in the account doc
+     * @returns Nothing
+     * @see {@link get_theme}
+     * @see {@link theme}
+     */
 
     /**
      * @function remove_class_id_helper
@@ -1522,7 +1551,27 @@ export const useMainStore = defineStore({
       let run_hash = Math.random().toString(36).substring(7);
       _status.log(`📚 Started fetch   | <${run_hash}>`);
       // check for duplicates
-      if (!this.active_doc?.classes) return Promise.reject("Waiting for user document to load");
+      if (!this.active_doc?.classes) {
+        let i = 0;
+        const max = 10000,
+          warn = 1500,
+          len = 100;
+        while (!this.active_doc?.classes && i < max / len) {
+          await new Promise((resolve) => setTimeout(resolve, len));
+          i++;
+        }
+        if (!this.active_doc?.classes) {
+          return Promise.reject("Classes not found in user doc within load cycle");
+        } else if (i * len >= warn) {
+          _status.warn(`📚 Initial class fetch took ${i * len}ms, warning set at ${warn}ms`);
+          new WarningToast(
+            `Initial class fetch took ${
+              i * len
+            }ms. Your network connection may negativly affect site preformance.`,
+            3500
+          );
+        }
+      }
 
       let unique = [...new Set(this.active_doc.classes)];
       if (unique.length != this.active_doc.classes.length) {

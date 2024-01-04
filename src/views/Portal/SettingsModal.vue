@@ -135,6 +135,22 @@
           redoing the tutorial </span
         >. We'll keep this updated as we add new features!
       </div>
+      <div class="overlay_contents_text overlay_contents_section">
+        <span
+          class="button_pointer_text click-action"
+          @click="
+            changed = true;
+            store.set_account_pref('simplified', !store.simplified);
+          "
+        >
+          {{ store.simplified ? "Leave" : "Enter" }} simplified view
+        </span>
+        to
+        <span v-if="!store.simplified"
+          >make MVTT easier to use on mobile devices and older computers</span
+        >
+        <span v-else>get back the classic interface</span>.
+      </div>
     </div>
     <div class="bottom_actions">
       <button

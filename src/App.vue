@@ -2,6 +2,7 @@
   <main
     id="themed_body"
     class="parent"
+    :class="{ simplified: store.simplified }"
     ref="app"
     :_theme="theme"
     @click="refreshTimeout"

@@ -398,3 +398,15 @@ img.loading_icon {
   background: var(--color-select);
   color: var(--color-theme-accent);
 }
+
+/* simplified view */
+
+#themed_body.parent.simplified {
+  --shadow-highlight: none;
+  --shadow-overlay-highlight: none;
+  --bg-filter-loading: none;
+}
+#themed_body.parent.simplified .click-action {
+  scale: unset !important;
+  transform: unset !important;
+}

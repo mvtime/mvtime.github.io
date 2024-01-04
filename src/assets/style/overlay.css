@@ -13,6 +13,10 @@
   align-items: center;
   backdrop-filter: blur(5px);
 }
+.parent.simplified .overlay_center_view {
+  background-color: var(--color-bg);
+  backdrop-filter: none;
+}
 .overlay_center_view > .overlay_close {
   position: absolute;
   top: 0;
@@ -85,7 +89,7 @@
   text-decoration: underline;
 }
 .bottom_actions > .close_action:first-child {
-  margin-left: calc(var(--padding-overlay) / 2);
+  padding: 0 calc(var(--padding-overlay) / 2);
 }
 .bottom_actions > *:last-child,
 .bottom_actions > .primary_styled,
@@ -433,15 +437,57 @@ textarea::-webkit-scrollbar-corner {
   backdrop-filter: none;
   animation: show_blur_bg 0.25s ease forwards;
 }
+.parent.simplified .overlay_center_view {
+  background: none;
+  backdrop-filter: none;
+  animation: show_noblur_bg 0.25s ease forwards;
+}
 /* animate out overlay */
 .overlay_center_view.animate_out {
   animation: hide_blur_bg 0.25s ease forwards;
+}
+.parent.simplified .overlay_center_view.animate_out {
+  animation: hide_noblur_bg 0.25s ease forwards;
 }
 .overlay_center_view.overlay_slot__wrapper.animate_out > *,
 .tutorial_end .modaltype {
   opacity: 0;
   transform: scale(1);
   animation: scale_out 0.25s ease forwards;
+}
+
+/* simplified view */
+.parent.simplified .styled_obj {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: var(--padding-overlay-input);
+}
+.parent.simplified .styled_obj .styled_line__separator {
+  width: calc(100% + var(--padding-overlay-input) * 2);
+  height: 0px;
+  border-left: none;
+  border-bottom: solid var(--thickness-overlay-border) var(--color-overlay-border);
+  margin: calc(var(--padding-overlay) / 2) calc(0px - var(--padding-overlay-input));
+  flex: 0 0 var(--thickness-overlay-border);
+  min-height: unset;
+}
+/* simplified modal actions */
+.parent.simplified div.bottom_actions .flex_spacer ~ button {
+  border-radius: 0px;
+  margin-left: 2px;
+}
+.parent.simplified div.bottom_actions:has(:nth-child(4)) .flex_spacer ~ button {
+  padding: 0 calc(var(--padding-overlay-action) / 1.15);
+}
+.parent.simplified div.bottom_actions .flex_spacer + button {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+.parent.simplified div.bottom_actions .flex_spacer ~ button:last-child {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
 
 /* scale and fade in with slight bounce */
@@ -492,6 +538,29 @@ textarea::-webkit-scrollbar-corner {
   0% {
     background: var(--color-overlay);
     backdrop-filter: blur(5px);
+  }
+
+  100% {
+    background: #00000000;
+    backdrop-filter: none;
+  }
+}
+/* simplified versions */
+@keyframes show_noblur_bg {
+  0% {
+    background: #00000000;
+    backdrop-filter: none;
+  }
+
+  100% {
+    background: var(--color-bg);
+    backdrop-filter: none;
+  }
+}
+@keyframes hide_noblur_bg {
+  0% {
+    background: var(--color-bg);
+    backdrop-filter: none;
   }
 
   100% {

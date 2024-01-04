@@ -97,7 +97,12 @@
       </div>
       <!-- checkboxes for classes -->
       <div class="checkboxes">
-        <div class="checkbox" v-for="class_obj in classes" :key="class_obj.id">
+        <a
+          class="checkbox"
+          v-for="class_obj in classes"
+          :key="class_obj.id"
+          :href="'/view/' + store.path_to_ref(class_obj.ref)"
+        >
           <input type="checkbox" :id="class_obj.id" :value="class_obj.id" v-model="task_classes" />
           <label
             class="button_pointer_text class_name"
@@ -110,8 +115,10 @@
           >
             P{{ class_obj.period }} - {{ class_obj.name }}
           </label>
-          <label v-else :for="class_obj.id">{{ class_obj.name }}</label>
-        </div>
+          <label v-else :for="class_obj.id" @click="$event.stopPropagation">{{
+            class_obj.name
+          }}</label>
+        </a>
       </div>
     </div>
     <div class="bottom_actions">
@@ -298,24 +305,18 @@ export default {
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
-  margin-top: 0.5rem;
 }
 .checkbox label {
   padding-left: 0.5rem;
   user-select: none;
   cursor: pointer;
 }
-.input_task__date {
-  max-width: 150px;
-}
 .inputs_row {
   flex-flow: row wrap;
 }
-.input_task__date {
-  margin-right: 0;
-}
 .styled_input.input_task__date {
   margin-right: 0;
+  max-width: 150px;
 }
 select.type_dropdown {
   padding: 5px;
@@ -337,7 +338,6 @@ select.type_dropdown {
 }
 /* new display method */
 .checkboxes {
-  gap: 0.25em;
 }
 .checkboxes .checkbox input {
   display: none;
@@ -354,5 +354,39 @@ select.type_dropdown {
 .checkboxes .checkbox {
   margin: 0;
   display: inline-flex;
+  flex-grow: 1;
+}
+.checkboxes .checkbox label {
+  width: 100%;
+  text-align: center;
+}
+@media (max-width: 600px) {
+  .checkboxes {
+    gap: 0.5em;
+  }
+  .checkboxes .checkbox,
+  .checkboxes .checkbox label {
+    width: 100%;
+    text-align: left;
+    line-height: 2.5em;
+  }
+  .checkboxes .checkbox label {
+    padding: 0 1em;
+    height: 2.5em;
+  }
+}
+
+.parent.simplified .checkboxes {
+  gap: 0.5em;
+}
+.parent.simplified .checkboxes .checkbox,
+.parent.simplified .checkboxes .checkbox label {
+  width: 100%;
+  text-align: left;
+  line-height: 2.5em;
+}
+.parent.simplified .checkboxes .checkbox label {
+  padding: 0 1em;
+  height: 2.5em;
 }
 </style>

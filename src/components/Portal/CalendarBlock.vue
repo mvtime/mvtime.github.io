@@ -84,7 +84,7 @@
           class="calendar_day"
           :_date="day.date.toISOString().split('T')[0]"
           :class="{
-            calendar_day__placeholder: day.is_placeholder,
+            calendar_day__placeholder: day.is_placeholder && !store.simplified,
             calendar_day__hastask: day.tasks ? day.tasks.length : false,
             calendar_day__today: day.is_today,
             calendar_day__past: day.is_past,
