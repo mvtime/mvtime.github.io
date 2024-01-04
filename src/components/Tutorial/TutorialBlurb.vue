@@ -19,7 +19,7 @@
       }"
     >
       <span
-        v-if="track.exists"
+        v-if="track.blurb"
         class="tutorialblurb__blurb nopad"
         :style="{ left: track.blurb_x + 'px' }"
       ></span>
@@ -162,6 +162,7 @@ export default {
           const width = el.outerWidth();
           const height = el.outerHeight();
           let track = {
+            blurb: true,
             top: offset.top - padding,
             left: offset.left - padding,
             width: width + padding * 2,
@@ -172,13 +173,27 @@ export default {
           };
           track.fake_x = Math.max(screen.pad, Math.min(screen.w - dialog.w - screen.pad, track.x));
           track.fake_y = Math.max(screen.pad, Math.min(screen.h - dialog.h - screen.pad, track.y));
-          // offset position for the pointer on top of the dialogue from side to side
-          track.blurb_x = track.x - track.fake_x + dialog.offset;
-          // limit the blurb to the width of the dialogue
-          track.blurb_x = Math.max(
-            dialog.rail_pad,
-            Math.min(dialog.w - dialog.rail_pad, track.blurb_x)
-          );
+
+          // check if covering the element and move off to the side
+          if (
+            track.fake_x + dialog.w > track.left &&
+            track.fake_x < track.left + track.width &&
+            track.fake_y + dialog.h > track.top &&
+            track.fake_y < track.top + track.height
+          ) {
+            track.blurb = false;
+            track.blurb_x = dialog.offset;
+            track.fake_y = window.innerHeight / 2 - (this.$refs?.dialog?.offsetHeight || 200) / 2;
+            track.fake_x = window.innerWidth / 2 - 350 / 2;
+          } else {
+            // offset position for the pointer on top of the dialogue from side to side
+            track.blurb_x = track.x - track.fake_x + dialog.offset;
+            // limit the blurb to the width of the dialogue
+            track.blurb_x = Math.max(
+              dialog.rail_pad,
+              Math.min(dialog.w - dialog.rail_pad, track.blurb_x)
+            );
+          }
           if (!this.done_welcome) {
             new SuccessToast("Welcome to MVTT, let's get you comfortable!", 3500);
             this.done_welcome = true;
@@ -188,6 +203,7 @@ export default {
       } else if (this.trackel == null) {
         return {
           exists: false,
+          blurb: false,
           fake_y: window.innerHeight / 2 - (this.$refs?.dialog?.offsetHeight || 200) / 2,
           fake_x: window.innerWidth / 2 - 350 / 2,
           top: window.innerHeight / 2,
