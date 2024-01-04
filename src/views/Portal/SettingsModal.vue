@@ -128,7 +128,7 @@
           "
         >
           redoing the tutorial </span
-        >.
+        >. We'll keep this updated as we add new features!
       </div>
     </div>
     <div class="bottom_actions">
