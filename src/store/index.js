@@ -1478,11 +1478,9 @@ export const useMainStore = defineStore({
       // do onboarding
       new SuccessToast("Created user document; Let's get started", 2000);
       if (!this.personal_account) {
+        // push to tutorial
         router.push({
-          name: "onboarding",
-          query: {
-            redirect: "/settings?redirect=/portal",
-          },
+          name: "portal",
         });
       }
       if (this.is_teacher) {

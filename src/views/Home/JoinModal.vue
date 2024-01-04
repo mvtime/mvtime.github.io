@@ -115,7 +115,7 @@ export default {
         // update router so that this page will redirect to /portal/onboarding
         // if no redirect, make it onboarding
         if (!this.$route?.query?.redirect) {
-          this.$router.replace({ name: "join", query: { redirect: "/portal/onboarding" } });
+          this.$router.replace({ name: "join", query: { redirect: "/portal" } });
         }
         this.page = "auth";
         _status.log("📝 Saving join form:", this.form);

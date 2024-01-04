@@ -57,9 +57,9 @@
   - ~~make classes editable~~
   - ~~join from code~~
 - Onboarding
-  - ui tutorial
   - large modal type for intro - better video support
     - fill screen on small devices
+  - ~~ui tutorial~~
   - ~~better logout prompt~~
   - ~~add first class~~
   - ~~join modal~~
@@ -101,7 +101,7 @@
 
 - Create onboarding
   - setup from pre-defined classes, add your own
-  - where to find everything
+  - ~~where to find everything~~
   - ~~join form -> add classes~~
 - Create studying / prep pages
   - really use the data/info that we have, let them create study schedules for themselves

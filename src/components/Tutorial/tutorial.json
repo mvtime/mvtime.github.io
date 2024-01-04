@@ -172,8 +172,8 @@
     "options": {
       "next_text": "Finish",
       "end": true,
-      "reclick": "null-filler",
-      "click_on_complete": ".left-bar .class_list .classes_container_class__add_class"
+      "pagename": "onboarding",
+      "reclick": "null-filler"
     }
   }
 ]
