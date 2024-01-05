@@ -223,7 +223,7 @@ export default {
       return this.prefixes[task.type] + task.name;
     },
     swap_to_calendar() {
-      this.$router.push({ name: "portal" });
+      this.$router.push({ name: "portal", query: this.$route.query });
     },
     run_get_tasks() {
       this.tasks = this.store.tasks;

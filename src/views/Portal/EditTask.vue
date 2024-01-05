@@ -13,7 +13,11 @@
             :href="`/view/${task._class.ref}`"
             @click="
               $event.preventDefault();
-              $router.push('/portal' + $event.target.getAttribute('href'));
+              $router.push({
+                name: 'viewclass',
+                params: { ref: task._class.ref },
+                query: $route.query,
+              });
             "
             :style="{
               '--color-class': class_obj.color,
@@ -246,6 +250,7 @@ export default {
             params: {
               ref: this.$route.params.ref,
             },
+            query: this.$route.query,
           });
         })
         .catch((err) => {
@@ -263,6 +268,7 @@ export default {
         },
         query: {
           title: this.is_note ? this.task.description : this.task.name,
+          ...this.$route.query,
         },
       });
     },

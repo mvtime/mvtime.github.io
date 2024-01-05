@@ -116,7 +116,7 @@
         <span
           id="stats_pointer_button"
           class="button_pointer_text button_pointer_icon click-action"
-          @click="$router.push({ name: 'stats' })"
+          @click="$router.push({ name: 'stats', query: $route.query })"
         >
           <div class="stats_icon themed_icon icon"></div>
           View your stats

@@ -113,7 +113,12 @@ export default {
         _status.log("⏵ ModalVue: continue_action not provided");
         // close this modal view
         window.onbeforeunload = null;
-        this.$router.push(this.$route.query.redirect || "/portal");
+        this.$router.push(
+          this.$route.query.redirect || {
+            name: "portal",
+            query: this.$route.query,
+          }
+        );
       },
       required: false,
     },

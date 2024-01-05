@@ -13,7 +13,7 @@
           >Join a class with your teacher's details or
           <span
             class="click-action button_pointer_text"
-            @click="$router.push({ name: 'codeenterclass' })"
+            @click="$router.push({ name: 'codeenterclass', query: $route.query })"
             >enter a class code</span
           >
         </span>
@@ -71,7 +71,7 @@
           :href="`/view/${cleaned_ref}`"
           @click="
             $event.preventDefault();
-            $router.push('/portal' + $event.target.getAttribute('href'));
+            $router.push({ name: 'viewclass', params: { ref: cleaned_ref }, query: $route.query });
           "
           :style="{
             '--color-class': class_obj.color,
@@ -206,7 +206,7 @@ export default {
           new ErrorToast("Invalid join code", err, 4000);
           _status.log("🔥 " + err);
           if (this.$route?.query?.manual) {
-            this.$router.push({ name: "codeenterclass" });
+            this.$router.push({ name: "codeenterclass", query: this.$route.query });
           } else {
             this.to_normal_add();
           }
@@ -243,7 +243,7 @@ export default {
       }
     },
     to_normal_add() {
-      this.$router.push({ name: "addclass" });
+      this.$router.push({ name: "addclass", query: this.$route.query });
     },
   },
 };

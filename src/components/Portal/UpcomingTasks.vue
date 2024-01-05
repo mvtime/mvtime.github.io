@@ -64,6 +64,7 @@ export default {
           // replace all slashes with ~ to avoid router issues
           ref: this.store.path_to_ref(task.ref),
         },
+        query: this.$route.query,
       });
     },
   },

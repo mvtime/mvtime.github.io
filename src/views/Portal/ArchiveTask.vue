@@ -12,7 +12,7 @@
         :href="`/view/${class_obj.ref}`"
         @click="
           $event.preventDefault();
-          $router.push('/portal' + $event.target.getAttribute('href'));
+          $router.push({ name: 'viewclass', params: { ref: class_obj.ref }, query: $route.query });
         "
         :style="{
           '--color-class': class_obj.color,
@@ -121,6 +121,7 @@ export default {
         params: {
           ref: this.$route?.params?.ref,
         },
+        query: this.$route.query,
       });
     },
   },

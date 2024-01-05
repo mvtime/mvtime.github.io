@@ -9,10 +9,14 @@
           You're editing
           <a
             class="class_name button_pointer_text"
-            :href="`/view/${this.$route.params.ref}`"
+            :href="`/view/${$route.params.ref}`"
             @click="
               $event.preventDefault();
-              $router.push('/portal' + $event.target.getAttribute('href'));
+              $router.push({
+                name: 'viewclass',
+                params: { ref: $route.params.ref },
+                query: $route.query,
+              });
             "
             :style="{
               '--color-class': original.color,
@@ -169,7 +173,11 @@ export default {
         });
     },
     leave_class() {
-      this.$router.push({ name: "leave", params: { ref: this.$route?.params?.ref } });
+      this.$router.push({
+        name: "leave",
+        params: { ref: this.$route?.params?.ref },
+        query: this.$route.query,
+      });
     },
     /** Shares the task link with the native share function, or to the clipboard if sharing is not supported */
     async share_class() {

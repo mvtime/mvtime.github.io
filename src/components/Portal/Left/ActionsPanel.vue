@@ -11,6 +11,7 @@
           $router.push({
             name: 'newtask',
             params: { tasktype: task_type[0] },
+            query: this.$route.query,
           });
         } else {
           warn_missing_class();
@@ -24,7 +25,7 @@
       </div>
     </div>
 
-    <div class="teacher_action" @click="$router.push('/portal/create')">
+    <div class="teacher_action" @click="$router.push({ name: 'createclass', query: $route.query })">
       <div class="teacher_action__icon icon__create"></div>
       <div class="teacher_action__text">Create a Class</div>
     </div>
@@ -68,6 +69,7 @@ export default {
         this.$router.push({
           name: "newtask",
           params: { tasktype: task_type[0] },
+          query: this.$route.query,
         });
         e.preventDefault();
         e.stopPropagation();

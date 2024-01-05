@@ -14,7 +14,11 @@
             :href="`/view/${task._class.ref}`"
             @click="
               $event.preventDefault();
-              $router.push('/portal' + $event.target.getAttribute('href'));
+              $router.push({
+                name: 'viewclass',
+                params: { ref: task._class.ref },
+                query: $route.query,
+              });
             "
             :style="{
               '--color-class': task._class.color,
@@ -138,6 +142,7 @@ export default {
         params: {
           ref: this.$route.params.ref,
         },
+        query: this.$route.query,
       });
     },
     async update_note() {

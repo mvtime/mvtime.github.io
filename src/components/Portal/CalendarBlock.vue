@@ -105,6 +105,7 @@
                   name: 'newtask',
                   query: {
                     date: format_date(day.date),
+                    ...this.$route.query,
                   },
                 });
               }
@@ -199,7 +200,6 @@ export default {
   props: {
     filtered_classes: { Array, default: () => [] },
     dragging_class: { Object, default: () => null },
-    fullpage: { Boolean, default: false },
   },
   emits: ["taskclick", "mounted"],
   data() {
@@ -243,7 +243,7 @@ export default {
       }
     },
     swap_to_study() {
-      this.$router.push({ name: "study" });
+      this.$router.push({ name: "study", query: this.$route.query });
     },
     check_leave(e) {
       // check if the mouse has left the calendar using drag event
@@ -275,6 +275,7 @@ export default {
             date: new Date(this.drag.to.getTime() - this.drag.to.getTimezoneOffset() * 60 * 1000)
               .toISOString()
               .split("T")[0],
+            ...this.$route.query,
           },
         });
       }
@@ -376,6 +377,9 @@ export default {
     },
   },
   computed: {
+    fullpage() {
+      return this.$route?.query?.calendar;
+    },
     tasks_loaded_month() {
       return this.tasks.some((task) => {
         const task_date = compatDateObj(task.date);
@@ -480,6 +484,7 @@ export default {
     height: 100%;
     box-sizing: border-box;
     overflow-y: hidden;
+    z-index: 4;
   }
 
   main.calendar.calendar_fullpage .calendar_days_container {

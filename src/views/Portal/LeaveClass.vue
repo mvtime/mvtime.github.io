@@ -7,10 +7,14 @@
       Are you sure you want to leave
       <a
         class="class_name button_pointer_text"
-        :href="`/view/${this.$route.params.ref}`"
+        :href="`/view/${$route.params.ref}`"
         @click="
           $event.preventDefault();
-          $router.push('/portal' + $event.target.getAttribute('href'));
+          $router.push({
+            name: 'viewclass',
+            params: { ref: $route.params.ref },
+            query: $route.query,
+          });
         "
         :style="{
           '--color-class': class_obj.color,

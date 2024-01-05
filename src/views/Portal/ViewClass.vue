@@ -211,6 +211,7 @@ export default {
         params: {
           ref: this.$route?.params?.ref,
         },
+        query: this.$route.query,
       });
     },
     join_class() {
@@ -219,6 +220,7 @@ export default {
         params: {
           ref: this.$route?.params?.ref,
         },
+        query: this.$route.query,
       });
     },
     leave_class() {
@@ -227,6 +229,7 @@ export default {
         params: {
           ref: this.$route?.params?.ref,
         },
+        query: this.$route.query,
       });
     },
     async get_upcoming() {
@@ -287,6 +290,7 @@ export default {
         params: {
           ref: ref,
         },
+        query: this.$route.query,
       });
     },
   },

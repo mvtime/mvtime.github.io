@@ -20,7 +20,7 @@
     <button
       class="settings_button click-action"
       title="Settings"
-      @click="$router.push('/settings')"
+      @click="$router.push({ name: 'settings', query: $route.query })"
     >
       <div class="settings_icon"></div>
     </button>

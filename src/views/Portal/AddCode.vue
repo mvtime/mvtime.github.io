@@ -58,7 +58,7 @@ export default {
         this.$router.push({
           name: "codeclass",
           params: { code: this.code },
-          query: { manual: true },
+          query: { manual: true, ...this.$route.query },
         });
       }
     },

@@ -70,7 +70,7 @@
         <div
           v-if="!store.is_teacher || true"
           class="classes_container_class classes_container_class__add_class"
-          @click="$router.push('/portal/add')"
+          @click="$router.push({ name: 'addclass', query: $route.query })"
         >
           <div class="class_swatch">
             <div class="class_swatch__add_icon"></div>
@@ -123,6 +123,7 @@ export default {
         params: {
           ref: this.clean_ref(class_obj.id),
         },
+        query: this.$route.query,
       });
     },
     edit_class(class_obj) {
@@ -131,6 +132,7 @@ export default {
         params: {
           ref: this.clean_ref(class_obj.id),
         },
+        query: this.$route.query,
       });
     },
   },

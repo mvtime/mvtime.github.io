@@ -470,6 +470,20 @@ const router = createRouter({
         },
       ],
     },
+    {
+      path: "/portal/calendar",
+      name: "calendar",
+
+      redirect: "/portal?calendar=true",
+      meta: {
+        page_title: "Calendar",
+        theme_color: {
+          light: "#f2f2f2",
+          dark: "#121212",
+        },
+        requiresAuth: true,
+      },
+    },
     // redirect any /app routes to /portal
     {
       path: "/app",

@@ -117,7 +117,7 @@
       @close="
         close_path
           ? $router.push(close_path)
-          : $router.push({ name: is_study ? 'study' : 'portal' })
+          : $router.push({ name: is_study ? 'study' : 'portal', query: $route.query })
       "
     >
       <router-view
@@ -202,6 +202,7 @@ export default {
       this.$router.replace({
         name: "daily",
         query: {
+          ...this.$route.query,
           redirect: this.$route.fullPath,
         },
       });
@@ -222,6 +223,7 @@ export default {
         params: {
           ref: this.store.path_to_ref(task.ref),
         },
+        query: this.$route.query,
       });
     },
     /** Toggle on or off a class in the filtered ClassList from showing in the Block */
@@ -244,6 +246,7 @@ export default {
         this.$router.push({
           name: "join",
           query: {
+            ...this.$route.query,
             redirect: this.$route.fullPath,
           },
         });

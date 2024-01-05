@@ -72,6 +72,7 @@
         @click="
           $router.push({
             name: 'settings',
+            query: $route.query,
           })
         "
       >
