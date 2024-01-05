@@ -72,6 +72,15 @@ main.portal_main_block {
   justify-content: space-between;
   align-items: stretch;
 }
+.portal_main_block_header__left {
+  height: var(--size-calendar-header);
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 10px;
+}
+
 .portal_main_block_title {
   font-size: 1rem;
   font-weight: 600;
@@ -84,6 +93,7 @@ main.portal_main_block {
   justify-content: center;
   align-items: center;
   user-select: none;
+  height: var(--size-calendar-header);
 }
 
 .portal_main_block_actions_wrapper {
@@ -160,6 +170,14 @@ main.portal_main_block {
   background-position: center;
   background-size: contain;
 }
+.portal_main_block_action .expand-icon {
+  background-image: url(@/assets/img/general/portal/expand.png);
+  background-image: url(@/assets/img/general/portal/expand.svg);
+}
+.portal_main_block_action .expand-icon.alt {
+  background-image: url(@/assets/img/general/portal/expand-alt.png);
+  background-image: url(@/assets/img/general/portal/expand-alt.svg);
+}
 .portal_main_block_action .arrow-icon.left {
   background-image: url(@/assets/img/general/portal/arrow-left.png);
   background-image: url(@/assets/img/general/portal/arrow-left.svg);
@@ -212,6 +230,7 @@ main.portal_main_block {
     text-align: center;
     line-height: var(--size-calendar-header);
     height: var(--size-calendar-header);
+    flex: 1 1 auto;
   }
   .portal_main_block_actions > .portal_main_block_action {
     flex-grow: 1;

@@ -8,14 +8,23 @@
     <LoadingCover v-if="!is_ready" class="calendar_loading" covering="Calendar Tasks" />
     <!-- calendar content -->
     <div class="calendar_header portal_main_block_header">
-      <div
-        class="calendar_date portal_main_block_title"
-        :title="
-          'Currently viewing ' +
-          loaded_month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
-        "
-      >
-        {{ loaded_month.toLocaleDateString("en-US", { month: "long", year: "numeric" }) }}
+      <div class="portal_main_block_header__left">
+        <button
+          class="portal_main_block_action portal_main_block_action_alt fullpage_toggle_button"
+          @click="toggle_fullscreen"
+          title="Toggle fullscreen (f)"
+        >
+          <div class="action_icon expand-icon" :class="{ alt: fullpage }"></div>
+        </button>
+        <div
+          class="calendar_date portal_main_block_title"
+          :title="
+            'Currently viewing ' +
+            loaded_month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
+          "
+        >
+          {{ loaded_month.toLocaleDateString("en-US", { month: "long", year: "numeric" }) }}
+        </div>
       </div>
       <div class="portal_main_block_actions_wrapper">
         <nav class="portal_main_block_actions">
@@ -221,10 +230,22 @@ export default {
     window.removeEventListener("keydown", this.handle_key);
   },
   methods: {
+    toggle_fullscreen() {
+      console.log("toggle_fullscreen", this.fullpage);
+      // toggle fullpage mode (route.query.calendar)
+      this.$router.push({
+        ...this.$route,
+        query: {
+          ...this.$route.query,
+          calendar: !this.fullpage,
+        },
+      });
+    },
     handle_key(event) {
       if (event.ctrlKey || this.$route.name != "portal") return;
-      if (event.key == "s") {
-        this.swap_to_study();
+      if (!event.shiftKey) {
+        if (event.key == "s") this.swap_to_study();
+        else if (event.key == "f") this.toggle_fullscreen();
       } else {
         // use arrow keys for month navigation and home to return to current month, shift as modifier moves in years
         const shift = event.shiftKey;
@@ -378,7 +399,7 @@ export default {
   },
   computed: {
     fullpage() {
-      return this.$route?.query?.calendar;
+      return JSON.parse(this.$route.query.calendar || "false");
     },
     tasks_loaded_month() {
       return this.tasks.some((task) => {
@@ -471,6 +492,9 @@ export default {
 </script>
 
 <style scoped>
+.fullpage_toggle_button {
+  display: none;
+}
 @media (min-width: 600px) {
   main.calendar.calendar_fullpage {
     border: none;
@@ -485,6 +509,9 @@ export default {
     box-sizing: border-box;
     overflow-y: hidden;
     z-index: 4;
+  }
+  .fullpage_toggle_button {
+    display: flex;
   }
 
   main.calendar.calendar_fullpage .calendar_days_container {
@@ -889,6 +916,13 @@ export default {
     height: unset;
     min-height: var(--height-calendar-task);
     flex-basis: 70px;
+  }
+}
+</style>
+<style>
+@media (min-width: 600px) {
+  .portal:has(main.calendar.calendar_fullpage) .portal_sidebar {
+    z-index: 0;
   }
 }
 </style>
