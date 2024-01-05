@@ -59,7 +59,11 @@ export default {
   },
   methods: {
     keydown(e) {
-      if (this.task_types.map((t) => t[2]).includes(e.key) && this.has_classes) {
+      if (
+        ["study", "portal"].includes(this.$route.name) &&
+        this.task_types.map((t) => t[2]).includes(e.key) &&
+        this.has_classes
+      ) {
         const task_type = this.task_types.find((t) => t[2] == e.key);
         this.$router.push({
           name: "newtask",
