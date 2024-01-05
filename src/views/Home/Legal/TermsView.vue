@@ -204,4 +204,14 @@
 export default {};
 </script>
 
-<style></style>
+<style scoped>
+p {
+  margin-bottom: 1em;
+}
+h1,
+h2,
+h3,
+h4 {
+  margin-bottom: 0.75em;
+}
+</style>
