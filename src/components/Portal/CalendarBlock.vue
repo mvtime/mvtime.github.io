@@ -495,7 +495,7 @@ export default {
 .fullpage_toggle_button {
   display: none;
 }
-@media (min-width: 600px) {
+@media (min-width: 630px) {
   main.calendar.calendar_fullpage {
     border: none;
     box-shadow: none;
@@ -920,7 +920,7 @@ export default {
 }
 </style>
 <style>
-@media (min-width: 600px) {
+@media (min-width: 630px) {
   .portal:has(main.calendar.calendar_fullpage) .portal_sidebar {
     z-index: 0;
   }
