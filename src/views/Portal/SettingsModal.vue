@@ -271,7 +271,7 @@ export default {
         },
         {
           key: null,
-          label: "Essential Emails",
+          label: "Essential emails (required)",
           description: "essential emails about your account",
           locked: true,
           sort_as: "essential",

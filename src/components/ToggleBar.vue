@@ -100,7 +100,8 @@ main.parent:not(.simplified) .toggle_switch:not([disabled="true"]):hover .toggle
   scale: 0.9;
 }
 
-main.parent:not(.simplified).toggle_switch:not([disabled="true"]).toggle_switch__on:hover
+main.parent:not(.simplified)
+  .toggle_switch:not([disabled="true"]).toggle_switch__on:hover
   .toggle_switch_knob {
   left: calc(100% - 1em);
 }

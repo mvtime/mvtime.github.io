@@ -58,12 +58,20 @@
   - ~~make classes editable~~
   - ~~join from code~~
 - Onboarding
+
   - large modal type for intro - better video support
-    - fill screen on small devices
+
+    - tutorial videos / pages
+      - View calendar
+      - Complete tasks on study page
+      - Link accounts
+      - View stats
+
   - ~~ui tutorial~~
   - ~~better logout prompt~~
   - ~~add first class~~
   - ~~join modal~~
+
 - Emails
   - exclude tasks marked as finished from weekly summary emails
   - setup cloud functions to send **daily**(?) emails
