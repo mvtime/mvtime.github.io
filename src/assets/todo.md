@@ -16,7 +16,8 @@
 
 - Studying
   - system for studying/working on tasks
-  - track task completion based on hash
+  - ~~track task completion based on id~~
+    - track by hash for updated versions, perhaps preference for specificity
   - ~~ability to mark tasks as done~~
   - ~~notes on tasks~~
 - Admin / Contact
@@ -32,16 +33,10 @@
     - add more protections to teacher mode
 - Student involvement
   - way for students to access teacher features for their peers / as a proxy for the teacher
-  - student self "classes" for college apps, other things to keep track of
-- Surveys
-  - make a way for users to see their own responses over time
-    - include major assignments in this timeline
-  - weekly / major surveys
-  - ~~show upcoming tasks at end of daily surveys~~
-  - ~~daily surveys~~
+  - student self "classes" for things specific to them to keep track of, all in one place
 - Tasks
+  - **auto-suggested link names based on domain**
   - auto-suggested task types based on title
-  - auto-suggested link names based on domain
   - allow / encourage links to other classes / through selector
   - allowed outlink domains set by district?
   - ~~fixes on edit page~~
@@ -49,8 +44,14 @@
   - ~~**store proxy in class doc - load from there for efficiency / read & write count**~~
   - ~~disallow finish when link still in-progress~~
   - ~~drag tasks on calendar to change date~~
+- Surveys
+  - ~~make a way for users to see their own responses over time~~
+    - include major assignments in this timeline
+  - weekly / major surveys
+  - ~~show upcoming tasks at end of daily surveys~~
+  - ~~daily surveys~~
 - Classes
-  - add from pre-set list
+  - **add from pre-set list**
     - setup from json / claim pre-set class feature (cloud?)
   - display join code to class
   - ~~class view page~~
@@ -64,7 +65,8 @@
   - ~~add first class~~
   - ~~join modal~~
 - Emails
-  - setup cloud functions to send daily(?) emails
+  - exclude tasks marked as finished from weekly summary emails
+  - setup cloud functions to send **daily**(?) emails
   - ~~setup cloud functions to send task change/create/archive emails~~
   - ~~setup cloud functions to send weekly emails~~
   - ~~link personal account email~~
@@ -72,8 +74,8 @@
   - ~~setup email server~~
   - ~~send from firebase doc~~
 - Accounts
-  - create email prefs screen
-  - fix linking feature
+  - fix linking feature??
+  - ~~create email prefs screen~~
   - ~~finish personal account connection~~
   - ~~create prefs screen~~
   - ~~allow connected personal / non-school email~~
@@ -112,8 +114,8 @@
   - time-based variations
     - on mondays, more in-depth, before first use
     - ~~during the week, short non-intrusive~~
-- Better prefs
-  - setup email prefs in onboarding
+- ~~Better prefs~~
+  - ~~add email prefs~~
   - ~~save theme under prefs, rather than its own key~~
   - ~~add the option to trust another email / oauth account with access to your account~~
     - ~~good for phones and such, save to prefs of the acc, then check either request oauth is student, or request oauth is in student prefs.trusted~~
