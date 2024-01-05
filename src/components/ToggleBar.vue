@@ -14,7 +14,7 @@
 
 <script>
 export default {
-  name: "ToggleSwitch",
+  name: "ToggleBar",
   props: {
     value: {
       type: Boolean,

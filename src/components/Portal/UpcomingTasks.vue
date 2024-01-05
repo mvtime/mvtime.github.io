@@ -15,7 +15,7 @@
           class="tasks_container_task"
           v-for="task of tasks"
           :task="task"
-          :key="task.name"
+          :key="task.ref"
           :href="`/view/${store.path_to_ref(task.ref)}`"
           target="_blank"
           @click="

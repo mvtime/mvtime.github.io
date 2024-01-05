@@ -35,16 +35,27 @@
   - way for students to access teacher features for their peers / as a proxy for the teacher
   - student self "classes" for things specific to them to keep track of, all in one place
 - Tasks
-  - **auto-suggested link names based on domain**
-  - auto-suggested task types based on title
-  - allow / encourage links to other classes / through selector
-  - allowed outlink domains set by district?
+  - AI/ML/Maybe just hardcoded features
+    - **auto-suggested link names based on domain**
+    - auto-suggested task types based on title
+    - automatic / algorithm-driven study suggestions?
+  - Links
+    - allow / encourage links to other classes / through selector
+    - allowed outlink domains set by district?
+  - Create studying / prep pages
+    - really use the data/info that we have, let them create study schedules for themselves
+    - ~~see upcoming assignments and mark them as done~~
   - ~~fixes on edit page~~
-  - ~~**process only changed tasks server-side / cancel runs on double changes**~~
-  - ~~**store proxy in class doc - load from there for efficiency / read & write count**~~
+  - ~~process only changed tasks server-side / cancel runs on double changes~~
+  - ~~store proxy in class doc - load from there for efficiency / read & write count~
   - ~~disallow finish when link still in-progress~~
   - ~~drag tasks on calendar to change date~~
 - Surveys
+  - Create survey / check-in modal
+    - add graphics / illustrations (on weekly at least)
+    - time-based variations
+      - on mondays, more in-depth, before first use
+      - ~~during the week, short non-intrusive~~
   - ~~make a way for users to see their own responses over time~~
     - include major assignments in this timeline
   - weekly / major surveys
@@ -59,15 +70,15 @@
   - ~~join from code~~
 - Onboarding
 
+  - **setup from pre-defined classes**, add your own
   - large modal type for intro - better video support
-
     - tutorial videos / pages
       - View calendar
       - Complete tasks on study page
       - Link accounts
       - View stats
-
-  - ~~ui tutorial~~
+  - ~~where to find everything~~
+    - ~~ui tutorial~~
   - ~~better logout prompt~~
   - ~~add first class~~
   - ~~join modal~~
@@ -81,13 +92,30 @@
   - ~~email template~~
   - ~~setup email server~~
   - ~~send from firebase doc~~
-- Accounts
+- Accounts/ Customization
+
   - fix linking feature??
+  - ~~Better prefs~~
+    - ~~add email prefs~~
+    - ~~save theme under prefs, rather than its own key~~
+    - ~~add the option to trust another email / oauth account with access to your account~~
+      - ~~good for phones and such, save to prefs of the acc, then check either request oauth is student, or request oauth is in student prefs.trusted~~
+  - ~~Make art assets~~
+    - ~~implement animations~~
+      - ~~loading imgs~~
+    - ~~implement transitions~~
+      - ~~for modals~~
+    - ~~Create promotional materials~~
+      - ~~update og:img~~
+      - ~~create public/img/promo imgs~~
+    - ~~Create contact page~~
+      - ~~fun lighthearted art stuff~~
   - ~~create email prefs screen~~
   - ~~finish personal account connection~~
   - ~~create prefs screen~~
   - ~~allow connected personal / non-school email~~
     - ~~settings from portal / email links~~
+
 - ~~Mobile Interface~~
   - ~~pages on mobile instead of sidebars~~
 - ~~Non-User-Facing~~
@@ -105,40 +133,7 @@
   - ~~fix overflow on very small screens~~
   - ~~redirect modal / outlink interceptor~~
 
-## Specific milestones / tasks
-
-### Sander
-
-- Create onboarding
-  - setup from pre-defined classes, add your own
-  - ~~where to find everything~~
-  - ~~join form -> add classes~~
-- Create studying / prep pages
-  - really use the data/info that we have, let them create study schedules for themselves
-  - ~~see upcoming assignments and mark them as done~~
-  - automatic / algorithm-driven suggestions?
-- Create survey / check-in modal
-  - add graphics / illustrations (on weekly at least)
-  - time-based variations
-    - on mondays, more in-depth, before first use
-    - ~~during the week, short non-intrusive~~
-- ~~Better prefs~~
-  - ~~add email prefs~~
-  - ~~save theme under prefs, rather than its own key~~
-  - ~~add the option to trust another email / oauth account with access to your account~~
-    - ~~good for phones and such, save to prefs of the acc, then check either request oauth is student, or request oauth is in student prefs.trusted~~
-- ~~Make art assets~~
-  - ~~implement animations~~
-    - ~~loading imgs~~
-  - ~~implement transitions~~
-    - ~~for modals~~
-  - ~~Create promotional materials~~
-    - ~~update og:img~~
-    - ~~create public/img/promo imgs~~
-  - ~~Create contact page~~
-    - ~~fun lighthearted art stuff~~
-
-### Aarush
+## Specific milestones / tasks (Aarush)
 
 - Create backend
   - Algorithms
