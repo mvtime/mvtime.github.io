@@ -89,9 +89,11 @@
             :loads="true"
           />
           &nbsp;
-          <span>Session timeout popup {{ show_timeout ? "enabled" : "disabled" }}</span>
+          <span
+            >Session timeout popup <b>{{ show_timeout ? "enabled" : "disabled" }}</b></span
+          >
         </div>
-        <div class="pause_popup_section__details">
+        <div class="pause_popup_section__details overlay_contents_section_details">
           The popup helps conserve local and network resources. To have MVTT open on the side
           without it getting in the way, you can toggle it above, though you may then have to reload
           to get the newest data
@@ -122,34 +124,64 @@
         and get an insight into your mental health and productivity
       </div>
       <div class="overlay_contents_text overlay_contents_section">
-        Feeling lost? Try
-        <span
-          class="button_pointer_text click-action"
-          @click="
-            changed = true;
-            store.finish_tutorial(false).then(() => {
-              $emit('close');
-            });
-          "
-        >
-          redoing the tutorial </span
-        >. We'll keep this updated as we add new features!
+        <span class="tutorial_redo_section">
+          Feeling lost? Try
+          <span
+            class="button_pointer_text click-action"
+            @click="
+              changed = true;
+              store.finish_tutorial(false).then(() => {
+                $emit('close');
+              });
+            "
+          >
+            redoing the tutorial </span
+          >. We'll keep this updated as we add new features!
+        </span>
+        <span class="simplified_view_section">
+          You can also
+          <span
+            class="button_pointer_text click-action"
+            @click="
+              changed = true;
+              store.set_account_pref('simplified', !store.simplified);
+            "
+          >
+            {{ store.simplified ? "leave" : "enter" }} simplified view
+          </span>
+          to
+          <span v-if="!store.simplified">make MVTT easier to use on slower devices</span>
+          <span v-else>get back the classic interface</span>.
+        </span>
       </div>
       <div class="overlay_contents_text overlay_contents_section">
-        <span
-          class="button_pointer_text click-action"
-          @click="
-            changed = true;
-            store.set_account_pref('simplified', !store.simplified);
-          "
-        >
-          {{ store.simplified ? "Leave" : "Enter" }} simplified view
-        </span>
-        to
-        <span v-if="!store.simplified"
-          >make MVTT easier to use on mobile devices and older computers</span
-        >
-        <span v-else>get back the classic interface</span>.
+        <p class="email_text">
+          You can find controls for your email preferences below. You're opted into all important
+          emails by default.
+        </p>
+        <div class="email_sections">
+          <div
+            class="email_section"
+            v-for="email_category in email_categories"
+            :key="email_category.sort_as"
+          >
+            <ToggleBar
+              class="click-action"
+              :value="!unsubed_from[email_category.sort_as]"
+              :disabled="email_category.locked"
+              @update="update_email_pref(email_category.key, email_category.description)"
+              :loads="true"
+            />
+            &nbsp;
+            <span>{{ email_category.label }}</span>
+          </div>
+        </div>
+        <div class="email_section__details overlay_contents_section_details">
+          We'll try to send you as few emails as possible, but some notifications are essential to
+          the operation of MVTT, such as those for account linkage and important account changes.
+          Note that linked accounts may also inherit some of your email preferences from their
+          student account.
+        </div>
       </div>
     </div>
     <div class="bottom_actions">
@@ -200,7 +232,7 @@
 import { useMainStore } from "@/store";
 import ToggleBar from "@/components/ToggleBar.vue";
 import "@/assets/style/overlay.css";
-import { SuccessToast } from "@svonk/util";
+import { SuccessToast, ErrorToast } from "@svonk/util";
 export default {
   name: "SettingsModal",
   emits: ["close"],
@@ -212,6 +244,39 @@ export default {
       changed: false,
       loading: false,
       new_email: "",
+      email_categories: [
+        {
+          key: "task-created",
+          label: "Task creation notifications",
+          description: "emails about newly created tasks",
+          sort_as: "task-created",
+        },
+        {
+          key: "task-updated",
+          label: "Task update notifications",
+          description: "emails about changed tasks",
+          sort_as: "task-updated",
+        },
+        {
+          key: "task-archived",
+          label: "Task deletion notifications",
+          description: "emails about removed tasks",
+          sort_as: "task-archived",
+        },
+        {
+          key: "scheduled-weekly",
+          label: "Weekly summary emails",
+          description: "weekly summary emails",
+          sort_as: "scheduled-weekly",
+        },
+        {
+          key: null,
+          label: "Essential Emails",
+          description: "essential emails about your account",
+          locked: true,
+          sort_as: "essential",
+        },
+      ],
     };
   },
   computed: {
@@ -228,6 +293,12 @@ export default {
         this.new_email.includes("@") &&
         this.new_email.split("@")[1].includes(".")
       );
+    },
+    unsubed_from() {
+      return this.email_categories.reduce((acc, cur) => {
+        acc[cur.key] = this.store.account_doc?.prefs?.unsub_from?.[cur.key] || false;
+        return acc;
+      }, {});
     },
   },
   methods: {
@@ -253,6 +324,38 @@ export default {
               );
             });
         }
+      }
+    },
+    update_email_pref(key, description) {
+      if (this.store.account_doc) {
+        // update account_doc.prefs.unsub_from value to toggle the value of this key
+        const before = this.store.account_doc?.prefs?.unsub_from || {};
+        const new_val = !before[key];
+        const after = { ...before, [key]: !before[key] };
+        this.store
+          .update_wrapper_with_merge({
+            prefs: {
+              ...this.store.account_doc.prefs,
+              unsub_from: after,
+            },
+          })
+          .then(() => {
+            this.changed = true;
+            new SuccessToast(
+              new_val ? `You'll no longer get ${description}` : `You'll now get ${description}`,
+              2000
+            );
+          })
+          .catch((err) => {
+            this.changed = false;
+            new ErrorToast(
+              new_val
+                ? `We couldn't unsubscribe you from ${description}`
+                : `We couldn't subscribe you to ${description}`,
+              err,
+              2000
+            );
+          });
       }
     },
     save() {
@@ -305,12 +408,21 @@ export default {
 </script>
 
 <style scoped>
-.pause_popup_section {
+.pause_popup_section,
+.email_section {
   line-height: 1.75;
   display: inline-flex;
   align-items: center;
   gap: 0.5em;
   /* margin-top: 0.75em; */
+}
+.email_sections {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 0.5em;
+}
+.email_section {
+  display: flex;
 }
 .remove_icon {
   filter: var(--filter-icon);
@@ -338,11 +450,15 @@ export default {
   flex-basis: 0;
   width: 20px;
 }
-.pause_popup_section__details {
+.overlay_contents_section_details {
   margin-top: 0.5em;
   opacity: 0.8;
   font-size: 0.9em;
   line-height: 1.5em;
+}
+.email_text {
+  margin: 0;
+  margin-bottom: 0.5em;
 }
 .stats_icon {
   background-image: url(@/assets/img/general/portal/stats.png);

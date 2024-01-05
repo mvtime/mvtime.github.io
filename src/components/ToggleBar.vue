@@ -95,12 +95,12 @@ export default {
   transition: left 0.2s ease-in-out, background-color 0.2s ease-in-out, opacity 0.2s ease-in-out,
     scale 0.1s ease-in-out;
 }
-.toggle_switch:hover .toggle_switch_knob {
+.toggle_switch:not([disabled="true"]):hover .toggle_switch_knob {
   left: 6px;
   scale: 0.9;
 }
 
-.toggle_switch__on:hover .toggle_switch_knob {
+.toggle_switch:not([disabled="true"]).toggle_switch__on:hover .toggle_switch_knob {
   left: calc(100% - 1em);
 }
 
