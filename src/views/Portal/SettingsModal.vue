@@ -258,6 +258,12 @@ export default {
           sort_as: "task-updated",
         },
         {
+          key: "task-moved",
+          label: "Task date change notifications",
+          description: "emails about tasks whose date has changed",
+          sort_as: "task-moved",
+        },
+        {
           key: "task-archived",
           label: "Task deletion notifications",
           description: "emails about removed tasks",
