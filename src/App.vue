@@ -170,19 +170,32 @@ export default {
   methods: {
     global_keydown(e) {
       if (!e.shiftKey) {
-        let el;
+        let el,
+          ignore = false;
         if (e.key == "Escape" && !e.ctrlKey) {
           el = $(".click_escape");
           if (!el.length) return;
         } else if (e.key == "Enter" && e.ctrlKey) {
           el = $(".click_ctrlenter");
+        } else if (e.key == "\\" && e.ctrlKey) {
+          this.store.toggle_theme();
+          ignore = true;
+        } else if (e.key == "/") {
+          this.$router.push({
+            name: "shortcuts",
+            query: this.$route.query,
+          });
+          ignore = true;
         }
-        if (!el) return;
-        el = el.not("[disabled]").not(".disabled").filter(":visible");
-        if (!el || !el.length) return;
-        $(el).first().click();
-        e.preventDefault();
-        e.stopPropagation();
+        if (el) {
+          el = el.not("[disabled]").not(".disabled").filter(":visible");
+          if (!el || !el.length) return;
+          $(el).first().click();
+        }
+        if (el || ignore) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
       }
     },
     tutorial_nav(change) {
@@ -195,7 +208,7 @@ export default {
         this.store
           .finish_tutorial(true)
           .then(() => {
-            new SuccessToast("Tutorial completed!", 2000);
+            new SuccessToast("Interface tutorial completed; here's some more resources!", 3500);
           })
           .catch((err) => {
             new ErrorToast("Couldn't complete tutorial", err, 3000);

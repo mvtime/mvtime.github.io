@@ -158,7 +158,7 @@
   {
     "el": null,
     "title": "That's all for now!",
-    "html": "Thanks for taking the tour! <br><br> If you have any questions, feel free to reach out to us by visiting the contact page (try using the title in the left sidebar to get to it from the homepage)! <br><br> In the meantime though, let's get you started by adding a class!",
+    "html": "Thanks for taking the tour! <br><br> If you have any questions, feel free to reach out to us by visiting the contact page (try using the title in the left sidebar to get to it from the homepage)! <br><br> In the meantime though, let's get you some more resources, then add your first class!",
     "options": {
       "next_text": "Finish",
       "reclick": "null-filler",
@@ -168,11 +168,11 @@
   {
     "el": null,
     "title": "That's all for now!",
-    "html": "Thanks for taking the tour! <br><br> If you have any questions, feel free to reach out to us by visiting the contact page (try using the title in the left sidebar to get to it from the homepage)! <br><br> In the meantime though, let's get you started by adding a class!",
+    "html": "Thanks for taking the tour! <br><br> If you have any questions, feel free to reach out to us by visiting the contact page (try using the title in the left sidebar to get to it from the homepage)! <br><br> In the meantime though, let's get you some more resources, then add your first class!",
     "options": {
       "next_text": "Finish",
       "end": true,
-      "pagename": "onboarding",
+      "pagename": "tutorial",
       "reclick": "null-filler"
     }
   }

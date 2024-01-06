@@ -70,13 +70,15 @@
   - ~~join from code~~
 - Onboarding
 
+  - **add keyboard shortcuts page on (/ or ?)**
   - **setup from pre-defined classes**, add your own
-  - **large modal type** for intro
-    - **tutorial videos / pages**
+    - **tutorial videos**
       - View calendar
       - Complete tasks on study page
       - Link accounts
       - View stats
+  - ~~large modal type for intro~~
+  - ~~tutorial modal set up~~
   - ~~where to find everything~~
     - ~~ui tutorial~~
   - ~~better logout prompt~~
