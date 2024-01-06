@@ -71,8 +71,8 @@
 - Onboarding
 
   - **setup from pre-defined classes**, add your own
-  - large modal type for intro - better video support
-    - tutorial videos / pages
+  - **large modal type** for intro
+    - **tutorial videos / pages**
       - View calendar
       - Complete tasks on study page
       - Link accounts

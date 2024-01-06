@@ -260,7 +260,7 @@ export default {
         {
           key: "task-moved",
           label: "Task date change notifications",
-          description: "emails about tasks whose date has changed",
+          description: "emails when tasks are moved",
           sort_as: "task-moved",
         },
         {

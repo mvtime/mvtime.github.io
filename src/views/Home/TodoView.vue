@@ -73,10 +73,6 @@ main.todo {
   justify-content: center;
   align-items: flex-start;
 }
-main.todo strong,
-main.todo b {
-  background: var(--color-theme);
-}
 main.todo .todo_header {
   max-width: 600px;
 }
@@ -123,5 +119,11 @@ h3.secondary_home_text {
 
 .todo_body ul > li:hover {
   opacity: 1;
+}
+main.todo strong,
+main.todo b {
+  background-color: var(--color-theme);
+  color: var(--color-theme-accent);
+  padding: 0 0.3em;
 }
 </style>
