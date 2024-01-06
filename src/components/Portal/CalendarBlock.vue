@@ -494,6 +494,8 @@ export default {
 <style scoped>
 .fullpage_toggle_button {
   display: none;
+  background: transparent;
+  border: solid var(--color-calendar-header) 2px;
 }
 @media (min-width: 630px) {
   main.calendar.calendar_fullpage {

@@ -203,7 +203,7 @@ body:has(#themed_body[_theme="dark"]) {
   --color-calendar-weekday-label: #565656;
   /* calendar task */
   --color-on-calendar-task: #000000cc;
-  --filter-calendar-task: brightness(0.65) saturate(1.6);
+  --filter-calendar-task: brightness(0.65) saturate(1.4);
   --color-text-on-calendar: #888;
   --color-calendar-note: #44444490;
   --color-on-calendar-note: #1d1d1d;
