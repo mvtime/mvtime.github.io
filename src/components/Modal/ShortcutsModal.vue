@@ -1,5 +1,5 @@
 <template>
-  <div class="shortcuts_modal">
+  <div class="shortcuts_modal" ref="shortcuts_modal">
     <div class="overlay_contents shortcuts_contents">
       <div v-if="!sections || !sections.length">No Registered Shortcuts</div>
       <div v-else class="shortcuts_sections">
@@ -34,6 +34,9 @@ export default {
     sections() {
       return useShortcuts().sections;
     },
+  },
+  mounted() {
+    this.$refs.shortcuts_modal.focus();
   },
 };
 </script>

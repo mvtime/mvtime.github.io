@@ -279,12 +279,7 @@ export default {
       }
     },
     show_shortcuts: function (new_val, old_val) {
-      if (new_val) {
-        // focus on next tick
-        this.$nextTick(() => {
-          this.$refs.shortcuts_modal.focus();
-        });
-      } else if (old_val && this.$refs.shortcuts_overlay) {
+      if (old_val && this.$refs.shortcuts_overlay) {
         this.animating_shortcuts = true;
         this.$refs.shortcuts_overlay.close();
         setTimeout(() => {

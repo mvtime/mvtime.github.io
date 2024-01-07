@@ -12,7 +12,7 @@
         A more effective way to manage test schedules, long-term assignments, and exam stress.
       </h3>
       <div class="homepage_actions">
-        <button class="action-btn click-action" @click="tomain">
+        <button class="action-btn click-action click_ctrlenter" @click="tomain">
           {{ logged_in ? "Open App" : "Get Started" }}
         </button>
         <button v-if="!logged_in" class="secondary_action auth-action can-login">
