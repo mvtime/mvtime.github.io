@@ -76,12 +76,24 @@
               @blur="fix_newlink_path"
               placeholder="Link URL (https://example.com)"
             />
-            <input
-              class="styled_links_add__text"
-              type="text"
-              v-model="newlink.text"
-              placeholder="Link Text (what students see)"
-            />
+            <div class="styled_links_add__sized">
+              <input
+                class="styled_links_add__text"
+                type="text"
+                v-model="newlink.text"
+                placeholder="Link Text (what students see)"
+              />
+              <div
+                class="styled_magic click-action"
+                v-if="
+                  newlink.path &&
+                  magic.text(newlink.path) &&
+                  magic.text(newlink.path) != newlink.text
+                "
+                @click="newlink.text = magic.text(newlink.path)"
+                title="Auto-generate link text"
+              ></div>
+            </div>
             <button
               class="styled_links_add__action"
               @click="add_newlink"
@@ -147,6 +159,7 @@
  */
 
 import { useMainStore } from "@/store";
+import { useMagic } from "@/store/magic";
 import { _status } from "@/common";
 import { ErrorToast, WarningToast } from "@svonk/util";
 import smoothReflow from "vue-smooth-reflow";
@@ -224,6 +237,9 @@ export default {
     },
     store() {
       return useMainStore();
+    },
+    magic() {
+      return useMagic();
     },
     classes() {
       return this.store.classes;

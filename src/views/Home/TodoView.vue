@@ -117,7 +117,6 @@ h3.secondary_home_text {
 .todo:not(.show_completed) li:has(> p > del:only-child) {
   display: none !important;
 }
-
 .todo_body ul > li:hover {
   opacity: 1;
 }

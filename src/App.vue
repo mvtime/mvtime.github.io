@@ -127,7 +127,7 @@ export default {
           description: "Toggle dark mode",
         },
         {
-          key: "/ or ?",
+          key: "Ctrl + /",
           description: "Toggle the shortcuts menu",
         },
       ],
@@ -210,33 +210,31 @@ export default {
   },
   methods: {
     global_keydown(e) {
-      if (!e.shiftKey) {
-        let el,
-          ignore = false;
-        if (this.show_shortcuts) ignore = true;
-        // Global Keys
-        if (e.key == "Escape" && !e.ctrlKey) {
-          el = $(".click_escape");
-        } else if (e.key == "Enter" && e.ctrlKey) {
-          el = $(".click_ctrlenter");
-        } else if (e.key == "\\" && e.ctrlKey) {
-          this.store.toggle_theme();
-          ignore = true;
-        } else if (e.key == "/") {
-          this.show_shortcuts = !this.show_shortcuts;
-          ignore = true;
-        }
-        // Modal Controls
-        if (el) {
-          el = el.not("[disabled]").not(".disabled").filter(":visible");
-          if (!el || !el.length) return;
-          $(el).first().click();
-        }
-        // Key Event Blocker
-        if (el || ignore) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
+      let el,
+        ignore = false;
+      if (this.show_shortcuts) ignore = true;
+      // Global Keys
+      if (!e.shiftKey && e.key == "Escape" && !e.ctrlKey) {
+        el = $(".click_escape");
+      } else if (!e.shiftKey && e.key == "Enter" && e.ctrlKey) {
+        el = $(".click_ctrlenter");
+      } else if (!e.shiftKey && e.key == "\\" && e.ctrlKey) {
+        this.store.toggle_theme();
+        ignore = true;
+      } else if (e.key == "/" && e.ctrlKey) {
+        this.show_shortcuts = !this.show_shortcuts;
+        ignore = true;
+      }
+      // Modal Controls
+      if (el) {
+        el = el.not("[disabled]").not(".disabled").filter(":visible");
+        if (!el || !el.length) return;
+        $(el).first().click();
+      }
+      // Key Event Blocker
+      if (el || ignore) {
+        e.preventDefault();
+        e.stopPropagation();
       }
     },
     tutorial_nav(change) {

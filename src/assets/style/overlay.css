@@ -361,18 +361,44 @@ hr.styled_links_separator {
   justify-content: stretch;
   gap: calc(var(--padding-overlay) / 2);
 }
-
 .styled_links_add input,
+.styled_links_add .styled_links_add__sized,
 .styled_links_add button {
   flex-grow: 1;
   flex-basis: 51%;
+  height: var(--height-overlay-secondary-input);
+}
+.styled_links_add .styled_links_add__sized {
+  display: flex;
+  flex-flow: row nowrap;
+  position: relative;
+}
+.styled_links_add input,
+.styled_links_add button {
   border-radius: 5px;
   border: none;
   padding: var(--padding-overlay-secondary-input);
-  height: var(--height-overlay-secondary-input);
   background-color: var(--color-overlay-secondary-input);
   color: var(--color-on-overlay-input);
 }
+
+.styled_links_add .styled_links_add__sized .styled_magic {
+  content: "";
+  position: absolute;
+  right: 3px;
+  top: 3px;
+  height: calc(var(--height-overlay-secondary-input) - 6px);
+  width: calc(var(--height-overlay-secondary-input) - 6px);
+  border-radius: 2px;
+  opacity: 0.5;
+  background-color: var(--color-overlay-secondary-action);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: calc(var(--height-overlay-secondary-input) - 6px);
+  background-image: url(@/assets/img/general/portal/magic.png);
+  background-image: url(@/assets/img/general/portal/magic.svg);
+}
+
 .styled_links_add button,
 .styled_links_add__action {
   flex-basis: auto;
