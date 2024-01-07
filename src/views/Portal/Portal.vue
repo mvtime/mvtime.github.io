@@ -117,7 +117,10 @@
       @close="
         close_path
           ? $router.push(close_path)
-          : $router.push({ name: is_study ? 'study' : 'portal', query: $route.query })
+          : $router.push({
+              name: is_study ? 'study' : 'portal',
+              query: { ...$route.query, date: undefined },
+            })
       "
     >
       <router-view

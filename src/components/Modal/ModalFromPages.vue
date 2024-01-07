@@ -33,6 +33,7 @@ function confirm_unfinished() {
 }
 import ModalVue from "./Modal.vue";
 import { _status } from "@/common";
+import { useShortcuts } from "@/store/shortcuts";
 export default {
   name: "ModalFromPages",
   emits: ["finish", "skip"],
@@ -57,6 +58,16 @@ export default {
       curr_data: null,
       curr_done: false,
       page_start: Date.now(),
+      shortcuts: [
+        {
+          key: "ArrowLeft",
+          description: "Go to the previous modal page",
+        },
+        {
+          key: "ArrowRight",
+          description: "Go to the next modal page",
+        },
+      ],
     };
   },
   computed: {
@@ -84,9 +95,11 @@ export default {
   },
   mounted() {
     window.addEventListener("keydown", this.arrow);
+    useShortcuts().register_all(this.shortcuts, "Modal");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.arrow);
+    useShortcuts().remove_tag("Modal");
   },
   methods: {
     set_done() {

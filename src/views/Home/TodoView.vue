@@ -113,7 +113,8 @@ h3.secondary_home_text {
   line-height: 1.15em;
   transition: opacity 0.2s ease-in-out;
 }
-.todo:not(.show_completed) li:has(> del) {
+.todo:not(.show_completed) li:has(> del),
+.todo:not(.show_completed) li:has(> p > del:only-child) {
   display: none !important;
 }
 

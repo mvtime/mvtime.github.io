@@ -60,6 +60,7 @@ import { SuccessToast } from "@svonk/util";
 import smoothReflow from "vue-smooth-reflow";
 import $ from "jquery";
 import { useMainStore } from "@/store";
+import { useShortcuts } from "@/store/shortcuts";
 export default {
   name: "TutorialBlurb",
   emits: ["next", "skip"],
@@ -103,6 +104,16 @@ export default {
     return {
       track: null,
       done_welcome: false,
+      shortcuts: [
+        {
+          key: "Enter, Space, ArrowRight",
+          description: "Continue",
+        },
+        {
+          key: "ArrowLeft",
+          description: "Skip",
+        },
+      ],
     };
   },
   mixins: [smoothReflow],
@@ -118,6 +129,7 @@ export default {
       childTransitions: true,
     });
     window.addEventListener("keydown", this.next_key);
+    useShortcuts().register_all(this.shortcuts, "Survey Stress");
     window.addEventListener("resize", this.track_flush);
     window.addEventListener("scroll", this.track_flush);
     window.setInterval(this.track_flush, 100);
@@ -125,7 +137,7 @@ export default {
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.next_key);
-    // track
+    useShortcuts().remove_tag("Survey Stress");
     window.removeEventListener("resize", this.track_flush);
     window.removeEventListener("scroll", this.track_flush);
     window.clearInterval(this.track_flush);

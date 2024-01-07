@@ -41,8 +41,15 @@
     >
       <LogoutModal class="router_center_view" @close="scope.close" />
     </OverlayWrapper>
+    <OverlayWrapper
+      v-if="show_shortcuts || animating_shortcuts"
+      ref="shortcuts_overlay"
+      v-slot="scope"
+      @close="show_shortcuts = false"
+    >
+      <ShortcutsModal class="router_center_view" ref="shortcuts_modal" @close="scope.close" />
+    </OverlayWrapper>
 
-    <!-- test tutorial blurb -->
     <TutorialBlurb
       v-if="show_tutorial"
       :title="tutorial.title"
@@ -72,7 +79,9 @@
  */
 import OverlayWrapper from "@/components/Modal/OverlayWrapper.vue";
 import LogoutModal from "@/components/Modal/LogoutModal.vue";
+import ShortcutsModal from "@/components/Modal/ShortcutsModal.vue";
 import { useMainStore } from "@/store";
+import { useShortcuts } from "@/store/shortcuts";
 import $ from "jquery";
 import { _status } from "@/common";
 // tutorial
@@ -85,13 +94,34 @@ export default {
     OverlayWrapper,
     LogoutModal,
     TutorialBlurb,
+    ShortcutsModal,
   },
   data() {
     return {
       platform: "",
       isElectron: false,
       animating: false,
+      animating_shortcuts: false,
       tutorial_page: 0,
+      show_shortcuts: false,
+      shortcuts: [
+        {
+          key: "Ctrl + Enter",
+          description: "Submit the current form",
+        },
+        {
+          key: "Escape",
+          description: "Close the current modal",
+        },
+        {
+          key: "Ctrl + \\",
+          description: "Toggle dark mode",
+        },
+        {
+          key: "/ or ?",
+          description: "Toggle the shortcuts menu",
+        },
+      ],
     };
   },
   computed: {
@@ -135,6 +165,7 @@ export default {
     this.store.logout_prompt = false;
     window.addEventListener("focus", this.refreshTimeout);
     window.addEventListener("keydown", this.global_keydown);
+    useShortcuts().register_all(this.shortcuts, "General");
 
     // catch href clicks to open as "/to/{encoded href}"
     this.$refs.app.addEventListener("click", (e) => {
@@ -158,6 +189,7 @@ export default {
   beforeUnmount() {
     window.removeEventListener("focus", this.refreshTimeout);
     window.removeEventListener("keydown", this.global_keydown);
+    useShortcuts().remove_tag("General");
   },
   created() {
     // do dark mode from local storage, then from store (if logged in)
@@ -181,10 +213,7 @@ export default {
           this.store.toggle_theme();
           ignore = true;
         } else if (e.key == "/") {
-          this.$router.push({
-            name: "shortcuts",
-            query: this.$route.query,
-          });
+          this.show_shortcuts = !this.show_shortcuts;
           ignore = true;
         }
         if (el) {
@@ -247,6 +276,20 @@ export default {
             this.animating = false;
           }, 250);
         }
+      }
+    },
+    show_shortcuts: function (new_val, old_val) {
+      if (new_val) {
+        // focus on next tick
+        this.$nextTick(() => {
+          this.$refs.shortcuts_modal.focus();
+        });
+      } else if (old_val && this.$refs.shortcuts_overlay) {
+        this.animating_shortcuts = true;
+        this.$refs.shortcuts_overlay.close();
+        setTimeout(() => {
+          this.animating_shortcuts = false;
+        }, 250);
       }
     },
     theme() {

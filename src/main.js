@@ -50,7 +50,7 @@ import "@/assets/style/main.css";
 // import jquery and store
 import $ from "jquery";
 
-import { useMainStore } from "./store";
+import { useMainStore } from "@/store";
 // auth
 
 $(document.body).on("click", ".auth-action", function () {
@@ -59,16 +59,6 @@ $(document.body).on("click", ".auth-action", function () {
     store.login();
   } else if ($(this).hasClass("can-logout")) {
     if ($(this).hasClass("doprompt")) {
-      // new Popup(
-      //   ["Log Out", "Are you sure you want to log out?"],
-      //   "default",
-      //   10000,
-      //   require("@svonk/util/assets/popup-out.svg"),
-      //   [
-      //     ["removePopup()", "Cancel", "secondary-action fullborder"],
-      //     ["removePopup()", "Confirm", "primary-action auth-action can-logout"],
-      //   ]
-      // );
       store.logout_prompt = true;
     } else {
       store.logout();

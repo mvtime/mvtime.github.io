@@ -47,7 +47,7 @@
     - ~~see upcoming assignments and mark them as done~~
   - ~~fixes on edit page~~
   - ~~process only changed tasks server-side / cancel runs on double changes~~
-  - ~~store proxy in class doc - load from there for efficiency / read & write count~
+  - ~~store proxy in class doc - load from there for efficiency / read & write count~~
   - ~~disallow finish when link still in-progress~~
   - ~~drag tasks on calendar to change date~~
 - Surveys
@@ -70,13 +70,13 @@
   - ~~join from code~~
 - Onboarding
 
-  - **add keyboard shortcuts page on (/ or ?)**
   - **setup from pre-defined classes**, add your own
-    - **tutorial videos**
+    - **create tutorial videos**
       - View calendar
       - Complete tasks on study page
       - Link accounts
       - View stats
+  - ~~add keyboard shortcuts page on (/ or ?)~~
   - ~~large modal type for intro~~
   - ~~tutorial modal set up~~
   - ~~where to find everything~~

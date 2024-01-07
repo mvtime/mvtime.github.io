@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import { useShortcuts } from "@/store/shortcuts";
 export default {
   emits: ["update", "status"],
   props: {
@@ -39,12 +40,20 @@ export default {
         sentiment: (100 * this.sentiment) / 5,
       };
     },
+    shortcuts() {
+      return this.sentiments.map((num) => ({
+        key: String(num),
+        description: `Set sentiment to ${num}`,
+      }));
+    },
   },
   mounted() {
     window.addEventListener("keydown", this.check_key);
+    useShortcuts().register_all(this.shortcuts, "Survey Stress");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.check_key);
+    useShortcuts().remove_tag("Survey Stress");
   },
   methods: {
     check_key(e) {

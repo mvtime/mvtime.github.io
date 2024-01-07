@@ -201,6 +201,7 @@ import { useMainStore } from "@/store";
 import LoadingCover from "@/components/LoadingCover.vue";
 import { _status, compatDateObj } from "@/common";
 import { ErrorToast, SuccessToast } from "@svonk/util";
+import { useShortcuts } from "@/store/shortcuts";
 export default {
   name: "CalendarBlock",
   components: {
@@ -218,6 +219,28 @@ export default {
       tasks: [],
       is_changed: false,
       drag: {},
+      shortcuts: [
+        {
+          key: "f",
+          description: "Toggle fullscreen",
+        },
+        {
+          key: "s",
+          description: "Swap to study portal",
+        },
+        {
+          key: "ArrowLeft",
+          description: "Previous month",
+        },
+        {
+          key: "ArrowRight",
+          description: "Next month",
+        },
+        {
+          key: "Home",
+          description: "Current month",
+        },
+      ],
     };
   },
   mounted() {
@@ -225,9 +248,11 @@ export default {
     this.$emit("mounted");
     this.tasks = this.store.tasks;
     window.addEventListener("keydown", this.handle_key);
+    useShortcuts().register_all(this.shortcuts, "Calendar");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handle_key);
+    useShortcuts().remove_tag("Calendar");
   },
   methods: {
     toggle_fullscreen() {

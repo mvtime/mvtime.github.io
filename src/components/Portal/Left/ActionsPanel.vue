@@ -35,6 +35,7 @@
 <script>
 import { useMainStore } from "@/store";
 import { WarningToast } from "@svonk/util";
+import { useShortcuts } from "@/store/shortcuts";
 export default {
   data() {
     return {
@@ -42,13 +43,25 @@ export default {
         ["note", "Add a Note", "n"],
         ["task", "Schedule a Task or Test", "t"],
       ],
+      shortcuts: [
+        {
+          key: "n",
+          description: "Add a Note",
+        },
+        {
+          key: "t",
+          description: "Schedule a Task or Test",
+        },
+      ],
     };
   },
   mounted() {
     window.addEventListener("keydown", this.keydown);
+    useShortcuts().register_all(this.shortcuts, "Teacher");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.keydown);
+    useShortcuts().remove_tag("Teacher");
   },
   computed: {
     store() {

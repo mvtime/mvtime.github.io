@@ -98,6 +98,7 @@ import "@/assets/style/portal_main.css";
 import { useMainStore } from "@/store";
 import LoadingCover from "@/components/LoadingCover.vue";
 import { _status } from "@/common";
+import { useShortcuts } from "@/store/shortcuts";
 export default {
   name: "StudyBlock",
   components: {
@@ -136,11 +137,31 @@ export default {
     this.$emit("mounted");
     this.tasks = this.store.tasks;
     window.addEventListener("keydown", this.handle_key);
+    useShortcuts().register_all(this.shortcuts, "Study Portal");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handle_key);
+    useShortcuts().remove_tag("Study Portal");
   },
   computed: {
+    shortcuts() {
+      return [
+        {
+          key: "c",
+          description: "View calendar",
+          action: this.swap_to_calendar,
+        },
+        ...this.lengths.map((item) => {
+          return {
+            key: item[3],
+            description: `View ${item[1].toLowerCase()} tasks`,
+            action: () => {
+              this.days = item[0];
+            },
+          };
+        }),
+      ];
+    },
     store() {
       return useMainStore();
     },
