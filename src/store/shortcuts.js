@@ -114,6 +114,10 @@ export const useShortcuts = defineStore({
 
           return a.tag.localeCompare(b.tag);
         }
+        // check for priority
+        if (a.top && !b.top) return -1;
+        if (!a.top && b.top) return 1;
+
         // compare key
         if (a.key !== b.key) {
           return a.key.localeCompare(b.key);

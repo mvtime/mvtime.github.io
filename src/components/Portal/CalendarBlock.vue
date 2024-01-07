@@ -227,6 +227,7 @@ export default {
         {
           key: "s",
           description: "Swap to study portal",
+          top: true,
         },
         {
           key: "ArrowLeft",

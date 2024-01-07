@@ -148,16 +148,13 @@ export default {
       return [
         {
           key: "c",
-          description: "View calendar",
-          action: this.swap_to_calendar,
+          description: "Swap to calendar",
+          top: true,
         },
         ...this.lengths.map((item) => {
           return {
             key: item[3],
             description: `View ${item[1].toLowerCase()} tasks`,
-            action: () => {
-              this.days = item[0];
-            },
           };
         }),
       ];
