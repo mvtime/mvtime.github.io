@@ -145,6 +145,7 @@ body,
   --color-overlay-section-separator: #00000020;
   /* overlay inputs */
   --color-overlay-input: #dedede;
+  --color-overlay-input-on-bg: #dedede;
   --color-on-overlay-input: #000;
   --color-overlay-input-alt: #e8e8e8;
   --color-on-overlay-input-alt: #aaaaaa;
@@ -226,6 +227,7 @@ body:has(#themed_body[_theme="dark"]) {
   --color-overlay-section-separator: #66656280;
   /* overlay inputs */
   --color-overlay-input: #2b2b2b;
+  --color-overlay-input-on-bg: #3f3f3f;
   --color-overlay-input-active: #3d3d3d;
   --color-on-overlay-input: #fff;
   --color-overlay-input-alt: #2b2b2b;

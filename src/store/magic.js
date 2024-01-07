@@ -56,9 +56,11 @@ function smart_url(path) {
     }
   } else if (
     path.match(/https:\/\/[a-zA-Z0-9]+.lon-capa.net*./) ||
-    path.match(/https:\/\/lon-capa.net*./)
+    path.match(/https:\/\/lon-capa.net*./) ||
+    path.match(/https:\/\/[a-zA-Z0-9]+.loncapa.net*./) ||
+    path.match(/https:\/\/loncapa.net*./)
   ) {
-    return "LON-CAPA";
+    return "LON-CAPA Portal";
   }
 }
 

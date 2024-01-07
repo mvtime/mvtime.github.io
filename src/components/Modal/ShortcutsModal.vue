@@ -64,7 +64,7 @@ export default {
   background-color: var(--color-on-bg);
 }
 .shortcuts_section:not(:only-child):hover .shortcut__key span {
-  background-color: var(--color-overlay-input);
+  background-color: var(--color-overlay-input-on-bg);
 }
 p.shortcuts_section__title {
   font-weight: bold;
