@@ -56,10 +56,10 @@ export default {
 .shortcut__key span {
   transition: background-color 0.2s;
 }
-.shortcuts_section:hover {
+.shortcuts_section:not(:only-child):hover {
   background-color: var(--color-on-bg);
 }
-.shortcuts_section:hover .shortcut__key span {
+.shortcuts_section:not(:only-child):hover .shortcut__key span {
   background-color: var(--color-overlay-input);
 }
 p.shortcuts_section__title {
