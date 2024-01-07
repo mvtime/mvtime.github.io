@@ -9,6 +9,7 @@
     @keydown="refreshTimeout"
     @focus="refreshTimeout"
   >
+    <!-- Overlays -->
     <OverlayWrapper
       v-if="do_timeout && (store.paused || animating)"
       ref="overlay"
@@ -51,7 +52,7 @@
     >
       <ShortcutsModal class="router_center_view" ref="shortcuts_modal" @close="scope.close" />
     </OverlayWrapper>
-
+    <!-- Tutorial -->
     <TutorialBlurb
       v-if="show_tutorial"
       :title="tutorial.title"
@@ -69,6 +70,7 @@
       @vnode-unmounted="tutorial_page = 0"
       style="z-index: 101"
     />
+    <!-- Page Contents -->
     <router-view></router-view>
   </main>
 </template>
@@ -76,22 +78,25 @@
 <script>
 /**
  * The main App component, which is the parent of all other components, and mostly serves as a wrapper for the router-view, though it does apply the theme
- *
  * @module App
  * @description The main App component, wrapper for Home or Portal Views.
  * @requires module:store/MainStore
  */
+// Elements
 import OverlayWrapper from "@/components/Modal/OverlayWrapper.vue";
 import LogoutModal from "@/components/Modal/LogoutModal.vue";
 import ShortcutsModal from "@/components/Modal/ShortcutsModal.vue";
+// Stores
 import { useMainStore } from "@/store";
 import { useShortcuts } from "@/store/shortcuts";
+// Global Scripts
 import $ from "jquery";
 import { _status } from "@/common";
-// tutorial
+import { SuccessToast, ErrorToast } from "@svonk/util";
+// Tutorial
 import tutorial_pages from "@/components/Tutorial/tutorial.json";
 import TutorialBlurb from "@/components/Tutorial/TutorialBlurb.vue";
-import { SuccessToast, ErrorToast } from "@svonk/util";
+// Page
 export default {
   name: "App",
   components: {
@@ -208,9 +213,10 @@ export default {
       if (!e.shiftKey) {
         let el,
           ignore = false;
+        if (this.show_shortcuts) ignore = true;
+        // Global Keys
         if (e.key == "Escape" && !e.ctrlKey) {
           el = $(".click_escape");
-          if (!el.length) return;
         } else if (e.key == "Enter" && e.ctrlKey) {
           el = $(".click_ctrlenter");
         } else if (e.key == "\\" && e.ctrlKey) {
@@ -220,11 +226,13 @@ export default {
           this.show_shortcuts = !this.show_shortcuts;
           ignore = true;
         }
+        // Modal Controls
         if (el) {
           el = el.not("[disabled]").not(".disabled").filter(":visible");
           if (!el || !el.length) return;
           $(el).first().click();
         }
+        // Key Event Blocker
         if (el || ignore) {
           e.preventDefault();
           e.stopPropagation();
@@ -232,11 +240,12 @@ export default {
       }
     },
     tutorial_nav(change) {
+      // Do UI Tutorial Actions
       const click = this.tutorial?.options?.click_on_complete;
       if (change > 0 && click) {
         $(click == true ? this.tutorial.el : click).click();
       }
-
+      // Finish Tutorial
       if (this.tutorial_page == tutorial_pages.length - 1) {
         this.store
           .finish_tutorial(true)
@@ -246,7 +255,9 @@ export default {
           .catch((err) => {
             new ErrorToast("Couldn't complete tutorial", err, 3000);
           });
-      } else if (this.tutorial_page + change >= 0 && (!this.tutorial.disable_prev || change > 0)) {
+      }
+      // Continue Tutorial
+      else if (this.tutorial_page + change >= 0 && (!this.tutorial.disable_prev || change > 0)) {
         this.tutorial_page += change;
       }
     },

@@ -32,7 +32,7 @@
             {{ loading ? "Loading..." : "No classes found" }}
           </option>
           <option v-else value="" disabled hidden selected>
-            {{ teacher_email && classes ? "Select a Class" : "" }}
+            {{ teacher_email && classes ? "Select a Class" : "-----" }}
           </option>
         </select>
       </div>

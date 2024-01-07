@@ -41,6 +41,7 @@ export default {
   mounted() {
     this.$refs.shortcuts_modal.focus();
   },
+  beforeUnmount() {},
 };
 </script>
 
@@ -58,11 +59,6 @@ export default {
 .shortcuts_section__filler,
 .shortcuts_section {
   flex: 1 1 275px;
-}
-
-.shortcuts_section,
-.shortcut__key span {
-  transition: background-color 0.2s;
 }
 .shortcuts_section:not(:only-child):hover {
   background-color: var(--color-on-bg);

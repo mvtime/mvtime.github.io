@@ -19,7 +19,7 @@
         playsinline
         nodownload
         preload="metadata"
-        @ended="if (active_tab < tabs.length) active_tab++;"
+        @ended="if (pages_left) active_tab++;"
         :poster="
           tabs[active_tab - 1].video.poster || require('@/assets/video/tutorial/placeholder.png')
         "
@@ -38,11 +38,11 @@
       <button
         class="continue_action click_ctrlenter"
         @click="
-          if (active_tab < tabs.length) active_tab++;
+          if (pages_left) active_tab++;
           else to_onboard();
         "
       >
-        {{ active_tab < tabs.length ? "Next" : "Finish" }}
+        {{ pages_left ? "Next" : "Finish" }}
       </button>
     </div>
   </main>
@@ -99,6 +99,11 @@ export default {
         },
       ],
     };
+  },
+  computed: {
+    pages_left() {
+      return this.active_tab < this.tabs.length;
+    },
   },
   methods: {
     to_onboard() {
