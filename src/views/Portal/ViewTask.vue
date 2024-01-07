@@ -12,7 +12,6 @@
             <span class="styled_line__label">Class:</span>
             <span class="styled_line__separator"></span>
             <span class="styled_line__value">
-              <!-- TODO: add /class page -->
               <a
                 class="class_name button_pointer_text"
                 :href="`/view/${task._class.ref}`"

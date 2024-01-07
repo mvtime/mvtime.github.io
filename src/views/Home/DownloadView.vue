@@ -41,19 +41,12 @@
     </p>
     <br />
     <span>
-      <!-- <a href="/download/MV-Test-Tracker.exe" download>
-        <button class="download_button click-action action-btn">Windows</button>
-      </a> -->
       <a
         href="/download/mvtt-sidebar.zip"
         download="MVTT-SIDEBAR--drop-me-on-the-developer-extensions-page.zip"
       >
         <button class="download_button click-action action-btn">Chrome Extension</button>
       </a>
-      <!-- &nbsp;
-      <a href="/download/MV-Test-Tracker.dmg" download>
-        <button class="download_button click-action action-btn">Mac</button>
-      </a> -->
     </span>
   </main>
 </template>

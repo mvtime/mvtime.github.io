@@ -95,8 +95,7 @@
       <div class="overlay_contents_text">
         Choose which classes this {{ task.type }} will be added to
       </div>
-      <!-- checkboxes for classes -->
-      <div class="checkboxes">
+      <div class="classes_checkboxes checkboxes">
         <a
           class="checkbox"
           v-for="class_obj in classes"

@@ -24,7 +24,6 @@
         @click="mobile_menu_open = !mobile_menu_open"
       ></button>
       <nav class="base-pages-nav">
-        <!-- show only if not on that page -->
         <router-link class="click-action-inline" to="/" @click="closeMenu">Home</router-link>
         <router-link class="click-action-inline" to="/about" @click="closeMenu">About</router-link>
         <router-link class="click-action-inline" to="/contact" @click="closeMenu"

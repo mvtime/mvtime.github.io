@@ -6,7 +6,7 @@
     <div class="overlay_contents" ref="contents">
       <div class="overlay_contents_text">
         The daily surveys you have completed are displayed below.
-        <!-- To view your individual responses, click on the data point. -->
+        <!--TODO: view individual responses from data points -->
       </div>
       <br />
       <nav class="stats_view_controls_wrapper">
@@ -57,7 +57,6 @@
             height="100%"
             :options="options"
           ></apexchart>
-          <!-- <div class="stats_view"></div> -->
         </div>
       </div>
       <br />
