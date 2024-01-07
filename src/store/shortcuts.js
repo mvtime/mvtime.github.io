@@ -21,8 +21,9 @@ function clean_key(key) {
   key = key.replace("Backspace", "⌫");
   key = key.replace("Delete", "⌦");
   key = key.replace("Tab", "⇥");
-  return key;
+  return key.split(", ");
 }
+
 export const useShortcuts = defineStore({
   id: "shortcuts",
   state: () => ({
@@ -39,7 +40,7 @@ export const useShortcuts = defineStore({
     },
     list() {
       return this.shortcuts.map((s) => {
-        return { ...s, key: clean_key(s.key) };
+        return { ...s, keys: clean_key(s.key) };
       });
     },
     sections() {
@@ -62,10 +63,9 @@ export const useShortcuts = defineStore({
         _status.error("⌨️ Shortcut must have key and description text");
         return;
       }
-      if (this.keys.includes(shortcut.key)) {
+      if (this.keys.includes(shortcut.key))
         _status.warn(`⌨️ Shortcut key "${shortcut.key}" already registered`);
-        return;
-      }
+
       this.keys.push(shortcut.key);
       this.shortcuts.push(shortcut);
       if (!skipSort) this.sort();

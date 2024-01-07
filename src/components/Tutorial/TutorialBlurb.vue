@@ -107,11 +107,11 @@ export default {
       shortcuts: [
         {
           key: "Enter, Space, ArrowRight",
-          description: "Continue",
+          description: "Next Page",
         },
         {
           key: "ArrowLeft",
-          description: "Skip",
+          description: "Back",
         },
       ],
     };
@@ -129,7 +129,7 @@ export default {
       childTransitions: true,
     });
     window.addEventListener("keydown", this.next_key);
-    useShortcuts().register_all(this.shortcuts, "Survey Stress");
+    useShortcuts().register_all(this.shortcuts, "Tutorial");
     window.addEventListener("resize", this.track_flush);
     window.addEventListener("scroll", this.track_flush);
     window.setInterval(this.track_flush, 100);
@@ -137,7 +137,7 @@ export default {
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.next_key);
-    useShortcuts().remove_tag("Survey Stress");
+    useShortcuts().remove_tag("Tutorial");
     window.removeEventListener("resize", this.track_flush);
     window.removeEventListener("scroll", this.track_flush);
     window.clearInterval(this.track_flush);

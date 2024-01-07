@@ -9,11 +9,11 @@
     @keydown="refreshTimeout"
     @focus="refreshTimeout"
   >
-    <router-view></router-view>
     <OverlayWrapper
       v-if="do_timeout && (store.paused || animating)"
       ref="overlay"
       class="pause_modal_overlay"
+      style="z-index: 104"
     >
       <main class="pause_modal router_center_view" ref="pause_modal">
         <header class="modal_header">
@@ -38,6 +38,7 @@
       ref="logout_modal"
       @close="store.logout_prompt = false"
       v-slot="scope"
+      style="z-index: 103"
     >
       <LogoutModal class="router_center_view" @close="scope.close" />
     </OverlayWrapper>
@@ -46,6 +47,7 @@
       ref="shortcuts_overlay"
       v-slot="scope"
       @close="show_shortcuts = false"
+      style="z-index: 102"
     >
       <ShortcutsModal class="router_center_view" ref="shortcuts_modal" @close="scope.close" />
     </OverlayWrapper>
@@ -65,7 +67,9 @@
       @next="tutorial_nav(1)"
       @skip="tutorial_nav(-1)"
       @vnode-unmounted="tutorial_page = 0"
+      style="z-index: 101"
     />
+    <router-view></router-view>
   </main>
 </template>
 

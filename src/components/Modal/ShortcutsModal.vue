@@ -1,5 +1,5 @@
 <template>
-  <div class="shortcuts_modal" ref="shortcuts_modal">
+  <div class="shortcuts_modal" ref="shortcuts_modal" :class="{ empty: !sections.length }">
     <div class="overlay_contents shortcuts_contents">
       <div v-if="!sections || !sections.length">No Registered Shortcuts</div>
       <div v-else class="shortcuts_sections">
@@ -13,12 +13,15 @@
               tabindex="1"
             >
               <td class="shortcut__key">
-                <span class="button_pointer_text">{{ shortcut.key }}</span>
+                <span class="button_pointer_text" v-for="key in shortcut.keys" :key="key">{{
+                  key
+                }}</span>
               </td>
               <td class="shortcut__description">{{ shortcut.description }}</td>
             </tr>
           </table>
         </div>
+        <div class="shortcuts_section__filler" v-if="sections.length && sections.length % 2"></div>
       </div>
     </div>
     <div class="click_escape nopad" @click="$emit('close')"></div>
@@ -44,7 +47,7 @@ export default {
 <style scoped>
 .shortcuts_sections {
   display: flex;
-  flex-direction: column;
+  flex-flow: row wrap;
   gap: 0.25em;
 }
 .shortcuts_section {
@@ -52,6 +55,11 @@ export default {
   border-radius: var(--radius-overlay-input);
   user-select: none;
 }
+.shortcuts_section__filler,
+.shortcuts_section {
+  flex: 1 1 275px;
+}
+
 .shortcuts_section,
 .shortcut__key span {
   transition: background-color 0.2s;
@@ -70,6 +78,24 @@ p.shortcuts_section__title {
   width: 100%;
 }
 .shortcuts_modal {
+  width: 100%;
+  max-width: 600px;
+}
+@media (max-width: 680px) {
+  .shortcuts_modal {
+    width: fit-content;
+  }
+  .shortcuts_sections {
+    flex-flow: column nowrap;
+  }
+  .shortcuts_section {
+    flex-basis: auto;
+  }
+  .shortcuts_section__filler {
+    display: none;
+  }
+}
+.shortcuts_modal.empty {
   width: fit-content;
 }
 .overlay_contents.shortcuts_contents {
@@ -91,8 +117,13 @@ p.shortcuts_section__title {
   padding-right: 0.5em;
   white-space: nowrap;
   /* fix for inconsistent width */
-  width: 75px;
+  /* width: 75px; */
   display: block;
+}
+.shortcut__key {
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 0.25em;
 }
 .shortcut__description {
   padding-left: 0.5em;
