@@ -337,8 +337,6 @@ select.type_dropdown {
   color: var(--color-on-class);
 }
 /* new display method */
-.checkboxes {
-}
 .checkboxes .checkbox input {
   display: none;
 }
