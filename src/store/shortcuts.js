@@ -9,8 +9,8 @@ function clean_key(key) {
   // replace arrow keys with symbols
   key = key.replace("ArrowUp", "↑");
   key = key.replace("ArrowDown", "↓");
-  key = key.replace("ArrowLeft", "←");
-  key = key.replace("ArrowRight", "→");
+  key = key.replace("ArrowLeft", "‹");
+  key = key.replace("ArrowRight", "›");
   // replace control keys with symbols
   key = key.replace("Control", "Ctrl");
   key = key.replace("Alt", "Alt");
@@ -50,7 +50,7 @@ export const useShortcuts = defineStore({
       for (let i = 0; i < tags.length; i++) {
         sections.push({
           tag: tags[i],
-          list: this.shortcuts.filter((s) => s.tag === tags[i]),
+          list: this.list.filter((s) => s.tag === tags[i]),
         });
       }
       return sections;

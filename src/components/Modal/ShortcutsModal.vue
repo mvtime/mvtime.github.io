@@ -90,6 +90,9 @@ p.shortcuts_section__title {
   font-weight: bold;
   padding-right: 0.5em;
   white-space: nowrap;
+  /* fix for inconsistent width */
+  width: 75px;
+  display: block;
 }
 .shortcut__description {
   padding-left: 0.5em;
