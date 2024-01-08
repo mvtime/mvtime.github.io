@@ -5,68 +5,57 @@
 import { defineStore } from "pinia";
 
 // Smart URL
+const smart_maps = [
+  // regex pattern, smart text
+  // Canvas
+  [/https:\/\/[a-zA-Z0-9]+.instructure.com\/courses\/[0-9]+\/modules*./, "Canvas Course Modules"],
+  [
+    /https:\/\/[a-zA-Z0-9]+.instructure.com\/courses\/[0-9]+\/assignments\/[0-9]+/,
+    "Canvas Assignment",
+  ],
+  [/https:\/\/[a-zA-Z0-9]+.instructure.com\/courses\/[0-9]+/, "Canvas Course"],
+  [/https:\/\/[a-zA-Z0-9]+.instructure.com\/courses/, "Canvas Home"],
+  [/https:\/\/[a-zA-Z0-9]+.instructure.com/, "Canvas"],
+  // G Classroom
+  [/https:\/\/classroom.google.com\/c\/[a-zA-Z0-9]+\/a\/.+/, "Google Classroom Assignment"],
+  [/https:\/\/classroom.google.com\/c\/[a-zA-Z0-9]+\/p\/.+/, "Google Classroom Post"],
+  [/https:\/\/classroom.google.com\/c\/[a-zA-Z0-9]+/, "Google Classroom Class"],
+  [/https:\/\/classroom.google.com\/h/, "Google Classroom Home"],
+  [/https:\/\/classroom.google.com\/u\/[0-9]+/, "Google Classroom Home"],
+  // G Drive
+  [/https:\/\/drive.google.com\/file\/d\/.+/, "Google Drive File"],
+  [/https:\/\/drive.google.com\/drawings\/d\/.+/, "Google Drawing"],
+  [/https:\/\/docs.google.com\/document\/d\/.+/, "Google Docs File"],
+  [/https:\/\/docs.google.com\/spreadsheets\/d\/.+/, "Google Sheet"],
+  // LON-CAPA
+  [/https:\/\/[a-zA-Z0-9]+.lon-capa.net.*/, "LON-CAPA Portal"],
+  [/https:\/\/lon-capa.net.*/, "LON-CAPA Portal"],
+  [/https:\/\/[a-zA-Z0-9]+.loncapa.net.*/, "LON-CAPA Portal"],
+  [/https:\/\/loncapa.net.*/, "LON-CAPA Portal"],
+];
 function smart_url(path) {
   if (!path) return;
   path = path.toLowerCase();
-  /**  Google Suite **/
-  if (path.match(/https:\/\/[a-zA-Z0-9]+.google.com\/[a-zA-Z0-9]+\/[a-zA-Z0-9]+/)) {
-    // Google Classroom
-    if (path.match(/https:\/\/classroom.google.com*./)) {
-      // Google Classroom assignment (classroom.google.com/c/.../a/...)
-      if (path.match(/https:\/\/classroom.google.com\/c\/[a-zA-Z0-9]+\/a\/*./)) {
-        return "Google Classroom Assignment";
-      }
-      // Google Classroom post (classroom.google.com/c/.../p/...)
-      else if (path.match(/https:\/\/classroom.google.com\/c\/[a-zA-Z0-9]+\/p\/*./)) {
-        return "Google Classroom Post";
-      }
-      // Google Classroom class (classroom.google.com/c/...)
-      else if (path.match(/https:\/\/classroom.google.com\/c\/[a-zA-Z0-9]+/)) {
-        return "Google Classroom Class";
-      }
-      // Google Classroom home
-      else if (
-        path.match(/https:\/\/classroom.google.com\/h/) ||
-        path.match(/https:\/\/classroom.google.com\/u\/[0-9]+/)
-      ) {
-        return "Google Classroom Home";
-      }
-      // Everything Else
-      else {
-        return "Google Classroom Link";
-      }
-    }
-  }
-  // Canvas
-  else if (path.match(/https:\/\/[a-zA-Z0-9]+.instructure.com*./)) {
-    // Canvas Assignment
-
-    if (path.match(/https:\/\/[a-zA-Z0-9]+.instructure.com\/courses\/[0-9]+\/modules*./)) {
-      return "Canvas Course Modules";
-    } else if (
-      path.match(/https:\/\/[a-zA-Z0-9]+.instructure.com\/courses\/[0-9]+\/assignments\/[0-9]+/)
-    ) {
-      return "Canvas Assignment";
-    } else if (path.match(/https:\/\/[a-zA-Z0-9]+.instructure.com\/courses\/[0-9]+/)) {
-      return "Canvas Course";
-    } else if (path.match(/https:\/\/[a-zA-Z0-9]+.instructure.com\/courses/)) {
-      return "Canvas Home";
-    } else {
-      return "Canvas Link";
-    }
-  } else if (
-    path.match(/https:\/\/[a-zA-Z0-9]+.lon-capa.net*./) ||
-    path.match(/https:\/\/lon-capa.net*./) ||
-    path.match(/https:\/\/[a-zA-Z0-9]+.loncapa.net*./) ||
-    path.match(/https:\/\/loncapa.net*./)
-  ) {
-    return "LON-CAPA Portal";
+  for (let i = 0; i < smart_maps.length; i++) {
+    if (path.match(smart_maps[i][0])) return smart_maps[i][1];
   }
 }
 
 export const useMagic = defineStore({
   id: "magic",
-  state: () => ({}),
+  state: () => ({
+    types: {
+      note: "Note",
+      task: "Assignment",
+      // socratic: "Socratic Seminar",
+      test: "Test",
+      // summative: "Summative Assignment",
+      // midterm: "Midterm",
+      project: "Project",
+      quiz: "Quiz",
+      exam: "Exam",
+    },
+  }),
   getters: {},
   actions: {
     /**
@@ -83,8 +72,24 @@ export const useMagic = defineStore({
      * @description get the smart type associated with a given description
      * @param {String} text
      */
-    type(text) {
-      return text;
+    type(task) {
+      const note = task.type == "note";
+      const name = ((note ? task.description : task.name) || "").toLowerCase();
+      if (
+        (name.includes("summative") && !name.includes("assignment")) ||
+        name.includes("formative") ||
+        (name.includes("unit") && name.includes("test"))
+      ) {
+        return "test";
+      }
+      if (name.includes("project")) return "project";
+      if (name.includes("quiz")) return "quiz";
+      if (name.includes("exam") || name.includes("midterm") || name.includes("final"))
+        return "exam";
+      if (name.length >= 100 || (!name && task.description && task.description.length >= 60))
+        return "note";
+      if ((name.length >= 10 && name.length < 50 && note) || name.includes("assignment"))
+        return "task";
     },
   },
 });

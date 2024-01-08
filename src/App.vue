@@ -67,7 +67,7 @@
       :trackel="tutorial.el"
       @next="tutorial_nav(1)"
       @skip="tutorial_nav(-1)"
-      @vnode-unmounted="tutorial_page = 0"
+      @vue:unmounted="tutorial_page = 0"
       style="z-index: 101"
     />
     <!-- Page Contents -->
@@ -116,19 +116,19 @@ export default {
       shortcuts: [
         {
           key: "Ctrl + Enter",
-          description: "Submit the current form",
+          description: "Submit current form",
         },
         {
           key: "Escape",
-          description: "Close the current modal",
+          description: "Close current modal",
         },
         {
           key: "Ctrl + \\",
           description: "Toggle dark mode",
         },
         {
-          key: "Ctrl + /",
-          description: "Toggle the shortcuts menu",
+          key: "Ctrl + / or Ctrl + ?",
+          description: "Toggle shortcuts menu",
         },
       ],
     };
@@ -221,7 +221,7 @@ export default {
       } else if (!e.shiftKey && e.key == "\\" && e.ctrlKey) {
         this.store.toggle_theme();
         ignore = true;
-      } else if (e.key == "/" && e.ctrlKey) {
+      } else if ((e.key == "/" && e.ctrlKey) || (e.key == "?" && e.ctrlKey)) {
         this.show_shortcuts = !this.show_shortcuts;
         ignore = true;
       }

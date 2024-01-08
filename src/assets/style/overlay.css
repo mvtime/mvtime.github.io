@@ -125,11 +125,57 @@
 }
 h2.modal_header_title,
 h2.modal_header_title > *,
+h2.modal_header_title > .contents_inherit > *,
 h2.header_style.modal_header_title {
   font-size: 25px;
   font-weight: 600;
   margin-bottom: 0;
   flex-shrink: 0;
+}
+
+h2.modal_header_title > .magic_wrapper {
+  padding-right: 0;
+  height: 1.7em;
+  background-color: var(--color-overlay-input);
+  border-radius: var(--radius-overlay-input);
+  width: auto;
+  transition: padding-right 0.25s ease-out;
+  position: relative;
+  transition-delay: 0.25s;
+}
+h2.modal_header_title > .magic_wrapper.magic_ready {
+  transition-delay: 0s;
+  padding-right: 1.7em;
+}
+
+h2.modal_header_title > .magic_wrapper .magic {
+  animation-delay: 0s;
+  position: absolute;
+  right: 3px;
+  top: 3px;
+  border-radius: calc(var(--radius-overlay-input) - 3px);
+  height: calc(1.7em - 6px);
+  width: calc(1.7em - 6px);
+}
+h2.modal_header_title > .magic_wrapper.magic_ready .magic {
+  animation-delay: 0.25s;
+}
+
+.styled_magic {
+  background-position: center;
+  background-repeat: no-repeat;
+  transform-origin: center;
+  background-color: var(--color-overlay-secondary-input);
+  background-image: url(@/assets/img/general/portal/magic.png);
+  background-image: url(@/assets/img/general/portal/magic.svg);
+}
+.styled_magic.magic_in {
+  opacity: 0;
+  animation: magic_in 0.2s ease-out forwards;
+}
+.styled_magic.magic_out {
+  opacity: 1;
+  animation: magic_out 0.2s ease-in forwards;
 }
 
 .inputs_row,
@@ -391,12 +437,11 @@ hr.styled_links_separator {
   width: calc(var(--height-overlay-secondary-input) - 6px);
   border-radius: 2px;
   opacity: 0.5;
-  background-color: var(--color-overlay-secondary-action);
-  background-position: center;
-  background-repeat: no-repeat;
   background-size: calc(var(--height-overlay-secondary-input) - 6px);
-  background-image: url(@/assets/img/general/portal/magic.png);
-  background-image: url(@/assets/img/general/portal/magic.svg);
+  /* color diff */
+  background-color: var(--color-overlay-secondary-action);
+  background-image: url(@/assets/img/general/portal/magic-darker.png);
+  background-image: url(@/assets/img/general/portal/magic-darker.svg);
 }
 
 .styled_links_add button,
@@ -522,6 +567,28 @@ textarea::-webkit-scrollbar-corner {
 }
 
 /* scale and fade in with slight bounce */
+@keyframes magic_in {
+  0% {
+    transform: scale(0.75);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes magic_out {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+}
 @keyframes scale_in {
   0% {
     transform: scale(0.9);

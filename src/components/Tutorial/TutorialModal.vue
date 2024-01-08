@@ -54,10 +54,10 @@ import { WarningToast } from "@svonk/util";
 export default {
   name: "TutorialModal",
   mounted() {
-    //TODO: add videos and remove
+    // TODO: add videos and remove
     new WarningToast("We're still working on creating the tutorial videos, sorry!", 2500);
     this.to_onboard();
-    //TODO: resume
+    // TODO: resume
     // const tab = this.$route?.params?.tab;
     // this.active_tab = tab && tab < this.tabs.length && tab >= 1 ? tab : 1;
     // this.set_route();

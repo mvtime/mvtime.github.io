@@ -75,7 +75,7 @@
                 @blur="fix_newlink_path"
                 placeholder="Link URL (http://example.com)"
               />
-              <div class="styled_links_add__sized">
+              <div class="styled_links_add__sized magic_wrapper">
                 <input
                   class="styled_links_add__text"
                   type="text"
@@ -159,17 +159,6 @@ export default {
       },
       ready: false,
       loading: true,
-      types: {
-        note: "Note",
-        task: "Assignment",
-        // socratic: "Socratic Seminar",
-        test: "Test",
-        // summative: "Summative Assignment",
-        // midterm: "Midterm",
-        project: "Project",
-        quiz: "Quiz",
-        exam: "Exam",
-      },
     };
   },
   mounted() {
@@ -193,7 +182,7 @@ export default {
       );
     },
     type_full() {
-      return this.types[this.task.type] || this.task.type || "Task";
+      return this.magic[this.task.type] || this.task.type || "Task";
     },
     newlink_not_ready() {
       // check if path and text, and also that path is a valid url

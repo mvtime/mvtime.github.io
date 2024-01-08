@@ -3,21 +3,32 @@
     <header class="modal_header">
       <h2 class="header_style modal_header_title">
         <span>Add a{{ is_vowel(type_full[0]) ? "n" : "" }}&MediumSpace;</span>
-        <select
-          title="Task type"
-          v-model="task.type"
-          class="type_dropdown styled_input styled_select"
-          ref="type"
+        <div
+          class="header_magic_wrapper magic_wrapper contents_inherit"
+          :class="{ magic_ready: magic_type }"
         >
-          <option
-            class="type_dropdown__option styled_select__option"
-            v-for="pair in Object.entries(types)"
-            :value="pair[0]"
-            :key="pair[0]"
+          <select
+            title="Task type"
+            v-model="task.type"
+            class="type_dropdown styled_input styled_select"
+            ref="type"
           >
-            {{ pair[1] }}
-          </option>
-        </select>
+            <option
+              class="type_dropdown__option styled_select__option"
+              v-for="pair in Object.entries(magic.types)"
+              :value="pair[0]"
+              :key="pair[0]"
+            >
+              {{ pair[1] }}
+            </option>
+          </select>
+          <div
+            class="magic magic_in styled_magic click-action"
+            :class="{ magic_out: !magic_type }"
+            @click="task.type = magic_type"
+            :title="'Use automatic type' + (magic_type ? ' (' + magic_type + ')' : '')"
+          ></div>
+        </div>
       </h2>
     </header>
     <div class="overlay_contents" ref="contents">
@@ -76,7 +87,7 @@
               @blur="fix_newlink_path"
               placeholder="Link URL (https://example.com)"
             />
-            <div class="styled_links_add__sized">
+            <div class="magic_wrapper styled_links_add__sized">
               <input
                 class="styled_links_add__text"
                 type="text"
@@ -84,7 +95,7 @@
                 placeholder="Link Text (what students see)"
               />
               <div
-                class="styled_magic click-action"
+                class="magic styled_magic click-action"
                 v-if="
                   newlink.path &&
                   magic.text(newlink.path) &&
@@ -192,17 +203,6 @@ export default {
         path: "",
       },
       loading: false,
-      types: {
-        note: "Note",
-        task: "Assignment",
-        // socratic: "Socratic Seminar",
-        test: "Test",
-        // summative: "Summative Assignment",
-        // midterm: "Midterm",
-        project: "Project",
-        quiz: "Quiz",
-        exam: "Exam",
-      },
     };
   },
   computed: {
@@ -247,6 +247,9 @@ export default {
     is_note() {
       return this.task.type === "note";
     },
+    magic_type() {
+      return this.magic.type(this.task) != this.task.type && this.magic.type(this.task);
+    },
   },
   methods: {
     try_submit() {
@@ -257,7 +260,7 @@ export default {
       }
     },
     get_type(type = this.task.type) {
-      return this.types[type] || type;
+      return this.magic.types[type] || type;
     },
     is_vowel(char) {
       return ["a", "e", "i", "o", "u"].includes(char.toLowerCase());
@@ -303,6 +306,18 @@ export default {
           this.newlink.path = "https://" + this.newlink.path;
           this.fix_newlink_path();
         }
+      }
+    },
+  },
+  watch: {
+    "task.type"(new_type, old_type) {
+      // if task -> note, clear name and move to description if empty {
+      if (new_type == "note") {
+        this.task.description = this.task.description || this.task.name;
+        this.task.name = "";
+      } else if (old_type == "note" && this.task.description?.length <= 35) {
+        this.task.name = this.task.description;
+        this.task.description = "";
       }
     },
   },

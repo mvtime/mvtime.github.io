@@ -75,6 +75,7 @@
  */
 
 import { useMainStore } from "@/store";
+import { useMagic } from "@/store/magic";
 import { _status } from "@/common";
 import { ErrorToast, WarningToast, SuccessToast } from "@svonk/util";
 import smoothReflow from "vue-smooth-reflow";
@@ -90,17 +91,6 @@ export default {
       note: "",
       ready: false,
       loading: true,
-      types: {
-        note: "Note",
-        task: "Assignment",
-        // socratic: "Socratic Seminar",
-        test: "Test",
-        // summative: "Summative Assignment",
-        // midterm: "Midterm",
-        project: "Project",
-        quiz: "Quiz",
-        exam: "Exam",
-      },
     };
   },
   mounted() {
@@ -119,7 +109,7 @@ export default {
       return !this.changed;
     },
     type_full() {
-      return this.types[this.task.type] || this.task.type || "Task";
+      return useMagic()?.types[this.task.type] || this.task.type || "Task";
     },
     store() {
       return useMainStore();
