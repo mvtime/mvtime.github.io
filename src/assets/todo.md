@@ -20,7 +20,8 @@
   - sync from that huge json file
 - **Tutorial Videos**
 - **AI/ML/Just "seems like magic" features, can be hardcoded**
-  - things like automatic link names, task typing
+  - through API
+  - ~~things like automatic link names, task typing~~
 - **Daily emails / EoD updates**
 
 ## Working on Now / Planned Soon (Sander)

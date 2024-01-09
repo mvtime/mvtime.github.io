@@ -5,7 +5,7 @@
         <span>Add a{{ is_vowel(type_full[0]) ? "n" : "" }}&MediumSpace;</span>
         <div
           class="header_magic_wrapper magic_wrapper contents_inherit"
-          :class="{ magic_ready: magic_type }"
+          :class="{ magic_ready: type_ready }"
         >
           <select
             title="Task type"
@@ -23,10 +23,11 @@
             </option>
           </select>
           <div
-            class="magic magic_in styled_magic click-action"
-            :class="{ magic_out: !magic_type }"
-            @click="task.type = magic_type"
-            :title="'Use automatic type' + (magic_type ? ' (' + magic_type + ')' : '')"
+            class="magic magic_in styled_magic alt_bg click-action"
+            :class="{ magic_out: !type_ready, loading_bg: loading_type }"
+            :disabled="!type_ready || loading_type"
+            @click="magic_type"
+            title="Use magically inferred type"
           ></div>
         </div>
       </h2>
@@ -95,13 +96,10 @@
                 placeholder="Link Text (what students see)"
               />
               <div
-                class="magic styled_magic click-action"
-                v-if="
-                  newlink.path &&
-                  magic.text(newlink.path) &&
-                  magic.text(newlink.path) != newlink.text
-                "
-                @click="newlink.text = magic.text(newlink.path)"
+                class="magic magic_in styled_magic alt_bg click-action"
+                :class="{ magic_out: !path_ready, loading_bg: loading_text }"
+                :disabled="!path_ready || loading_text"
+                @click="magic_text"
                 title="Auto-generate link text"
               ></div>
             </div>
@@ -172,7 +170,7 @@
 import { useMainStore } from "@/store";
 import { useMagic } from "@/store/magic";
 import { _status } from "@/common";
-import { ErrorToast, WarningToast } from "@svonk/util";
+import { ErrorToast, WarningToast, SuccessToast } from "@svonk/util";
 import smoothReflow from "vue-smooth-reflow";
 
 export default {
@@ -203,6 +201,10 @@ export default {
         path: "",
       },
       loading: false,
+      loading_type: false,
+      loading_text: false,
+      loaded_type: false,
+      loaded_text: false,
     };
   },
   computed: {
@@ -247,8 +249,16 @@ export default {
     is_note() {
       return this.task.type === "note";
     },
-    magic_type() {
-      return this.magic.type(this.task) != this.task.type && this.magic.type(this.task);
+    type_ready() {
+      return !this.loaded_type && this.task && (this.task.description || this.task.name).length > 5;
+    },
+    path_ready() {
+      return (
+        !this.loaded_text &&
+        this.newlink.path &&
+        this.newlink_not_ready &&
+        this.newlink.path.startsWith("https://")
+      );
     },
   },
   methods: {
@@ -308,6 +318,64 @@ export default {
         }
       }
     },
+    async magic_type() {
+      if (!this.type_ready) return;
+      this.loading_type = true;
+      // cleanup task
+      const clean_task = {
+        name: this.task.name,
+        description: this.task.description,
+        date: this.task.date,
+        classes: this.task_classes.map(
+          (class_id) => this.classes.find((c) => c.id == class_id)?.name
+        ),
+      };
+
+      this.magic
+        .type(JSON.stringify(clean_task))
+        .then((type) => {
+          if (type) {
+            new SuccessToast(`Generated task type '${type}'`, 1500);
+            _status.log("🔗 Generated task type:", type);
+            this.task.type = type;
+          } else {
+            new WarningToast("Couldn't reasonably infer a task type", 2000);
+            _status.warn("📃 Couldn't generate task type");
+          }
+          this.loaded_type = true;
+          this.loading_type = false;
+        })
+        .catch((err) => {
+          new ErrorToast("Something went wrong generating the task type", err, 3000);
+          _status.error("⚠ Failed task type generation:", err);
+          this.loaded_type = false;
+          this.loading_type = false;
+        });
+    },
+    async magic_text() {
+      if (!this.path_ready || this.newlink.text) return;
+      this.loading_text = true;
+      this.magic
+        .text(this.newlink.path)
+        .then((text) => {
+          if (text) {
+            new SuccessToast(`Generated link text '${text}'`, 1500);
+            _status.log("🔗 Generated link text:", text);
+            this.newlink.text = text;
+          } else {
+            new WarningToast("Couldn't reasonably infer link text", 2000);
+            _status.warn("📃 Couldn't generate link text");
+          }
+          this.loaded_text = true;
+          this.loading_text = false;
+        })
+        .catch((err) => {
+          new ErrorToast("Couldn't generate link text", err, 3000);
+          _status.error("⚠ Failed link text generation:", err);
+          this.loaded_text = false;
+          this.loading_text = false;
+        });
+    },
   },
   watch: {
     "task.type"(new_type, old_type) {
@@ -319,6 +387,42 @@ export default {
         this.task.name = this.task.description;
         this.task.description = "";
       }
+    },
+    // if newlink.path changes, set loaded_text to false
+    "newlink.path"(new_path, old_path) {
+      if (new_path != old_path) {
+        this.loaded_text = false;
+      }
+    },
+    "newlink.text"(new_text, old_text) {
+      if (new_text != old_text) {
+        this.loaded_text = false;
+      }
+    },
+    // if name, description, date, or classes change, set loaded_type to false
+    // fix for references being the same
+    "task.name"(new_name, old_name) {
+      if (new_name !== old_name) {
+        this.loaded_type = false;
+      }
+    },
+    "task.description"(new_desc, old_desc) {
+      if (new_desc !== old_desc) {
+        this.loaded_type = false;
+      }
+    },
+    "task.date"(new_date, old_date) {
+      if (new_date !== old_date) {
+        this.loaded_type = false;
+      }
+    },
+    task_classes: {
+      deep: true,
+      handler(new_classes, old_classes) {
+        if (new_classes != old_classes) {
+          this.loaded_type = false;
+        }
+      },
     },
   },
 };

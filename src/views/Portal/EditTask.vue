@@ -75,7 +75,7 @@
                 @blur="fix_newlink_path"
                 placeholder="Link URL (http://example.com)"
               />
-              <div class="styled_links_add__sized magic_wrapper">
+              <div class="magic_wrapper styled_links_add__sized">
                 <input
                   class="styled_links_add__text"
                   type="text"
@@ -83,13 +83,10 @@
                   placeholder="Link Text (what students see)"
                 />
                 <div
-                  class="styled_magic click-action"
-                  v-if="
-                    newlink.path &&
-                    magic.text(newlink.path) &&
-                    magic.text(newlink.path) != newlink.text
-                  "
-                  @click="newlink.text = magic.text(newlink.path)"
+                  class="magic magic_in styled_magic alt_bg click-action"
+                  :class="{ magic_out: !path_ready, loading_bg: loading_text }"
+                  :disabled="!path_ready || loading_text"
+                  @click="magic_text"
                   title="Auto-generate link text"
                 ></div>
               </div>
@@ -142,7 +139,7 @@
 import { useMainStore } from "@/store";
 import { useMagic } from "@/store/magic";
 import { _status, compatDateObj } from "@/common";
-import { ErrorToast, WarningToast } from "@svonk/util";
+import { ErrorToast, WarningToast, SuccessToast } from "@svonk/util";
 import smoothReflow from "vue-smooth-reflow";
 
 export default {
@@ -159,6 +156,8 @@ export default {
       },
       ready: false,
       loading: true,
+      loading_text: false,
+      loaded_text: false,
     };
   },
   mounted() {
@@ -216,6 +215,26 @@ export default {
         month: "long",
         day: "numeric",
       });
+    },
+    path_ready() {
+      return (
+        !this.loaded_text &&
+        this.newlink.path &&
+        this.newlink_not_ready &&
+        this.newlink.path.startsWith("https://")
+      );
+    },
+  },
+  watch: {
+    "newlink.path"(new_path, old_path) {
+      if (new_path != old_path) {
+        this.loaded_text = false;
+      }
+    },
+    "newlink.text"(new_text, old_text) {
+      if (new_text != old_text) {
+        this.loaded_text = false;
+      }
     },
   },
   methods: {
@@ -323,6 +342,30 @@ export default {
           this.fix_newlink_path();
         }
       }
+    },
+    async magic_text() {
+      if (!this.path_ready || this.newlink.text) return;
+      this.loading_text = true;
+      this.magic
+        .text(this.newlink.path)
+        .then((text) => {
+          if (text) {
+            new SuccessToast(`Generated link text '${text}'`, 1500);
+            _status.log("🔗 Generated link text:", text);
+            this.newlink.text = text;
+          } else {
+            new WarningToast("Couldn't reasonably infer link text", 2000);
+            _status.warn("📃 Couldn't generate link text");
+          }
+          this.loaded_text = true;
+          this.loading_text = false;
+        })
+        .catch((err) => {
+          new ErrorToast("Couldn't generate link text", err, 3000);
+          _status.error("⚠ Failed link text generation:", err);
+          this.loaded_text = false;
+          this.loading_text = false;
+        });
     },
   },
 };
