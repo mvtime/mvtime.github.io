@@ -86,6 +86,12 @@ export default {
       hideOverflow: true,
       childTransitions: true,
     });
+    // remove the title from the query
+    this.$router.replace({
+      ...this.$route,
+      query: { ...this.$route.query, title: undefined },
+    });
+
     if (!this.ref || !this.type) {
       new WarningToast("There was no task provided", 2000);
       this.$emit("close");

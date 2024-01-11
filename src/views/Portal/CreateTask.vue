@@ -186,6 +186,12 @@ export default {
     } else {
       this.$refs.date.focus();
     }
+    
+    // remove the class and date from the query
+    this.$router.replace({
+      ...this.$route,
+      query: { ...this.$route.query, class: undefined, date: undefined },
+    });
   },
   data() {
     return {
