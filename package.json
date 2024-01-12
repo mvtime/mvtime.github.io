@@ -13,7 +13,11 @@
     "postcompile": "mkdir dist\\download & move dist_electron\\MV-Test-Tracker.exe dist\\download && echo 'Moved builds to download folder'",
     "electron:build": "vue-cli-service electron:build",
     "electron:serve": "vue-cli-service electron:serve",
-    "postbuild": "copy /Y dist\\index.html dist\\404.html && echo 'Copied index.html to 404.html'",
+    "postbuild": "cross-env OS_TYPE=$(uname -s) npm-run-all --parallel copy-files echo-message",
+    "copy-files": "npm run copy-win || npm run copy-nix",
+    "copy-win": "copy /Y dist\\index.html dist\\404.html",
+    "copy-nix": "cp dist/index.html dist/404.html",
+    "echo-message": "echo 'Copied index.html to 404.html'",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",
     "predeploy": "npm run build",
@@ -52,6 +56,7 @@
     "@vue/cli-plugin-pwa": "~5.0.0",
     "@vue/cli-plugin-router": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
+    "cross-env": "^7.0.3",
     "electron": "^25.3.1",
     "electron-devtools-installer": "^3.1.0",
     "eslint": "^7.32.0",
@@ -59,6 +64,7 @@
     "gh-pages": "^5.0.0",
     "html-loader": "^4.2.0",
     "markdown-loader": "^8.0.0",
+    "npm-run-all": "^4.1.5",
     "vue-cli-plugin-electron-builder": "^2.1.1"
   },
   "homepage": "http://mvtt.app"

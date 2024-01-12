@@ -257,7 +257,6 @@ export default {
   },
   methods: {
     toggle_fullscreen() {
-      console.log("toggle_fullscreen", this.fullpage);
       // toggle fullpage mode (route.query.calendar)
       const new_fullpage = !this.fullpage;
       let query = { ...this.$route.query };

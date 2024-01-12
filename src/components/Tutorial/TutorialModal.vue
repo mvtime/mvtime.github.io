@@ -65,6 +65,7 @@ export default {
   data() {
     return {
       active_tab: 1,
+      onboarding: false,
       tabs: [
         {
           index: 1,
@@ -107,7 +108,8 @@ export default {
   },
   methods: {
     to_onboard() {
-      this.$router.push({ name: "onboarding", query: this.$route.query });
+      this.onboarding = true;
+      this.$router.push({ name: "onboarding" });
     },
     set_route() {
       this.$router.replace({
@@ -119,7 +121,7 @@ export default {
   },
   watch: {
     active_tab() {
-      this.set_route();
+      if (!this.onboarding) this.set_route();
     },
   },
 };
