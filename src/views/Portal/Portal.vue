@@ -329,7 +329,7 @@ main.portal .portal_sidebar {
   flex-basis: 300px;
   width: 300px;
   flex-grow: 0;
-  flex-shrink: 1;
+  flex-shrink: 0;
   background-color: var(--color-bg);
   position: relative;
   box-sizing: border-box;
