@@ -259,6 +259,9 @@ body:has(#themed_body[_theme="dark"]) {
   /* font-weight: normal; */
   font-family: "Inter", "Poppins", "Open Sans", sans-serif;
 }
+*:not(.click-action) {
+  -webkit-tap-highlight-color: #00000000;
+}
 html,
 body {
   padding: 0;

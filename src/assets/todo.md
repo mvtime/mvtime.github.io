@@ -19,10 +19,11 @@
   - students able to add tasks to their classes / teachers can invite students to edit their classes
   - sync from that huge json file
 - **Tutorial Videos**
-- **AI/ML/Just "seems like magic" features, can be hardcoded**
-  - through API
-  - ~~things like automatic link names, task typing~~
 - **Daily emails / EoD updates**
+  - ~~better email prefs~~
+- **~~AI/ML/Just "seems like magic" features, can be hardcoded~~**
+  - ~~through API~~
+  - ~~things like automatic link names, task typing~~
 
 ## Working on Now / Planned Soon (Sander)
 
