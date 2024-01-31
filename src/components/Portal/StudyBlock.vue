@@ -227,7 +227,7 @@ export default {
   },
   methods: {
     handle_key(event) {
-      if (event.ctrlKey || this.$route.name != "study") return;
+      if (event.ctrlKey || event.metaKey || this.$route.name != "study") return;
       if (event.key == "c") {
         this.swap_to_calendar();
       } else {

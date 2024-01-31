@@ -6,22 +6,31 @@ import { defineStore } from "pinia";
 function clean_key(key) {
   if (!key) return;
   key = key.replace(" or ", ", ");
-  // replace arrow keys with symbols
-  key = key.replace("ArrowUp", "↑");
-  key = key.replace("ArrowDown", "↓");
-  key = key.replace("ArrowLeft", "‹");
-  key = key.replace("ArrowRight", "›");
-  // replace control keys with symbols
-  key = key.replace("Control", "Ctrl");
-  key = key.replace("Alt", "Alt");
-  key = key.replace("Shift", "Shift");
-  // replace other keys with symbols
-  key = key.replace("Enter", "⏎");
-  key = key.replace("Escape", "Esc");
-  key = key.replace("Backspace", "⌫");
-  key = key.replace("Delete", "⌦");
-  key = key.replace("Tab", "⇥");
-  return key.split(", ");
+  return key.split(", ").map((k) => {
+    // replace control keys with symbols
+    k = k.replace("Control", "Ctrl");
+    // do macos specifics
+    if (navigator?.userAgent.indexOf("Mac OS X") != -1) {
+      k = k.replace("Ctrl", "⌘");
+      k = k.replace("Meta", "⌘");
+      k = k.replace("Shift", "⇧");
+      k = k.replace("Alt", "⌥");
+      k = k.replace("Escape", "esc");
+      k = k.replace("Home", "fn + →");
+    }
+    // replace arrow keys with symbols
+    k = k.replace("ArrowUp", "↑");
+    k = k.replace("ArrowDown", "↓");
+    k = k.replace("ArrowLeft", "←");
+    k = k.replace("ArrowRight", "→");
+    // replace other keys with symbols
+    k = k.replace("Enter", "⏎");
+    k = k.replace("Escape", "Esc");
+    k = k.replace("Backspace", "⌫");
+    k = k.replace("Delete", "⌦");
+    k = k.replace("Tab", "⇥");
+    return k;
+  });
 }
 
 export const useShortcuts = defineStore({

@@ -214,14 +214,17 @@ export default {
         ignore = false;
       if (this.show_shortcuts) ignore = true;
       // Global Keys
-      if (!e.shiftKey && e.key == "Escape" && !e.ctrlKey) {
+      if (!e.shiftKey && e.key == "Escape" && !(e.ctrlKey || e.metaKey)) {
         el = $(".click_escape");
-      } else if (!e.shiftKey && e.key == "Enter" && e.ctrlKey) {
+      } else if (!e.shiftKey && e.key == "Enter" && (e.ctrlKey || e.metaKey)) {
         el = $(".click_ctrlenter");
-      } else if (!e.shiftKey && e.key == "\\" && e.ctrlKey) {
+      } else if (!e.shiftKey && e.key == "\\" && (e.ctrlKey || e.metaKey)) {
         this.store.toggle_theme();
         ignore = true;
-      } else if ((e.key == "/" && e.ctrlKey) || (e.key == "?" && e.ctrlKey)) {
+      } else if (
+        (e.key == "/" && (e.ctrlKey || e.metaKey)) ||
+        (e.key == "?" && (e.ctrlKey || e.metaKey))
+      ) {
         this.show_shortcuts = !this.show_shortcuts;
         ignore = true;
       }

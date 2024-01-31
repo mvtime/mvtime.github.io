@@ -234,8 +234,16 @@ export default {
           description: "Previous month",
         },
         {
+          key: "Shift + ArrowLeft",
+          description: "Previous year",
+        },
+        {
           key: "ArrowRight",
           description: "Next month",
+        },
+        {
+          key: "Shift + ArrowRight",
+          description: "Next year",
         },
         {
           key: "Home",
@@ -269,25 +277,29 @@ export default {
       });
     },
     handle_key(event) {
-      if (event.ctrlKey || this.$route.name != "portal") return;
+      if (event.ctrlKey || event.metaKey || this.$route.name != "portal") return;
       if (!event.shiftKey) {
-        if (event.key == "s") this.swap_to_study();
-        else if (event.key == "f") this.toggle_fullscreen();
-      } else {
-        // use arrow keys for month navigation and home to return to current month, shift as modifier moves in years
-        const shift = event.shiftKey;
-        let action = () => {};
-        if (event.key == "ArrowLeft") {
-          action = this.prev_month;
-        } else if (event.key == "ArrowRight") {
-          action = this.next_month;
-        } else if (event.key == "Home") {
-          this.this_month();
+        if (event.key == "s") {
+          this.swap_to_study();
+          return;
+        } else if (event.key == "f" && !(event.ctrlKey || event.metaKey)) {
+          this.toggle_fullscreen();
           return;
         }
-        for (let i = 0; i < (shift ? 12 : 1); i++) {
-          action();
-        }
+      }
+      // use arrow keys for month navigation and home to return to current month, shift as modifier moves in years
+      const shift = event.shiftKey;
+      let action = () => {};
+      if (event.key == "ArrowLeft") {
+        action = this.prev_month;
+      } else if (event.key == "ArrowRight") {
+        action = this.next_month;
+      } else if (event.key == "Home") {
+        this.this_month();
+        return;
+      }
+      for (let i = 0; i < (shift ? 12 : 1); i++) {
+        action();
       }
     },
     swap_to_study() {

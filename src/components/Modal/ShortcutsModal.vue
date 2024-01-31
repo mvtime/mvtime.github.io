@@ -121,6 +121,10 @@ p.shortcuts_section__title {
   flex-flow: row nowrap;
   gap: 0.25em;
 }
+/* macos style */
+.shortcut__key span {
+  font-family: system-ui;
+}
 .shortcut__description {
   padding-left: 0.5em;
   text-align: left;
