@@ -1,10 +1,19 @@
 <template>
-  <main class="study portal_main_block">
+  <main class="study portal_main_block" :class="{ study_fullpage: fullpage }">
     <!-- use LoadingCover component when waiting for ready -->
     <LoadingCover v-if="!is_ready" class="study_loading" covering="Study Tasks" />
     <div class="study_header portal_main_block_header">
-      <div class="study_name portal_main_block_title">
-        Upcoming<span class="desktop_only_text">&nbsp;Assignments</span>
+      <div class="portal_main_block_header__left">
+        <button
+          class="portal_main_block_action portal_main_block_action_alt fullpage_toggle_button"
+          @click="toggle_fullscreen"
+          title="Toggle fullscreen (f)"
+        >
+          <div class="action_icon expand-icon" :class="{ alt: fullpage }"></div>
+        </button>
+        <div class="study_name portal_main_block_title">
+          Upcoming<span class="desktop_only_text">&nbsp;Assignments</span>
+        </div>
       </div>
       <div class="portal_main_block_actions_wrapper">
         <nav class="portal_main_block_actions portal_main_block_actions_freeform">
@@ -144,10 +153,18 @@ export default {
     useShortcuts().remove_tag("Study Portal");
   },
   computed: {
+    fullpage() {
+      return JSON.parse(this.$route.query.calendar || "false");
+    },
     shortcuts() {
       return [
         {
-          key: "c",
+          key: "f",
+          description: "Toggle fullscreen",
+          top: true,
+        },
+        {
+          key: "` or c",
           description: "Swap to calendar",
           top: true,
         },
@@ -226,9 +243,23 @@ export default {
     },
   },
   methods: {
+    toggle_fullscreen() {
+      // toggle fullpage mode (route.query.calendar)
+      const new_fullpage = !this.fullpage;
+      let query = { ...this.$route.query };
+      if (new_fullpage) query.calendar = true;
+      else delete query.calendar;
+
+      this.$router.push({
+        ...this.$route,
+        query: query,
+      });
+    },
     handle_key(event) {
-      if (event.ctrlKey || event.metaKey || this.$route.name != "study") return;
-      if (event.key == "c") {
+      if (event.ctrlKey || event.metaKey || event.shiftKey || this.$route.name != "study") return;
+      if (event.key == "f") {
+        this.toggle_fullscreen();
+      } else if (event.key == "c" || event.key == "`") {
         this.swap_to_calendar();
       } else {
         let length = this.lengths.find((item) => item[3] == event.key);
@@ -290,6 +321,8 @@ export default {
 </script>
 
 <style scoped>
+/* NON-FULLPAGE */
+
 /* list animations */
 .study-group-move,
 .study_list:not(.study-group-move) .study-list-move {
@@ -593,6 +626,59 @@ export default {
   .study_list {
     flex-basis: 33.33%;
     max-width: calc(50% - 5px);
+  }
+}
+
+/* fullpage */
+.fullpage_toggle_button {
+  display: none;
+  background: transparent;
+  border: solid var(--color-calendar-header) 2px;
+}
+@media (min-width: 630px) {
+  main.study.study_fullpage {
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    top: 0;
+    left: 0;
+    position: fixed;
+    max-width: unset;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    overflow-y: hidden;
+    z-index: 4;
+  }
+  .fullpage_toggle_button {
+    display: flex;
+  }
+  main.study.study_fullpage .study_list_group:not(:empty) {
+    max-height: unset;
+    height: 100%;
+  }
+}
+@media (min-width: 800px) {
+  main.study.study_fullpage .study_list_group:not(:empty) {
+    max-height: 550px;
+    align-content: center;
+  }
+}
+@media (min-width: 800px) and (min-height: 720px) {
+  main.study.study_fullpage .study_list_group:not(:empty) {
+    margin-top: calc(
+      (
+          100vh - (var(--padding-calendar) * 1.5 + var(--size-calendar-header)) -
+            var(--padding-calendar) - 550px
+        ) / 2
+    );
+  }
+}
+</style>
+<style>
+@media (min-width: 630px) {
+  .portal:has(main.study.study_fullpage) .portal_sidebar {
+    z-index: 0;
   }
 }
 </style>

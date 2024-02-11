@@ -23,7 +23,7 @@
               '--color-class': class_obj.color,
               '--color-class-alt': class_obj.color + '2d',
             }"
-            >{{ `P${class_obj.period} - ${class_obj.name}` }}</a
+            >{{ store.class_text(class_obj) }}</a
           >
         </div>
         <div class="inputs_row">

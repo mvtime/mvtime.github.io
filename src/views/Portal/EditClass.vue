@@ -22,7 +22,7 @@
               '--color-class': original.color,
               '--color-class-alt': original.color + '2d',
             }"
-            >{{ `P${original.period} - ${original.name}` }}</a
+            >{{ store.class_text(original) }}</a
           >
         </div>
         <div class="inputs_row">
@@ -77,7 +77,7 @@
       <button
         class="continue_action click_ctrlenter"
         @click="update_class"
-        :disabled="!ready || !changed || !class_obj.name || !class_obj.period"
+        :disabled="!ready || !changed || !class_obj.name"
         :class="{ loading_bg: loading }"
       >
         Save
@@ -189,7 +189,7 @@ export default {
           if (navigator.share) {
             navigator
               .share({
-                title: `P${this.class_obj.period} - ${this.class_obj.name}`,
+                title: this.store.class_text(this.class_obj),
                 text: "Join my class on MVTT!",
                 url: url.href,
               })

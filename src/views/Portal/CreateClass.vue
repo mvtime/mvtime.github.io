@@ -36,11 +36,7 @@
     <div class="bottom_actions">
       <button class="close_action click_escape" @click="$emit('close')">Close</button>
       <div class="flex_spacer"></div>
-      <button
-        class="continue_action"
-        @click="create_class"
-        :disabled="!class_obj.name || !class_obj.period"
-      >
+      <button class="continue_action" @click="create_class" :disabled="!class_obj.name">
         Create Class
       </button>
     </div>

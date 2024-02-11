@@ -26,7 +26,7 @@
             :disabled="class_obj.is_joined"
           >
             <span v-if="class_obj.is_joined">[JOINED]</span>
-            P{{ class_obj.period }} - {{ class_obj.name }}
+            {{ store.class_text(class_obj) }}
           </option>
           <option v-if="teacher_email && !classes" value="" disabled hidden selected>
             {{ loading ? "Loading..." : "No classes found" }}

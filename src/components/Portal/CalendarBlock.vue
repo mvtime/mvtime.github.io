@@ -2,6 +2,7 @@
   <main
     class="calendar portal_main_block"
     @drag="check_leave"
+    @mousewheel="page_flip"
     :class="{ calendar_fullpage: fullpage }"
   >
     <!-- use LoadingCover component when waiting for ready -->
@@ -214,6 +215,10 @@ export default {
   emits: ["taskclick", "mounted"],
   data() {
     return {
+      wheel: {
+        initial: false,
+        timeout: null,
+      },
       loaded_month: new Date(new Date().setDate(1)),
       is_ready: false,
       tasks: [],
@@ -225,7 +230,7 @@ export default {
           description: "Toggle fullscreen",
         },
         {
-          key: "s",
+          key: "` or s",
           description: "Swap to study portal",
           top: true,
         },
@@ -264,6 +269,25 @@ export default {
     useShortcuts().remove_tag("Calendar");
   },
   methods: {
+    page_flip(e) {
+      if (e.button != 0) return;
+      if (!this.wheel.initial) {
+        if (e.deltaX > 0) {
+          this.next_month();
+        } else if (e.deltaX < 0) {
+          this.prev_month();
+        }
+
+        this.wheel.initial = true;
+        this.timeout = setTimeout(() => {
+          this.wheel.initial = false;
+        }, 400);
+      }
+      if (e.deltaX) {
+        e.preventDefault();
+        return false;
+      }
+    },
     toggle_fullscreen() {
       // toggle fullpage mode (route.query.calendar)
       const new_fullpage = !this.fullpage;
@@ -279,7 +303,7 @@ export default {
     handle_key(event) {
       if (event.ctrlKey || event.metaKey || this.$route.name != "portal") return;
       if (!event.shiftKey) {
-        if (event.key == "s") {
+        if (event.key == "s" || event.key == "`") {
           this.swap_to_study();
           return;
         } else if (event.key == "f" && !(event.ctrlKey || event.metaKey)) {
@@ -536,6 +560,11 @@ export default {
   background: transparent;
   border: solid var(--color-calendar-header) 2px;
 }
+
+main.calendar {
+  overscroll-behavior-x: none;
+}
+
 @media (min-width: 630px) {
   main.calendar.calendar_fullpage {
     border: none;

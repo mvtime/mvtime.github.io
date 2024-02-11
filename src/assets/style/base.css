@@ -328,7 +328,7 @@ body:has(#themed_body[_theme="dark"]) {
   /* placeholder */
   --placehold-bg: #121212;
   /*toast*/
-  --toast-bg: #191c1d;
+  --toast-bg: #2b2b2b;
   --toast-bg-transparent: #303030aa;
   --toast-text: #ffffff;
   --toast-border: #242424;

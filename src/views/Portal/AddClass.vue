@@ -39,7 +39,7 @@
             :disabled="class_obj.is_joined && !adding"
           >
             <span v-if="class_obj.is_joined && !adding">[JOINED]</span>
-            P{{ class_obj.period }} - {{ class_obj.name }}
+            {{ store.class_text(class_obj) }}
           </option>
           <option v-if="teacher_email && !classes" value="" disabled hidden selected>
             {{ loading ? "Loading..." : "No classes found" }}
@@ -77,7 +77,7 @@
             '--color-class': class_obj.color,
             '--color-class-alt': class_obj.color + '2d',
           }"
-          >{{ `P${class_obj.period} - ${class_obj.name}` }}</a
+          >{{ store.class_text(class_obj) }}</a
         >
       </div>
       <div v-if="class_obj" class="overlay_contents_text">

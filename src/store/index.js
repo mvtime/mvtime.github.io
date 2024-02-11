@@ -481,6 +481,17 @@ export const useMainStore = defineStore({
   /** The actions to manipulate the store state */
   actions: {
     /**
+     * @function class_text
+     * @description get the smart text associated with a given class
+     * @param {String} class_obj
+     * @returns {String} text - the formatted name text associated with the class data
+     */
+    class_text(class_obj) {
+      if (!class_obj) return;
+      if (class_obj.period) return `P${class_obj.period} - ${class_obj.name}`;
+      return class_obj.name;
+    },
+    /**
      * @function set_account_pref
      * @description Set a preference in the account doc
      * @param {String} pref The preference to set
@@ -818,7 +829,7 @@ export const useMainStore = defineStore({
             class_tasks[j].color = classes[i].color;
             tasks.push({
               ...class_tasks[j],
-              class_name: `P${classes[i].period} - ${classes[i].name}`,
+              class_name: this.class_text(classes[i]),
             });
           }
         }
@@ -1634,6 +1645,9 @@ export const useMainStore = defineStore({
         if (a.period == b.period) {
           return a.name.localeCompare(b.name);
         }
+        // prefer classes that have periods over those that don't
+        if (!a.period && a.period !== 0) return 1;
+        if (!b.period && b.period !== 0) return -1;
         return a.period - b.period;
       });
       this.classes = classes;
@@ -1709,7 +1723,13 @@ export const useMainStore = defineStore({
       }
       await this.update_remote();
       await this.fetch_classes();
-      new SuccessToast(`Added "P${class_period} - ${class_name}" to your classes`, 2000);
+      new SuccessToast(
+        `Added "${this.class_text({
+          name: class_name,
+          period: class_period,
+        })}" to your classes`,
+        2000
+      );
       // return new success promise
       return Promise.resolve();
     },
@@ -1727,7 +1747,7 @@ export const useMainStore = defineStore({
         new WarningToast("You need to be a teacher to create a class", 2000);
         return;
       }
-      if (!class_obj.name || !class_obj.period) return; // handled in disabled attr of button, failsafe for db
+      if (!class_obj.name) return; // handled in disabled attr of button, failsafe for db
       try {
         // check if there is a teacher doc and collection
         if (!this.teacher.doc_ref || !this.teacher.collection_ref) {
@@ -1740,7 +1760,7 @@ export const useMainStore = defineStore({
         // create class doc under teacher.collection_ref
         let class_doc_ref = await addDoc(this.teacher.collection_ref, class_obj);
         // add class to user doc;
-        new SuccessToast(`Created class "${class_obj.name}"`, 2000);
+        new SuccessToast(`Created class "${this.class_text(class_obj)}"`, 2000);
         _status.log("🏫 class_doc_ref", class_doc_ref);
         await this.add_class(
           this.active_doc.email || this.user.email,
@@ -1955,7 +1975,7 @@ export const useMainStore = defineStore({
           ...task_data,
           ref: ref,
           class_id: [_email, _id].join("/"),
-          class_name: `P${class_data.period} - ${class_data.name}`,
+          class_name: this.class_text(class_data),
           _class: { ...class_data, ref: [_email.split(this.ORG_DOMAIN)[0], _id].join("~") },
         };
         return Promise.resolve(task_data);
@@ -2025,7 +2045,7 @@ export const useMainStore = defineStore({
             date: compatDateObj(task.date),
             color: class_doc.color,
             class_id: [_email, _id].join("/"),
-            class_name: `P${class_doc.period} - ${class_doc.name}`,
+            class_name: this.class_text(class_doc),
           });
         });
         _status.log("📚 Got upcoming tasks");

@@ -16,7 +16,8 @@ function clean_key(key) {
       k = k.replace("Shift", "⇧");
       k = k.replace("Alt", "⌥");
       k = k.replace("Escape", "esc");
-      k = k.replace("Home", "fn + →");
+      k = k.replace("Home", "fn + ←");
+      k = k.replace("End", "fn + →");
     }
     // replace arrow keys with symbols
     k = k.replace("ArrowUp", "↑");

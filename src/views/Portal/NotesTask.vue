@@ -24,7 +24,7 @@
               '--color-class': task._class.color,
               '--color-class-alt': task._class.color + '2d',
             }"
-            >{{ `P${task._class.period} - ${task._class.name}` }}</a
+            >{{ store.class_text(class_obj) }}</a
           >
         </div>
         <div class="inputs_row">
