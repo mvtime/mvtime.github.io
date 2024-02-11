@@ -95,16 +95,31 @@ export default {
     },
     keydown(e) {
       const key = e.key.toLowerCase();
-      if (!["study", "portal"].includes(this.$route.name)) {
-        return;
-      } else if (key === "+" || key === "=") {
+      // handle plus/equal case
+      if (key === "+" || key === "=") {
         if (key === "+") {
           this.plusDown = true;
         } else if (key === "=") {
           this.equalDown = true;
         }
-        e.preventDefault();
-        e.stopPropagation();
+      }
+
+      // change existing type while in creation window
+      if (this.$route.name == "newtask" && (this.plusDown || this.equalDown)) {
+        const task_type = this.task_types.find((t) => t[2].includes(key));
+        if (task_type) {
+          this.$router.push({
+            name: "newtask",
+            params: { tasktype: task_type[0] },
+            query: this.$route.query,
+          });
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }
+      // create new from portal or study pages
+      else if (!["study", "portal"].includes(this.$route.name)) {
+        return;
       } else if (
         (this.plusDown || this.equalDown) &&
         this.has_classes &&

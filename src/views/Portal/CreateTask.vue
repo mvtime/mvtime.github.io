@@ -381,6 +381,9 @@ export default {
     },
   },
   watch: {
+    "$route.params.tasktype"(new_type) {
+      this.task.type = new_type;
+    },
     "task.type"(new_type, old_type) {
       // update paramater in url
       this.$router.replace({
