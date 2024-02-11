@@ -109,7 +109,7 @@ export default {
       return !this.changed;
     },
     type_full() {
-      return useMagic()?.types[this.task.type] || this.task.type || "Task";
+      return useMagic()?.type_full(this.task.type) || "Task";
     },
     store() {
       return useMainStore();

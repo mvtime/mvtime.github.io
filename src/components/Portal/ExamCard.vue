@@ -34,7 +34,7 @@ export default {
   },
   computed: {
     type_full() {
-      return useMagic().types[this.task.type];
+      return useMagic().type_full(this.task.type);
     },
   },
 };

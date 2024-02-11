@@ -15,11 +15,11 @@
           >
             <option
               class="type_dropdown__option styled_select__option"
-              v-for="pair in Object.entries(magic.types)"
-              :value="pair[0]"
-              :key="pair[0]"
+              v-for="entry in magic.types"
+              :value="entry.key"
+              :key="entry.key"
             >
-              {{ pair[1] }}
+              {{ entry.name }}
             </option>
           </select>
           <div
@@ -186,7 +186,7 @@ export default {
     } else {
       this.$refs.date.focus();
     }
-    
+
     // remove the class and date from the query
     this.$router.replace({
       ...this.$route,
@@ -223,7 +223,7 @@ export default {
       );
     },
     type_full() {
-      return this.get_type(this.task.type);
+      return this.magic.type_full(this.task.type);
     },
     newlink_not_ready() {
       // check if path and text, and also that path is a valid url
@@ -274,9 +274,6 @@ export default {
       } else {
         new WarningToast("Please fill out all required fields", 1000);
       }
-    },
-    get_type(type = this.task.type) {
-      return this.magic.types[type] || type;
     },
     is_vowel(char) {
       return ["a", "e", "i", "o", "u"].includes(char.toLowerCase());
@@ -385,6 +382,11 @@ export default {
   },
   watch: {
     "task.type"(new_type, old_type) {
+      // update paramater in url
+      this.$router.replace({
+        ...this.$route,
+        params: { ...this.$route.params, tasktype: new_type },
+      });
       // if task -> note, clear name and move to description if empty {
       if (new_type == "note") {
         this.task.description = this.task.description || this.task.name;

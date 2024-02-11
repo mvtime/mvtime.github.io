@@ -2,15 +2,19 @@
   <div class="teacher_actions">
     <div
       :disabled="!has_classes"
-      :title="has_classes ? `${task_type[1]} (${task_type[2]})` : 'Please create a class first'"
-      v-for="task_type of task_types"
-      :key="task_type[0]"
+      :title="
+        has_classes
+          ? `${task_type.list_as} (${task_type.shortcuts.map((s) => '+ and ' + s).join(', ')})`
+          : 'Please create a class first'
+      "
+      v-for="task_type of selected_types"
+      :key="task_type.key"
       class="teacher_action"
       @click="
         if (has_classes) {
           $router.push({
             name: 'newtask',
-            params: { tasktype: task_type[0] },
+            params: { tasktype: task_type.key },
             query: this.$route.query,
           });
         } else {
@@ -20,8 +24,7 @@
     >
       <div class="teacher_action__icon icon__add"></div>
       <div class="teacher_action__text">
-        <!-- Schedule a  -->
-        {{ task_type[1] }}
+        {{ task_type.list_as }}
       </div>
     </div>
 
@@ -34,36 +37,47 @@
 
 <script>
 import { useMainStore } from "@/store";
+import { useMagic } from "@/store/magic";
 import { WarningToast } from "@svonk/util";
 import { useShortcuts } from "@/store/shortcuts";
 export default {
   data() {
     return {
-      task_types: [
-        ["note", "Add a Note", "n"],
-        ["task", "Schedule a Task or Test", "t"],
-      ],
-      shortcuts: [
-        {
-          key: "n",
-          description: "Add a Note",
-        },
-        {
-          key: "t",
-          description: "Schedule a Task or Test",
-        },
-      ],
+      plusDown: false,
+      equalDown: false,
     };
   },
   mounted() {
     window.addEventListener("keydown", this.keydown);
+    window.addEventListener("keyup", this.keyup);
     useShortcuts().register_all(this.shortcuts, "Teacher");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.keydown);
+    window.removeEventListener("keyup", this.keyup);
     useShortcuts().remove_tag("Teacher");
   },
   computed: {
+    selected_types() {
+      // only the first 2 types of magic.types
+      return this.magic.types.slice(0, 2);
+    },
+    task_types() {
+      return this.magic.types.map((t) => [t.key, t.list_as, t.shortcuts]);
+    },
+    shortcuts() {
+      return this.task_types.map((t) => ({
+        key: t[2]
+          .map((t) => {
+            return "+ and " + t;
+          })
+          .join(", "),
+        description: t[1],
+      }));
+    },
+    magic() {
+      return useMagic();
+    },
     store() {
       return useMainStore();
     },
@@ -72,13 +86,31 @@ export default {
     },
   },
   methods: {
+    keyup(e) {
+      if (e.key === "+") {
+        this.plusDown = false;
+      } else if (e.key === "=") {
+        this.equalDown = false;
+      }
+    },
     keydown(e) {
-      if (
-        ["study", "portal"].includes(this.$route.name) &&
-        this.task_types.map((t) => t[2]).includes(e.key) &&
-        this.has_classes
+      const key = e.key.toLowerCase();
+      if (!["study", "portal"].includes(this.$route.name)) {
+        return;
+      } else if (key === "+" || key === "=") {
+        if (key === "+") {
+          this.plusDown = true;
+        } else if (key === "=") {
+          this.equalDown = true;
+        }
+        e.preventDefault();
+        e.stopPropagation();
+      } else if (
+        (this.plusDown || this.equalDown) &&
+        this.has_classes &&
+        this.task_types.some((t) => t[2].includes(key))
       ) {
-        const task_type = this.task_types.find((t) => t[2] == e.key);
+        const task_type = this.task_types.find((t) => t[2].includes(key));
         this.$router.push({
           name: "newtask",
           params: { tasktype: task_type[0] },

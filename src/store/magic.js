@@ -10,20 +10,56 @@ export const useMagic = defineStore({
   id: "magic",
   state: () => ({
     last: {},
-    types: {
-      note: "Note",
-      task: "Assignment",
+    types: [
+      { key: "note", name: "Note", list_as: "Add a Note", shortcuts: ["n"] },
+      {
+        key: "task",
+        name: "Assignment",
+        list_as: "Schedule an Assignment",
+        shortcuts: ["a"],
+      },
       // socratic: "Socratic Seminar",
-      test: "Test",
+      {
+        key: "test",
+        name: "Test",
+        list_as: "Schedule a Test",
+        shortcuts: ["t"],
+      },
+
       // summative: "Summative Assignment",
       // midterm: "Midterm",
-      project: "Project",
-      quiz: "Quiz",
-      exam: "Exam",
-    },
+      {
+        key: "project",
+        name: "Project",
+        list_as: "Schedule a Project",
+        shortcuts: ["p"],
+      },
+      {
+        key: "quiz",
+        name: "Quiz",
+        list_as: "Schedule a Quiz",
+        shortcuts: ["q"],
+      },
+      {
+        key: "exam",
+        name: "Exam",
+        list_as: "Schedule an Exam",
+        shortcuts: ["e"],
+      },
+    ],
   }),
   getters: {},
   actions: {
+    /**
+     * @function type_full
+     * @description get the full type name from the short type
+     * @param {String} short_type - the short type of the task
+     * @returns {String} text - the full type name
+     * @see types
+     */
+    type_full(short_type) {
+      return this.types.find((t) => t.key === short_type)?.name || short_type;
+    },
     /**
      * @function path
      * @description get the smart text associated with a given url

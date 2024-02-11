@@ -181,7 +181,7 @@ export default {
       );
     },
     type_full() {
-      return this.magic?.types[this.task.type] || this.task.type || "Task";
+      return this.magic?.type_full(this.task.type) || "Task";
     },
     newlink_not_ready() {
       // check if path and text, and also that path is a valid url
