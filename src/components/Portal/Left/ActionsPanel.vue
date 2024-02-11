@@ -32,6 +32,23 @@
       <div class="teacher_action__icon icon__create"></div>
       <div class="teacher_action__text">Create a Class</div>
     </div>
+    <div
+      class="action_add_shortcut_hint toast default noremove"
+      v-if="equalDown || plusDown || toastOut"
+      :class="{ out: toastOut }"
+    >
+      <img alt="icon" src="@/assets/img/general/toast-keyboard.svg" class="toast-icon" />
+      Waiting for rest of shortcut (&VeryThinSpace;<span
+        v-for="type of magic.types"
+        :key="type.key"
+      >
+        <span style="text-decoration: underline">{{ type.shortcuts[0].toLowerCase() }}</span>
+        <span> {{ type.name.slice(1) }} </span>
+        <span v-if="magic.types.indexOf(type) !== magic.types.length - 1"
+          >,&MediumSpace;</span
+        > </span
+      >&VeryThinSpace;)
+    </div>
   </div>
 </template>
 
@@ -45,6 +62,8 @@ export default {
     return {
       plusDown: false,
       equalDown: false,
+      toastOut: false,
+      toastTimeout: null,
     };
   },
   mounted() {
@@ -91,6 +110,15 @@ export default {
         this.plusDown = false;
       } else if (e.key === "=") {
         this.equalDown = false;
+      } else {
+        return;
+      }
+      if (!this.plusDown && !this.equalDown) {
+        window.clearTimeout(this.toastTimeout);
+        this.toastOut = true;
+        this.toastTimeout = window.setTimeout(() => {
+          this.toastOut = false;
+        }, 500);
       }
     },
     keydown(e) {
@@ -143,6 +171,9 @@ export default {
 </script>
 
 <style>
+.action_add_shortcut_hint.out {
+  animation: slideOut 0.5s forwards;
+}
 .teacher_actions {
   display: flex;
   flex-flow: column nowrap;
