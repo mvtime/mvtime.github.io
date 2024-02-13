@@ -271,7 +271,7 @@ export default {
   methods: {
     page_flip(e) {
       if (e.button != 0) return;
-      if (Math.abs(e.deltaX) < Math.abs(e.deltaY)) return;
+      if (Math.abs(e.deltaX) < Math.max(Math.abs(e.deltaY), 10)) return;
       if (!this.wheel.initial) {
         if (e.deltaX > 0) {
           this.next_month();
