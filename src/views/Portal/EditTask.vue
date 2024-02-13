@@ -67,7 +67,15 @@
               </div>
             </div>
             <hr class="styled_links_separator" />
-            <div class="styled_links_add">
+            <div
+              class="styled_links_add"
+              @keydown="
+                if ($event.key === 'Enter') {
+                  $event.preventDefault();
+                  add_newlink();
+                }
+              "
+            >
               <input
                 class="styled_links_add__path"
                 type="url"

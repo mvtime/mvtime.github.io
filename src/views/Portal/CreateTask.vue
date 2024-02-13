@@ -80,7 +80,15 @@
             </div>
           </div>
           <hr class="styled_links_separator" />
-          <div class="styled_links_add">
+          <div
+            class="styled_links_add"
+            @keydown="
+              if ($event.key === 'Enter') {
+                $event.preventDefault();
+                add_newlink();
+              }
+            "
+          >
             <input
               class="styled_links_add__path"
               type="url"
@@ -126,14 +134,14 @@
           <input type="checkbox" :id="class_obj.id" :value="class_obj.id" v-model="task_classes" />
           <label
             class="button_pointer_text class_name"
-            v-if="class_obj.period"
+            v-if="class_obj.id"
             :for="class_obj.id"
             :style="{
               '--color-class': class_obj.color,
               '--color-class-alt': class_obj.color + '2d',
             }"
           >
-            P{{ class_obj.period }} - {{ class_obj.name }}
+            {{ store.class_text(class_obj) }}
           </label>
           <label v-else :for="class_obj.id" @click="$event.stopPropagation">{{
             class_obj.name
