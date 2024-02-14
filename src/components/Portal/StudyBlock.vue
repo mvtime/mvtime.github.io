@@ -279,7 +279,7 @@ export default {
       this.is_ready = true;
     },
     is_finished(ref) {
-      return this.store.finished_tasks.includes(ref);
+      return this.store.finished_tasks?.includes(ref);
     },
     toggle_finished(ref) {
       this.store

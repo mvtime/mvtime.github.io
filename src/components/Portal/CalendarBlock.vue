@@ -138,6 +138,7 @@
               :class="{
                 calendar_day_task__dragging: drag.task == task,
                 calendar_day_task__loading: drag.task == task && drag.load,
+                calendar_day_task__finished: is_completed(task),
               }"
               v-for="task of day.tasks"
               :is_note="task.type === 'note'"
@@ -422,6 +423,9 @@ export default {
         day1.getFullYear() === day2.getFullYear()
       );
     },
+    is_completed(task) {
+      return this.store.finished_tasks?.includes(task.ref);
+    },
     get_day_tasks(day) {
       return this.tasks
         .filter((task) => {
@@ -432,7 +436,15 @@ export default {
           );
         })
         .sort((a, b) => {
+          // prefer notes nomatter what
           if (a.type == "note" && b.type != "note") return -1;
+          // check completion status by this.is_completed()
+          if (this.is_completed(a) && !this.is_completed(b)) return 1;
+          if (!this.is_completed(a) && this.is_completed(b)) return -1;
+          // prefer those with periods and rank in order of period
+          if (a.period && !b.period) return -1;
+          if (!a.period && b.period) return 1;
+          if (a.period && b.period) return a.period - b.period;
         });
     },
     next_month() {
@@ -888,6 +900,17 @@ main.calendar {
 .calendar_day_task.calendar_day_task__dragging:not(.calendar_day_task__loading) {
   opacity: 0.001;
 }
+.calendar_day_task__finished {
+  text-decoration: line-through;
+  color: var(--color-calendar-task);
+  background: none;
+  transition: opacity 0.1s ease-out;
+  opacity: 0.5;
+}
+.calendar_day_task__finished:hover {
+  opacity: 1;
+}
+
 .task_icon {
   width: 100%;
   height: 100%;
@@ -904,7 +927,10 @@ main.calendar {
   background-image: url(@/assets/img/general/portal/edit.png);
   background-image: url(@/assets/img/general/portal/edit.svg);
 }
-.calendar_day_task[is_note="false"]:not(.calendar_day__weekday_label)::after {
+.calendar_day_task[is_note="false"]:not(
+    .calendar_day__weekday_label,
+    .calendar_day_task__finished
+  )::after {
   content: "";
   display: block;
   width: calc(var(--padding-calendar-task) + 2px);
