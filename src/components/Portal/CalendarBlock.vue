@@ -906,11 +906,15 @@ main.calendar {
   background: none;
   transition: opacity 0.1s ease-out;
   opacity: 0.5;
+  border: solid 2px var(--color-calendar-task);
 }
 .calendar_day_task__finished:hover {
   opacity: 1;
 }
-
+.calendar_day_task__loading.calendar_day_task__finished,
+.calendar_day_task__finished:has(.calendar_day_task_editable):hover {
+  border: none;
+}
 .task_icon {
   width: 100%;
   height: 100%;

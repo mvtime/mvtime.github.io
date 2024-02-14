@@ -88,7 +88,7 @@ export default {
       return this.task_types.map((t) => ({
         key: t[2]
           .map((t) => {
-            return "+ and " + t;
+            return "= + " + t;
           })
           .join(", "),
         description: t[1],
