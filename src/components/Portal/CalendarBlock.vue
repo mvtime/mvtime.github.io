@@ -900,7 +900,7 @@ main.calendar {
 .calendar_day_task.calendar_day_task__dragging:not(.calendar_day_task__loading) {
   opacity: 0.001;
 }
-.calendar_day_task__finished {
+.calendar_day_task.calendar_day_task__finished {
   text-decoration: line-through;
   color: var(--color-calendar-task);
   background: none;
@@ -908,7 +908,10 @@ main.calendar {
   opacity: 0.5;
   border: solid 2px var(--color-calendar-task);
 }
-.calendar_day_task__finished:hover {
+main .calendar_day_task__finished:hover:not(:active) {
+  transform: none;
+}
+.calendar_day_task.calendar_day_task__finished:hover {
   opacity: 1;
 }
 .calendar_day_task__loading.calendar_day_task__finished,
