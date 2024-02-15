@@ -30,7 +30,9 @@
             You can hide this message using the toggle in your account preferences.
           </div>
           <br />
-          <div class="overlay_contents_text">Please click anywhere to resume using MVTT.</div>
+          <div class="overlay_contents_text">
+            Please click anywhere to resume using {{ $env.VUE_APP_BRAND_SHORT_NAME }}.
+          </div>
         </div>
       </main>
     </OverlayWrapper>
@@ -186,7 +188,11 @@ export default {
         }
         // check that it's an outlink
         let url = new URL(e.target.href);
-        if (url?.hostname == "mvtt.app" || url?.hostname == window?.location?.hostname) return;
+        if (
+          url?.hostname == this.$env.VUE_APP_BRAND_DOMAIN ||
+          url?.hostname == window?.location?.hostname
+        )
+          return;
 
         // if outlink, open in new tab as "/to/{encoded href}"
         e.preventDefault();

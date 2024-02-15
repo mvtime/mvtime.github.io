@@ -8,6 +8,15 @@ import { _status } from "@/common";
 // create instances of app requisites
 const pinia = createPinia();
 const app = createApp(App);
+// setup env vars
+app.mixin({
+  computed: {
+    $env() {
+      return process.env;
+    },
+  },
+});
+
 // setup app requisites
 app.use(router);
 app.use(pinia);
@@ -32,13 +41,16 @@ app.mount("#app");
 watch(
   pinia.state,
   (state) => {
-    window.localStorage.setItem("MVTT_app_state", JSON.stringify(state.main));
+    window.localStorage.setItem(
+      `${process.env.VUE_APP_BRAND_SHORT_NAME}_app_state`,
+      JSON.stringify(state.main)
+    );
   },
   { deep: true }
 );
-// when window.localStorage.MVTT_teacher_mode changes, reload
+// when window.localStorage. _teacher_mode changes, reload
 window.addEventListener("storage", (e) => {
-  if (e.key === "MVTT_teacher_mode") {
+  if (e.key === `${process.env.VUE_APP_BRAND_SHORT_NAME}_teacher_mode`) {
     _status.log("🏫 Detected teacher mode change, reloading");
     window.location.reload();
   }

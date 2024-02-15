@@ -1,7 +1,7 @@
 <template>
   <Modal
     :can_continue="true"
-    :title="'Leaving MVTT'"
+    :title="'Leaving ' + $env.VUE_APP_BRAND_SHORT_NAME"
     :html="contents"
     :continue_action="open"
     :skippable="true"
@@ -41,12 +41,12 @@ export default {
     }
     try {
       const url = new URL(this.path);
-      if ("mvtt.app" == url.host) {
-        new SuccessToast("Redirecting to MVTT");
+      if (this.$env.VUE_APP_BRAND_DOMAIN == url.host) {
+        new SuccessToast(`Redirecting to ${this.$env.VUE_APP_BRAND_SHORT_NAME}`);
         this.open();
       }
     } catch {
-      _status.log("Couldn not verify path domain is not MVTT");
+      _status.log(`Couldn not verify path domain is not ${this.$env.VUE_APP_BRAND_SHORT_NAME}`);
     }
   },
   computed: {
@@ -54,7 +54,9 @@ export default {
       return this.path
         ? `You are being redirected to <a href="${this.path}">${new URL(this.path).host}</a>
             <br><br>
-           Content outside of MVTT is not vetted by our team, and may be harmful.`
+           Content outside of ${
+             this.$env.VUE_APP_BRAND_SHORT_NAME
+           } is not vetted by our team, and may be harmful.`
         : "Missing redirect path";
     },
   },

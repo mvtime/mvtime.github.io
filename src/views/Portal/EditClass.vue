@@ -185,12 +185,12 @@ export default {
       this.store
         .code_from_ref(this.ref)
         .then((code) => {
-          let url = new URL("https://add.mvtt.app/" + code);
+          let url = new URL(`https://add.${this.$env.VUE_APP_BRAND_DOMAIN}/` + code);
           if (navigator.share) {
             navigator
               .share({
                 title: this.store.class_text(this.class_obj),
-                text: "Join my class on MVTT!",
+                text: `Join my class on ${this.$env.VUE_APP_BRAND_SHORT_NAME}!`,
                 url: url.href,
               })
               .then(() => new SuccessToast("Opened share dialog", 1000))

@@ -8,13 +8,13 @@ import { getAnalytics } from "firebase/analytics";
 
 // firebase config
 const firebaseConfig = {
-  apiKey: "AIzaSyDGqqhApln4pxm4EynPCSkfwyK8aopjfCk",
-  authDomain: "auth.mvtt.app",
-  projectId: "mvtrack",
-  storageBucket: "mvtrack.appspot.com",
-  messagingSenderId: "1070634963357",
-  appId: "1:1070634963357:web:2a4abc725fff24a5199f74",
-  measurementId: "G-6LNX1KCR8E",
+  apiKey: process.env.FIREBASE_apiKey,
+  authDomain: process.env.FIREBASE_authDomain,
+  projectId: process.env.FIREBASE_projectId,
+  storageBucket: process.env.FIREBASE_storageBucket,
+  messagingSenderId: process.env.FIREBASE_messagingSenderId,
+  appId: process.env.FIREBASE_appId,
+  measurementId: process.env.FIREBASE_measurementId,
 };
 
 // initialize firebases

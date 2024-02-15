@@ -45,7 +45,7 @@
           <div class="portal_info_welcome">
             {{
               store.recently_joined
-                ? "Welcome to MVTT"
+                ? `Welcome to ${this.$env.VUE_APP_BRAND_SHORT_NAME}`
                 : store.non_recent_signin
                 ? "Welcome Back"
                 : random_welcome
@@ -209,7 +209,10 @@ export default {
           redirect: this.$route.fullPath,
         },
       });
-      new WarningToast("Please complete the daily survey to use MVTT today!", 3000);
+      new WarningToast(
+        `Please complete the daily survey to use ${this.$env.VUE_APP_BRAND_SHORT_NAME} today!`,
+        3000
+      );
     },
     /** Close / minimize the left sidebar on small screens */
     close_left_bar() {
@@ -253,7 +256,10 @@ export default {
             redirect: this.$route.fullPath,
           },
         });
-        new WarningToast("Please fill out the join form to use MVTT!", 3000);
+        new WarningToast(
+          `Please fill out the join form to use ${this.$env.VUE_APP_BRAND_SHORT_NAME}!`,
+          3000
+        );
       }
     },
   },

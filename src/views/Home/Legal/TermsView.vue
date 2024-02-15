@@ -1,17 +1,22 @@
 <template>
   <div>
-    <h1>Terms and Conditions for <b>MV Test Tracker</b></h1>
+    <h1>
+      Terms and Conditions for <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}</b>
+    </h1>
 
-    <p>Welcome to <b>MV Test Tracker!</b></p>
+    <p>
+      Welcome to <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}!</b>
+    </p>
     <p>
       These terms and conditions outline the rules and regulations for the use of
-      <b>MV Test Tracker.</b>, Website, located at <b>mvtt.app</b>
+      <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}.</b>, Website, located at
+      <b>{{ $env.VUE_APP_BRAND_DOMAIN }}</b>
     </p>
 
     <p>
       By accessing this website we assume you accept these terms and conditions. Do not continue to
-      use <b>MV Test Tracker</b> if you do not agree to take all of the terms and conditions stated
-      on this page.
+      use <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}</b> if you do not agree to take all of the terms and
+      conditions stated on this page.
     </p>
 
     <p>
@@ -31,8 +36,9 @@
     <h2>Cookies</h2>
 
     <p>
-      We employ the use of cookies. By accessing <b>MV Test Tracker,</b> you agreed to use cookies
-      in agreement with the <b>MV Test Tracker's</b> Privacy Policy.
+      We employ the use of cookies. By accessing
+      <b>{{ $env.VUE_APP_BRAND_LONG_NAME }},</b> you agreed to use cookies in agreement with the
+      <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}'s</b> Privacy Policy.
     </p>
     <p>
       Most interactive websites use cookies to let us retrieve the user's details for each visit.
@@ -44,36 +50,46 @@
     <h2>License</h2>
 
     <p>
-      Unless otherwise stated, <b>MV Test Tracker</b> and/or its licensors own the intellectual
-      property rights for all material on <b>MV Test Tracker.</b> All intellectual property rights
-      are reserved. You may access this from <b>MV Test Tracker</b> for your own personal use
+      Unless otherwise stated, <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}</b> and/or its licensors own
+      the intellectual property rights for all material on
+      <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}.</b> All intellectual property rights are reserved. You
+      may access this from <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}</b> for your own personal use
       subjected to restrictions set in these terms and conditions.
     </p>
     <p>You must not:</p>
     <ul>
-      <li>Republish material from <b>MV Test Tracker</b></li>
-      <li>Sell, rent or sub-license material from <b>MV Test Tracker</b></li>
-      <li>Reproduce, duplicate or copy material from <b>MV Test Tracker</b></li>
-      <li>Redistribute content from <b>MV Test Tracker</b></li>
+      <li>
+        Republish material from <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}</b>
+      </li>
+      <li>
+        Sell, rent or sub-license material from <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}</b>
+      </li>
+      <li>
+        Reproduce, duplicate or copy material from <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}</b>
+      </li>
+      <li>
+        Redistribute content from <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}</b>
+      </li>
     </ul>
 
     <p>This Agreement shall begin on the date hereof.</p>
 
     <p>
       Parts of this website offer an opportunity for users to post and exchange opinions and
-      information in certain areas of the website. <b>MV Test Tracker's</b> does not filter, edit,
-      publish or review Comments prior to their presence on the website. Comments do not reflect the
-      views and opinions of <b>MV Test Tracker's</b> its agents and/or affiliates. Comments reflect
-      the views and opinions of the person who post their views and opinions. To the extent
-      permitted by applicable laws, <b>MV Test Tracker's</b> shall not be liable for the Comments or
-      for any liability, damages or expenses caused and/or suffered as a result of any use of and/or
-      posting of and/or appearance of the Comments on this website.
+      information in certain areas of the website.
+      <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}'s</b> does not filter, edit, publish or review Comments
+      prior to their presence on the website. Comments do not reflect the views and opinions of
+      <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}'s</b> its agents and/or affiliates. Comments reflect the
+      views and opinions of the person who post their views and opinions. To the extent permitted by
+      applicable laws, <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}'s</b> shall not be liable for the
+      Comments or for any liability, damages or expenses caused and/or suffered as a result of any
+      use of and/or posting of and/or appearance of the Comments on this website.
     </p>
 
     <p>
-      <b>MV Test Tracker's</b> reserves the right to monitor all Comments and to remove any Comments
-      which can be considered inappropriate, offensive or causes breach of these Terms and
-      Conditions.
+      <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}'s</b> reserves the right to monitor all Comments and to
+      remove any Comments which can be considered inappropriate, offensive or causes breach of these
+      Terms and Conditions.
     </p>
 
     <p>You warrant and represent that:</p>
@@ -150,8 +166,9 @@
       We will approve link requests from these organizations if we decide that: (a) the link would
       not make us look unfavorably to ourselves or to our accredited businesses; (b) the
       organization does not have any negative records with us; (c) the benefit to us from the
-      visibility of the hyperlink compensates the absence of <b>MV Test Tracker</b>; and (d) the
-      link is in the context of general resource information.
+      visibility of the hyperlink compensates the absence of
+      <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}</b
+      >; and (d) the link is in the context of general resource information.
     </p>
     <p>
       These organizations may link to our home page so long as the link: (a) is not in any way
@@ -161,10 +178,11 @@
     </p>
     <p>
       If you are one of the organizations listed in paragraph 2 above and are interested in linking
-      to our website, you must inform us by sending an e-mail to <b>MV Test Tracker</b>. Please
-      include your name, your organization name, contact information as well as the URL of your
-      site, a list of any URLs from which you intend to link to our Website, and a list of the URLs
-      on our site to which you would like to link. Wait 2-3 weeks for a response.
+      to our website, you must inform us by sending an e-mail to
+      <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}</b
+      >. Please include your name, your organization name, contact information as well as the URL of
+      your site, a list of any URLs from which you intend to link to our Website, and a list of the
+      URLs on our site to which you would like to link. Wait 2-3 weeks for a response.
     </p>
 
     <p>Approved organizations may hyperlink to our Website as follows:</p>
@@ -179,8 +197,8 @@
     </ul>
 
     <p>
-      No use of <b>MV Test Tracker's</b> logo or other artwork will be allowed for linking absent a
-      trademark license agreement.
+      No use of <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}'s</b> logo or other artwork will be allowed
+      for linking absent a trademark license agreement.
     </p>
 
     <h2>iFrames</h2>

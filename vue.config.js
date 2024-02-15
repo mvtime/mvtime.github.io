@@ -1,7 +1,10 @@
 const { defineConfig } = require("@vue/cli-service");
+const Dotenv = require("dotenv-webpack");
 const path = require("path");
+
 module.exports = defineConfig({
   configureWebpack: {
+    plugins: [new Dotenv()],
     module: {
       rules: [
         // Add markdown-loader for files ending with '.md' in the assets folder
@@ -23,9 +26,9 @@ module.exports = defineConfig({
   pluginOptions: {
     electronBuilder: {
       builderOptions: {
-        appId: "app.mvtt",
-        productName: "MV Test Tracker",
-        copyright: "© 2022-2023 MV Test Tracker",
+        appId: process.env.VUE_APP_BRAND_DOMAIN.split(".").reverse().join("."),
+        productName: process.env.VUE_APP_BRAND_LONG_NAME,
+        copyright: `© 2022-2023 ${process.env.VUE_APP_BRAND_LONG_NAME}`,
         win: {
           icon: "public/img/icons/app.ico",
           target: "nsis",
@@ -38,12 +41,12 @@ module.exports = defineConfig({
           icon: "public/img/icons/app.png",
           target: "AppImage",
         },
-        artifactName: "MVTT-setup.${ext}",
+        artifactName: process.env.VUE_APP_BRAND_SHORT_NAME + "-setup.${ext}",
         protocols: [
           {
-            name: "MVTT App",
+            name: `${process.env.VUE_APP_BRAND_SHORT_NAME} App`,
             role: "Viewer",
-            schemes: ["app", "mvtt"],
+            schemes: ["app", process.env.VUE_APP_BRAND_SHORT_NAME.toLowerCase()],
           },
         ],
       },
@@ -61,11 +64,10 @@ module.exports = defineConfig({
     appleMobileWebAppStatusBarStyle: "black-translucent",
     display: "standalone",
     manifestOptions: {
-      name: "MV Test Tracker",
-      short_name: "MVTT",
+      name: process.env.VUE_APP_BRAND_LONG_NAME,
+      short_name: process.env.VUE_APP_BRAND_SHORT_NAME,
       theme_color: "#f5c14b",
-      description:
-        "MV Test tracker provides A more effective way to manage your upcoming tests and exams.",
+      description: `${process.env.VUE_APP_BRAND_LONG_NAME} provides A more effective way to manage your upcoming tests and exams.`,
       screenshots: [
         // in ./img/ss/
         {

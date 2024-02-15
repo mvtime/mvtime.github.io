@@ -56,7 +56,7 @@ export const useMainStore = defineStore({
   state: () => {
     let state = {};
     // setting up store
-    let local = window.localStorage.getItem("MVTT_app_state");
+    let local = window.localStorage.getItem(`${process.env.VUE_APP_BRAND_SHORT_NAME}_app_state`);
     if (local && local != "undefined" && local != "null") {
       try {
         _status.log("↻ State from local storage");
@@ -292,10 +292,10 @@ export const useMainStore = defineStore({
       if (!this.user) return false;
       if (
         this.active_doc?.teacher_mode == true ||
-        window?.localStorage?.MVTT_teacher_mode == "true"
+        window?.localStorage?.[`${process.env.VUE_APP_BRAND_SHORT_NAME}_teacher_mode`] == "true"
       ) {
         if (this.active_doc?.teacher_mode == true || this.active_doc?.teacher_mode == null) {
-          window.localStorage.setItem("MVTT_teacher_mode", true);
+          window.localStorage.setItem(`${process.env.VUE_APP_BRAND_SHORT_NAME}_teacher_mode`, true);
           if (this.personal_account) {
             _status.log("🏫 No teacher mode for personal account");
             return false;
@@ -304,7 +304,10 @@ export const useMainStore = defineStore({
             return true;
           }
         } else {
-          window.localStorage.setItem("MVTT_teacher_mode", false);
+          window.localStorage.setItem(
+            `${process.env.VUE_APP_BRAND_SHORT_NAME}_teacher_mode`,
+            false
+          );
           _status.log("🏫 Teacher mode disabled locally to reflect remote changes");
         }
       }
@@ -782,11 +785,13 @@ export const useMainStore = defineStore({
      * @see {@link is_teacher}
      */
     async toggle_teacher() {
-      // use localStorage.MVTT_teacher_mode as basis for toggle, then set the localStorage and remote doc
+      // use localStorage. _teacher_mode as basis for toggle, then set the localStorage and remote doc
       if (!this.user) return;
       let prev =
-        this.active_doc?.teacher_mode || window.localStorage.getItem("MVTT_teacher_mode") == "true";
-      window.localStorage.setItem("MVTT_teacher_mode", !prev);
+        this.active_doc?.teacher_mode ||
+        window.localStorage.getItem(`${process.env.VUE_APP_BRAND_SHORT_NAME}_teacher_mode`) ==
+          "true";
+      window.localStorage.setItem(`${process.env.VUE_APP_BRAND_SHORT_NAME}_teacher_mode`, !prev);
       let new_text = !prev ? "on" : "off";
       if (this.active_doc) {
         this.active_doc.teacher_mode = !prev;
@@ -874,7 +879,7 @@ export const useMainStore = defineStore({
         doc_ref: null,
         collection_ref: null,
       };
-      window.localStorage.removeItem("MVTT_app_state");
+      window.localStorage.removeItem(`${process.env.VUE_APP_BRAND_SHORT_NAME}_app_state`);
       // if page requires auth, redirect to home
       if (router.currentRoute?.value?.meta?.requiresAuth) {
         router.push("/");

@@ -188,12 +188,14 @@ export default {
   methods: {
     /** Shares the class link with the native share function, or to the clipboard if sharing is not supported */
     async share_class() {
-      let url = new URL("https://view.mvtt.app/" + this.$route.params.ref);
+      let url = new URL(`https://view.${this.$env.VUE_APP_BRAND_DOMAIN}/` + this.$route.params.ref);
       if (navigator.share) {
         navigator
           .share({
             title: this.class_obj.name,
-            text: `Check out ${this.class_obj.name || "this class"} on MVTT!`,
+            text: `Check out ${this.class_obj.name || "this class"} on ${
+              this.$env.VUE_APP_BRAND_SHORT_NAME
+            }!`,
             url: url.href,
           })
           .then(() => new SuccessToast("Opened share dialog", 1000))

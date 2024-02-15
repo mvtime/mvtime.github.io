@@ -7,7 +7,7 @@
       <div v-if="!store.is_teacher" class="overlay_contents_section">
         <div class="overlay_contents_text">
           You can link a personal (non-{{ this.store.ORG_DOMAIN.substring(1) }}) account to access
-          MVTT when not signed into your school account below!
+          {{ $env.VUE_APP_BRAND_SHORT_NAME }} when not signed into your school account below!
         </div>
         <div class="overlay_contents_text" v-if="store.personal_account">
           <br />
@@ -94,9 +94,9 @@
           >
         </div>
         <div class="pause_popup_section__details overlay_contents_section_details">
-          The popup helps conserve local and network resources. To have MVTT open on the side
-          without it getting in the way, you can toggle it above, though you may then have to reload
-          to get the newest data
+          The popup helps conserve local and network resources. To have
+          {{ $env.VUE_APP_BRAND_SHORT_NAME }} open on the side without it getting in the way, you
+          can toggle it above, though you may then have to reload to get the newest data
         </div>
       </div>
       <div class="overlay_contents_text overlay_contents_section">
@@ -150,7 +150,9 @@
             {{ store.simplified ? "leave" : "enter" }} simplified view
           </span>
           to
-          <span v-if="!store.simplified">make MVTT easier to use on slower devices</span>
+          <span v-if="!store.simplified"
+            >make {{ $env.VUE_APP_BRAND_SHORT_NAME }} easier to use on slower devices</span
+          >
           <span v-else>get back the classic interface</span>.
         </span>
       </div>
@@ -178,9 +180,9 @@
         </div>
         <div class="email_section__details overlay_contents_section_details">
           We'll try to send you as few emails as possible, but some notifications are essential to
-          the operation of MVTT, such as those for account linkage and important account changes.
-          Note that linked accounts may also inherit some of your email preferences from their
-          student account.
+          the operation of {{ $env.VUE_APP_BRAND_SHORT_NAME }}, such as those for account linkage
+          and important account changes. Note that linked accounts may also inherit some of your
+          email preferences from their student account.
         </div>
       </div>
     </div>

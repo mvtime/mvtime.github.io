@@ -1,35 +1,5 @@
 <template>
   <main class="about center-1000">
-    <!-- 
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "BlogPosting",
-      "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": "https://mvtt.app/about"
-      },
-      "headline": "The MVTT Mission",
-      "description": "A better way to organize our cluttered lifes. By students, for the wellbeing of students....",
-      "image": "https://mvtt.app/og/hero-img.png",  
-      "author": {
-        "@type": "Person",
-        "name": "Sander Vonk",
-        "url": "https://svonk.me"
-      },  
-      "publisher": {
-        "@type": "Organization",
-        "name": "Mountain View Test Tracker",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://mvtt.app/favicon.ico"
-        }
-      },
-      "datePublished": "2023-03-11",
-      "dateModified": "2023-03-18"
-    }
-    </script>
-    -->
     <div class="about_header">
       <h2 class="header_style">Our Mission;</h2>
       <br />
@@ -39,21 +9,22 @@
     </div>
     <hr />
     <p class="about_body">
-      At MVTT, we're working to lighten the load on both students and teachers. Far too many times
-      have students realized that they had 2, 3, or even 4 major tests <i>on the same day</i>!
-      Students should never have to sacrifice their ability to demonstrate what they've learned, and
-      teachers should never have to see their students stressed, simply because of scheduling
-      issues. <br /><br />
-      MV Test Tracker exists to help everyone involved in the testing process to make better use of
-      their time, and to remove as much the stress and uncertainty around it as possible. Our tool
-      is made for <i>you</i>, and your feedback and ideas are an essencial part of our mission. We'd
-      love for you to be involved in the development process, you can see what we're working on
-      <router-link to="/roadmap">here</router-link>! If you're feeling adventurous, you can even
-      <router-link to="/download">try the beta companion software</router-link>! <br /><br />
+      At {{ $env.VUE_APP_BRAND_SHORT_NAME }}, we're working to lighten the load on both students and
+      teachers. Far too many times have students realized that they had 2, 3, or even 4 major tests
+      <i>on the same day</i>! Students should never have to sacrifice their ability to demonstrate
+      what they've learned, and teachers should never have to see their students stressed, simply
+      because of scheduling issues. <br /><br />
+      {{ $env.VUE_APP_BRAND_LONG_NAME }} exists to help everyone involved in the testing process to
+      make better use of their time, and to remove as much the stress and uncertainty around it as
+      possible. Our tool is made for <i>you</i>, and your feedback and ideas are an essencial part
+      of our mission. We'd love for you to be involved in the development process, you can see what
+      we're working on <router-link to="/roadmap">here</router-link>! If you're feeling adventurous,
+      you can even <router-link to="/download">try the beta companion software</router-link>!
+      <br /><br />
       Thank you for your support,
       <br />
       <b class="team-signature"
-        ><router-link to="/contact">The MV Test Tracker Team</router-link></b
+        ><router-link to="/contact">The {{ $env.VUE_APP_BRAND_LONG_NAME }} Team</router-link></b
       >
     </p>
   </main>

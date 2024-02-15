@@ -21,7 +21,7 @@ function _log() {
   // check for very large messages and warn them in the console with the first 100 characters (make sure this catches the message, even if it's not the first argument, or in a object format)
   let args = Array.from(arguments);
   let extras = [
-    `%cMVTT`,
+    `%c${process.env.VUE_APP_BRAND_SHORT_NAME}`,
     "background:#272727;color:#C9B092;padding:7px 12px;font-family:Lato,sans-serif;font-weight:bold;font-size:1.3em",
   ];
   // check if first character is emoji, followed by space

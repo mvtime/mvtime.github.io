@@ -82,7 +82,7 @@ const router = createRouter({
               name: "join",
               component: () => import("@/views/Home/JoinModal.vue"),
               meta: {
-                page_title: "Join the MVTT Beta",
+                page_title: `Join the ${process.env.VUE_APP_BRAND_SHORT_NAME} Beta`,
                 theme_color: {
                   light: "#bfbfbf",
                   dark: "#0d0d0d",

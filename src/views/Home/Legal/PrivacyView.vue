@@ -1,11 +1,12 @@
 <template>
   <div>
-    <h1>Privacy Policy for MV Test Tracker</h1>
+    <h1>Privacy Policy for {{ $env.VUE_APP_BRAND_LONG_NAME }}</h1>
 
     <p>
-      At MV Test Tracker, accessible from mvtt.app, one of our main priorities is the privacy of our
-      visitors. This Privacy Policy document contains types of information that is collected and
-      recorded by MV Test Tracker and how we use it.
+      At {{ $env.VUE_APP_BRAND_LONG_NAME }}, accessible from {{ $env.VUE_APP_BRAND_DOMAIN }}, one of
+      our main priorities is the privacy of our visitors. This Privacy Policy document contains
+      types of information that is collected and recorded by {{ $env.VUE_APP_BRAND_LONG_NAME }} and
+      how we use it.
     </p>
 
     <p>
@@ -116,20 +117,21 @@
     <h2>Log Files</h2>
 
     <p>
-      MV Test Tracker follows a standard procedure of using log files. These files log visitors when
-      they visit websites. All hosting companies do this and a part of hosting services' analytics.
-      The information collected by log files include internet protocol (IP) addresses, browser type,
-      Internet Service Provider (ISP), date and time stamp, referring/exit pages, and possibly the
-      number of clicks. These are not linked to any information that is personally identifiable. The
-      purpose of the information is for analyzing trends, administering the site, tracking users'
-      movement on the website, and gathering demographic information.
+      {{ $env.VUE_APP_BRAND_LONG_NAME }} follows a standard procedure of using log files. These
+      files log visitors when they visit websites. All hosting companies do this and a part of
+      hosting services' analytics. The information collected by log files include internet protocol
+      (IP) addresses, browser type, Internet Service Provider (ISP), date and time stamp,
+      referring/exit pages, and possibly the number of clicks. These are not linked to any
+      information that is personally identifiable. The purpose of the information is for analyzing
+      trends, administering the site, tracking users' movement on the website, and gathering
+      demographic information.
     </p>
 
     <h2>Privacy Policies</h2>
 
     <p>
       You may consult this list to find the Privacy Policy for each of the advertising partners of
-      MV Test Tracker.
+      {{ $env.VUE_APP_BRAND_LONG_NAME }}.
     </p>
 
     <p>
@@ -142,17 +144,17 @@
     </p>
 
     <p>
-      Note that MV Test Tracker has no access to or control over these cookies that are used by
-      third-party advertisers.
+      Note that {{ $env.VUE_APP_BRAND_LONG_NAME }} has no access to or control over these cookies
+      that are used by third-party advertisers.
     </p>
 
     <h2>Third Party Privacy Policies</h2>
 
     <p>
-      MV Test Tracker's Privacy Policy does not apply to other advertisers or websites. Thus, we are
-      advising you to consult the respective Privacy Policies of these third-party ad servers for
-      more detailed information. It may include their practices and instructions about how to
-      opt-out of certain options.
+      {{ $env.VUE_APP_BRAND_LONG_NAME }}'s Privacy Policy does not apply to other advertisers or
+      websites. Thus, we are advising you to consult the respective Privacy Policies of these
+      third-party ad servers for more detailed information. It may include their practices and
+      instructions about how to opt-out of certain options.
     </p>
 
     <p>
@@ -170,19 +172,19 @@
     </p>
 
     <p>
-      MV Test Tracker does not knowingly collect any Personal Identifiable Information from children
-      under the age of 13. If you think that your child provided this kind of information on our
-      website, we strongly encourage you to contact us immediately and we will do our best efforts
-      to promptly remove such information from our records.
+      {{ $env.VUE_APP_BRAND_LONG_NAME }} does not knowingly collect any Personal Identifiable
+      Information from children under the age of 13. If you think that your child provided this kind
+      of information on our website, we strongly encourage you to contact us immediately and we will
+      do our best efforts to promptly remove such information from our records.
     </p>
 
     <h2>Online Privacy Policy Only</h2>
 
     <p>
       This Privacy Policy applies only to our online activities and is valid for visitors to our
-      website with regards to the information that they shared and/or collect in MV Test Tracker.
-      This policy is not applicable to any information collected offline or via channels other than
-      this website.
+      website with regards to the information that they shared and/or collect in
+      {{ $env.VUE_APP_BRAND_LONG_NAME }}. This policy is not applicable to any information collected
+      offline or via channels other than this website.
     </p>
 
     <h2>Consent</h2>

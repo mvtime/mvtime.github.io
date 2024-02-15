@@ -4,12 +4,12 @@
       <h2 class="header_style">Downloads</h2>
       <br />
       <h3 class="secondary_home_text">
-        Get the latest version of MV Test Tracker for your platform. (Coming Soon!)
+        Get the latest version of {{$env.VUE_APP_BRAND_LONG_NAME}} for your platform. (Coming Soon!)
       </h3>
     </div>
     <hr />
     <p class="download_body">
-      MV Test Tracker is currently in development. We're working hard to get the first version out
+      {{$env.VUE_APP_BRAND_LONG_NAME}} is currently in development. We're working hard to get the first version out
       as soon as possible. In the meantime, you can check out our
       <router-link to="/about">about</router-link> page to learn more about our mission, and our
       <router-link to="/contact">contact</router-link>
@@ -43,7 +43,7 @@
     <span>
       <a
         href="/download/mvtt-sidebar.zip"
-        download="MVTT-SIDEBAR--drop-me-on-the-developer-extensions-page.zip"
+        :download="$env.VUE_APP_BRAND_SHORT_NAME + '-SIDEBAR--drop-me-on-the-developer-extensions-page.zip'"
       >
         <button class="download_button click-action action-btn">Chrome Extension</button>
       </a>

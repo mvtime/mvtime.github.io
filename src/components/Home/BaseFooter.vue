@@ -3,8 +3,9 @@
     <p>
       <span
         >&copy; 2022-2023
-        <span class="desktop_only_text">MV Test Tracker</span>
-        <span class="mobile_only_text">MVTT</span>.&nbsp;</span
+        <span class="desktop_only_text">{{ $env.VUE_APP_BRAND_LONG_NAME }}</span>
+        <span class="mobile_only_text">{{ $env.VUE_APP_BRAND_SHORT_NAME }}</span
+        >.&nbsp;</span
       >
       &ThickSpace;<span>Website by <a href="https://svonk.me/">Sander Vonk</a>.</span>
       <!-- Required OAuth legal pages -->
