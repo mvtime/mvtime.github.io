@@ -8,7 +8,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "deploy": "cross-env BRAND_DOMAIN=$VUE_APP_BRAND_DOMAIN echo $BRAND_DOMAIN > ./dist/CNAME && npm run publish",
+    "deploy": "echo mvtt.app > ./dist/CNAME && npm run publish",
     "compile": "npm run electron:build",
     "postcompile": "mkdir dist\\download & move dist_electron\\MV-Test-Tracker.exe dist\\download && echo 'Moved builds to download folder'",
     "electron:build": "vue-cli-service electron:build",
