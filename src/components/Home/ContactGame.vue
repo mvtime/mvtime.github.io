@@ -71,7 +71,7 @@ export default {
           lines: [
             `Hi there! You can find me on <a href="https://linkedin.com/in/sandercvonk/" target="_blank">LinkedIn</a>, email me at <a href="mailto:sander@svonk.me" target="_blank">sander@svonk.me</a> or just <a href="https://svonk.me/ecard" download target="_blank">add me to your contacts!<a>`,
             `Thanks for using ${this.$env.VUE_APP_BRAND_SHORT_NAME}! We really hope you find it useful, and if you have any feedback, please reach out!`,
-            `By the way, did you know we have an API? You can use it to build your own apps that integrate with ${this.$env.VUE_APP_BRAND_SHORT_NAME}. Try it out at <a href="https://api.${this.$env.VUE_APP_BRAND_DOMAIN}">api.${this.$env.VUE_APP_BRAND_DOMAIN}</a>, and contact me to get things set up!`,
+            `By the way, did you know we have an API? You can use it to build your own apps that integrate with ${this.$env.VUE_APP_BRAND_SHORT_NAME}. Try it out at <a href="https://${this.$env.VUE_APP_BRAND_DOMAIN__API}">${this.$env.VUE_APP_BRAND_DOMAIN__API}</a>, and contact me to get things set up!`,
           ],
         },
         {

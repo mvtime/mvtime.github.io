@@ -990,8 +990,8 @@ export const useMainStore = defineStore({
         let sent_email = await addDoc(email_queue, {
           to: email,
           cc: this.user.email,
-          from: `${this.active_doc.name} via MV Test Tracker <mail@mvtt.app>`,
-          fromname: this.active_doc.name + " via MV Test Tracker",
+          from: `${this.active_doc.name} via ${process.env.VUE_APP_BRAND_LONG_NAME} <${process.env.VUE_APP_BRAND_MAIL_ADDRESS}>`,
+          fromname: this.active_doc.name + ` via ${process.env.VUE_APP_BRAND_LONG_NAME}`,
           template: {
             name: "link_invite",
             data: {

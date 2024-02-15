@@ -188,7 +188,9 @@ export default {
   methods: {
     /** Shares the class link with the native share function, or to the clipboard if sharing is not supported */
     async share_class() {
-      let url = new URL(`https://view.${this.$env.VUE_APP_BRAND_DOMAIN}/` + this.$route.params.ref);
+      let url = new URL(
+        `https://${this.$env.VUE_APP_BRAND_DOMAIN__VIEWCLASS}/` + this.$route.params.ref
+      );
       if (navigator.share) {
         navigator
           .share({

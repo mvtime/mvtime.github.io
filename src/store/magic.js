@@ -4,7 +4,7 @@
 import { _status } from "@/common";
 import { defineStore } from "pinia";
 
-const API_URL = "https://api.mvtt.app/";
+const API_URL = `https://${process.env.VUE_APP_BRAND_DOMAIN__API}/`;
 
 export const useMagic = defineStore({
   id: "magic",

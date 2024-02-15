@@ -85,9 +85,9 @@ $(document.body).on("click", ".gohome", function () {
 import { removePopup } from "@svonk/util";
 router.afterEach((to) => {
   if (to.meta && to.meta.page_title) {
-    document.title = "MV Test Tracker | " + to.meta.page_title;
+    document.title = `${process.env.VUE_APP_BRAND_LONG_NAME} | ` + to.meta.page_title;
   } else {
-    document.title = "MV Test Tracker";
+    document.title = process.env.VUE_APP_BRAND_LONG_NAME;
   }
   let theme_light = to.meta?.theme_color?.light || "#f5c14b";
   let theme_dark = to.meta?.theme_color?.dark || "#f5c14b";

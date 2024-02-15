@@ -185,7 +185,7 @@ export default {
       this.store
         .code_from_ref(this.ref)
         .then((code) => {
-          let url = new URL(`https://add.${this.$env.VUE_APP_BRAND_DOMAIN}/` + code);
+          let url = new URL(`https://${this.$env.VUE_APP_BRAND_DOMAIN__ADDCLASS}/` + code);
           if (navigator.share) {
             navigator
               .share({
