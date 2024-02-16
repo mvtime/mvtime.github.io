@@ -32,23 +32,6 @@
       <div class="teacher_action__icon icon__create"></div>
       <div class="teacher_action__text">Create a Class</div>
     </div>
-    <div
-      class="action_add_shortcut_hint toast default noremove"
-      v-if="equalDown || plusDown || toastOut"
-      :class="{ out: toastOut }"
-    >
-      <img alt="icon" src="@/assets/img/general/toast-keyboard.svg" class="toast-icon" />
-      Waiting for rest of shortcut (&VeryThinSpace;<span
-        v-for="type of magic.types"
-        :key="type.key"
-      >
-        <span style="text-decoration: underline">{{ type.shortcuts[0].toLowerCase() }}</span>
-        <span> {{ type.name.slice(1) }} </span>
-        <span v-if="magic.types.indexOf(type) !== magic.types.length - 1"
-          >,&MediumSpace;</span
-        > </span
-      >&VeryThinSpace;)
-    </div>
   </div>
 </template>
 
@@ -62,19 +45,18 @@ export default {
     return {
       plusDown: false,
       equalDown: false,
-      toastOut: false,
       toastTimeout: null,
     };
   },
   mounted() {
     window.addEventListener("keydown", this.keydown);
     window.addEventListener("keyup", this.keyup);
-    useShortcuts().register_all(this.shortcuts, "Teacher");
+    this.short.register_all(this.shortcuts, "Teacher");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.keydown);
     window.removeEventListener("keyup", this.keyup);
-    useShortcuts().remove_tag("Teacher");
+    this.short.remove_tag("Teacher");
   },
   computed: {
     selected_types() {
@@ -100,6 +82,9 @@ export default {
     store() {
       return useMainStore();
     },
+    short() {
+      return useShortcuts();
+    },
     has_classes() {
       return this.store?.active_doc?.classes?.length > 0;
     },
@@ -113,11 +98,12 @@ export default {
       } else {
         return;
       }
+      this.short.set_activity(this.plusDown || this.equalDown, "addTaskDown");
       if (!this.plusDown && !this.equalDown) {
         window.clearTimeout(this.toastTimeout);
-        this.toastOut = true;
+        this.short.set_activity(true, "addTaskToast");
         this.toastTimeout = window.setTimeout(() => {
-          this.toastOut = false;
+          this.short.set_activity(false, "addTaskToast");
         }, 500);
       }
     },
@@ -130,6 +116,7 @@ export default {
         } else if (key === "=") {
           this.equalDown = true;
         }
+        this.short.set_activity(this.plusDown || this.equalDown, "addTaskDown");
       }
 
       // change existing type while in creation window
@@ -149,7 +136,7 @@ export default {
       else if (!["study", "portal"].includes(this.$route.name)) {
         return;
       } else if (
-        (this.plusDown || this.equalDown) &&
+        this.short.is_active("addTaskDown") &&
         this.has_classes &&
         this.task_types.some((t) => t[2].includes(key))
       ) {

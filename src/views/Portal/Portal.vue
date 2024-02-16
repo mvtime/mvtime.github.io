@@ -92,6 +92,24 @@
         }
       "
     />
+    <!-- show add task popup when active through shortcuts -->
+    <div
+      class="action_add_shortcut_hint toast default noremove"
+      v-if="short.is_active('addTaskDown') || short.is_active('addTaskToast')"
+      :class="{ out: short.is_active('addTaskToast') && !short.is_active('addTaskDown') }"
+    >
+      <img alt="icon" src="@/assets/img/general/toast-keyboard.svg" class="toast-icon" />
+      Waiting for rest of shortcut (&VeryThinSpace;<span
+        v-for="type of magic.types"
+        :key="type.key"
+      >
+        <span style="text-decoration: underline">{{ type.shortcuts[0].toLowerCase() }}</span>
+        <span> {{ type.name.slice(1) }} </span>
+        <span v-if="magic.types.indexOf(type) !== magic.types.length - 1"
+          >,&MediumSpace;</span
+        > </span
+      >&VeryThinSpace;)
+    </div>
     <!-- show bottom nav bar if on device 600px wide or lower -->
 
     <nav class="portal_mobile_nav">
@@ -147,6 +165,8 @@ import StudyBlock from "@/components/Portal/StudyBlock.vue";
 import CalendarBlock from "@/components/Portal/CalendarBlock.vue";
 import OverlayWrapper from "@/components/Modal/OverlayWrapper.vue";
 import { useMainStore } from "@/store";
+import { useShortcuts } from "@/store/shortcuts";
+import { useMagic } from "@/store/magic";
 import { WarningToast } from "@svonk/util";
 import "@/assets/style/overlay.css";
 import { _status } from "../../common";
@@ -192,8 +212,15 @@ export default {
     random_welcome() {
       return this.welcomes[Math.floor(Math.random() * this.welcomes.length)];
     },
+    /** stores */
     store() {
       return useMainStore();
+    },
+    magic() {
+      return useMagic();
+    },
+    short() {
+      return useShortcuts();
     },
   },
   methods: {

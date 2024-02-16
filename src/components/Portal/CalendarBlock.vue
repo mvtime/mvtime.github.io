@@ -1032,8 +1032,7 @@ main .calendar_day_task__finished:hover:not(:active) {
 <style>
 @media (min-width: 630px) {
   .portal:has(main.calendar.calendar_fullpage) .portal_sidebar {
-    z-index: 1000;
-    top: 200vh;
+    z-index: 0;
   }
 }
 </style>

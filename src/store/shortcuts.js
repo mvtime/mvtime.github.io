@@ -39,6 +39,7 @@ export const useShortcuts = defineStore({
   state: () => ({
     shortcuts: [],
     keys: [],
+    active: {},
   }),
   getters: {
     get(shortcut) {
@@ -140,6 +141,13 @@ export const useShortcuts = defineStore({
       this.shortcuts = [];
       this.keys = [];
       _status.log("⌨️ Cleared shortcuts");
+    },
+    // active keys and actions easy access
+    set_activity(state, shortName) {
+      this.active[shortName] = state;
+    },
+    is_active(shortName) {
+      return this.active[shortName];
     },
   },
 });
