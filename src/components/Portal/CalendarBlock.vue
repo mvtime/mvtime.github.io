@@ -442,8 +442,13 @@ export default {
           );
         })
         .sort((a, b) => {
-          // prefer notes nomatter what
-          if (a.type == "note" && b.type != "note") return -1;
+          if (a.type != b.type) {
+            let prioritize_notes = !this.store?.account_doc?.prefs?.derank_notes;
+            if (prioritize_notes && a.type == "note") return -1;
+            if (prioritize_notes && b.type == "note") return 1;
+            if (a.type == "note" && b.type != "note") return 1;
+            if (a.type != "note" && b.type == "note") return -1;
+          }
           // check completion status by this.is_completed()
           if (this.is_completed(a) && !this.is_completed(b)) return 1;
           if (!this.is_completed(a) && this.is_completed(b)) return -1;

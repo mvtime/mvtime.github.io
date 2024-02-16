@@ -81,6 +81,20 @@
         >
       </div>
       <div class="overlay_contents_text overlay_contents_section">
+        <div class="notes_priority_section">
+          <ToggleBar
+            class="click-action"
+            :value="prioritize_notes"
+            @update="update_notes_priority"
+            :loads="true"
+          />
+          &nbsp;
+          <span
+            >Notes priority set to <b>{{ prioritize_notes ? "high" : "low" }}</b></span
+          >
+        </div>
+      </div>
+      <div class="overlay_contents_text overlay_contents_section">
         <div class="pause_popup_section">
           <ToggleBar
             class="click-action"
@@ -294,6 +308,9 @@ export default {
     show_timeout() {
       return !this.store?.account_doc?.prefs?.hide_timeout;
     },
+    prioritize_notes() {
+      return !this.store?.account_doc?.prefs?.derank_notes;
+    },
     ready_to_link() {
       return (
         !this.loading &&
@@ -328,6 +345,30 @@ export default {
                 value
                   ? "We'll show the popup when your session times out"
                   : "You won't see the timeout popup anymore",
+                2000
+              );
+            });
+        }
+      }
+    },
+    update_notes_priority(value) {
+      if (this.store.account_doc) {
+        let before = !this.store.account_doc?.prefs?.derank_notes;
+        if (before != value) {
+          // update the value
+          this.store
+            .update_wrapper_with_merge({
+              prefs: {
+                ...this.store.account_doc.prefs,
+                derank_notes: !value,
+              },
+            })
+            .then(() => {
+              this.changed = true;
+              new SuccessToast(
+                value
+                  ? "We'll show notes above other items on your claendar"
+                  : "You won't see notes above other items anymore",
                 2000
               );
             });
@@ -417,6 +458,7 @@ export default {
 
 <style scoped>
 .pause_popup_section,
+.notes_priority_section,
 .email_section {
   line-height: 1.75;
   display: inline-flex;
