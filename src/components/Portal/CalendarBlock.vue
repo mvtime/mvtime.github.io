@@ -442,6 +442,10 @@ export default {
           );
         })
         .sort((a, b) => {
+          // check completion status by this.is_completed()
+          if (this.is_completed(a) && !this.is_completed(b)) return 1;
+          if (!this.is_completed(a) && this.is_completed(b)) return -1;
+          // prioritize/deprioritize notes based on user settings
           if (a.type != b.type) {
             let prioritize_notes = !this.store?.account_doc?.prefs?.derank_notes;
             if (prioritize_notes && a.type == "note") return -1;
@@ -449,9 +453,6 @@ export default {
             if (a.type == "note" && b.type != "note") return 1;
             if (a.type != "note" && b.type == "note") return -1;
           }
-          // check completion status by this.is_completed()
-          if (this.is_completed(a) && !this.is_completed(b)) return 1;
-          if (!this.is_completed(a) && this.is_completed(b)) return -1;
           // prefer those with periods and rank in order of period
           if (a.period && !b.period) return -1;
           if (!a.period && b.period) return 1;
