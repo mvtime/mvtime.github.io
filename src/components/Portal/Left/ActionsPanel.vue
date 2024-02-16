@@ -132,10 +132,8 @@ export default {
           e.stopPropagation();
         }
       }
-      // create new from portal or study pages
-      else if (!["study", "portal"].includes(this.$route.name)) {
-        return;
-      } else if (
+      // create new
+      else if (
         this.short.is_active("addTaskDown") &&
         this.has_classes &&
         this.task_types.some((t) => t[2].includes(key))
