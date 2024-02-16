@@ -233,6 +233,10 @@ export default {
           description: "Toggle fullscreen",
         },
         {
+          key: "Ctrl + 🖱",
+          description: "Mark task finished",
+        },
+        {
           key: "` or s",
           description: "Swap to study portal",
           top: true,
