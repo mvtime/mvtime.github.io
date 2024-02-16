@@ -27,6 +27,11 @@
 
 ## Working on Now / Planned Soon (Sander)
 
+- Task Creation
+  - ~~better keyboard shortcuts (+ and t,p,e,q=quiz, etc)~~
+  - shortcuts on `position:fixed` layouts, ~~fullscreen~~
+    - migrate to new system that puts it outside of the sidebar element
+  - class selection popup on creation hotkey
 - Studying
   - system for studying/working on tasks
   - ~~track task completion based on id~~

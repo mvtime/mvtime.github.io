@@ -678,7 +678,8 @@ export default {
 <style>
 @media (min-width: 630px) {
   .portal:has(main.study.study_fullpage) .portal_sidebar {
-    z-index: 0;
+    z-index: 1000;
+    top: 200vh;
   }
 }
 </style>
