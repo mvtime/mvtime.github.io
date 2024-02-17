@@ -29,13 +29,12 @@
 </template>
 
 <script>
-import { useShortcuts } from "@/store/shortcuts";
 import "@/assets/style/overlay.css";
 export default {
   name: "ShortcutsModal",
   computed: {
     sections() {
-      return useShortcuts().sections;
+      return this.$shortcuts.sections;
     },
   },
   mounted() {

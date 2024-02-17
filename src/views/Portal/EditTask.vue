@@ -144,7 +144,6 @@
  * @emits {Function} close - An event emitted when the task is created or the modal is closed.
  */
 
-import { useMagic } from "@/store/magic";
 import { compatDateObj } from "@/common";
 import { ErrorToast, WarningToast, SuccessToast } from "@svonk/util";
 import smoothReflow from "vue-smooth-reflow";
@@ -188,7 +187,7 @@ export default {
       );
     },
     type_full() {
-      return this.magic?.type_full(this.task.type) || "Task";
+      return this.$magic?.type_full(this.task.type) || "Task";
     },
     newlink_not_ready() {
       // check if path and text, and also that path is a valid url
@@ -198,9 +197,6 @@ export default {
       let classes = this.$store?.classes;
       if (!classes) return null;
       return classes.find((class_obj) => class_obj.id === this.original.class_id) || {};
-    },
-    magic() {
-      return useMagic();
     },
     is_note() {
       return this.task.type === "note";
@@ -350,7 +346,7 @@ export default {
     async magic_text() {
       if (!this.path_ready || this.newlink.text) return;
       this.loading_text = true;
-      this.magic
+      this.$magic
         .text(this.newlink.path)
         .then((text) => {
           if (text) {

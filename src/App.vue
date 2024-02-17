@@ -89,7 +89,6 @@ import OverlayWrapper from "@/components/Modal/OverlayWrapper.vue";
 import LogoutModal from "@/components/Modal/LogoutModal.vue";
 import ShortcutsModal from "@/components/Modal/ShortcutsModal.vue";
 // Stores
-import { useShortcuts } from "@/store/shortcuts";
 // Global Scripts
 import $ from "jquery";
 import { SuccessToast, ErrorToast } from "@svonk/util";
@@ -171,7 +170,7 @@ export default {
     this.$store.logout_prompt = false;
     window.addEventListener("focus", this.refreshTimeout);
     window.addEventListener("keydown", this.global_keydown);
-    useShortcuts().register_all(this.shortcuts, "General");
+    this.$shortcuts.register_all(this.shortcuts, "General");
 
     // catch href clicks to open as "/to/{encoded href}"
     this.$refs.app.addEventListener("click", (e) => {
@@ -199,7 +198,7 @@ export default {
   beforeUnmount() {
     window.removeEventListener("focus", this.refreshTimeout);
     window.removeEventListener("keydown", this.global_keydown);
-    useShortcuts().remove_tag("General");
+    this.$shortcuts.remove_tag("General");
   },
   created() {
     // do dark mode from local storage, then from store (if logged in)

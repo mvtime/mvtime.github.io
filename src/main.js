@@ -5,6 +5,15 @@ import router from "@/router";
 import VueApexCharts from "vue3-apexcharts";
 import { placeholderToast /*Popup*/ } from "@svonk/util";
 import { _status } from "@/common";
+
+import { Toast } from "@svonk/util";
+import "./registerServiceWorker";
+import VueLazyload from "vue-lazyload";
+
+import { useMainStore } from "@/store";
+import { useShortcuts } from "@/store/shortcuts";
+import { useMagic } from "@/store/magic";
+
 // create instances of app requisites
 const pinia = createPinia();
 const app = createApp(App);
@@ -13,7 +22,6 @@ const app = createApp(App);
 // setup app requisites
 app.use(router);
 app.use(pinia);
-import { useMainStore } from "@/store";
 app.mixin({
   computed: {
     $env() {
@@ -25,6 +33,12 @@ app.mixin({
     // store access
     $store() {
       return useMainStore();
+    },
+    $shortcuts() {
+      return useShortcuts();
+    },
+    $magic() {
+      return useMagic();
     },
   },
 });
@@ -114,10 +128,6 @@ window.toast = placeholderToast;
 window.$ = $;
 
 // router guard
-import { Toast } from "@svonk/util";
-
-import "./registerServiceWorker";
-import VueLazyload from "vue-lazyload";
 router.beforeEach((to) => {
   const store = useMainStore();
 

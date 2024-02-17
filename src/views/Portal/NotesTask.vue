@@ -74,7 +74,6 @@
  * @emits {Function} close - An event emitted when the task is created or the modal is closed.
  */
 
-import { useMagic } from "@/store/magic";
 import { ErrorToast, WarningToast, SuccessToast } from "@svonk/util";
 import smoothReflow from "vue-smooth-reflow";
 
@@ -107,7 +106,7 @@ export default {
       return !this.changed;
     },
     type_full() {
-      return useMagic()?.type_full(this.task.type) || "Task";
+      return this.$magic?.type_full(this.task.type) || "Task";
     },
     changed() {
       return this.original_note !== this.note;

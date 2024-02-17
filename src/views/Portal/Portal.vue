@@ -95,17 +95,17 @@
     <!-- show add task popup when active through shortcuts -->
     <div
       class="action_add_shortcut_hint toast default noremove"
-      v-if="short.is_active('addTaskDown') || short.is_active('addTaskToast')"
-      :class="{ out: short.is_active('addTaskToast') && !short.is_active('addTaskDown') }"
+      v-if="$shortcuts.is_active('addTaskDown') || $shortcuts.is_active('addTaskToast')"
+      :class="{ out: $shortcuts.is_active('addTaskToast') && !$shortcuts.is_active('addTaskDown') }"
     >
       <img alt="icon" src="@/assets/img/general/toast-keyboard.svg" class="toast-icon" />
       Waiting for rest of shortcut (&VeryThinSpace;<span
-        v-for="type of magic.types"
+        v-for="type of $magic.types"
         :key="type.key"
       >
         <span style="text-decoration: underline">{{ type.shortcuts[0].toLowerCase() }}</span>
         <span> {{ type.name.slice(1) }} </span>
-        <span v-if="magic.types.indexOf(type) !== magic.types.length - 1"
+        <span v-if="$magic.types.indexOf(type) !== $magic.types.length - 1"
           >,&MediumSpace;</span
         > </span
       >&VeryThinSpace;)
@@ -164,8 +164,6 @@ import RightBar from "@/components/Portal/RightBar.vue";
 import StudyBlock from "@/components/Portal/StudyBlock.vue";
 import CalendarBlock from "@/components/Portal/CalendarBlock.vue";
 import OverlayWrapper from "@/components/Modal/OverlayWrapper.vue";
-import { useShortcuts } from "@/store/shortcuts";
-import { useMagic } from "@/store/magic";
 import { WarningToast } from "@svonk/util";
 import "@/assets/style/overlay.css";
 export default {
@@ -209,13 +207,6 @@ export default {
     /** A random welcome message */
     random_welcome() {
       return this.welcomes[Math.floor(Math.random() * this.welcomes.length)];
-    },
-    /** stores */
-    magic() {
-      return useMagic();
-    },
-    short() {
-      return useShortcuts();
     },
   },
   methods: {

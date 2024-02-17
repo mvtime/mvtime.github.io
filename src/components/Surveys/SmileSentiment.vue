@@ -26,7 +26,6 @@
 </template>
 
 <script>
-import { useShortcuts } from "@/store/shortcuts";
 export default {
   emits: ["update", "status"],
   props: {
@@ -59,11 +58,11 @@ export default {
   },
   mounted() {
     window.addEventListener("keydown", this.check_key);
-    useShortcuts().register_all(this.shortcuts, "Survey Mood");
+    this.$shortcuts.register_all(this.shortcuts, "Survey Mood");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.check_key);
-    useShortcuts().remove_tag("Survey Mood");
+    this.$shortcuts.remove_tag("Survey Mood");
   },
   methods: {
     check_key(e) {

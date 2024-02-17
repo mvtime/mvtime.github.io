@@ -36,9 +36,7 @@
 </template>
 
 <script>
-import { useMagic } from "@/store/magic";
 import { WarningToast } from "@svonk/util";
-import { useShortcuts } from "@/store/shortcuts";
 export default {
   data() {
     return {
@@ -59,11 +57,11 @@ export default {
   },
   computed: {
     selected_types() {
-      // only the first 2 types of magic.types
-      return this.magic.types.slice(0, 2);
+      // only the first 2 types of $magic.types
+      return this.$magic.types.slice(0, 2);
     },
     task_types() {
-      return this.magic.types.map((t) => [t.key, t.list_as, t.shortcuts]);
+      return this.$magic.types.map((t) => [t.key, t.list_as, t.shortcuts]);
     },
     shortcuts() {
       return this.task_types.map((t) => ({
@@ -75,11 +73,8 @@ export default {
         description: t[1],
       }));
     },
-    magic() {
-      return useMagic();
-    },
     short() {
-      return useShortcuts();
+      return this.$shortcuts;
     },
     has_classes() {
       return this.$store?.active_doc?.classes?.length > 0;

@@ -56,7 +56,7 @@
             "
           >
             <div
-              v-if="!store.is_teacher || class_obj.email != this.$store.user.email"
+              v-if="!$store.is_teacher || class_obj.email != $store.user.email"
               class="class_swatch__icon class_swatch_remove__icon"
             ></div>
             <div v-else class="class_swatch__icon class_swatch_edit__icon"></div>
@@ -68,7 +68,7 @@
           <span v-else class="class_name">{{ class_obj.name }}</span>
         </a>
         <div
-          v-if="!store.is_teacher || true"
+          v-if="!$store.is_teacher || true"
           class="classes_container_class classes_container_class__add_class"
           @click="$router.push({ name: 'addclass', query: $route.query })"
         >

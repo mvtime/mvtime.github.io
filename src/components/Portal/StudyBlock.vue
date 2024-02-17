@@ -105,7 +105,6 @@
 <script>
 import "@/assets/style/portal_main.css";
 import LoadingCover from "@/components/LoadingCover.vue";
-import { useShortcuts } from "@/store/shortcuts";
 export default {
   name: "StudyBlock",
   components: {
@@ -144,11 +143,11 @@ export default {
     this.$emit("mounted");
     this.tasks = this.$store.tasks;
     window.addEventListener("keydown", this.handle_key);
-    useShortcuts().register_all(this.shortcuts, "Study Portal");
+    this.$shortcuts.register_all(this.shortcuts, "Study Portal");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handle_key);
-    useShortcuts().remove_tag("Study Portal");
+    this.$shortcuts.remove_tag("Study Portal");
   },
   computed: {
     fullpage() {

@@ -204,7 +204,6 @@ import "@/assets/style/portal_main.css";
 import LoadingCover from "@/components/LoadingCover.vue";
 import { compatDateObj } from "@/common";
 import { ErrorToast, SuccessToast } from "@svonk/util";
-import { useShortcuts } from "@/store/shortcuts";
 export default {
   name: "CalendarBlock",
   components: {
@@ -268,11 +267,11 @@ export default {
     this.$emit("mounted");
     this.tasks = this.$store.tasks;
     window.addEventListener("keydown", this.handle_key);
-    useShortcuts().register_all(this.shortcuts, "Calendar");
+    this.$shortcuts.register_all(this.shortcuts, "Calendar");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.handle_key);
-    useShortcuts().remove_tag("Calendar");
+    this.$shortcuts.remove_tag("Calendar");
   },
   methods: {
     page_flip(e) {

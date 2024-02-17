@@ -32,7 +32,6 @@ function confirm_unfinished() {
   return "You haven't finished the task yet, and might lose progress. Are you sure you want to close the tab?";
 }
 import ModalVue from "./Modal.vue";
-import { useShortcuts } from "@/store/shortcuts";
 export default {
   name: "ModalFromPages",
   emits: ["finish", "skip"],
@@ -94,11 +93,11 @@ export default {
   },
   mounted() {
     window.addEventListener("keydown", this.arrow);
-    useShortcuts().register_all(this.shortcuts, "Modal");
+    this.$shortcuts.register_all(this.shortcuts, "Modal");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.arrow);
-    useShortcuts().remove_tag("Modal");
+    this.$shortcuts.remove_tag("Modal");
   },
   methods: {
     set_done() {
