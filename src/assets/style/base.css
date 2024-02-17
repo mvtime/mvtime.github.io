@@ -94,8 +94,8 @@ body,
   --color-theme: #%VUE_APP_THEME_COLOR%;
   --color-select: #%VUE_APP_THEME_COLOR%80;
   --color-theme-alt: #%VUE_APP_THEME_COLOR%40;
-  --color-theme-accent: #000;
-  --color-theme-accent-border: #4c4c4c;
+  --color-theme-accent: #%VUE_APP_THEME_ACCENT_COLOR%;
+  --color-theme-accent-border: #%VUE_APP_THEME_ACCENT_COLOR_ALT%;
   --color-on-action: #fff;
   --color-action: #242325;
   --filter-icon: none;
@@ -185,7 +185,7 @@ body:has(#themed_body[_theme="dark"]) {
   --color-link: #178ca7;
   --color-select: #%VUE_APP_THEME_COLOR%;
   --color-action: #%VUE_APP_THEME_COLOR%;
-  --color-on-action: #000;
+  --color-on-action: #VUE_APP_THEME_ACCENT_COLOR%%;
   --filter-icon: invert(1) hue-rotate(180deg);
   --filter-swatch-icon: none;
   --color-secondary: #121212;

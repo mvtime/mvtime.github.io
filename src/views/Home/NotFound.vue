@@ -68,7 +68,7 @@ h2.err_text {
 }
 nav span:not(.router-link):not(.nostyle) {
   opacity: 0.7;
-  color: var(--color-theme-accent-border);
+  color: #4c4c4c;
 }
 nav .router-link {
   opacity: 1;
