@@ -1,10 +1,17 @@
 const { defineConfig } = require("@vue/cli-service");
-const Dotenv = require("dotenv-webpack");
 const path = require("path");
+const webpack = require("webpack");
 
 module.exports = defineConfig({
   configureWebpack: {
-    plugins: [new Dotenv()],
+    plugins: [
+      new webpack.DefinePlugin(
+        Object.keys(process.env).reduce((acc, key) => {
+          acc[`process.env.${key}`] = JSON.stringify(process.env[key]);
+          return acc;
+        }, {})
+      ),
+    ],
     module: {
       rules: [
         // Add markdown-loader for files ending with '.md' in the assets folder

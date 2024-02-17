@@ -1,6 +1,6 @@
 @import "@/assets/style/base.css";
 
-#app {
+#root {
   margin: 0 auto;
   width: 100%;
   height: 100%;

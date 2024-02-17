@@ -50,7 +50,7 @@ app.use(VueLazyload, {
 });
 
 // mount app
-app.mount("#app");
+app.mount("#root");
 // setup store persistence using watcher
 watch(
   pinia.state,

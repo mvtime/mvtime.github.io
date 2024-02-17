@@ -42,7 +42,7 @@
     <br />
     <span>
       <a
-        href="/download/mvtt-sidebar.zip"
+        :href="$env.VUE_APP_SIDEBAR_DOWNLOAD_URL"
         :download="$env.VUE_APP_BRAND_SHORT_NAME + '-SIDEBAR--drop-me-on-the-developer-extensions-page.zip'"
       >
         <button class="download_button click-action action-btn">Chrome Extension</button>
