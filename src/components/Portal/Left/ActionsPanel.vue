@@ -36,7 +36,6 @@
 </template>
 
 <script>
-import { useMainStore } from "@/store";
 import { useMagic } from "@/store/magic";
 import { WarningToast } from "@svonk/util";
 import { useShortcuts } from "@/store/shortcuts";
@@ -83,7 +82,7 @@ export default {
       return useShortcuts();
     },
     has_classes() {
-      return this.store?.active_doc?.classes?.length > 0;
+      return this.$store?.active_doc?.classes?.length > 0;
     },
   },
   methods: {

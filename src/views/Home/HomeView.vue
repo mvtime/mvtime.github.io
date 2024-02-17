@@ -30,8 +30,6 @@
 </template>
 
 <script>
-// import store
-import { useMainStore } from "@/store";
 import OverlayWrapper from "@/components/Modal/OverlayWrapper.vue";
 
 export default {
@@ -62,7 +60,7 @@ export default {
       return combo;
     },
     logged_in() {
-      return this.store.user;
+      return this.$store.user;
     },
     source() {
       try {
@@ -81,7 +79,9 @@ export default {
   methods: {
     close() {
       this.$router.replace(
-        this.store.done_join_form && this.$route?.query?.redirect ? this.$route.query.redirect : "/"
+        this.$store.done_join_form && this.$route?.query?.redirect
+          ? this.$route.query.redirect
+          : "/"
       );
     },
     tomain() {

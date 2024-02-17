@@ -4,12 +4,12 @@
       <h2 class="header_style modal_header_title">Account Preferences</h2>
     </header>
     <div class="overlay_contents">
-      <div v-if="!store.is_teacher" class="overlay_contents_section">
+      <div v-if="!$store.is_teacher" class="overlay_contents_section">
         <div class="overlay_contents_text">
-          You can link a personal (non-{{ this.store.ORG_DOMAIN.substring(1) }}) account to access
+          You can link a personal (non-{{ $store.ORG_DOMAIN.substring(1) }}) account to access
           {{ $env.VUE_APP_BRAND_SHORT_NAME }} when not signed into your school account below!
         </div>
-        <div class="overlay_contents_text" v-if="store.personal_account">
+        <div class="overlay_contents_text" v-if="$store.personal_account">
           <br />
           You're currently signed in using a personal account. You can unlink it, or link more
           emails, through your main account.
@@ -18,21 +18,21 @@
           <div class="styled_input styled_links_box">
             <div class="styled_links_display">
               <span
-                v-if="!store.linked_accounts || !store.linked_accounts.length"
+                v-if="!$store.linked_accounts || !$store.linked_accounts.length"
                 class="placeholder"
                 >No linked accounts, add one below</span
               >
               <div v-else class="styled_line_links">
                 <div
                   class="styled_line_links__account"
-                  v-for="email in store.linked_accounts"
-                  :class="{ active: store.personal_account && store.user.email == email }"
+                  v-for="email in $store.linked_accounts"
+                  :class="{ active: $store.personal_account && $store.user.email == email }"
                   :key="email"
                 >
                   <div
                     class="styled_line_links__remove"
                     @click="uninvite_linked(email)"
-                    v-if="!store.personal_account"
+                    v-if="!$store.personal_account"
                     title="Remove Account"
                   >
                     <div class="remove_icon"></div>
@@ -42,7 +42,7 @@
               </div>
             </div>
             <hr class="styled_links_separator" />
-            <div class="styled_links_add" :class="{ links_personal: store.personal_account }">
+            <div class="styled_links_add" :class="{ links_personal: $store.personal_account }">
               <input
                 class="styled_links_add__text"
                 type="email"
@@ -50,31 +50,31 @@
                 @update="fix_email"
                 v-model="new_email"
                 placeholder="Personal Email"
-                :disabled="store.personal_account || loading"
+                :disabled="$store.personal_account || loading"
               />
               <button
                 class="styled_links_add__action"
                 @click="invite_linked"
                 :disabled="!ready_to_link"
               >
-                {{ store.personal_account ? "UNAVALIABLE" : "Add" }}
+                {{ $store.personal_account ? "UNAVALIABLE" : "Add" }}
               </button>
             </div>
           </div>
         </div>
       </div>
-      <div v-if="!store.personal_account" class="overlay_contents_text overlay_contents_section">
+      <div v-if="!$store.personal_account" class="overlay_contents_text overlay_contents_section">
         Click
         <span
           class="button_pointer_text click-action"
           @click="
-            store.toggle_teacher();
+            $store.toggle_teacher();
             changed = true;
           "
         >
           here </span
-        >&MediumSpace; to {{ store.is_teacher ? "disable" : "enable" }} teacher mode
-        <span v-if="store.is_teacher">and return to the student view.</span>
+        >&MediumSpace; to {{ $store.is_teacher ? "disable" : "enable" }} teacher mode
+        <span v-if="$store.is_teacher">and return to the student view.</span>
         <span v-else
           >to create, and manage your own classes and tasks. This may require setup by an admin if
           you do not have a teacher email.</span
@@ -145,7 +145,7 @@
         <span
           id="theme_pointer_button"
           class="button_pointer_text button_pointer_icon click-action"
-          @click="store.toggle_theme()"
+          @click="$store.toggle_theme()"
         >
           <div class="theme_icon icon"></div>
           Switch Theme
@@ -171,7 +171,7 @@
             class="button_pointer_text click-action"
             @click="
               changed = true;
-              store.finish_tutorial(false).then(() => {
+              $store.finish_tutorial(false).then(() => {
                 $emit('close');
               });
             "
@@ -185,13 +185,13 @@
             class="button_pointer_text click-action"
             @click="
               changed = true;
-              store.set_account_pref('simplified', !store.simplified);
+              $store.set_account_pref('simplified', !$store.simplified);
             "
           >
-            {{ store.simplified ? "leave" : "enter" }} simplified view
+            {{ $store.simplified ? "leave" : "enter" }} simplified view
           </span>
           to
-          <span v-if="!store.simplified"
+          <span v-if="!$store.simplified"
             >make {{ $env.VUE_APP_BRAND_SHORT_NAME }} easier to use on slower devices</span
           >
           <span v-else>get back the classic interface</span>.
@@ -229,7 +229,7 @@
     </div>
     <div class="bottom_actions">
       <button
-        v-if="!store.personal_account"
+        v-if="!$store.personal_account"
         class="back_action click_escape"
         @click="$emit('close')"
       >
@@ -239,9 +239,9 @@
       <button
         class="continue_action click_ctrlenter"
         :class="{ loading_bg: loading }"
-        :disabled="!store.personal_account && !changed && !store.is_teacher"
+        :disabled="!$store.personal_account && !changed && !$store.is_teacher"
         @click="
-          if (store.personal_account || store.is_teacher) {
+          if ($store.personal_account || $store.is_teacher) {
             $emit('close');
           } else {
             save();
@@ -251,9 +251,9 @@
         {{
           changed
             ? "Finish"
-            : store.personal_account
+            : $store.personal_account
             ? "Close"
-            : store.is_teacher
+            : $store.is_teacher
             ? "Done"
             : "Finish"
         }}
@@ -329,13 +329,13 @@ export default {
   },
   computed: {
     show_timeout() {
-      return !this.store?.account_doc?.prefs?.hide_timeout;
+      return !this.$store?.account_doc?.prefs?.hide_timeout;
     },
     prioritize_notes() {
-      return !this.store?.account_doc?.prefs?.derank_notes;
+      return !this.$store?.account_doc?.prefs?.derank_notes;
     },
     include_finished() {
-      return !this.store?.account_doc?.prefs?.hide_finished;
+      return !this.$store?.account_doc?.prefs?.hide_finished;
     },
     ready_to_link() {
       return (
@@ -347,21 +347,21 @@ export default {
     },
     unsubed_from() {
       return this.email_categories.reduce((acc, cur) => {
-        acc[cur.key] = this.store.account_doc?.prefs?.unsub_from?.[cur.key] || false;
+        acc[cur.key] = this.$store.account_doc?.prefs?.unsub_from?.[cur.key] || false;
         return acc;
       }, {});
     },
   },
   methods: {
     update_account_pref(key, value, [on_true, on_false]) {
-      if (this.store.account_doc) {
-        let before = this.store.account_doc?.prefs?.[key];
+      if (this.$store.account_doc) {
+        let before = this.$store.account_doc?.prefs?.[key];
         if (before != value) {
           // update the value
-          this.store
+          this.$store
             .update_wrapper_with_merge({
               prefs: {
-                ...this.store.account_doc.prefs,
+                ...this.$store.account_doc.prefs,
                 [key]: value,
               },
             })
@@ -378,15 +378,15 @@ export default {
       }
     },
     update_email_pref(key, description) {
-      if (this.store.account_doc) {
+      if (this.$store.account_doc) {
         // update account_doc.prefs.unsub_from value to toggle the value of this key
-        const before = this.store.account_doc?.prefs?.unsub_from || {};
+        const before = this.$store.account_doc?.prefs?.unsub_from || {};
         const new_val = !before[key];
         const after = { ...before, [key]: !before[key] };
-        this.store
+        this.$store
           .update_wrapper_with_merge({
             prefs: {
-              ...this.store.account_doc.prefs,
+              ...this.$store.account_doc.prefs,
               unsub_from: after,
             },
           })
@@ -416,10 +416,10 @@ export default {
       }
     },
     invite_linked() {
-      if (!this.store.personal_account) {
+      if (!this.$store.personal_account) {
         this.changed = true;
         this.loading = true;
-        this.store
+        this.$store
           .invite_linked(this.new_email)
           .then(() => {
             this.loading = false;
@@ -434,7 +434,7 @@ export default {
     uninvite_linked(email) {
       this.changed = true;
       this.loading = true;
-      this.store
+      this.$store
         .uninvite_linked(email)
         .then(() => {
           this.loading = false;

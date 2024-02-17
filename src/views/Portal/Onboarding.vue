@@ -26,7 +26,7 @@
             :disabled="class_obj.is_joined"
           >
             <span v-if="class_obj.is_joined">[JOINED]</span>
-            {{ store.class_text(class_obj) }}
+            {{ $store.class_text(class_obj) }}
           </option>
           <option v-if="teacher_email && !classes" value="" disabled hidden selected>
             {{ loading ? "Loading..." : "No classes found" }}
@@ -64,7 +64,7 @@
  * @requires module:store/MainStore
  * @emits {Function} close - An event emitted when the class is added or the modal is closed.
  */
-import { useMainStore } from "@/store";
+
 export default {
   name: "OnboardingView",
   emits: ["close"],
@@ -81,23 +81,22 @@ export default {
       return this.classes.find((class_obj) => class_obj.id === this.class_id) || {};
     },
     loading() {
-      return this.store.loaded_email !== this.teacher_email;
+      return this.$store.loaded_email !== this.teacher_email;
     },
     classes() {
       if (!this.teacher_email) {
         return null;
-      } else if (this.teacher_email === this.store.loaded_email) {
-        return this.store.loaded_classes;
+      } else if (this.teacher_email === this.$store.loaded_email) {
+        return this.$store.loaded_classes;
       }
       // commit store fetch_classes_by_email with teacher_email
-      this.store.fetch_classes_by_email(this.teacher_email);
+      this.$store.fetch_classes_by_email(this.teacher_email);
 
       return null;
     },
     name() {
-      let store = this.store;
-      if (store.user && store.user.displayName)
-        return "Hi " + store.user.displayName.split(" ")[0] + ", ";
+      if (this.$store.user && this.$store.user.displayName)
+        return "Hi " + this.$store.user.displayName.split(" ")[0] + ", ";
       return "";
     },
   },
@@ -108,7 +107,7 @@ export default {
   methods: {
     add_class() {
       this.adding = true;
-      this.store
+      this.$store
         .add_class(this.teacher_email, this.class_id, this.class_obj.name, this.class_obj.period)
         .then(() => {
           this.$emit("close");

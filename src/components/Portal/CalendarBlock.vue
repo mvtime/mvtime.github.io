@@ -45,13 +45,13 @@
         </nav>
         <button
           class="portal_main_block_action portal_main_block_action_alt"
-          v-if="!store.is_teacher || true"
+          v-if="!$store.is_teacher || true"
           @click="swap_to_study"
           title="View study portal (s)"
         >
           <div
             class="action_icon todo-icon"
-            :class="{ alt: store.upcoming_todo && store.upcoming_todo.length }"
+            :class="{ alt: $store.upcoming_todo && $store.upcoming_todo.length }"
           ></div>
         </button>
       </div>
@@ -94,7 +94,7 @@
           class="calendar_day"
           :_date="day.date.toISOString().split('T')[0]"
           :class="{
-            calendar_day__placeholder: day.is_placeholder && !store.simplified,
+            calendar_day__placeholder: day.is_placeholder && !$store.simplified,
             calendar_day__hastask: day.tasks ? day.tasks.length : false,
             calendar_day__today: day.is_today,
             calendar_day__past: day.is_past,
@@ -108,9 +108,9 @@
         >
           <div
             class="calendar_day_date"
-            :class="{ 'click-action': store.is_teacher }"
+            :class="{ 'click-action': $store.is_teacher }"
             @click="
-              if (store.is_teacher) {
+              if ($store.is_teacher) {
                 $router.push({
                   name: 'newtask',
                   query: {
@@ -146,9 +146,9 @@
               :title="task.name"
               :draggable="
                 task &&
-                store.is_teacher &&
-                store.user &&
-                task.ref.split('/')[0] == store.active_doc.email &&
+                $store.is_teacher &&
+                $store.user &&
+                task.ref.split('/')[0] == $store.active_doc.email &&
                 $route.name != 'study'
               "
               @dragstart="
@@ -166,7 +166,7 @@
               @click="
                 $event.preventDefault();
                 if (task.type != 'note' && ($event.ctrlKey || $event.metaKey))
-                  store.set_finished(!store.finished_tasks.includes(task.ref), task.ref);
+                  $store.set_finished(!$store.finished_tasks.includes(task.ref), task.ref);
                 else $emit('taskclick', task);
               "
             >
@@ -174,9 +174,9 @@
                 class="calendar_day_task_editable"
                 v-if="
                   task &&
-                  store.is_teacher &&
-                  store.user &&
-                  task.ref.split('/')[0] == store.active_doc.email
+                  $store.is_teacher &&
+                  $store.user &&
+                  task.ref.split('/')[0] == $store.active_doc.email
                 "
               >
                 <span class="task_icon task_edit__icon" :class="{ loading_bg: drag.load }"></span>
@@ -266,7 +266,7 @@ export default {
   mounted() {
     this.$status.log("📅 Calendar mounted");
     this.$emit("mounted");
-    this.tasks = this.store.tasks;
+    this.tasks = this.$store.tasks;
     window.addEventListener("keydown", this.handle_key);
     useShortcuts().register_all(this.shortcuts, "Calendar");
   },
@@ -388,7 +388,7 @@ export default {
 
         this.drag.load = true;
         this.drag.to = null;
-        this.store
+        this.$store
           .update_task(this.drag.task.ref, {
             ...this.drag.task,
             date: new Date(to - to.getTimezoneOffset() * 60 * 1000).toISOString().split("T")[0],
@@ -429,12 +429,12 @@ export default {
       );
     },
     is_completed(task) {
-      return this.store.finished_tasks?.includes(task.ref);
+      return this.$store.finished_tasks?.includes(task.ref);
     },
     get_day_tasks(day) {
       return this.tasks
         .filter((task) => {
-          if (this.store?.account_doc?.prefs?.hide_finished && this.is_completed(task))
+          if (this.$store?.account_doc?.prefs?.hide_finished && this.is_completed(task))
             return false;
           const task_date = compatDateObj(task.date);
           return (
@@ -448,7 +448,7 @@ export default {
           if (!this.is_completed(a) && this.is_completed(b)) return -1;
           // prioritize/deprioritize notes based on user settings
           if (a.type != b.type) {
-            let prioritize_notes = !this.store?.account_doc?.prefs?.derank_notes;
+            let prioritize_notes = !this.$store?.account_doc?.prefs?.derank_notes;
             if (prioritize_notes && a.type == "note") return -1;
             if (prioritize_notes && b.type == "note") return 1;
             if (a.type == "note" && b.type != "note") return 1;
@@ -476,7 +476,7 @@ export default {
       this.loaded_month = new Date(this.loaded_month.setMonth(this.loaded_month.getMonth() - 1));
     },
     run_get_tasks() {
-      this.tasks = this.store.tasks;
+      this.tasks = this.$store.tasks;
       this.is_ready = true;
     },
     get_link(ref) {
@@ -551,11 +551,11 @@ export default {
       }
       this.drag.class = this.dragging_class;
     },
-    "store.classes": {
+    "$store.classes": {
       handler(a, b) {
         if (a.length != b.length && this.is_ready) {
           this.$status.log("📦 Classes array length changed, calendar updating tasks");
-          this.store
+          this.$store
             .fetch_classes()
             .then(() => {
               this.run_get_tasks();
@@ -567,9 +567,9 @@ export default {
       },
       deep: true,
     },
-    "store.tasks": {
+    "$store.tasks": {
       handler() {
-        this.tasks = this.store.tasks;
+        this.tasks = this.$store.tasks;
       },
       deep: true,
     },

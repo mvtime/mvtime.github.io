@@ -23,7 +23,7 @@
               '--color-class': class_obj.color,
               '--color-class-alt': class_obj.color + '2d',
             }"
-            >{{ store.class_text(class_obj) }}</a
+            >{{ $store.class_text(class_obj) }}</a
           >
         </div>
         <div class="inputs_row">
@@ -195,7 +195,7 @@ export default {
       return !this.newlink.path || !this.newlink.text || !this.newlink.path.startsWith("http");
     },
     class_obj() {
-      let classes = this.store?.classes;
+      let classes = this.$store?.classes;
       if (!classes) return null;
       return classes.find((class_obj) => class_obj.id === this.original.class_id) || {};
     },
@@ -268,7 +268,7 @@ export default {
         return;
       }
       this.loading = true;
-      this.store
+      this.$store
         .update_task(this.task.ref, this.task)
         .then(() => {
           // this.$emit("close");
@@ -311,7 +311,7 @@ export default {
         this.$emit("close");
       }
       // get task from store
-      this.store
+      this.$store
         .task_from_ref(ref)
         .then((task) => {
           if (!task) {

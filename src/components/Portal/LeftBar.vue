@@ -4,17 +4,17 @@
       <div class="branding-title gohome">{{ $env.VUE_APP_BRAND_LONG_NAME }}</div>
       <div class="flex_spacer"></div>
       <!-- Actions Panel -->
-      <ActionsPanel v-if="store && store.is_teacher" />
+      <ActionsPanel v-if="$store && $store.is_teacher" />
       <!-- Class List -->
       <ClassList v-bind="$attrs" @dragclass="$emit('dragclass', $event)" />
       <div class="flex_spacer"></div>
     </div>
     <!-- Theme Button -->
     <button
-      :_theme="store.get_theme"
+      :_theme="$store.get_theme"
       class="theme_button click-action"
       title="Switch Theme"
-      @click="store.toggle_theme"
+      @click="$store.toggle_theme"
     >
       <div class="theme_icon"></div>
       <div class="toggle_text">Switch Theme</div>
@@ -28,7 +28,6 @@
 import SidebarToggle from "@/components/Portal/SidebarToggle.vue";
 import ClassList from "./Left/ClassList.vue";
 import ActionsPanel from "./Left/ActionsPanel.vue";
-import { useMainStore } from "@/store";
 import { placeholderToast } from "@svonk/util";
 export default {
   name: "LeftBar",

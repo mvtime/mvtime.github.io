@@ -68,7 +68,7 @@ export default {
   },
   methods: {
     create_class() {
-      this.store.create_class(this.class_obj).then(() => {
+      this.$store.create_class(this.class_obj).then(() => {
         this.$emit("close");
       });
     },

@@ -240,7 +240,7 @@ export default {
       e.stopPropagation();
     },
     track_flush() {
-      if (!this.store.done_tutorial) {
+      if (!this.$store.done_tutorial) {
         this.track = this.track_fn();
         if (this.options?.reclick) {
           $(this.options.reclick).click();

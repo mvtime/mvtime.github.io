@@ -96,7 +96,7 @@
       </button>
       <button
         class="join_leave_action primary_styled"
-        v-else-if="store.user && class_obj"
+        v-else-if="$store.user && class_obj"
         :disabled="!ready"
         :class="{ click_escape: joinable }"
         @click="
@@ -151,20 +151,20 @@ export default {
     },
     joinable() {
       return (
-        this.store.user &&
+        this.$store.user &&
         this.class_obj &&
         // and not already joined
-        !this.store?.active_doc?.classes?.includes(this.store.ref_to_path(this.$route.params.ref))
+        !this.$store?.active_doc?.classes?.includes(this.$store.ref_to_path(this.$route.params.ref))
       );
     },
     editable() {
       return (
-        this.store.is_teacher &&
-        this.store.user &&
+        this.$store.is_teacher &&
+        this.$store.user &&
         this.class_obj &&
         this.$route.params.ref &&
         this.$route.params.ref.split("~")[0] ==
-          this.store.active_doc.email.replace(this.store.ORG_DOMAIN, "")
+          this.$store.active_doc.email.replace(this.$store.ORG_DOMAIN, "")
       );
     },
   },
@@ -236,7 +236,7 @@ export default {
         return;
       }
       this.loading_upcoming = true;
-      this.store
+      this.$store
         .upcoming_from_ref(this.$route.params.ref.split("~").join("/"), this.class_obj)
         .then((upcoming) => {
           this.upcoming = upcoming;
@@ -266,7 +266,7 @@ export default {
         return;
       }
       // get class from store
-      this.store
+      this.$store
         .class_from_ref(ref)
         .then((class_obj) => {
           if (!class_obj) {

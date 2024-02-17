@@ -83,7 +83,7 @@
       <div class="flex_spacer"></div>
       <button
         class="edit_action primary_styled"
-        v-if="!store.is_teacher && store.user && task && task.type != 'note'"
+        v-if="!$store.is_teacher && $store.user && task && task.type != 'note'"
         @click="notes_task"
       >
         Notes
@@ -91,10 +91,10 @@
       <button
         class="edit_action primary_styled"
         v-if="
-          store.is_teacher &&
-          store.user &&
+          $store.is_teacher &&
+          $store.user &&
           task &&
-          task.ref.split('/')[0] == store.active_doc.email.replace(store.ORG_DOMAIN, '')
+          task.ref.split('/')[0] == $store.active_doc.email.replace($store.ORG_DOMAIN, '')
         "
         @click="edit_task"
       >
@@ -152,7 +152,7 @@ export default {
     note() {
       const ref = this.$route?.params?.ref;
       if (!this.task || !ref) return;
-      const note = this.store.note_for(ref);
+      const note = this.$store.note_for(ref);
       return note && converter.makeHtml(note);
     },
   },
@@ -228,7 +228,7 @@ export default {
         return;
       }
       // get task from store
-      this.store
+      this.$store
         .task_from_ref(ref)
         .then((task) => {
           if (!task) {

@@ -2,7 +2,7 @@
   <div class="right-bar portal_sidebar" :class="{ active: sidebar_open }" @click="show_if_inactive">
     <div class="sidebar_overflow">
       <div class="sidebar_first_block">
-        <div class="linked_acc_icon" v-if="store && store.personal_account">
+        <div class="linked_acc_icon" v-if="$store && $store.personal_account">
           <img
             class="linked_acc_icon__img"
             width="24"
@@ -31,7 +31,6 @@
 <script>
 import SidebarToggle from "@/components/Portal/SidebarToggle.vue";
 import UpcomingTasks from "@/components/Portal/UpcomingTasks.vue";
-import { useMainStore } from "@/store";
 export default {
   name: "RightBar",
   components: {

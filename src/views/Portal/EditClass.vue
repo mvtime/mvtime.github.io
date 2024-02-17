@@ -22,7 +22,7 @@
               '--color-class': original.color,
               '--color-class-alt': original.color + '2d',
             }"
-            >{{ store.class_text(original) }}</a
+            >{{ $store.class_text(original) }}</a
           >
         </div>
         <div class="inputs_row">
@@ -117,7 +117,7 @@ export default {
       return JSON.stringify(this.class_obj) != JSON.stringify(this.original);
     },
     is_owned() {
-      return this.store.user.email.split("@")[0] == this.ref.split("/")[0];
+      return this.$store.user.email.split("@")[0] == this.ref.split("/")[0];
     },
   },
   mounted() {
@@ -142,7 +142,7 @@ export default {
   methods: {
     update_class() {
       this.loading = true;
-      this.store
+      this.$store
         .update_class(this.ref, this.class_obj)
         .then(() => {
           this.$emit("close");
@@ -155,7 +155,7 @@ export default {
     },
     get_class() {
       this.ready = false;
-      this.store
+      this.$store
         .class_from_ref(this.ref)
         .then((class_obj) => {
           this.class_obj = class_obj;
@@ -178,14 +178,14 @@ export default {
     /** Shares the task link with the native share function, or to the clipboard if sharing is not supported */
     async share_class() {
       this.loading_share = true;
-      this.store
+      this.$store
         .code_from_ref(this.ref)
         .then((code) => {
           let url = new URL(`https://${this.$env.VUE_APP_BRAND_DOMAIN__ADDCLASS}/` + code);
           if (navigator.share) {
             navigator
               .share({
-                title: this.store.class_text(this.class_obj),
+                title: this.$store.class_text(this.class_obj),
                 text: `Join my class on ${this.$env.VUE_APP_BRAND_SHORT_NAME}!`,
                 url: url.href,
               })

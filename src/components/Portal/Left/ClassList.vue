@@ -15,7 +15,7 @@
           :href="'/view/' + clean_ref(class_obj.ref)"
           v-for="class_obj of classes"
           :draggable="
-            store.is_teacher && class_obj.email == this.store.user.email && $route.name != 'study'
+            $store.is_teacher && class_obj.email == $store.user.email && $route.name != 'study'
           "
           @dragstart="
             $emit('dragclass', class_obj);
@@ -41,12 +41,12 @@
             class="class_swatch"
             :_email="class_obj.email"
             :title="
-              store.is_teacher && class_obj.email == this.store.user.email
+              $store.is_teacher && class_obj.email == $store.user.email
                 ? 'Edit Class'
                 : 'Leave Class'
             "
             @click="
-              if (store.is_teacher && class_obj.email == this.store.user.email) {
+              if ($store.is_teacher && class_obj.email == $store.user.email) {
                 edit_class(class_obj);
               } else {
                 leave_class(class_obj);
@@ -56,7 +56,7 @@
             "
           >
             <div
-              v-if="!store.is_teacher || class_obj.email != this.store.user.email"
+              v-if="!store.is_teacher || class_obj.email != this.$store.user.email"
               class="class_swatch__icon class_swatch_remove__icon"
             ></div>
             <div v-else class="class_swatch__icon class_swatch_edit__icon"></div>
@@ -83,7 +83,6 @@
 </template>
 
 <script>
-import { useMainStore } from "@/store";
 export default {
   props: {
     filtered_classes: {
@@ -99,7 +98,7 @@ export default {
   },
   computed: {
     classes() {
-      return this.store.classes.map((class_obj) => {
+      return this.$store.classes.map((class_obj) => {
         return {
           ...class_obj,
           email: class_obj.id.split("/")[0],

@@ -60,10 +60,10 @@ export default {
     } else {
       this.ready = true;
     }
-    this.store.personal_account = true;
+    this.$store.personal_account = true;
     if (
-      this.store?.linked_account_doc?.linked_to &&
-      this.store.linked_account_doc.linked_to == this.code
+      this.$store?.linked_account_doc?.linked_to &&
+      this.$store.linked_account_doc.linked_to == this.code
     ) {
       this.$emit("close");
       new WarningToast("These two accounts are already linked!", 2000);
@@ -71,7 +71,7 @@ export default {
   },
   methods: {
     finish() {
-      this.store.link_account_uid(this.code).then(() => {
+      this.$store.link_account_uid(this.code).then(() => {
         this.$emit("close");
       });
     },

@@ -16,7 +16,7 @@
           v-for="task of tasks"
           :task="task"
           :key="task.ref"
-          :href="`/view/${store.path_to_ref(task.ref)}`"
+          :href="`/view/${$store.path_to_ref(task.ref)}`"
           target="_blank"
           @click="
             $event.preventDefault();
@@ -34,7 +34,6 @@
 
 <script>
 import ExamCard from "@/components/Portal/ExamCard.vue";
-import { useMainStore } from "@/store";
 
 export default {
   name: "UpcomingTasks",
@@ -49,7 +48,7 @@ export default {
   },
   computed: {
     tasks() {
-      return this.store.upcoming_todo.slice(0, 6);
+      return this.$store.upcoming_todo.slice(0, 6);
     },
   },
   methods: {
@@ -59,7 +58,7 @@ export default {
         name: "viewtask",
         params: {
           // replace all slashes with ~ to avoid router issues
-          ref: this.store.path_to_ref(task.ref),
+          ref: this.$store.path_to_ref(task.ref),
         },
         query: this.$route.query,
       });

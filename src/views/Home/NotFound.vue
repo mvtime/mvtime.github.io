@@ -24,13 +24,11 @@
 </template>
 
 <script>
-// import store
-import { useMainStore } from "@/store";
 export default {
   name: "NotFound",
   computed: {
     logged_in() {
-      return this.store.user;
+      return this.$store.user;
     },
   },
 };

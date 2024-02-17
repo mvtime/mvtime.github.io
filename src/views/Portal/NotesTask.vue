@@ -24,7 +24,7 @@
               '--color-class': task._class.color,
               '--color-class-alt': task._class.color + '2d',
             }"
-            >{{ store.class_text(class_obj) }}</a
+            >{{ $store.class_text(class_obj) }}</a
           >
         </div>
         <div class="inputs_row">
@@ -132,7 +132,7 @@ export default {
     },
     async update_note() {
       this.loading = true;
-      this.store
+      this.$store
         .set_note(this.note, this.$route.params.ref)
         .then(() => {
           new SuccessToast(
@@ -160,7 +160,7 @@ export default {
         this.$emit("close");
       }
       // get task from store
-      this.store
+      this.$store
         .task_from_ref(ref)
         .then((task) => {
           if (!task) {
@@ -174,7 +174,7 @@ export default {
             this.loading = false;
           }
           // get note
-          const note = this.store.note_for(this.$route.params.ref);
+          const note = this.$store.note_for(this.$route.params.ref);
           if (note) {
             this.note = note;
             this.original_note = note;

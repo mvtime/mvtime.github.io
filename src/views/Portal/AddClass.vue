@@ -6,7 +6,7 @@
     <div class="overlay_contents" ref="contents">
       <div class="overlay_contents_text">
         <span v-if="is_join"
-          >{{ store.loaded_email == teacher_email ? "Loaded" : "Loading" }} from your teacher's
+          >{{ $store.loaded_email == teacher_email ? "Loaded" : "Loading" }} from your teacher's
           class {{ code ? "code" : "ref" }}</span
         >
         <span v-else
@@ -39,7 +39,7 @@
             :disabled="class_obj.is_joined && !adding"
           >
             <span v-if="class_obj.is_joined && !adding">[JOINED]</span>
-            {{ store.class_text(class_obj) }}
+            {{ $store.class_text(class_obj) }}
           </option>
           <option v-if="teacher_email && !classes" value="" disabled hidden selected>
             {{ loading ? "Loading..." : "No classes found" }}
@@ -77,7 +77,7 @@
             '--color-class': class_obj.color,
             '--color-class-alt': class_obj.color + '2d',
           }"
-          >{{ store.class_text(class_obj) }}</a
+          >{{ $store.class_text(class_obj) }}</a
         >
       </div>
       <div v-if="class_obj" class="overlay_contents_text">
@@ -143,10 +143,10 @@ export default {
     this.use_ref();
     if (
       !this.is_join &&
-      this.store.loaded_email &&
-      this.store.get_loaded_classes.some((class_obj) => !class_obj.is_joined)
+      this.$store.loaded_email &&
+      this.$store.get_loaded_classes.some((class_obj) => !class_obj.is_joined)
     ) {
-      this.teacher_email = this.store.loaded_email;
+      this.teacher_email = this.$store.loaded_email;
     }
   },
   computed: {
@@ -155,19 +155,19 @@ export default {
       return this.classes.find((class_obj) => class_obj.id === this.class_id) || false;
     },
     cleaned_ref() {
-      return this.store.path_to_ref(this.teacher_email, this.class_id);
+      return this.$store.path_to_ref(this.teacher_email, this.class_id);
     },
     loading() {
-      return this.store.loaded_email !== this.teacher_email;
+      return this.$store.loaded_email !== this.teacher_email;
     },
     classes() {
       if (!this.teacher_email) {
         return null;
-      } else if (this.teacher_email === this.store.loaded_email) {
-        return this.store.get_loaded_classes;
+      } else if (this.teacher_email === this.$store.loaded_email) {
+        return this.$store.get_loaded_classes;
       }
       // commit store fetch_classes_by_email with teacher_email
-      this.store.fetch_classes_by_email(this.teacher_email);
+      this.$store.fetch_classes_by_email(this.teacher_email);
 
       return null;
     },
@@ -181,7 +181,7 @@ export default {
   methods: {
     async add_class() {
       this.adding = true;
-      this.store
+      this.$store
         .add_class(this.teacher_email, this.class_id, this.class_obj.name, this.class_obj.period)
         .then(() => {
           this.$emit("close");
@@ -196,7 +196,7 @@ export default {
       let ref = this.$route.params?.ref;
       if (!ref && this.code) {
         try {
-          ref = await this.store.ref_from_code(this.code);
+          ref = await this.$store.ref_from_code(this.code);
         } catch (err) {
           new ErrorToast("Invalid join code", err, 4000);
           this.$status.log("🔥 " + err);
@@ -212,14 +212,14 @@ export default {
       if (ref && this.is_join) {
         this.$status.log("🔍 Attempting to use class join ref", ref);
         let [_email, _id] = ref.split("~");
-        _email += this.store.ORG_DOMAIN;
+        _email += this.$store.ORG_DOMAIN;
         this.teacher_email = _email;
-        this.store.fetch_classes_by_email(_email);
-        while (this.store.loaded_email !== this.teacher_email) {
+        this.$store.fetch_classes_by_email(_email);
+        while (this.$store.loaded_email !== this.teacher_email) {
           await new Promise((resolve) => setTimeout(resolve, 100));
         }
 
-        let found = this.store?.get_loaded_classes?.find((class_obj) => class_obj.id === _id);
+        let found = this.$store?.get_loaded_classes?.find((class_obj) => class_obj.id === _id);
         if (found) {
           this.class_id = _id;
           if (found.is_joined) {

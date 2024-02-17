@@ -9,7 +9,7 @@
         v-for="task of tasks"
         :task="task"
         :key="task.name"
-        :href="`/view/${store.path_to_ref(task.ref)}`"
+        :href="`/view/${$store.path_to_ref(task.ref)}`"
         target="_blank"
         @click="$event.preventDefault()"
       />
@@ -28,12 +28,12 @@ export default {
   },
   computed: {
     tasks() {
-      return this.store.upcoming_todo.slice(0, 4);
+      return this.$store.upcoming_todo.slice(0, 4);
     },
     getData() {
       return {
-        tasks: this.store.upcoming_todo,
-        num: this.store.upcoming_todo?.length || 0,
+        tasks: this.$store.upcoming_todo,
+        num: this.$store.upcoming_todo?.length || 0,
       };
     },
   },

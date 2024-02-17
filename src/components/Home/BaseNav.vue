@@ -3,10 +3,10 @@
     <h1 class="gohome hideoverflow">{{ $env.VUE_APP_BRAND_LONG_NAME }}</h1>
     <!-- Theme Button -->
     <button
-      :_theme="store.get_theme"
+      :_theme="$store.get_theme"
       class="theme_button"
       title="Switch Theme"
-      @click="store.toggle_theme"
+      @click="$store.toggle_theme"
     >
       <div class="theme_icon"></div>
       <div class="toggle_text">Switch Theme</div>
@@ -34,7 +34,7 @@
       <button
         id="nav-auth-btn"
         class="small-action-btn auth-action can-logout can-login click-action"
-        :class="{ linked: store.personal_account && store.user, oauth: !logged_in }"
+        :class="{ linked: $store.personal_account && $store.user, oauth: !logged_in }"
       >
         Log {{ logged_in ? "Out" : "In" }}
       </button>
@@ -68,7 +68,7 @@ export default {
   },
   computed: {
     logged_in() {
-      return !!this.store.user;
+      return !!this.$store.user;
     },
   },
 };

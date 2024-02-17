@@ -129,7 +129,7 @@
           class="checkbox"
           v-for="class_obj in classes"
           :key="class_obj.id"
-          :href="'/view/' + store.path_to_ref(class_obj.ref)"
+          :href="'/view/' + $store.path_to_ref(class_obj.ref)"
         >
           <input type="checkbox" :id="class_obj.id" :value="class_obj.id" v-model="task_classes" />
           <label
@@ -141,7 +141,7 @@
               '--color-class-alt': class_obj.color + '2d',
             }"
           >
-            {{ store.class_text(class_obj) }}
+            {{ $store.class_text(class_obj) }}
           </label>
           <label v-else :for="class_obj.id" @click="$event.stopPropagation">{{
             class_obj.name
@@ -253,7 +253,7 @@ export default {
       return useMagic();
     },
     classes() {
-      return this.store.classes;
+      return this.$store.classes;
     },
     is_note() {
       return this.task.type === "note";
@@ -297,7 +297,7 @@ export default {
         return;
       }
       this.loading = true;
-      this.store
+      this.$store
         .create_task(this.task, this.task_classes)
         .then(() => {
           //! router to new task view?

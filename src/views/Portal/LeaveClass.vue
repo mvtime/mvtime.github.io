@@ -20,7 +20,7 @@
           '--color-class': class_obj.color,
           '--color-class-alt': class_obj.color + '2d',
         }"
-        >{{ store.class_text(class_obj) }}</a
+        >{{ $store.class_text(class_obj) }}</a
       >? <br /><br />
       You'll need to use the
       <span class="button_pointer_text">Join Class</span> button in the left sidebar to join it
@@ -50,7 +50,6 @@
  * @module views/Portal/LeaveClass
  */
 import smoothReflow from "vue-smooth-reflow";
-import { useMainStore } from "@/store";
 import { WarningToast } from "@svonk/util";
 export default {
   name: "LeaveClass",
@@ -76,13 +75,13 @@ export default {
       this.$emit("close");
     } else {
       let [_email, _id] = this.ref.split("~");
-      _email += this.store.ORG_DOMAIN;
+      _email += this.$store.ORG_DOMAIN;
       this.ref = [_email, _id].join("/");
       if (this.ref.split("/").length !== 2) {
         new WarningToast("Couldn't find that class", 2000);
         this.$emit("close");
       } else {
-        let classes = this.store?.classes;
+        let classes = this.$store?.classes;
         if (!classes || !this.ref) this.class_obj = {};
         this.class_obj = classes.find((class_obj) => class_obj.id === this.ref) || {};
         this.ready = true;
@@ -92,7 +91,7 @@ export default {
   methods: {
     leave_class() {
       this.loading = true;
-      this.store
+      this.$store
         .remove_class(this.class_obj.id)
         .then(() => {
           this.$emit("clear_filters");

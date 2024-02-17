@@ -23,7 +23,7 @@ app.mixin({
       return _status;
     },
     // store access
-    store() {
+    $store() {
       return useMainStore();
     },
   },

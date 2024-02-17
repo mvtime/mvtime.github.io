@@ -27,7 +27,7 @@ export default {
   },
   methods: {
     logout() {
-      this.store.logout();
+      this.$store.logout();
       this.$emit("close");
     },
   },

@@ -36,7 +36,6 @@
 </template>
 
 <script>
-import { useMainStore } from "@/store";
 import { ErrorToast } from "@svonk/util";
 export default {
   name: "LinkAccount",
@@ -74,7 +73,7 @@ export default {
   mounted() {
     // get code prop from route
     this.code = this.$route.params.code;
-    this.store
+    this.$store
       .doc_from_uid(this.code)
       .then((result) => {
         this.loading = false;

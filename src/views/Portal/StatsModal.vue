@@ -176,7 +176,7 @@ export default {
   },
   computed: {
     completed() {
-      return this.store?.active_doc?.done_surveys || [];
+      return this.$store?.active_doc?.done_surveys || [];
     },
     graphs() {
       let graphs = this.filters
@@ -196,7 +196,7 @@ export default {
     },
     options() {
       let self = this;
-      let theme = this.store.theme;
+      let theme = this.$store.theme;
       return {
         xaxis: {
           type: "datetime",
@@ -308,7 +308,7 @@ export default {
       this.can_update = false;
       this.last_update = Date.now();
       this.surveys = [];
-      this.store
+      this.$store
         .get_cached_surveys(this.completed, force)
         .then((data) => {
           this.process(data);

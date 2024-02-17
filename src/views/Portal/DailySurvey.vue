@@ -21,7 +21,6 @@ import LongResponse from "@/components/Surveys/LongResponse.vue";
 import UpcomingPage from "@/components/Surveys/UpcomingPage.vue";
 // Mark all components passed into page.content with shallowRef(Component)
 import { shallowRef } from "vue";
-import { useMainStore } from "@/store";
 import { WarningToast, SuccessToast } from "@svonk/util";
 export default {
   name: "DailySurvey",
@@ -78,14 +77,14 @@ export default {
   methods: {
     /** Save the responses to the database and close the modal */
     saveResponses(responses) {
-      this.store.save_daily_survey(responses);
+      this.$store.save_daily_survey(responses);
       window.onbeforeunload = null;
       this.$emit("close");
     },
   },
   /** If the user has already completed the survey when opened, close the modal */
   mounted() {
-    if (this.store.done_daily_survey) {
+    if (this.$store.done_daily_survey) {
       window.onbeforeunload = null;
       this.$emit("close");
       new WarningToast("You already completed the daily survey today!", 2000);
@@ -93,9 +92,9 @@ export default {
   },
   /** If we find out the user has already completed the survey at any time, close the modal */
   watch: {
-    store: {
+    $store: {
       handler() {
-        if (this.store.done_daily_survey) {
+        if (this.$store.done_daily_survey) {
           window.onbeforeunload = null;
           this.$emit("close");
           if (this.done_tutorial) {

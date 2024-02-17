@@ -18,7 +18,7 @@
           '--color-class': class_obj.color,
           '--color-class-alt': class_obj.color + '2d',
         }"
-        >{{ store.class_text(class_obj) }}</a
+        >{{ $store.class_text(class_obj) }}</a
       >.
     </div>
     <div class="bottom_actions">
@@ -63,9 +63,9 @@ export default {
   computed: {
     class_obj() {
       if (!this.ref) return {};
-      let classes = this.store?.classes,
+      let classes = this.$store?.classes,
         [_email, _id] = this.ref.split("/");
-      let email = _email + this.store.ORG_DOMAIN,
+      let email = _email + this.$store.ORG_DOMAIN,
         class_id = [email, _id].join("/");
       if (!classes || !email || !_id || !class_id) return {};
       let class_obj = classes.find((class_obj) => class_obj.id === class_id) || {};
@@ -104,7 +104,7 @@ export default {
   methods: {
     archive_task() {
       this.loading = true;
-      this.store
+      this.$store
         .archive_task(this.ref)
         .then(() => {
           new SuccessToast(`Archived ${this.type}`, 3000);

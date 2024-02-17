@@ -31,7 +31,7 @@
         <header class="portal_info calendar_width">
           <div class="portal_info_title">
             <span class="portal_info_usertype"
-              >{{ store.is_teacher ? "Teacher" : "Student" }} Dashboard</span
+              >{{ $store.is_teacher ? "Teacher" : "Student" }} Dashboard</span
             >
             <span class="portal_info_date">{{
               new Date().toLocaleDateString("en-US", {
@@ -44,9 +44,9 @@
           </div>
           <div class="portal_info_welcome">
             {{
-              store.recently_joined
+              $store.recently_joined
                 ? `Welcome to ${this.$env.VUE_APP_BRAND_SHORT_NAME}`
-                : store.non_recent_signin
+                : $store.non_recent_signin
                 ? "Welcome Back"
                 : random_welcome
             }}
@@ -200,11 +200,11 @@ export default {
     },
     /** The user's first name, or adequate placeholder */
     name() {
-      return this.store.user?.displayName?.split(" ")[0] || "User";
+      return this.$store.user?.displayName?.split(" ")[0] || "User";
     },
     /** Whether the user has completed the daily survey today */
     did_survey() {
-      return this.store.done_daily_survey;
+      return this.$store.done_daily_survey;
     },
     /** A random welcome message */
     random_welcome() {
@@ -249,7 +249,7 @@ export default {
       this.$router.push({
         name: "viewtask",
         params: {
-          ref: this.store.path_to_ref(task.ref),
+          ref: this.$store.path_to_ref(task.ref),
         },
         query: this.$route.query,
       });
@@ -264,13 +264,13 @@ export default {
     },
     /** Launch the Daily Survey if it hasn't yet been completed */
     check_and_do_survey() {
-      if (this?.store?.user && !this?.did_survey && this.$route?.meta?.noSurvey !== true) {
+      if (this.$store?.user && !this?.did_survey && this.$route?.meta?.noSurvey !== true) {
         this.do_survey();
       }
     },
     /** Launch the Join Form if it hasn't been completed yet */
     check_and_do_join() {
-      if (!this.store.done_join_form) {
+      if (!this.$store.done_join_form) {
         this.$router.push({
           name: "join",
           query: {
@@ -290,7 +290,7 @@ export default {
     this.$status.log("🏗 Portal mounted");
     this.check_and_do_join();
     this.check_and_do_survey();
-    this.store
+    this.$store
       .fetch_classes()
       .then(() => {
         // run calendar run_get_tasks method
@@ -329,7 +329,7 @@ export default {
       }
       this.check_and_do_survey();
     },
-    store: {
+    $store: {
       handler() {
         this.check_and_do_join();
       },

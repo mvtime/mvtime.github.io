@@ -35,7 +35,7 @@
         >
           <div
             class="action_icon cal-icon"
-            :class="{ alt: store.upcoming && store.upcoming.length }"
+            :class="{ alt: $store.upcoming && $store.upcoming.length }"
           ></div>
         </button>
       </div>
@@ -57,7 +57,7 @@
       >
         <a
           class="study_list__name"
-          :href="'/view/' + store.path_to_ref(classes[list[0].class_id].ref)"
+          :href="'/view/' + $store.path_to_ref(classes[list[0].class_id].ref)"
         >
           {{ list[0].class_name }}</a
         >
@@ -86,7 +86,7 @@
                 $emit('taskclick', task);
                 $event.preventDefault();
               "
-              :href="'/view/' + store.path_to_ref(task.ref)"
+              :href="'/view/' + $store.path_to_ref(task.ref)"
             >
               <span class="study_list_task__name__text">{{ prefixed_name(task) }}</span>
             </a>
@@ -142,7 +142,7 @@ export default {
   mounted() {
     this.$status.log("👓 Study page mounted");
     this.$emit("mounted");
-    this.tasks = this.store.tasks;
+    this.tasks = this.$store.tasks;
     window.addEventListener("keydown", this.handle_key);
     useShortcuts().register_all(this.shortcuts, "Study Portal");
   },
@@ -177,7 +177,7 @@ export default {
     classes() {
       // turn classes array into an object with class_id as key
       let classes = {};
-      for (let class_obj of this.store.classes) {
+      for (let class_obj of this.$store.classes) {
         classes[class_obj.id] = class_obj;
       }
       return classes;
@@ -208,8 +208,8 @@ export default {
 
       // sort those with is_finished = false to the top
       filtered.sort((a, b) => {
-        let a_finished = this.store.finished_tasks.includes(a.ref);
-        let b_finished = this.store.finished_tasks.includes(b.ref);
+        let a_finished = this.$store.finished_tasks.includes(a.ref);
+        let b_finished = this.$store.finished_tasks.includes(b.ref);
         if (a_finished && !b_finished) return 1;
         if (!a_finished && b_finished) return -1;
         return 0;
@@ -270,14 +270,14 @@ export default {
       this.$router.push({ name: "portal", query: this.$route.query });
     },
     run_get_tasks() {
-      this.tasks = this.store.tasks;
+      this.tasks = this.$store.tasks;
       this.is_ready = true;
     },
     is_finished(ref) {
-      return this.store.finished_tasks?.includes(ref);
+      return this.$store.finished_tasks?.includes(ref);
     },
     toggle_finished(ref) {
-      this.store
+      this.$store
         .set_finished(!this.is_finished(ref), ref)
         .then(() => {
           this.$status.log("📦 Task completion status set");
@@ -287,13 +287,13 @@ export default {
         });
     },
   },
-  // watch for store.classes change
+  // watch for $store.classes change
   watch: {
-    "store.classes": {
+    "$store.classes": {
       handler(a, b) {
         if (a.length != b.length && this.is_ready) {
           this.$status.log("📦 Classes array length changed, calendar updating tasks");
-          this.store
+          this.$store
             .fetch_classes()
             .then(() => {
               this.run_get_tasks();
@@ -305,9 +305,9 @@ export default {
       },
       deep: true,
     },
-    "store.tasks": {
+    "$store.tasks": {
       handler() {
-        this.tasks = this.store.tasks;
+        this.tasks = this.$store.tasks;
       },
       deep: true,
     },

@@ -74,9 +74,9 @@ export default {
     },
     continue_text() {
       if (this.page == "form") {
-        return !this.store?.user ? ["Continue", " to Sign-Up"] : ["Save"];
+        return !this.$store?.user ? ["Continue", " to Sign-Up"] : ["Save"];
       } else {
-        return !this.store?.user ? ["Authenticating", "..."] : ["Saving...", ""];
+        return !this.$store?.user ? ["Authenticating", "..."] : ["Saving...", ""];
       }
     },
     source() {
@@ -95,14 +95,14 @@ export default {
   },
   mounted() {
     // if user is logged in and has completed, close
-    if (this.store.done_join_form) {
+    if (this.$store.done_join_form) {
       // exit
       this.$emit("close");
       new WarningToast("You've already joined!", 2000);
     }
     // if user is logged in, use their name to prefill
-    if (this.store?.user) {
-      this.form.name = this.store.user?.displayName || "";
+    if (this.$store?.user) {
+      this.form.name = this.$store.user?.displayName || "";
     }
   },
   methods: {
@@ -117,13 +117,13 @@ export default {
         this.page = "auth";
         this.$status.log("📝 Saving join form:", this.form);
         // trigger auth if needed
-        if (!this.store?.user) {
+        if (!this.$store?.user) {
           this.$status.log("🔑 Triggering auth");
           // trigger auth, and once done, save form data and close
-          this.store
+          this.$store
             .login()
             .then(() => {
-              this.store.save_join_form(this.form);
+              this.$store.save_join_form(this.form);
               this.check_store_and_close();
             })
             .catch((err) => {
@@ -133,29 +133,29 @@ export default {
             });
         } else {
           // save form data and close
-          this.store.save_join_form(this.form);
+          this.$store.save_join_form(this.form);
           this.check_store_and_close();
         }
       }
     },
     check_store_and_close() {
       // close if join_form is set
-      if (this.store.done_join_form) {
+      if (this.$store.done_join_form) {
         this.$emit("close");
       }
     },
   },
   watch: {
     // listen for any changes to store
-    "store.done_join_form": {
+    "$store.done_join_form": {
       handler() {
         this.check_store_and_close();
       },
       deep: true,
     },
-    "store.user": {
+    "$store.user": {
       handler() {
-        if (!this.store?.user) {
+        if (!this.$store?.user) {
           this.$router.push({ name: "home", query: { redirect: this.$route.query?.redirect } });
           return;
         }

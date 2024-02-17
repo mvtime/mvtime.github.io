@@ -2,7 +2,7 @@
   <main
     id="themed_body"
     class="parent"
-    :class="{ simplified: store.simplified }"
+    :class="{ simplified: $store.simplified }"
     ref="app"
     :_theme="theme"
     @click="refreshTimeout"
@@ -11,7 +11,7 @@
   >
     <!-- Overlays -->
     <OverlayWrapper
-      v-if="do_timeout && (store.paused || animating)"
+      v-if="do_timeout && ($store.paused || animating)"
       ref="overlay"
       class="pause_modal_overlay"
       style="z-index: 104"
@@ -37,9 +37,9 @@
       </main>
     </OverlayWrapper>
     <OverlayWrapper
-      v-if="store.logout_prompt"
+      v-if="$store.logout_prompt"
       ref="logout_modal"
-      @close="store.logout_prompt = false"
+      @close="$store.logout_prompt = false"
       v-slot="scope"
       style="z-index: 103"
     >
@@ -135,16 +135,16 @@ export default {
   },
   computed: {
     do_timeout() {
-      return !this.store?.account_doc?.prefs?.hide_timeout;
+      return !this.$store?.account_doc?.prefs?.hide_timeout;
     },
     pageTitle() {
       return document.title;
     },
     theme() {
-      return this.store.get_theme;
+      return this.$store.get_theme;
     },
     show_tutorial() {
-      return !this.store.done_tutorial && tutorial_pages && this.store;
+      return !this.$store.done_tutorial && tutorial_pages && this.$store;
     },
     tutorial() {
       const page = tutorial_pages[this.tutorial_page];
@@ -167,8 +167,8 @@ export default {
       console.log("Electron Platform: " + this.platform);
     }
     this.set_theme();
-    this.store.paused = false;
-    this.store.logout_prompt = false;
+    this.$store.paused = false;
+    this.$store.logout_prompt = false;
     window.addEventListener("focus", this.refreshTimeout);
     window.addEventListener("keydown", this.global_keydown);
     useShortcuts().register_all(this.shortcuts, "General");
@@ -220,7 +220,7 @@ export default {
       } else if (!e.shiftKey && e.key == "Enter" && (e.ctrlKey || e.metaKey)) {
         el = $(".click_ctrlenter");
       } else if (!e.shiftKey && e.key == "\\" && (e.ctrlKey || e.metaKey)) {
-        this.store.toggle_theme();
+        this.$store.toggle_theme();
         ignore = true;
       } else if (
         (e.key == "/" && (e.ctrlKey || e.metaKey)) ||
@@ -249,7 +249,7 @@ export default {
       }
       // Finish Tutorial
       if (this.tutorial_page == tutorial_pages.length - 1) {
-        this.store
+        this.$store
           .finish_tutorial(true)
           .then(() => {
             new SuccessToast("Interface tutorial completed; here's some more resources!", 3500);
@@ -264,8 +264,8 @@ export default {
       }
     },
     refreshTimeout() {
-      if (this.store) {
-        this.store.refresh_timeout();
+      if (this.$store) {
+        this.$store.refresh_timeout();
       }
     },
     set_theme() {
@@ -279,7 +279,7 @@ export default {
     },
   },
   watch: {
-    "store.paused": function (new_val, old_val) {
+    "$store.paused": function (new_val, old_val) {
       if (this.do_timeout) {
         if (new_val) {
           // focus on next tick
