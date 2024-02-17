@@ -23,7 +23,6 @@
 </template>
 
 <script>
-import { useMagic } from "@/store/magic";
 export default {
   name: "ExamCard",
   props: {
@@ -34,7 +33,7 @@ export default {
   },
   computed: {
     type_full() {
-      return useMagic().type_full(this.task.type);
+      return this.$magic.type_full(this.task.type);
     },
   },
 };
