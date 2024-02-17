@@ -62,7 +62,7 @@ export default {
         name: "",
         period: null,
         description: "",
-        color: `#${this.$env.VUE_APP_THEME_COLOR}`,
+        color: `#${process.env.VUE_APP_THEME_COLOR}`,
       },
     };
   },
