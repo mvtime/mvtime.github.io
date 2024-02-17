@@ -86,7 +86,6 @@
 <script>
 import { useMainStore } from "@/store";
 import { ErrorToast, WarningToast } from "@svonk/util";
-import { _status } from "../../common";
 export default {
   name: "StatsModal",
   emits: ["close"],
@@ -177,9 +176,6 @@ export default {
     };
   },
   computed: {
-    store() {
-      return useMainStore();
-    },
     completed() {
       return this.store?.active_doc?.done_surveys || [];
     },
@@ -290,10 +286,10 @@ export default {
     try_update() {
       if (this.can_update) {
         this.update(true);
-        _status.log("Manualling refreshing survey data");
+        this.$status.log("Manualling refreshing survey data");
       } else {
         new WarningToast("Please wait before updating again", 2000);
-        _status.warn("Blocked quick refresh of survey data ");
+        this.$status.warn("Blocked quick refresh of survey data ");
       }
     },
     process(data) {

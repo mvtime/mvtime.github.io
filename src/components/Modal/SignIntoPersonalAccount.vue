@@ -60,11 +60,7 @@ export default {
         });
     },
   },
-  computed: {
-    store() {
-      return useMainStore();
-    },
-  },
+  computed: {},
   mounted() {
     this.logout_if_org();
     this.check_and_emit();

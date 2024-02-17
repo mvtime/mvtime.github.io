@@ -51,11 +51,7 @@ export default {
       loading: true,
     };
   },
-  computed: {
-    store() {
-      return useMainStore();
-    },
-  },
+  computed: {},
   mounted() {
     this.$emit("mounted");
     window.addEventListener("resize", this.close_sidebar);

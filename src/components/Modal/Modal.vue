@@ -58,7 +58,6 @@
  * @property {String} submit_text - The text to display on the continue button.
  * @property {String} skip_text - The text to display on the skip button.
  *  */
-import { _status } from "@/common";
 import smoothReflow from "vue-smooth-reflow";
 export default {
   name: "ModalVue",
@@ -110,7 +109,7 @@ export default {
     continue_action: {
       type: Function,
       default: () => {
-        _status.log("⏵ ModalVue: continue_action not provided");
+        this.$status.log("⏵ ModalVue: continue_action not provided");
         // close this modal view
         window.onbeforeunload = null;
         this.$router.push(

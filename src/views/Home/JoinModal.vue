@@ -52,7 +52,6 @@
 import { useMainStore } from "@/store";
 import "@/assets/style/overlay.css";
 import { WarningToast } from "@svonk/util";
-import { _status } from "@/common";
 export default {
   emits: ["close"],
   data() {
@@ -80,9 +79,6 @@ export default {
       } else {
         return !this.store?.user ? ["Authenticating", "..."] : ["Saving...", ""];
       }
-    },
-    store() {
-      return useMainStore();
     },
     source() {
       try {
@@ -120,10 +116,10 @@ export default {
           this.$router.replace({ name: "join", query: { redirect: "/portal" } });
         }
         this.page = "auth";
-        _status.log("📝 Saving join form:", this.form);
+        this.$status.log("📝 Saving join form:", this.form);
         // trigger auth if needed
         if (!this.store?.user) {
-          _status.log("🔑 Triggering auth");
+          this.$status.log("🔑 Triggering auth");
           // trigger auth, and once done, save form data and close
           this.store
             .login()
@@ -132,7 +128,7 @@ export default {
               this.check_store_and_close();
             })
             .catch((err) => {
-              _status.error("💾 Error logging in:", err);
+              this.$status.error("💾 Error logging in:", err);
               new WarningToast("Couldn't complete authentication; " + err, 2000);
               this.page = "form";
             });

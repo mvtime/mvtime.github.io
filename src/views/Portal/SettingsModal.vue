@@ -85,12 +85,34 @@
           <ToggleBar
             class="click-action"
             :value="prioritize_notes"
-            @update="update_notes_priority"
+            @update="
+              update_account_pref('derank_notes', !$event, [
+                'We\'ll show notes above other items on your claendar',
+                'You won\'t see notes above other items anymore',
+              ])
+            "
             :loads="true"
           />
           &nbsp;
           <span
             >Notes priority set to <b>{{ prioritize_notes ? "high" : "low" }}</b></span
+          >
+        </div>
+        <div class="show_finished_section">
+          <ToggleBar
+            class="click-action"
+            :value="include_finished"
+            @update="
+              update_account_pref('hide_finished', !$event, [
+                'You\'ll see finished tasks in your calendar',
+                'You won\'t see finished tasks in your calendar anymore',
+              ])
+            "
+            :loads="true"
+          />
+          &nbsp;
+          <span
+            >Finished tasks <b> {{ include_finished ? "shown" : "not shown" }}</b> in calendar</span
           >
         </div>
       </div>
@@ -99,7 +121,12 @@
           <ToggleBar
             class="click-action"
             :value="show_timeout"
-            @update="update_timeout_option"
+            @update="
+              update_account_pref('hide_timeout', $event, [
+                'We\'ll show the popup when your session times out',
+                'You won\'t see the timeout popup anymore',
+              ])
+            "
             :loads="true"
           />
           &nbsp;
@@ -302,14 +329,14 @@ export default {
     };
   },
   computed: {
-    store() {
-      return useMainStore();
-    },
     show_timeout() {
       return !this.store?.account_doc?.prefs?.hide_timeout;
     },
     prioritize_notes() {
       return !this.store?.account_doc?.prefs?.derank_notes;
+    },
+    include_finished() {
+      return !this.store?.account_doc?.prefs?.hide_finished;
     },
     ready_to_link() {
       return (
@@ -327,50 +354,26 @@ export default {
     },
   },
   methods: {
-    update_timeout_option(value) {
+    update_account_pref(key, value, [on_true, on_false]) {
       if (this.store.account_doc) {
-        let before = !this.store.account_doc?.prefs?.hide_timeout;
+        let before = this.store.account_doc?.prefs?.[key];
         if (before != value) {
           // update the value
           this.store
             .update_wrapper_with_merge({
               prefs: {
                 ...this.store.account_doc.prefs,
-                hide_timeout: !value,
+                [key]: value,
               },
             })
             .then(() => {
               this.changed = true;
-              new SuccessToast(
-                value
-                  ? "We'll show the popup when your session times out"
-                  : "You won't see the timeout popup anymore",
-                2000
-              );
-            });
-        }
-      }
-    },
-    update_notes_priority(value) {
-      if (this.store.account_doc) {
-        let before = !this.store.account_doc?.prefs?.derank_notes;
-        if (before != value) {
-          // update the value
-          this.store
-            .update_wrapper_with_merge({
-              prefs: {
-                ...this.store.account_doc.prefs,
-                derank_notes: !value,
-              },
+              new SuccessToast(value ? on_false : on_true, 2000);
             })
-            .then(() => {
-              this.changed = true;
-              new SuccessToast(
-                value
-                  ? "We'll show notes above other items on your claendar"
-                  : "You won't see notes above other items anymore",
-                2000
-              );
+            .catch((err) => {
+              this.changed = false;
+              new ErrorToast(`Couldn't update key ${key} of preferences`, err, 2000);
+              this.$status.error('⚙️ Couldn\'t update preferences key "${key}" to "${value}"');
             });
         }
       }
@@ -459,6 +462,7 @@ export default {
 <style scoped>
 .pause_popup_section,
 .notes_priority_section,
+.show_finished_section,
 .email_section {
   line-height: 1.75;
   display: inline-flex;

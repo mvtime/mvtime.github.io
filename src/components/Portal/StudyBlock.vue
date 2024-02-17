@@ -106,7 +106,6 @@
 import "@/assets/style/portal_main.css";
 import { useMainStore } from "@/store";
 import LoadingCover from "@/components/LoadingCover.vue";
-import { _status } from "@/common";
 import { useShortcuts } from "@/store/shortcuts";
 export default {
   name: "StudyBlock",
@@ -142,7 +141,7 @@ export default {
     };
   },
   mounted() {
-    _status.log("👓 Study page mounted");
+    this.$status.log("👓 Study page mounted");
     this.$emit("mounted");
     this.tasks = this.store.tasks;
     window.addEventListener("keydown", this.handle_key);
@@ -175,9 +174,6 @@ export default {
           };
         }),
       ];
-    },
-    store() {
-      return useMainStore();
     },
     classes() {
       // turn classes array into an object with class_id as key
@@ -285,10 +281,10 @@ export default {
       this.store
         .set_finished(!this.is_finished(ref), ref)
         .then(() => {
-          _status.log("📦 Task completion status set");
+          this.$status.log("📦 Task completion status set");
         })
         .catch((err) => {
-          _status.error("🔥 Couldn't set task finished", err);
+          this.$status.error("🔥 Couldn't set task finished", err);
         });
     },
   },
@@ -297,14 +293,14 @@ export default {
     "store.classes": {
       handler(a, b) {
         if (a.length != b.length && this.is_ready) {
-          _status.log("📦 Classes array length changed, calendar updating tasks");
+          this.$status.log("📦 Classes array length changed, calendar updating tasks");
           this.store
             .fetch_classes()
             .then(() => {
               this.run_get_tasks();
             })
             .catch((err) => {
-              _status.error("🔥 Couldn't fetch classes", err);
+              this.$status.error("🔥 Couldn't fetch classes", err);
             });
         }
       },

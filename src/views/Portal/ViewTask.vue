@@ -115,7 +115,7 @@
  */
 
 import { WarningToast, ErrorToast, SuccessToast } from "@svonk/util";
-import { _status, compatDateObj } from "@/common";
+import { compatDateObj } from "@/common";
 import { useMainStore } from "@/store";
 import smoothReflow from "vue-smooth-reflow";
 import showdown from "showdown";
@@ -132,9 +132,6 @@ export default {
     };
   },
   computed: {
-    store() {
-      return useMainStore();
-    },
     date() {
       let date = compatDateObj(this.task?.date);
       if (isNaN(date.getTime())) return;
@@ -186,7 +183,7 @@ export default {
             url: url.href,
           })
           .then(() => new SuccessToast("Opened share dialog", 1000))
-          .catch((err) => _status.error("Error sharing", err));
+          .catch((err) => this.$status.error("Error sharing", err));
       } else if (navigator.clipboard) {
         navigator.clipboard.writeText(url.href);
         new WarningToast("Sharing not supported, copied link to clipboard", 2000);
@@ -245,7 +242,7 @@ export default {
         })
         .catch((err) => {
           new ErrorToast("Error getting task", err, 1500);
-          _status.error("⚠ Error getting task", err);
+          this.$status.error("⚠ Error getting task", err);
           this.$emit("close");
         });
     },

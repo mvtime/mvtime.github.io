@@ -169,7 +169,6 @@ import { useShortcuts } from "@/store/shortcuts";
 import { useMagic } from "@/store/magic";
 import { WarningToast } from "@svonk/util";
 import "@/assets/style/overlay.css";
-import { _status } from "../../common";
 export default {
   name: "AppPortal",
   components: {
@@ -213,9 +212,6 @@ export default {
       return this.welcomes[Math.floor(Math.random() * this.welcomes.length)];
     },
     /** stores */
-    store() {
-      return useMainStore();
-    },
     magic() {
       return useMagic();
     },
@@ -292,7 +288,7 @@ export default {
   },
   /** Preform Join Form & Daily Survey completion checks on load */
   mounted() {
-    _status.log("🏗 Portal mounted");
+    this.$status.log("🏗 Portal mounted");
     this.check_and_do_join();
     this.check_and_do_survey();
     this.store
@@ -306,7 +302,7 @@ export default {
         this.loaded = true;
       })
       .catch((err) => {
-        _status.error("🔥 Couldn't fetch classes", err);
+        this.$status.error("🔥 Couldn't fetch classes", err);
       });
   },
   /** Preform same checks as mounted, but if any of the completion statuses could've changed on page switch or data load */

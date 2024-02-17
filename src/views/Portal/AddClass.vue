@@ -119,7 +119,6 @@
  * @emits {Function} close - An event emitted when the class is added or the modal is closed.
  */
 import { useMainStore } from "@/store";
-import { _status } from "@/common";
 import { ErrorToast, WarningToast /*SuccessToast*/ } from "@svonk/util";
 import smoothReflow from "vue-smooth-reflow";
 export default {
@@ -173,9 +172,6 @@ export default {
 
       return null;
     },
-    store() {
-      return useMainStore();
-    },
     is_join() {
       return this.$route?.name == "refclass" || this.$route?.name == "codeclass";
     },
@@ -204,7 +200,7 @@ export default {
           ref = await this.store.ref_from_code(this.code);
         } catch (err) {
           new ErrorToast("Invalid join code", err, 4000);
-          _status.log("🔥 " + err);
+          this.$status.log("🔥 " + err);
           if (this.$route?.query?.manual) {
             this.$router.push({ name: "codeenterclass", query: this.$route.query });
           } else {
@@ -215,7 +211,7 @@ export default {
       }
 
       if (ref && this.is_join) {
-        _status.log("🔍 Attempting to use class join ref", ref);
+        this.$status.log("🔍 Attempting to use class join ref", ref);
         let [_email, _id] = ref.split("~");
         _email += this.store.ORG_DOMAIN;
         this.teacher_email = _email;
@@ -229,12 +225,12 @@ export default {
           this.class_id = _id;
           if (found.is_joined) {
             new WarningToast("You've already joined this class", 3000);
-            _status.log("🔥 Already joined class", ref);
+            this.$status.log("🔥 Already joined class", ref);
             //this.$emit("close");
           }
         } else {
           new WarningToast("Couldn't find that class", 3000);
-          _status.log("🔥 Unfound class for join ref", ref);
+          this.$status.log("🔥 Unfound class for join ref", ref);
           this.to_normal_add();
         }
       } else if (this.is_join) {

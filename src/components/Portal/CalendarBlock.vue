@@ -203,7 +203,7 @@
 import "@/assets/style/portal_main.css";
 import { useMainStore } from "@/store";
 import LoadingCover from "@/components/LoadingCover.vue";
-import { _status, compatDateObj } from "@/common";
+import { compatDateObj } from "@/common";
 import { ErrorToast, SuccessToast } from "@svonk/util";
 import { useShortcuts } from "@/store/shortcuts";
 export default {
@@ -265,7 +265,7 @@ export default {
     };
   },
   mounted() {
-    _status.log("📅 Calendar mounted");
+    this.$status.log("📅 Calendar mounted");
     this.$emit("mounted");
     this.tasks = this.store.tasks;
     window.addEventListener("keydown", this.handle_key);
@@ -352,14 +352,14 @@ export default {
           this.drag.to = null;
         }
       } catch (err) {
-        _status.error("🔥 Couldn't check if mouse left calendar", err);
+        this.$status.error("🔥 Couldn't check if mouse left calendar", err);
       }
     },
     // drag:
     drop_class() {
       if (this.drag?.class && this.drag?.to) {
         // open task add with class and date
-        _status.log("📅 Dropped class on calendar day");
+        this.$status.log("📅 Dropped class on calendar day");
         this.$router.push({
           name: "newtask",
           query: {
@@ -401,12 +401,12 @@ export default {
               }to ${to.toLocaleDateString()}`,
               2000
             );
-            _status.log("📅 Moved task date");
+            this.$status.log("📅 Moved task date");
             this.drag = {};
           })
           .catch((err) => {
             new ErrorToast("Couldn't update task", err, 2000);
-            _status.error("🔥 Couldn't update task", err);
+            this.$status.error("🔥 Couldn't update task", err);
             this.drag = {};
           });
         // } else if (this.drag.to && this.drag.class) {
@@ -435,6 +435,8 @@ export default {
     get_day_tasks(day) {
       return this.tasks
         .filter((task) => {
+          if (this.store?.account_doc?.prefs?.hide_finished && this.is_completed(task))
+            return false;
           const task_date = compatDateObj(task.date);
           return (
             this.day_matches(task_date, day) &&
@@ -498,9 +500,6 @@ export default {
         );
       });
     },
-    store() {
-      return useMainStore();
-    },
     days() {
       const days = [];
       const today = compatDateObj(new Date().toISOString().split("T")[0]);
@@ -556,14 +555,14 @@ export default {
     "store.classes": {
       handler(a, b) {
         if (a.length != b.length && this.is_ready) {
-          _status.log("📦 Classes array length changed, calendar updating tasks");
+          this.$status.log("📦 Classes array length changed, calendar updating tasks");
           this.store
             .fetch_classes()
             .then(() => {
               this.run_get_tasks();
             })
             .catch((err) => {
-              _status.error("🔥 Couldn't fetch classes", err);
+              this.$status.error("🔥 Couldn't fetch classes", err);
             });
         }
       },

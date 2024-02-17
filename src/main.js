@@ -9,31 +9,30 @@ import { _status } from "@/common";
 const pinia = createPinia();
 const app = createApp(App);
 // setup env vars
+
+// setup app requisites
+app.use(router);
+app.use(pinia);
 app.mixin({
   computed: {
     $env() {
       return process.env;
     },
+    $status() {
+      return _status;
+    },
+    // store access
+    store() {
+      return pinia.state;
+    },
   },
 });
-
-// setup app requisites
-app.use(router);
-app.use(pinia);
 app.use(VueApexCharts);
-//* setup image loading
-// const loadimage = require("@/assets/img/placeholder/load_dark.gif");
-// const errorimage = require("@/assets/img/placeholder/error_dark.png");
+//* setup image loading (will use the classes it assigns to style loading images)
 app.use(VueLazyload, {
   preLoad: 2,
-  // error: errorimage,
-  // loading: loadimage,
   attempt: 1,
 });
-
-//* lottie animations
-// import LottieVuePlayer from "@lottiefiles/vue-lottie-player";
-// app.use(LottieVuePlayer);
 
 // mount app
 app.mount("#app");

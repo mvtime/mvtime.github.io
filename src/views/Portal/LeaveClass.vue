@@ -64,11 +64,7 @@ export default {
       class_obj: {},
     };
   },
-  computed: {
-    store() {
-      return useMainStore();
-    },
-  },
+  computed: {},
   mounted() {
     this.$smoothReflow({
       el: this.$refs.contents,

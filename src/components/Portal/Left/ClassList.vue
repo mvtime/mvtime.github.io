@@ -98,9 +98,6 @@ export default {
     };
   },
   computed: {
-    store() {
-      return useMainStore();
-    },
     classes() {
       return this.store.classes.map((class_obj) => {
         return {

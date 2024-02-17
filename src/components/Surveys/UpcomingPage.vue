@@ -28,9 +28,6 @@ export default {
     ExamCard,
   },
   computed: {
-    store() {
-      return useMainStore();
-    },
     tasks() {
       return this.store.upcoming_todo.slice(0, 4);
     },

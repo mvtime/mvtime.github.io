@@ -43,7 +43,6 @@
 </template>
 
 <script>
-import { useMainStore } from "../../store";
 export default {
   name: "BaseNav",
   data() {
@@ -68,9 +67,6 @@ export default {
     window.removeEventListener("resize", this.resize);
   },
   computed: {
-    store() {
-      return useMainStore();
-    },
     logged_in() {
       return !!this.store.user;
     },

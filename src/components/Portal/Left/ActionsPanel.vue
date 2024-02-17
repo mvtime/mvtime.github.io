@@ -79,9 +79,6 @@ export default {
     magic() {
       return useMagic();
     },
-    store() {
-      return useMainStore();
-    },
     short() {
       return useShortcuts();
     },

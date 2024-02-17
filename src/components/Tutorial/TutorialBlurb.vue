@@ -143,9 +143,6 @@ export default {
     window.clearInterval(this.track_flush);
   },
   computed: {
-    store() {
-      return useMainStore();
-    },
     is_end() {
       return this.options?.end;
     },

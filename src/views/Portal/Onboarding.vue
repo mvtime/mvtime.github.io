@@ -94,9 +94,6 @@ export default {
 
       return null;
     },
-    store() {
-      return useMainStore();
-    },
     name() {
       let store = this.store;
       if (store.user && store.user.displayName)

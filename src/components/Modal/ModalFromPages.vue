@@ -32,7 +32,6 @@ function confirm_unfinished() {
   return "You haven't finished the task yet, and might lose progress. Are you sure you want to close the tab?";
 }
 import ModalVue from "./Modal.vue";
-import { _status } from "@/common";
 import { useShortcuts } from "@/store/shortcuts";
 export default {
   name: "ModalFromPages",
@@ -121,7 +120,7 @@ export default {
       ) {
         this.page_index = page_index;
       } else {
-        _status.log(`⏵ ModalFromPages: page index ${page_index} invalid`);
+        this.$status.log(`⏵ ModalFromPages: page index ${page_index} invalid`);
       }
     },
     next_page() {

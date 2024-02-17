@@ -177,7 +177,6 @@
 
 import { useMainStore } from "@/store";
 import { useMagic } from "@/store/magic";
-import { _status } from "@/common";
 import { ErrorToast, WarningToast, SuccessToast } from "@svonk/util";
 import smoothReflow from "vue-smooth-reflow";
 
@@ -251,9 +250,6 @@ export default {
       if (!class_obj) return null;
       return class_obj.name;
     },
-    store() {
-      return useMainStore();
-    },
     magic() {
       return useMagic();
     },
@@ -310,7 +306,7 @@ export default {
         })
         .catch((err) => {
           this.loading = false;
-          _status.error(`📃 Couldn't create ${this.task.type || "task"}:`, err);
+          this.$status.error(`📃 Couldn't create ${this.task.type || "task"}:`, err);
           new ErrorToast("Couldn't create task", err, 2000);
         });
     },
@@ -347,18 +343,18 @@ export default {
         .then((type) => {
           if (type) {
             new SuccessToast(`Generated task type '${type}'`, 1500);
-            _status.log("🔗 Generated task type:", type);
+            this.$status.log("🔗 Generated task type:", type);
             this.task.type = type;
           } else {
             new WarningToast("Couldn't reasonably infer a task type", 2000);
-            _status.warn("📃 Couldn't generate task type");
+            this.$status.warn("📃 Couldn't generate task type");
           }
           this.loaded_type = true;
           this.loading_type = false;
         })
         .catch((err) => {
           new ErrorToast("Something went wrong generating the task type", err, 3000);
-          _status.error("⚠ Failed task type generation:", err);
+          this.$status.error("⚠ Failed task type generation:", err);
           this.loaded_type = false;
           this.loading_type = false;
         });
@@ -371,18 +367,18 @@ export default {
         .then((text) => {
           if (text) {
             new SuccessToast(`Generated link text '${text}'`, 1500);
-            _status.log("🔗 Generated link text:", text);
+            this.$status.log("🔗 Generated link text:", text);
             this.newlink.text = text;
           } else {
             new WarningToast("Couldn't reasonably infer link text", 2000);
-            _status.warn("📃 Couldn't generate link text");
+            this.$status.warn("📃 Couldn't generate link text");
           }
           this.loaded_text = true;
           this.loading_text = false;
         })
         .catch((err) => {
           new ErrorToast("Couldn't generate link text", err, 3000);
-          _status.error("⚠ Failed link text generation:", err);
+          this.$status.error("⚠ Failed link text generation:", err);
           this.loaded_text = false;
           this.loading_text = false;
         });

@@ -53,11 +53,7 @@ export default {
       default: "",
     },
   },
-  computed: {
-    store() {
-      return useMainStore();
-    },
-  },
+  computed: {},
   mounted() {
     if (!this.code) {
       new WarningToast("No code provided!", "You must provide a code to link your account.");

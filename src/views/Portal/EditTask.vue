@@ -146,7 +146,7 @@
 
 import { useMainStore } from "@/store";
 import { useMagic } from "@/store/magic";
-import { _status, compatDateObj } from "@/common";
+import { compatDateObj } from "@/common";
 import { ErrorToast, WarningToast, SuccessToast } from "@svonk/util";
 import smoothReflow from "vue-smooth-reflow";
 
@@ -199,9 +199,6 @@ export default {
       let classes = this.store?.classes;
       if (!classes) return null;
       return classes.find((class_obj) => class_obj.id === this.original.class_id) || {};
-    },
-    store() {
-      return useMainStore();
     },
     magic() {
       return useMagic();
@@ -287,7 +284,7 @@ export default {
         })
         .catch((err) => {
           this.loading = false;
-          _status.error(`📃 Couldn't save changes to ${this.task.type || "task"}:`, err);
+          this.$status.error(`📃 Couldn't save changes to ${this.task.type || "task"}:`, err);
           new ErrorToast(`Couldn't edit ${this.task.type || "task"}`, err, 2000);
         });
     },
@@ -320,7 +317,7 @@ export default {
         .then((task) => {
           if (!task) {
             new WarningToast("Couldn't find that task", 2000);
-            _status.warn("⚠ Couldn't find task");
+            this.$status.warn("⚠ Couldn't find task");
             this.$emit("close");
           } else {
             this.task = task;
@@ -332,7 +329,7 @@ export default {
         })
         .catch((err) => {
           new ErrorToast("Error getting task", err, 1500);
-          _status.error("⚠ Error getting task", err);
+          this.$status.error("⚠ Error getting task", err);
           this.$emit("close");
         });
     },
@@ -359,18 +356,18 @@ export default {
         .then((text) => {
           if (text) {
             new SuccessToast(`Generated link text '${text}'`, 1500);
-            _status.log("🔗 Generated link text:", text);
+            this.$status.log("🔗 Generated link text:", text);
             this.newlink.text = text;
           } else {
             new WarningToast("Couldn't reasonably infer link text", 2000);
-            _status.warn("📃 Couldn't generate link text");
+            this.$status.warn("📃 Couldn't generate link text");
           }
           this.loaded_text = true;
           this.loading_text = false;
         })
         .catch((err) => {
           new ErrorToast("Couldn't generate link text", err, 3000);
-          _status.error("⚠ Failed link text generation:", err);
+          this.$status.error("⚠ Failed link text generation:", err);
           this.loaded_text = false;
           this.loading_text = false;
         });

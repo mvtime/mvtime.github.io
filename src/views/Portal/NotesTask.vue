@@ -76,7 +76,6 @@
 
 import { useMainStore } from "@/store";
 import { useMagic } from "@/store/magic";
-import { _status } from "@/common";
 import { ErrorToast, WarningToast, SuccessToast } from "@svonk/util";
 import smoothReflow from "vue-smooth-reflow";
 
@@ -110,9 +109,6 @@ export default {
     },
     type_full() {
       return useMagic()?.type_full(this.task.type) || "Task";
-    },
-    store() {
-      return useMainStore();
     },
     changed() {
       return this.original_note !== this.note;
@@ -150,7 +146,7 @@ export default {
         })
         .catch((err) => {
           this.loading = false;
-          _status.error(`📃 Couldn't edit ${this.task.type || "task"} notes:`, err);
+          this.$status.error(`📃 Couldn't edit ${this.task.type || "task"} notes:`, err);
           new ErrorToast(`Couldn't edit ${this.task.type || "task"} notes`, err, 2000);
         });
     },
@@ -170,7 +166,7 @@ export default {
         .then((task) => {
           if (!task) {
             new WarningToast("Couldn't find that task", 2000);
-            _status.warn("⚠ Couldn't find task");
+            this.$status.warn("⚠ Couldn't find task");
             this.$emit("close");
           } else {
             this.task = task;
@@ -187,7 +183,7 @@ export default {
         })
         .catch((err) => {
           new ErrorToast("Error getting task", err, 1500);
-          _status.error("⚠ Error getting task", err);
+          this.$status.error("⚠ Error getting task", err);
           this.$emit("close");
         });
     },

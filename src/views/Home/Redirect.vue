@@ -20,7 +20,6 @@
 
 import Modal from "@/components/Modal/Modal.vue";
 import { WarningToast, SuccessToast } from "@svonk/util";
-import { _status } from "@/common";
 export default {
   name: "RedirectView",
   components: {
@@ -46,7 +45,9 @@ export default {
         this.open();
       }
     } catch {
-      _status.log(`Couldn not verify path domain is not ${this.$env.VUE_APP_BRAND_SHORT_NAME}`);
+      this.$status.log(
+        `Couldn not verify path domain is not ${this.$env.VUE_APP_BRAND_SHORT_NAME}`
+      );
     }
   },
   computed: {

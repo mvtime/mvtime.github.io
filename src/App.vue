@@ -93,7 +93,6 @@ import { useMainStore } from "@/store";
 import { useShortcuts } from "@/store/shortcuts";
 // Global Scripts
 import $ from "jquery";
-import { _status } from "@/common";
 import { SuccessToast, ErrorToast } from "@svonk/util";
 // Tutorial
 import tutorial_pages from "@/components/Tutorial/tutorial.json";
@@ -196,7 +195,7 @@ export default {
 
         // if outlink, open in new tab as "/to/{encoded href}"
         e.preventDefault();
-        _status.log(`🔗 Opening outlink in a new tab | "${url.href}"`);
+        this.$status.log(`🔗 Opening outlink in a new tab | "${url.href}"`);
         window.open("/to/" + encodeURIComponent(url.href), "_blank");
       }
     });

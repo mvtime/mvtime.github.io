@@ -29,9 +29,6 @@ import { useMainStore } from "@/store";
 export default {
   name: "NotFound",
   computed: {
-    store() {
-      return useMainStore();
-    },
     logged_in() {
       return this.store.user;
     },

@@ -54,11 +54,7 @@ export default {
       data: null,
     };
   },
-  computed: {
-    store() {
-      return useMainStore();
-    },
-  },
+  computed: {},
   methods: {
     gradeText(numeric) {
       switch (numeric) {

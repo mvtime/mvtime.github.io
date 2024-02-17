@@ -61,9 +61,6 @@ export default {
       window.localStorage.setItem("home_art", combo);
       return combo;
     },
-    store() {
-      return useMainStore();
-    },
     logged_in() {
       return this.store.user;
     },

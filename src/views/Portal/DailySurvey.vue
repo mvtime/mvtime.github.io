@@ -74,11 +74,7 @@ export default {
       ],
     };
   },
-  computed: {
-    store() {
-      return useMainStore();
-    },
-  },
+  computed: {},
   methods: {
     /** Save the responses to the database and close the modal */
     saveResponses(responses) {
