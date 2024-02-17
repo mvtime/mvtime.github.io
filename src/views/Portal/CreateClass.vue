@@ -62,7 +62,7 @@ export default {
         name: "",
         period: null,
         description: "",
-        color: "#f5c14b",
+        color: `#${this.$env.VUE_APP_THEME_COLOR}`,
       },
     };
   },

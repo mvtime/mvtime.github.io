@@ -91,9 +91,9 @@ body,
   --color-footer: #ddd;
   --color-footer-text: #222;
   --color-link: #45818e;
-  --color-theme: #f5c14b;
-  --color-select: #f5c24b80;
-  --color-theme-alt: #f5c14b40;
+  --color-theme: #%VUE_APP_THEME_COLOR%;
+  --color-select: #%VUE_APP_THEME_COLOR%80;
+  --color-theme-alt: #%VUE_APP_THEME_COLOR%40;
   --color-theme-accent: #000;
   --color-theme-accent-border: #4c4c4c;
   --color-on-action: #fff;
@@ -115,8 +115,8 @@ body,
   --color-on-calendar-date: #969696;
   --color-calendar-weekday-label: #969696;
   /* calendar task */
-  --color-calendar-task: #f5c14b;
-  --color-calendar-task-alt: #f5c14b40;
+  --color-calendar-task: #%VUE_APP_THEME_COLOR%;
+  --color-calendar-task-alt: #%VUE_APP_THEME_COLOR%40;
   --color-on-calendar-task: #fff;
   --filter-calendar-task: none;
   --color-text-on-calendar: #333;
@@ -130,8 +130,8 @@ body,
   --spacing-classes: 7px;
   --spacing-classes-alt: 5px;
   --color-on-class: #fff;
-  --color-class: #f5c14b;
-  --color-class-alt: #f5c14b40;
+  --color-class: #%VUE_APP_THEME_COLOR%;
+  --color-class-alt: #%VUE_APP_THEME_COLOR%40;
   /* overlay */
   --color-loading-overlay: #00000060;
   --shadow-overlay-highlight: 0 0 20px #00000030;
@@ -183,8 +183,8 @@ body:has(#themed_body[_theme="dark"]) {
   --color-footer: #3a3a3a;
   --color-footer-text: #ddd;
   --color-link: #178ca7;
-  --color-select: #f5c14b;
-  --color-action: #f5c14b;
+  --color-select: #%VUE_APP_THEME_COLOR%;
+  --color-action: #%VUE_APP_THEME_COLOR%;
   --color-on-action: #000;
   --filter-icon: invert(1) hue-rotate(180deg);
   --filter-swatch-icon: none;
@@ -334,7 +334,7 @@ body:has(#themed_body[_theme="dark"]) {
   --toast-border: #242424;
   --toast-secondary: #3b3b3b;
   /*popup*/
-  --primary: #f5c14b;
+  --primary: #%VUE_APP_THEME_COLOR%;
   --primary-container: hsl(36, 100%, 18%);
   --on-primary: hsl(36, 100%, 13%);
   --on-primary-container: hsl(36, 100%, 84%);

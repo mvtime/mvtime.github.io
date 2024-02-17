@@ -2,19 +2,21 @@ const { defineConfig } = require("@vue/cli-service");
 const path = require("path");
 const webpack = require("webpack");
 
+const envPlugin = () => {
+  return new webpack.DefinePlugin(
+    Object.keys(process.env).reduce((acc, key) => {
+      acc[`process.env.${key}`] = JSON.stringify(process.env[key]);
+      return acc;
+    }, {})
+  );
+};
+
 module.exports = defineConfig({
   configureWebpack: {
-    plugins: [
-      new webpack.DefinePlugin(
-        Object.keys(process.env).reduce((acc, key) => {
-          acc[`process.env.${key}`] = JSON.stringify(process.env[key]);
-          return acc;
-        }, {})
-      ),
-    ],
+    plugins: [envPlugin()],
     module: {
       rules: [
-        // Add markdown-loader for files ending with '.md' in the assets folder
+        // Handle .md files in assets
         {
           test: /\.md$/,
           include: [path.resolve(__dirname, "src/assets")],
@@ -24,6 +26,19 @@ module.exports = defineConfig({
             },
             {
               loader: "markdown-loader",
+            },
+          ],
+        },
+        // replace %VARIABLE% in the contents of .css files with the value of process.env.VARIABLE
+        {
+          test: /\.css$/,
+          use: [
+            {
+              loader: "string-replace-loader",
+              options: {
+                search: /%(\w+)%/g,
+                replace: (match, p1) => process.env[p1],
+              },
             },
           ],
         },
@@ -65,7 +80,7 @@ module.exports = defineConfig({
       skipWaiting: true,
     },
     themeColor: "",
-    msTileColor: "#f5c14b",
+    msTileColor: `#${process.env.VUE_APP_THEME_COLOR}`,
     author: "Sander Vonk",
     appleMobileWebAppCapable: "yes",
     appleMobileWebAppStatusBarStyle: "black-translucent",
@@ -73,7 +88,7 @@ module.exports = defineConfig({
     manifestOptions: {
       name: process.env.VUE_APP_BRAND_LONG_NAME,
       short_name: process.env.VUE_APP_BRAND_SHORT_NAME,
-      theme_color: "#f5c14b",
+      theme_color: `#${process.env.VUE_APP_THEME_COLOR}`,
       description: `${process.env.VUE_APP_BRAND_LONG_NAME} provides A more effective way to manage your upcoming tests and exams.`,
       screenshots: [
         // in ./img/ss/

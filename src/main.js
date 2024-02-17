@@ -102,8 +102,8 @@ router.afterEach((to) => {
   } else {
     document.title = process.env.VUE_APP_BRAND_LONG_NAME;
   }
-  let theme_light = to.meta?.theme_color?.light || "#f5c14b";
-  let theme_dark = to.meta?.theme_color?.dark || "#f5c14b";
+  let theme_light = to.meta?.theme_color?.light || `#${process.env.VUE_APP_THEME_COLOR}`;
+  let theme_dark = to.meta?.theme_color?.dark || `#${process.env.VUE_APP_THEME_COLOR}`;
 
   $("meta.theme-color").attr("content", theme_light);
   $("meta.theme-color-dark").attr("content", theme_dark);
