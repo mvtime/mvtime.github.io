@@ -104,7 +104,6 @@
 
 <script>
 import "@/assets/style/portal_main.css";
-import { useMainStore } from "@/store";
 import LoadingCover from "@/components/LoadingCover.vue";
 import { useShortcuts } from "@/store/shortcuts";
 export default {

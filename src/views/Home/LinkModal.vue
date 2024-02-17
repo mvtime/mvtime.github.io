@@ -9,7 +9,6 @@
 
 <script>
 /* eslint-disable vue/no-unused-components */
-import { useMainStore } from "@/store";
 import { shallowRef } from "vue";
 import { WarningToast } from "@svonk/util";
 import ModalFromPages from "@/components/Modal/ModalFromPages.vue";

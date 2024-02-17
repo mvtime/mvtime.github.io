@@ -59,7 +59,6 @@
 import { SuccessToast } from "@svonk/util";
 import smoothReflow from "vue-smooth-reflow";
 import $ from "jquery";
-import { useMainStore } from "@/store";
 import { useShortcuts } from "@/store/shortcuts";
 export default {
   name: "TutorialBlurb",

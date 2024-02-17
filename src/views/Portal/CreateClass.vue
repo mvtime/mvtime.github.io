@@ -52,7 +52,7 @@
  * @requires module:store/MainStore
  * @emits {Function} close - An event emitted when the class is created or the modal is closed.
  */
-import { useMainStore } from "@/store";
+
 export default {
   name: "AddClassView",
   emits: ["close"],
@@ -68,11 +68,9 @@ export default {
   },
   methods: {
     create_class() {
-      useMainStore()
-        .create_class(this.class_obj)
-        .then(() => {
-          this.$emit("close");
-        });
+      this.store.create_class(this.class_obj).then(() => {
+        this.$emit("close");
+      });
     },
   },
 };

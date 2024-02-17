@@ -144,7 +144,6 @@
  * @emits {Function} close - An event emitted when the task is created or the modal is closed.
  */
 
-import { useMainStore } from "@/store";
 import { useMagic } from "@/store/magic";
 import { compatDateObj } from "@/common";
 import { ErrorToast, WarningToast, SuccessToast } from "@svonk/util";

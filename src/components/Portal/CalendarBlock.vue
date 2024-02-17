@@ -201,7 +201,6 @@
 
 <script>
 import "@/assets/style/portal_main.css";
-import { useMainStore } from "@/store";
 import LoadingCover from "@/components/LoadingCover.vue";
 import { compatDateObj } from "@/common";
 import { ErrorToast, SuccessToast } from "@svonk/util";

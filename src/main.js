@@ -13,6 +13,7 @@ const app = createApp(App);
 // setup app requisites
 app.use(router);
 app.use(pinia);
+import { useMainStore } from "@/store";
 app.mixin({
   computed: {
     $env() {
@@ -23,7 +24,7 @@ app.mixin({
     },
     // store access
     store() {
-      return pinia.state;
+      return useMainStore();
     },
   },
 });
@@ -61,7 +62,6 @@ import "@/assets/style/main.css";
 // import jquery and store
 import $ from "jquery";
 
-import { useMainStore } from "@/store";
 // auth
 
 $(document.body).on("click", ".auth-action", function () {

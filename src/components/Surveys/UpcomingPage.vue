@@ -19,7 +19,6 @@
 
 <script>
 import ExamCard from "@/components/Portal/ExamCard.vue";
-import { useMainStore } from "@/store";
 
 export default {
   name: "UpcomingTasks",

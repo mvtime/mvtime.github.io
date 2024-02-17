@@ -118,7 +118,6 @@
  * @requires module:store/MainStore
  * @emits {Function} close - An event emitted when the class is added or the modal is closed.
  */
-import { useMainStore } from "@/store";
 import { ErrorToast, WarningToast /*SuccessToast*/ } from "@svonk/util";
 import smoothReflow from "vue-smooth-reflow";
 export default {

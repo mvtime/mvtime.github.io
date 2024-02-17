@@ -272,7 +272,6 @@
  * @emits {Function} close - An event emitted when the modal is closed.
  */
 
-import { useMainStore } from "@/store";
 import ToggleBar from "@/components/ToggleBar.vue";
 import "@/assets/style/overlay.css";
 import { SuccessToast, ErrorToast } from "@svonk/util";

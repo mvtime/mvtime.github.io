@@ -89,7 +89,6 @@ import OverlayWrapper from "@/components/Modal/OverlayWrapper.vue";
 import LogoutModal from "@/components/Modal/LogoutModal.vue";
 import ShortcutsModal from "@/components/Modal/ShortcutsModal.vue";
 // Stores
-import { useMainStore } from "@/store";
 import { useShortcuts } from "@/store/shortcuts";
 // Global Scripts
 import $ from "jquery";
@@ -140,9 +139,6 @@ export default {
     },
     pageTitle() {
       return document.title;
-    },
-    store() {
-      return useMainStore();
     },
     theme() {
       return this.store.get_theme;

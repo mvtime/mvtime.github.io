@@ -49,7 +49,6 @@
 </template>
 
 <script>
-import { useMainStore } from "@/store";
 import "@/assets/style/overlay.css";
 import { WarningToast } from "@svonk/util";
 export default {

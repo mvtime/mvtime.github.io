@@ -84,7 +84,6 @@
 </template>
 
 <script>
-import { useMainStore } from "@/store";
 import { ErrorToast, WarningToast } from "@svonk/util";
 export default {
   name: "StatsModal",

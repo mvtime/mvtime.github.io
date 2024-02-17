@@ -164,7 +164,6 @@ import RightBar from "@/components/Portal/RightBar.vue";
 import StudyBlock from "@/components/Portal/StudyBlock.vue";
 import CalendarBlock from "@/components/Portal/CalendarBlock.vue";
 import OverlayWrapper from "@/components/Modal/OverlayWrapper.vue";
-import { useMainStore } from "@/store";
 import { useShortcuts } from "@/store/shortcuts";
 import { useMagic } from "@/store/magic";
 import { WarningToast } from "@svonk/util";

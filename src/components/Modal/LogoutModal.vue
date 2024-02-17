@@ -13,7 +13,6 @@
 </template>
 
 <script>
-import { useMainStore } from "@/store";
 import Modal from "@/components/Modal/Modal.vue";
 export default {
   name: "LogoutModal",
@@ -28,7 +27,7 @@ export default {
   },
   methods: {
     logout() {
-      useMainStore().logout();
+      this.store.logout();
       this.$emit("close");
     },
   },

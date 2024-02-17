@@ -123,7 +123,6 @@
  */
 
 import { WarningToast, ErrorToast, SuccessToast } from "@svonk/util";
-import { useMainStore } from "@/store";
 import smoothReflow from "vue-smooth-reflow";
 import showdown from "showdown";
 import "@/assets/style/markdown.css";
