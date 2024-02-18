@@ -8,7 +8,7 @@
   - study resources from data, better planning
 - Collect student wellness data
   - will allow us to show its usefulness
-  - what led us to start MVTT in the first place, advocating for student health
+  - what led us to start this project in the first place, advocating for student health
 
 # Changes
 

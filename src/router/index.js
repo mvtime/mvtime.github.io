@@ -217,19 +217,6 @@ const router = createRouter({
       },
       children: [
         {
-          path: "/portal/tutorial/:tab?",
-          name: "tutorial",
-          component: () => import("../components/Tutorial/TutorialModal.vue"),
-          meta: {
-            page_title: "Tutorial Videos",
-            theme_color: {
-              light: "#f2f2f2",
-              dark: "#121212",
-            },
-            requiresAuth: true,
-          },
-        },
-        {
           path: "/portal/tutorial/add",
           name: "onboarding",
           component: () => import("../views/Portal/Onboarding.vue"),
@@ -242,6 +229,19 @@ const router = createRouter({
             requiresAuth: true,
             block_close: true,
             noSurvey: true,
+          },
+        },
+        {
+          path: "/portal/tutorial/:tab?",
+          name: "tutorial",
+          component: () => import("../components/Tutorial/TutorialModal.vue"),
+          meta: {
+            page_title: "Tutorial Videos",
+            theme_color: {
+              light: "#f2f2f2",
+              dark: "#121212",
+            },
+            requiresAuth: true,
           },
         },
         {

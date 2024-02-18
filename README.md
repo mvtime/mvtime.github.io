@@ -15,12 +15,13 @@ npm run serve
 ### Builds and deploys to Github Pages (through the gh-pages branch)
 
 ```
-npm run deploy
+npm run deploy [mode=mvtt]
 ```
 
 ### [To-dos and Feature roadmap](https://mvtt.app/roadmap)
 
 ### Useful links
-[Home](https://mvtt.app) · 
-[About](https://mvtt.app/about) · 
+
+[Home](https://mvtt.app) ·
+[About](https://mvtt.app/about) ·
 [Contact](https://mvtt.app/contact)

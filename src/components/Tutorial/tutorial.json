@@ -116,8 +116,8 @@
   },
   {
     "el": ".left-bar .branding-title",
-    "title": "Well, we *are* MVTT",
-    "html": "Clicking the MVTT logo will take you back to the portal home page",
+    "title": "Well, we *are* %VUE_APP_BRAND_SHORT_NAME%",
+    "html": "Clicking the %VUE_APP_BRAND_SHORT_NAME% logo will take you back to the portal home page",
     "options": {
       "reclick": ".left-bar, #portal_mobile__left",
       "pagename": "portal"

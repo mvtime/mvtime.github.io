@@ -8,14 +8,12 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "deploy": "echo mvtt.app > ./dist/CNAME && npm run publish",
-    "compile": "npm run electron:build",
+    "deploy": "node deploy.js",
     "postbuild": "cross-env OS_TYPE=$(uname -s) npm-run-all --parallel copy-files echo-message",
     "copy-files": "npm run copy-win || npm run copy-nix",
     "copy-win": "copy /Y dist\\index.html dist\\404.html",
     "copy-nix": "cp dist/index.html dist/404.html",
     "echo-message": "echo 'Copied index.html to 404.html'",
-    "predeploy": "npm run build",
     "publish": "gh-pages -d dist"
   },
   "dependencies": {

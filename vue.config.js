@@ -31,7 +31,8 @@ module.exports = defineConfig({
         },
         // replace %VARIABLE% in the contents of .css files with the value of process.env.VARIABLE
         {
-          test: /\.css$/,
+          // apply to css and json files
+          test: /\.(css|json)$/,
           use: [
             {
               loader: "string-replace-loader",
