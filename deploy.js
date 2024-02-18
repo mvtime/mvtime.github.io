@@ -22,27 +22,30 @@ if (!fs.existsSync(env_file)) {
 // load with dotenv
 const env = require("dotenv").config({ path: env_file });
 
-function runCommand(command, message) {
-  console.log(message);
+function runCommand(command, tag, message) {
+  console.log(`\n------------- START ${tag}\n` + message);
   execSync(command, { stdio: "inherit" });
+  console.log(`-------------  END  ${tag}\n`);
 }
 
 function deploy() {
   // if this is a fork, pull the upstream
   const hasUpstream = execSync("git remote -v").toString().includes("upstream");
   if (hasUpstream) {
-    runCommand("git pull upstream main", "Pulling upstream");
+    runCommand("git pull upstream main", "pull", "Pulling upstream");
+    runCommand("git push origin main", "push", "Pushing to origin");
   }
 
   runCommand(
-    `npm run build${mode ? ` -- --mode ${mode}` : ""}`,
+    `vue-cli-service build${mode ? ` --mode ${mode}` : ""}`,
+    "build",
     `\nBuilding "${env.parsed.VUE_APP_BRAND_LONG_NAME}" (${env.parsed.VUE_APP_BRAND_SHORT_NAME})`
   );
 
   const domain = env.parsed.VUE_APP_BRAND_DOMAIN;
-  runCommand(`echo ${domain} > ./dist/CNAME`, `Writing domain ${domain} to CNAME`);
+  runCommand(`echo ${domain} > ./dist/CNAME`, "domain", `Writing domain ${domain} to CNAME`);
 
-  runCommand("npm run publish", "\nPublishing");
+  runCommand("npm run publish", "publish", "\nPublishing");
   console.log("\nFinished Deploy");
 }
 
