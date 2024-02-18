@@ -103,6 +103,7 @@ main.parent:not(.simplified) .click-action:active
 /* google branding for login */
 .small-action-btn.oauth {
   background-color: #fff;
+  color: #000;
   background-image: url(@/assets/img/general/oauth.png);
   background-image: url(@/assets/img/general/oauth.svg);
 }
