@@ -163,7 +163,7 @@ export default {
       if (!this.platform && window.location.search) {
         this.platform = window.location.search.split("=")[1];
       }
-      console.log("Electron Platform: " + this.platform);
+      this.$status.log("Electron Platform: " + this.platform);
     }
     this.set_theme();
     this.$store.paused = false;
