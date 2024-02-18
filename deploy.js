@@ -29,6 +29,12 @@ function runCommand(command, message) {
 }
 
 function deploy() {
+  // if this is a fork, pull the upstream
+  const hasUpstream = execSync("git remote -v").toString().includes("upstream");
+  if (hasUpstream) {
+    runCommand("git pull upstream main", "Pulling upstream");
+  }
+
   runCommand(
     `npm run build -- --mode=${mode}`,
     `\nBuilding "${env.parsed.VUE_APP_BRAND_LONG_NAME}" (${env.parsed.VUE_APP_BRAND_SHORT_NAME})`
