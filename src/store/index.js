@@ -22,7 +22,7 @@ import { auth, db, authChangeAction, refreshTimeout } from "../firebase";
 import { signInWithPopup, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
 const provider = new GoogleAuthProvider();
 const isElectron = navigator?.userAgent?.toLowerCase()?.indexOf(" electron/") > -1;
-const ORG_DOMAIN = "@mvla.net";
+const ORG_DOMAIN = `@${process.env.VUE_APP_ORG_DOMAIN}}`;
 // add email and name to provider
 provider.addScope("email");
 provider.addScope("profile");
@@ -967,7 +967,7 @@ export const useMainStore = defineStore({
       }
       // exclude empty or mvla emails
       if (!email || validOrgAcc(email) || !email.includes("@")) {
-        new WarningToast("Please enter a valid non-mvla email", 2000);
+        new WarningToast(`Please enter a valid non-${process.env.VUE_APP_ORG_NAME} email`, 2000);
         return;
       }
       // check if email is already linked (has entry with matching .email)
@@ -1285,7 +1285,7 @@ export const useMainStore = defineStore({
           ) {
             auth.signOut();
             new WarningToast(
-              "Please use your MVLA email to log in, or use an account that has been linked",
+              `Please use your ${process.env.VUE_APP_ORG_NAME} email to log in, or use an account that has been linked`,
               4000
             );
             this.clear();
