@@ -30,3 +30,4 @@ pnpm-debug.log*
 /public/img
 /public/og
 /public/download
+/public/favicon.ico
