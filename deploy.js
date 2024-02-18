@@ -1,11 +1,3 @@
-// deploy.js
-// deploys to the mode specified in the command line
-// - given as "npm run deploy [mode]"
-// - check that an env file exists for the mode (.env.[mode])
-// - run build w/ -- --mode=[mode]
-// - echo [mode env's file domain] > ./dist/CNAME
-// - run publish
-
 const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
@@ -31,15 +23,22 @@ if (!fs.existsSync(env_file)) {
 // load with dotenv
 const env = require("dotenv").config({ path: env_file });
 
-console.log(
-  `\nBuilding "${env.parsed.VUE_APP_BRAND_LONG_NAME}" (${env.parsed.VUE_APP_BRAND_SHORT_NAME})`
-);
-execSync(`npm run build -- --mode=${mode}`, { stdio: "inherit" });
+function runCommand(command, message) {
+  console.log(message);
+  execSync(command, { stdio: "inherit" });
+}
 
-const domain = env.parsed.VUE_APP_BRAND_DOMAIN;
-console.log(`Writing domain ${domain} to CNAME`);
-fs.writeFileSync(path.resolve(__dirname, "dist/CNAME"), domain);
+function deploy() {
+  runCommand(
+    `npm run build -- --mode=${mode}`,
+    `\nBuilding "${env.parsed.VUE_APP_BRAND_LONG_NAME}" (${env.parsed.VUE_APP_BRAND_SHORT_NAME})`
+  );
 
-console.log("\nPublishing");
-execSync("npm run publish", { stdio: "inherit" });
-console.log("\nFinished Deploy");
+  const domain = env.parsed.VUE_APP_BRAND_DOMAIN;
+  runCommand(`echo ${domain} > ./dist/CNAME`, `Writing domain ${domain} to CNAME`);
+
+  runCommand("npm run publish", "\nPublishing");
+  console.log("\nFinished Deploy");
+}
+
+deploy();
