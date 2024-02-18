@@ -42,6 +42,8 @@ function deploy() {
     `\nBuilding "${env.parsed.VUE_APP_BRAND_LONG_NAME}" (${env.parsed.VUE_APP_BRAND_SHORT_NAME})`
   );
 
+  runCommand("npm run postbuild", "postbuild", "\nRunning postbuild script");
+
   const domain = env.parsed.VUE_APP_BRAND_DOMAIN;
   runCommand(`echo ${domain} > ./dist/CNAME`, "domain", `Writing domain ${domain} to CNAME`);
 

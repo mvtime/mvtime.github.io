@@ -22,7 +22,7 @@ import { auth, db, authChangeAction, refreshTimeout } from "../firebase";
 import { signInWithPopup, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
 const provider = new GoogleAuthProvider();
 const isElectron = navigator?.userAgent?.toLowerCase()?.indexOf(" electron/") > -1;
-const ORG_DOMAIN = `@${process.env.VUE_APP_ORG_DOMAIN}}`;
+let ORG_DOMAIN = `@${process.env.VUE_APP_ORG_DOMAIN}`;
 // add email and name to provider
 provider.addScope("email");
 provider.addScope("profile");
@@ -1966,6 +1966,7 @@ export const useMainStore = defineStore({
       try {
         let [_email, _id, task_id] = ref.split("/");
         _email += this.ORG_DOMAIN;
+        _status.log("📄 Getting task from ref:", [_email, _id, task_id].join(" - "));
         let class_doc = await getDoc(doc(db, "classes", _email, "classes", _id));
         if (!class_doc.exists()) return Promise.resolve(null);
         let class_data = class_doc.data();

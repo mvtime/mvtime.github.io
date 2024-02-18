@@ -150,6 +150,7 @@ export default {
       );
     },
     note() {
+      if (!this.$store.user) return;
       const ref = this.$route?.params?.ref;
       if (!this.task || !ref) return;
       const note = this.$store.note_for(ref);
