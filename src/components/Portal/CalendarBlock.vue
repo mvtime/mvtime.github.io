@@ -167,7 +167,7 @@
                 $event.preventDefault();
                 if (task.type != 'note' && ($event.ctrlKey || $event.metaKey))
                   $store.set_finished(!$store.finished_tasks.includes(task.ref), task.ref);
-                else $emit('taskclick', task);
+                else if (task.type != 'note') $emit('taskclick', task);
               "
             >
               <div
