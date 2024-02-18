@@ -15,7 +15,7 @@ npm run serve
 ### Builds and deploys to Github Pages (through the gh-pages branch)
 
 ```
-npm run deploy [mode=mvtt]
+npm run deploy
 ```
 
 ### [To-dos and Feature roadmap](https://mvtt.app/roadmap)

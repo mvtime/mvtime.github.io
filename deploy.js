@@ -5,18 +5,17 @@ const { execSync } = require("child_process");
 const mode = process.argv[2];
 
 if (!mode) {
-  console.error("No mode specified; use 'npm run deploy [mode]'");
-  process.exit(1);
+  console.log("No mode specified; will deploy to production");
 }
 
-console.log(`\nAttempting to deploy to "${mode}"`);
-const public_env_file = path.resolve(__dirname, `.env.${mode}`);
-const local_env_file = path.resolve(__dirname, `.env.${mode}.local`);
+console.log(`\nAttempting to deploy to "${mode ? mode : "production"}"`);
+const public_env_file = path.resolve(__dirname, mode ? `.env.${mode}` : ".env");
+const local_env_file = path.resolve(__dirname, mode ? `.env.${mode}.local` : ".env.local");
 
-const env_file = fs.existsSync(public_env_file) ? public_env_file : local_env_file;
+const env_file = fs.existsSync(local_env_file) ? local_env_file : public_env_file;
 
 if (!fs.existsSync(env_file)) {
-  console.error(`No env file found for "${mode}"`);
+  console.error(`No env file found for ${mode ? mode : "production"}`);
   process.exit(1);
 }
 
@@ -36,7 +35,7 @@ function deploy() {
   }
 
   runCommand(
-    `npm run build -- --mode=${mode}`,
+    `npm run build${mode ? ` -- --mode ${mode}` : ""}`,
     `\nBuilding "${env.parsed.VUE_APP_BRAND_LONG_NAME}" (${env.parsed.VUE_APP_BRAND_SHORT_NAME})`
   );
 
