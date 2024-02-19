@@ -56,7 +56,7 @@
     </OverlayWrapper>
     <!-- Tutorial -->
     <TutorialBlurb
-      v-if="show_tutorial"
+      v-if="show_tutorial && $route.fullPath.startsWith('/portal')"
       :title="tutorial.title"
       :key="'tutorial'"
       :options="tutorial.options"
