@@ -23,7 +23,7 @@ if (!fs.existsSync(env_file)) {
 const env = require("dotenv").config({ path: env_file });
 
 function runCommand(command, tag, message) {
-  console.log(`\n------------- START ${tag}\n` + message);
+  console.log(`\n------------- START ${tag}\n\n` + message);
   execSync(command, { stdio: "inherit" });
   console.log(`-------------  END  ${tag}\n`);
 }
@@ -42,13 +42,13 @@ function deploy() {
     `\nBuilding "${env.parsed.VUE_APP_BRAND_LONG_NAME}" (${env.parsed.VUE_APP_BRAND_SHORT_NAME})`
   );
 
-  runCommand("npm run postbuild", "postbuild", "\nRunning postbuild script");
+  runCommand("npm run postbuild", "postbuild", "Running postbuild script");
 
   const domain = env.parsed.VUE_APP_BRAND_DOMAIN;
   runCommand(`echo ${domain} > ./dist/CNAME`, "domain", `Writing domain ${domain} to CNAME`);
 
-  runCommand("npm run publish", "publish", "\nPublishing");
-  console.log("\nFinished Deploy");
+  runCommand("npm run publish", "publish", "Publishing");
+  console.log("\n\x1b[32m%s\x1b[0m", "[ Finished deploying! ]\n");
 }
 
 deploy();
