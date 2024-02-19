@@ -88,9 +88,10 @@ module.exports = defineConfig({
     display: "standalone",
     manifestOptions: {
       name: process.env.VUE_APP_BRAND_LONG_NAME,
+      id: process.env.VUE_APP_BRAND_DOMAIN,
       short_name: process.env.VUE_APP_BRAND_SHORT_NAME,
       theme_color: `#${process.env.VUE_APP_THEME_COLOR}`,
-      description: `${process.env.VUE_APP_BRAND_LONG_NAME} provides A more effective way to manage your upcoming tests and exams.`,
+      description: `${process.env.VUE_APP_BRAND_LONG_NAME} provides a more effective way to manage your upcoming tests and exams.`,
       screenshots: [
         // in ./img/ss/
         {
