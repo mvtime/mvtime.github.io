@@ -23,9 +23,22 @@ if (!fs.existsSync(env_file)) {
 const env = require("dotenv").config({ path: env_file });
 
 function runCommand(command, tag, message) {
-  console.log(`\n------------- START ${tag}\n\n` + message);
+  console.log(
+    "\x1b[33m%s\x1b[0m",
+    `\n ${"-".repeat(20 - Math.ceil(tag.length / 2))} START ${tag} ${"-".repeat(
+      20 - Math.floor(tag.length / 2)
+    )}\n`
+  );
+  console.log("\x1b[34m%s\x1b[0m", message);
+
   execSync(command, { stdio: "inherit" });
-  console.log(`-------------  END  ${tag}\n`);
+
+  console.log(
+    "\x1b[33m%s\x1b[0m",
+    `\n ${"-".repeat(21 - Math.ceil(tag.length / 2))} END ${tag} ${"-".repeat(
+      21 - Math.floor(tag.length / 2)
+    )} \n`
+  );
 }
 
 function deploy() {
@@ -47,8 +60,8 @@ function deploy() {
   const domain = env.parsed.VUE_APP_BRAND_DOMAIN;
   runCommand(`echo ${domain} > ./dist/CNAME`, "domain", `Writing domain ${domain} to CNAME`);
 
-  runCommand("npm run publish", "publish", "Publishing");
-  console.log("\n\x1b[32m%s\x1b[0m", "[ Finished deploying! ]\n");
+  runCommand("npm run publish", "publish", "Publishing to remote gh-pages branch");
+  console.log("\n\x1b[32m%s\x1b[0m", "[ finished deploying! ]\n");
 }
 
 deploy();
