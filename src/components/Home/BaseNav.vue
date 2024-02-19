@@ -29,6 +29,14 @@
         <router-link class="click-action-inline" to="/contact" @click="closeMenu"
           >Contact</router-link
         >
+        <a
+          class="click-action-inline"
+          v-for="pair in JSON.parse($env.VUE_APP_ORG_LINKS || '[]')"
+          :href="pair[1]"
+          :key="pair[1]"
+          @click="closeMenu"
+          >{{ pair[0] }}
+        </a>
       </nav>
       <span class="flex_spacer"></span>
       <button
