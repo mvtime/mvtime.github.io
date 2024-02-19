@@ -25,9 +25,9 @@ const env = require("dotenv").config({ path: env_file });
 function runCommand(command, tag, message) {
   console.log(
     "\x1b[33m%s\x1b[0m",
-    `\n ${"-".repeat(20 - Math.ceil(tag.length / 2))} START ${tag} ${"-".repeat(
-      20 - Math.floor(tag.length / 2)
-    )}\n`
+    `\n|${"-".repeat(25 - Math.ceil(tag.length / 2))} START ${tag} ${"-".repeat(
+      25 - Math.floor(tag.length / 2)
+    )}|\n`
   );
   console.log("\x1b[34m%s\x1b[0m", message);
 
@@ -35,9 +35,9 @@ function runCommand(command, tag, message) {
 
   console.log(
     "\x1b[33m%s\x1b[0m",
-    `\n ${"-".repeat(21 - Math.ceil(tag.length / 2))} END ${tag} ${"-".repeat(
-      21 - Math.floor(tag.length / 2)
-    )} \n`
+    `\n|${"-".repeat(26 - Math.ceil(tag.length / 2))} END ${tag} ${"-".repeat(
+      26 - Math.floor(tag.length / 2)
+    )}|\n`
   );
 }
 
@@ -61,7 +61,7 @@ function deploy() {
   runCommand(`echo ${domain} > ./dist/CNAME`, "domain", `Writing domain ${domain} to CNAME`);
 
   runCommand("npm run publish", "publish", "Publishing to remote gh-pages branch");
-  console.log("\n\x1b[32m%s\x1b[0m", "[ finished deploying! ]\n");
+  console.log("\n\x1b[32m%s\x1b[0m", "[ finished deploying ]\n");
 }
 
 deploy();
