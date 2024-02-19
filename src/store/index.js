@@ -1285,7 +1285,7 @@ export const useMainStore = defineStore({
           ) {
             auth.signOut();
             new WarningToast(
-              `Please use your ${process.env.VUE_APP_ORG_NAME} email to log in, or use an account that has been linked`,
+              `Please use your ${process.env.VUE_APP_ORG_NAME} (@${process.env.VUE_APP_ORG_DOMAIN}) email to log in, or use an account that has been linked`,
               4000
             );
             this.clear();
