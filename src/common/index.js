@@ -22,14 +22,19 @@ function _log() {
   let args = Array.from(arguments);
   let extras = [
     `%c${process.env.VUE_APP_BRAND_SHORT_NAME}`,
-    "background:#272727;color:#C9B092;padding:7px 12px;font-family:Lato,sans-serif;font-weight:bold;font-size:1.3em",
+    `background:#${process.env.VUE_APP_BRAND_CONSOLE_COLOR_BG || "272727"};color:#${
+      process.env.VUE_APP_BRAND_CONSOLE_COLOR_TEXT || "C9B092"
+    };padding:7px 12px;font-family:Lato,sans-serif;font-weight:bold;font-size:1.3em`,
   ];
   // check if first character is emoji, followed by space
   if (getFirstNonStandardCharacter(args[0]) != null) {
     // remove the first two characters from the first argument
     extras[0] += " %c" + getFirstNonStandardCharacter(args[0]);
-    extras[2] =
-      "background:#C9B092aa;background:#ffffffaa;color:#272727;padding:3px 5px;margin-left:5px;border-radius:5px;font-family:monospace !important;font-weight:bold;font-size:1.25em";
+    extras[2] = `background:#${
+      process.env.VUE_APP_BRAND_CONSOLE_COLOR_TEXT || "C9B092"
+    }aa;background:#ffffffaa;color:#${
+      process.env.VUE_APP_BRAND_CONSOLE_COLOR_BG || "272727"
+    };padding:3px 5px;margin-left:5px;border-radius:5px;font-family:monospace !important;font-weight:bold;font-size:1.25em`;
     args[0] = args[0].substring(2).trimStart();
   }
   try {
