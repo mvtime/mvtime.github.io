@@ -40,7 +40,10 @@ export default {
     }
     try {
       const url = new URL(this.path);
-      if (this.$env.VUE_APP_BRAND_DOMAIN == url.host) {
+      if (
+        this.$env.VUE_APP_BRAND_DOMAIN == url.host ||
+        url.host.endsWith("." + this.$env.VUE_APP_BRAND_DOMAIN)
+      ) {
         new SuccessToast(`Redirecting to ${this.$env.VUE_APP_BRAND_SHORT_NAME}`);
         this.open();
       }
