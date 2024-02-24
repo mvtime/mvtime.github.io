@@ -2,6 +2,8 @@
  * @module common
  */
 
+/* eslint-disable */
+
 /** Imperfect helper for _status.log() */
 function getFirstNonStandardCharacter(str) {
   try {
