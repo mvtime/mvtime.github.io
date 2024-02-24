@@ -47,6 +47,9 @@ function deploy() {
   if (hasUpstream) {
     runCommand("git pull upstream main", "pull", "Pulling upstream");
     runCommand("git push origin main", "push", "Pushing to origin");
+  } else {
+    // create the documentation
+    runCommand("jsdoc -c jsdoc.config", "docs", "Building JSDocs");
   }
 
   runCommand(

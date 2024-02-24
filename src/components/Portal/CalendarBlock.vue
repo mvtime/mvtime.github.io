@@ -165,9 +165,12 @@
               :href="'/view/' + get_link(task.ref)"
               @click="
                 $event.preventDefault();
-                if (task.type != 'note' && ($event.ctrlKey || $event.metaKey))
-                  $store.set_finished(!$store.finished_tasks.includes(task.ref), task.ref);
-                else if (task.type != 'note') $emit('taskclick', task);
+                if ($event.ctrlKey || $event.metaKey) {
+                  if (task.type != 'note')
+                    $store.set_finished(!$store.finished_tasks.includes(task.ref), task.ref);
+                } else {
+                  $emit('taskclick', task);
+                }
               "
             >
               <div
