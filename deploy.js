@@ -48,8 +48,6 @@ function deploy() {
     runCommand("git pull upstream main", "pull", "Pulling upstream");
     runCommand("git push origin main", "push", "Pushing to origin");
   } else {
-    // delete prev docs
-    runCommand("rm -r -f public/docs", "rm docs", "Deleting previous docs");
     // create the documentation
     runCommand(
       "rm -r -f public/docs && jsdoc -c jsdoc.config",
