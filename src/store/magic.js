@@ -1,5 +1,8 @@
 /**
- * @module store/magic
+ * This store mnages AI/ML tasks and requests, as well as other "smart" or api-drieven features
+ * @file store/magic.js
+ * @namespace .magic
+ * @memberOf store
  */
 
 // setup Pinia store
@@ -10,8 +13,20 @@ const API_URL = `https://${process.env.VUE_APP_BRAND_DOMAIN__API}/`;
 
 export const useMagic = defineStore({
   id: "magic",
+  /**
+   * @namespace .magic.state
+   * @memberOf .magic
+   */
   state: () => ({
+    /**
+     * @memberOf .magic.state
+     * @property {Object} last Keeps track of when each endpoint was last called and with what hash data in order to rate limit
+     */
     last: {},
+    /**
+     * @memberOf .magic.state
+     * @property {Array} types List of task types and their short names, full names, list names, and keyboard shortcuts
+     */
     types: [
       { key: "note", name: "Note", list_as: "Add a Note", shortcuts: ["n"] },
       {
@@ -50,9 +65,18 @@ export const useMagic = defineStore({
       },
     ],
   }),
+  /**
+   * @namespace .magic.getters
+   * @memberOf .magic
+   */
   getters: {},
+  /**
+   * @namespace .magic.actions
+   * @memberOf .magic
+   */
   actions: {
     /**
+     * @memberOf .magic.actions
      * @function type_full
      * @description get the full type name from the short type
      * @param {String} short_type - the short type of the task
@@ -63,6 +87,7 @@ export const useMagic = defineStore({
       return this.types.find((t) => t.key === short_type)?.name || short_type;
     },
     /**
+     * @memberOf .magic.actions
      * @function path
      * @description get the smart text associated with a given url
      * @param {String} path
@@ -73,6 +98,7 @@ export const useMagic = defineStore({
       return await this.rated_api_get("get/magic/link-text", { path });
     },
     /**
+     * @memberOf .magic.actions
      * @function type
      * @description get the smart type associated with a given description
      * @param {String} text
@@ -82,6 +108,7 @@ export const useMagic = defineStore({
       return await this.rated_api_get("get/magic/task-type", { task });
     },
     /**
+     * @memberOf .magic.actions
      * @function api_get
      * @description do get request to url: API_URL + endpoint with request query of data
      * @param {String} endpoint api endpoint
@@ -116,6 +143,7 @@ export const useMagic = defineStore({
       }
     },
     /**
+     * @memberOf .magic.actions
      * @function rated_api_get
      * @description do api_get but abide by rate limit (only eval once every 15 seconds)
      */

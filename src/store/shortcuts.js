@@ -1,11 +1,15 @@
 /**
- * @module store/shortcuts
+ * This store manages the registration, removal, and formatting of keyboard shortcuts, for use in help UIs
+ * @file store/shortcuts.js
+ * @namespace .shortcuts
+ * @memberOf store
  */
 
 // setup Pinia store
 import { _status } from "@/common";
 import { defineStore } from "pinia";
 /**
+ * @memberOf .shortcuts
  * @function clean_key
  * @description Clean up keystrings for display
  * @param {String} key keystring to reformat
@@ -49,8 +53,13 @@ export const useShortcuts = defineStore({
     keys: [],
     active: {},
   }),
+  /**
+   * @namespace .shortcuts.getters
+   * @memberof .shortcuts
+   */
   getters: {
     /**
+     * @memberOf .shortcuts.getters
      * @function get
      * @description Get a shortcut by object
      * @param {Object} shortcut
@@ -60,6 +69,7 @@ export const useShortcuts = defineStore({
       return this.shortcuts.find((s) => s === shortcut);
     },
     /**
+     * @memberOf .shortcuts.getters
      * @function get_key
      * @description Get a shortcut by key
      * @param {String} key
@@ -69,6 +79,7 @@ export const useShortcuts = defineStore({
       return this.shortcuts.find((s) => s.key === key);
     },
     /**
+     * @memberOf .shortcuts.getters
      * @function list
      * @description Get a list of shortcuts
      * @returns an array of formatted shortcuts
@@ -79,6 +90,7 @@ export const useShortcuts = defineStore({
       });
     },
     /**
+     * @memberOf .shortcuts.getters
      * @function sections
      * @description Get a list of shortcuts by section
      * @returns an array of formatted shortcuts by section
@@ -97,8 +109,13 @@ export const useShortcuts = defineStore({
       return sections;
     },
   },
+  /**
+   * @namespace .shortcuts.actions
+   * @memberof .shortcuts
+   */
   actions: {
     /**
+     * @memberOf .shortcuts
      * @function register
      * @description Register a new shortcut
      * @param {Object} shortcut
@@ -117,6 +134,7 @@ export const useShortcuts = defineStore({
       if (!skipSort) this.sort();
     },
     /**
+     * @memberOf .shortcuts.actions
      * @function register_all
      * @description Register a list of shortcuts with a given tag
      * @param {Array} list
@@ -129,6 +147,7 @@ export const useShortcuts = defineStore({
       this.sort();
     },
     /**
+     * @memberOf .shortcuts.actions
      * @function remove
      * @description Remove a shortcut
      * @param {Object} shortcut
@@ -141,6 +160,7 @@ export const useShortcuts = defineStore({
       this.shortcuts.splice(this.shortcuts.indexOf(shortcut), 1);
     },
     /**
+     * @memberOf .shortcuts.actions
      * @function remove_all
      * @description Remove all shortcuts with a given tag
      * @param {Array} list
@@ -152,6 +172,7 @@ export const useShortcuts = defineStore({
       }
     },
     /**
+     * @memberOf .shortcuts.actions
      * @function remove_tag
      * @description Remove all shortcuts with a given tag
      * @param {String} tag
@@ -161,6 +182,7 @@ export const useShortcuts = defineStore({
       this.keys = this.shortcuts.map((s) => s.key);
     },
     /**
+     * @memberOf .shortcuts.actions
      * @function remove_key
      * @description Remove a shortcut by key
      * @param {String} key
@@ -174,6 +196,7 @@ export const useShortcuts = defineStore({
       this.shortcuts.splice(this.shortcuts.indexOf(this.get_key(key)), 1);
     },
     /**
+     * @memberOf .shortcuts.actions
      * @function remove_keys
      * @description Remove shortcuts with any of the given keys
      * @param {Array} keys
@@ -184,6 +207,7 @@ export const useShortcuts = defineStore({
       }
     },
     /**
+     * @memberOf .shortcuts.actions
      * @function sort
      * @description Sort the shortcuts
      */
@@ -209,6 +233,7 @@ export const useShortcuts = defineStore({
       });
     },
     /**
+     * @memberOf .shortcuts.actions
      * @function clear
      * @description Clear all shortcuts
      */
@@ -218,6 +243,7 @@ export const useShortcuts = defineStore({
       _status.log("⌨️ Cleared shortcuts");
     },
     /**
+     * @memberOf .shortcuts.actions
      * @function set_activity
      * @description Set the activity state of a shortcut
      * @param {Boolean} state
@@ -227,6 +253,7 @@ export const useShortcuts = defineStore({
       this.active[shortName] = state;
     },
     /**
+     * @memberOf .shortcuts.actions
      * @function is_active
      * @description Check if a shortcut is active
      * @param {String} shortName

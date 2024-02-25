@@ -1,5 +1,13 @@
 /**
- * @module store
+ * Group of stores that handle page-inspecific data and methods
+ * @namespace store
+ */
+
+/**
+ * The main store for the app, with most primary data and methods needed to function
+ * @file store/index.js
+ * @namespace .main
+ * @memberOf store
  */
 
 // setup Pinia store
@@ -72,35 +80,36 @@ export const useMainStore = defineStore({
     }
     // if no local storage, set up store
     _status.log("🔨 Setting up store from scratch");
-    /** Set default store state */
+    /**
+     * @namespace .main.state
+     * @description The state of the main store
+     * @memberOf .main
+     */
+    /* Set default store state */
     return (state = {
       /**
-       * @name user
-       * @description The user object from firebase auth
-       * @type {Object}
+       * @memberOf .main.state
+       * @property {Object} user The user object from firebase auth
        * @default null
        */
       user: null,
       /**
-       * @name account_doc
-       * @description The authenticated user's document from the users collection in firestore
-       * @type {Object}
+       * @memberOf .main.state
+       * @property {Object} account_doc The authenticated user's document from the users collection in firestore
        * @default null
        * @see {@link active_doc}
        */
       account_doc: null,
       /**
-       * @name linked_account_doc
-       * @description The linked account document from the users collection in firestore
-       * @type {Object}
+       * @memberOf .main.state
+       * @property {Object} linked_account_doc The linked account document from the users collection in firestore
        * @default null
        * @see {@link active_doc}
        */
       linked_account_doc: null,
       /**
-       * @name classes
-       * @description Collection of the ids of classes that the user is in
-       * @type {Array}
+       * @memberOf .main.state
+       * @property {Array} classes Collection of the firebase document ids of classes that the user is in
        * @default []
        * @see {@link fetch_classes}
        * @see {@link get_tasks}
@@ -108,35 +117,31 @@ export const useMainStore = defineStore({
        */
       classes: [],
       /**
-       * @name tasks
-       * @description Collection of the processed task objects
-       * @type {Array}
+       * @memberOf .main.state
+       * @property {Array} tasks Collection of the processed task objects
        * @default []
        * @see {@link get_tasks}
        */
       tasks: [],
       /**
-       * @name loaded_email
-       * @description The email of the user that the classes have been loaded for (for previews in AddClass.vue)
-       * @type {String}
+       * @memberOf .main.state
+       * @property {String} loaded_email The email of the user that the classes have been loaded for (for previews in AddClass.vue)
        * @default null
        * @see {@link loaded_classes}
        * @see {@link fetch_classes_by_email}
        */
       loaded_email: null,
       /**
-       * @name loaded_classes
-       * @description The classes that have been loaded for the loaded_email (for previews in AddClass.vue)
-       * @type {Array}
+       * @memberOf .main.state
+       * @property {Array} loaded_classes The classes that have been loaded for the loaded_email (for previews in AddClass.vue)
        * @default null
        * @see {@link loaded_email}
        * @see {@link fetch_classes_by_email}
        */
       loaded_classes: null,
       /**
-       * @name teacher
-       * @description The teacher object, with doc_ref and collection_ref
-       * @type {Object}
+       * @memberOf .main.state
+       * @property {Object} teacher The teacher object, with doc_ref and collection_ref
        * @default {doc_ref: null, collection_ref: null}
        * @see {@link is_teacher}
        * @see {@link create_teacher_doc}
@@ -146,9 +151,8 @@ export const useMainStore = defineStore({
         collection_ref: null,
       },
       /**
-       * @name theme
-       * @description The theme of the app, either "light" or "dark"
-       * @type {String}
+       * @memberOf .main.state
+       * @property {Object} theme The theme of the app, either "light" or "dark"
        * @default null
        * @see {@link get_theme}
        * @see {@link toggle_theme}
@@ -157,9 +161,8 @@ export const useMainStore = defineStore({
        */
       theme: null,
       /**
-       * @name personal_account
-       * @description If the user is using their personal account (true) or a valid org account (false)
-       * @type {Boolean}
+       * @memberOf .main.state
+       * @property {Boolean} personal_account If the user is using their personal account (true) or a valid org account (false)
        * @default false
        * @see {@link linked_account_doc}
        * @see {@link linked_account_ref}
@@ -168,26 +171,28 @@ export const useMainStore = defineStore({
        */
       personal_account: false,
       /**
-       * @name paused
-       * @description If the app is paused (true) or not (false)
-       * @type {Boolean}
+       * @memberOf .main.state
+       * @property {Boolean} paused If the app is paused (true) or not (false)
        * @default false
        * @see {@link show_timeout}
        * @see {@link hide_timeout}
        */
       paused: false,
       /**
-       * @name logout_prompt
-       * @description If the app is showing a logout prompt (true) or not (false)
-       * @type {Boolean}
+       * @memberOf .main.state
+       * @property {Boolean} logout_prompt If the app is showing a logout prompt (true) or not (false)
        * @default false
        */
       logout_prompt: false,
     });
   },
-  /** The getters to get data that's based off of the store state, but requires manipulation */
+  /** The getters to get data that's based off of the store state, but requires manipulation
+   * @namespace .main.getters
+   * @memberof .main
+   */
   getters: {
     /**
+     * @memberOf .main.getters
      * @function ORG_DOMAIN
      * @description Get the domain of the organization (@domain.tld)
      * @returns {String} The domain of the organization
@@ -196,6 +201,7 @@ export const useMainStore = defineStore({
       return ORG_DOMAIN;
     },
     /**
+     * @memberOf .main.getters
      * @function simplified
      * @description Get if the user is using a simplified view (true) or not (false)
      * @returns {Boolean} If the user is using a simplified view
@@ -204,6 +210,7 @@ export const useMainStore = defineStore({
       return this.account_doc?.prefs?.simplified || false;
     },
     /**
+     * @memberOf .main.getters
      * @function linked_accounts
      * @description Get all linked accounts from active_doc.linked
      * @returns {Array} Array of linked account emails
@@ -215,6 +222,7 @@ export const useMainStore = defineStore({
       return this.active_doc.linked || [];
     },
     /**
+     * @memberOf .main.getters
      * @function upcoming
      * @description et the upcoming tasks (after 8AM today)
      * @returns {Array} Array of upcoming tasks
@@ -241,6 +249,7 @@ export const useMainStore = defineStore({
       return upcoming;
     },
     /**
+     * @memberOf .main.getters
      * @function upcoming_todo
      * @description Get the upcoming tasks (after 8AM today) that havent been marked as done
      * @returns {Array} Array of upcoming tasks
@@ -254,6 +263,7 @@ export const useMainStore = defineStore({
       return this.upcoming.filter((task) => !this.finished_tasks?.includes(task.ref));
     },
     /**
+     * @memberOf .main.getters
      * @function non_recent_signin
      * @description Check if user signed in within the last 24 hours
      * @returns {Boolean} if the user's session started within the last 24 hours
@@ -269,6 +279,7 @@ export const useMainStore = defineStore({
       return diff > 24 * 60 * 60 * 1000;
     },
     /**
+     * @memberOf .main.getters
      * @function recently_joined
      * @description Check if user joined within the last 12 hours
      * @returns {Boolean} if the user's account was created within the last 12 hours
@@ -284,6 +295,7 @@ export const useMainStore = defineStore({
       return diff < 12 * 60 * 60 * 1000;
     },
     /**
+     * @memberOf .main.getters
      * @function is_teacher
      * @description Check if user is a teacher, or is in teacher mode locally (for testing)
      * @returns {Boolean} if the user is a teacher
@@ -324,6 +336,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.getters
      * @function done_daily_survey
      * @description Check if user has completed the daily survey, or is a teacher
      * @returns {Boolean} if the user / proxy for the user has completed the join form
@@ -338,6 +351,7 @@ export const useMainStore = defineStore({
       return this.active_doc?.done_surveys && this.active_doc.done_surveys?.includes(today);
     },
     /**
+     * @memberOf .main.getters
      * @function done_tutorial
      * @description Check if user has completed the tutorial
      * @returns {Boolean} if the user / proxy for the user has completed the tutorial
@@ -348,6 +362,7 @@ export const useMainStore = defineStore({
       return this.account_doc?.done_tutorial;
     },
     /**
+     * @memberOf .main.getters
      * @function done_join_form
      * @description Check if user has completed the join form
      * @returns {Boolean} if the user / proxy for the user has completed the join form
@@ -358,6 +373,7 @@ export const useMainStore = defineStore({
       return !!this.active_doc?.join_form;
     },
     /**
+     * @memberOf .main.getters
      * @function account_ref
      * @description Get the user's absolute document reference (the signed-in account, even if it's a linked account)
      * @returns {Object} The firebase document reference for the user's account
@@ -368,6 +384,7 @@ export const useMainStore = defineStore({
       return doc(db, "users", this.user.uid);
     },
     /**
+     * @memberOf .main.getters
      * @function linked_account_ref
      * @description Get the user's linked account document reference (the account that the user is linked to, if it exists)
      * @returns {Object} The firebase document reference for the user's linked account
@@ -379,6 +396,7 @@ export const useMainStore = defineStore({
       return doc(db, "users", this.account_doc.linked_to);
     },
     /**
+     * @memberOf .main.getters
      * @function active_ref
      * @description Get the user's active document reference (the signed-in account's doc ref, or the linked account's if it exists)
      * @returns {Object} The firebase document reference for the user's active account
@@ -388,6 +406,7 @@ export const useMainStore = defineStore({
       return this.personal_account ? this.linked_account_ref : this.account_ref;
     },
     /**
+     * @memberOf .main.getters
      * @function active_doc
      * @description Get the user's active document (the signed-in account's doc, or the linked account's if it exists)
      * @returns {Object} The local copy of the document being used for dashboard data
@@ -398,6 +417,7 @@ export const useMainStore = defineStore({
       return this.personal_account ? this.linked_account_doc : this.account_doc;
     },
     /**
+     * @memberOf .main.getters
      * @function get_theme
      * @description Get theme from local storage or user doc
      * @returns {String} "light" or "dark"
@@ -434,6 +454,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.getters
      * @function get_loaded_classes
      * @description Get the classes that have been loaded for the loaded_email, and set the .is_joined property on each
      * @returns {Array} Array of classes that have been loaded for the loaded_email
@@ -453,6 +474,7 @@ export const useMainStore = defineStore({
       });
     },
     /**
+     * @memberOf .main.getters
      * @function finished_tasks
      * @description return all the finished tasks
      * @returns {Boolean} If the task is finished or not
@@ -468,6 +490,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.getters
      * @function notes
      * @description return all the notes in a dictionary with the ref as the key
      * @returns {Object} Dictionary of notes with refs as keys
@@ -483,9 +506,12 @@ export const useMainStore = defineStore({
       }
     },
   },
-  /** The actions to manipulate the store state */
+  /** The actions to manipulate the store state
+   * @namespace .main.actions
+   */
   actions: {
     /**
+     * @memberOf .main.actions
      * @function class_text
      * @description get the smart text associated with a given class
      * @param {String} class_obj
@@ -497,6 +523,7 @@ export const useMainStore = defineStore({
       return class_obj.name;
     },
     /**
+     * @memberOf .main.actions
      * @function set_account_pref
      * @description Set a preference in the account doc
      * @param {String} pref The preference to set
@@ -516,6 +543,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function get_surveys
      * @description Get the survey data for the given dates for this user
      * @param {Array} dates Array of dates to get the survey data for
@@ -549,6 +577,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function get_cached_surveys
      * @description Get the survey data for the given dates for this user, using the cached data in the active doc. If the data does not include the given dates, get the data from the server and save it to use as the cashe
      * @param {Array} dates Array of dates to get the survey data for
@@ -610,6 +639,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function note_for
      * @description Get the note for the given ref
      * @param {String} note The note to set
@@ -622,6 +652,7 @@ export const useMainStore = defineStore({
       return (this.notes && this.notes[this.ref_to_path(ref)]) || null;
     },
     /**
+     * @memberOf .main.actions
      * @function set_note
      * @description set a task with the given path to have a note in the keyed "notes" property of the active doc (remove if value is falsey, add note if truthy)
      * @param {String} note The note to set
@@ -650,6 +681,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function set_finished
      * @description set a task with the given ref to finished in the finished array of the active doc (remove if finished is false, add path if finished is true)
      * @param {Boolean} finished The finished status to set
@@ -681,6 +713,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function path_to_ref
      * @description Convert a path to a ref (email~class_id?~task_id)
      * @param {String} path The path to convert
@@ -697,6 +730,7 @@ export const useMainStore = defineStore({
       return task_id ? `${_email}~${_id}~${task_id}` : `${_email}~${_id}`;
     },
     /**
+     * @memberOf .main.actions
      * @function ref_to_path
      * @description Convert a ref to a path (email/class_id?/task_id)
      * @param {String} path The path to convert
@@ -713,6 +747,7 @@ export const useMainStore = defineStore({
       return task_id ? `${_email}/${_id}/${task_id}` : `${_email}/${_id}`;
     },
     /**
+     * @memberOf .main.actions
      * @function code_from_ref_helper
      * @param {String} ref ref in email/uid format
      * @returns {String} 6-character code from ref
@@ -723,6 +758,7 @@ export const useMainStore = defineStore({
       return hash.substring(0, 5);
     },
     /**
+     * @memberOf .main.actions
      * @function code_from_ref
      * @description Create a proxy code from a ref (email/uid)
      * @param {String} ref ref in email/uid format
@@ -760,6 +796,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function ref_from_code
      * @description Get the ref (email/uid) from a code
      * @param {String} code The code to get the ref for
@@ -781,6 +818,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function toggle_teacher
      * @description Toggle teacher mode (for testing)
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
@@ -805,6 +843,7 @@ export const useMainStore = defineStore({
     },
 
     /**
+     * @memberOf .main.actions
      * @function get_tasks
      * @description Get all tasks from all classes
      * @returns {Promise} Promise that resolves to Array of all tasks from all classes, with class name and color added
@@ -863,6 +902,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function clear
      * @description Reset the store state and local storage, and redirect to home if page requires auth
      * @note Imperfect, and isn't enough to prevent errors when the app updates to a version with a different store state structure
@@ -887,6 +927,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function set_active
      * @description Set the active document (the signed-in account's doc, or the linked account's if it exists) to the provided document
      * @param {Object} data The document data to replace the active document (account_doc or linked_doc) with
@@ -905,6 +946,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function doc_from_uid
      * @description Get a user document from a uid
      * @param {String} uid The uid of the user to get the document for
@@ -927,6 +969,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function link_account_uid
      * @description Link a user account to another user's account by uid (for personal accounts only)
      * @param {String} uid The uid of the user to link to
@@ -956,6 +999,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function invite_linked
      * @description Invite a user account to link to another user's account (for personal accounts only,) including sending them an email with the code to join
      * @param {String} email The email of the user to invite (and send an invite email to)
@@ -1037,6 +1081,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function uninvite_linked
      * @description Unlink a user account from another user's account (for personal accounts only)
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
@@ -1065,6 +1110,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function refresh_timeout
      * @description A proxy for the refreshTimeout function in firebase.js (to reduce unnecessary onSnapshot calls)
      * @param {Number} delay The delay in milliseconds to refresh the timeout for (default 1000 set in firebase.js)
@@ -1077,6 +1123,7 @@ export const useMainStore = defineStore({
       refreshTimeout(delay);
     },
     /**
+     * @memberOf .main.actions
      * @function login_promise
      * @description A wrapper for the store.user state, to wait for the user to be set
      * @returns {Promise} A promise that resolves to the user object
@@ -1096,6 +1143,7 @@ export const useMainStore = defineStore({
       });
     },
     /**
+     * @memberOf .main.actions
      * @function save_join_form
      * @description Save the responses from the join form to the active user's document
      * @param {Object} responses The responses from the join form to save
@@ -1119,6 +1167,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function finish_tutorial
      * @description Set the user's tutorial status to finished
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
@@ -1135,6 +1184,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function save_daily_survey
      * @description Save the responses from the daily survey to the active user's document
      * @param {Object} responses The responses from the daily survey to save
@@ -1175,6 +1225,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function toggle_theme
      * @description Toggle the theme between light and dark, and save to local storage and user account doc
      * @see {@link get_theme}
@@ -1195,13 +1246,7 @@ export const useMainStore = defineStore({
       this.theme = this.get_theme;
     },
     /**
-     * @function set pref
-     * @description Set a preference in the account doc
-     * @see {@link get_theme}
-     * @see {@link theme}
-     */
-
-    /**
+     * @memberOf .main.actions
      * @function remove_class_id_helper
      * @description Helper function to remove a class from the active user's document and save changes to remote
      * @see {@link remove_class}
@@ -1222,6 +1267,7 @@ export const useMainStore = defineStore({
       await this.update_remote();
     },
     /**
+     * @memberOf .main.actions
      * @function remove_invalid
      * @description Remove a class from the active user's document, and show a toast saying that the class was removed because it was invalid
      * @see {@link remove_class_id_helper}
@@ -1232,6 +1278,7 @@ export const useMainStore = defineStore({
       return Promise.resolve();
     },
     /**
+     * @memberOf .main.actions
      * @function remove_class
      * @description Remove a class from the active user's document, and show a toast saying that the class was removed manually
      * @see {@link remove_class_id_helper}
@@ -1249,6 +1296,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function set_user
      * @description Set the user object and load the user's document, with some additional checks and error handling. Also set the user's document if it exists, or create it if it doesn't, and logs them out if the account is deemed invalid
      * @see {@link user}
@@ -1312,6 +1360,7 @@ export const useMainStore = defineStore({
         });
     },
     /**
+     * @memberOf .main.actions
      * @function login
      * @description Log the user in with Google OAuth (using the appropriate prompt type based on window support), and set the user object.
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
@@ -1364,6 +1413,7 @@ export const useMainStore = defineStore({
         });
     },
     /**
+     * @memberOf .main.actions
      * @function login_personal
      * @description Most things that login() does, but for personal accounts (does not preform org account check, enforce sign-in domain, or redirect)
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
@@ -1406,6 +1456,7 @@ export const useMainStore = defineStore({
         });
     },
     /**
+     * @memberOf .main.actions
      * @function logout
      * @description Log the user out and clear the store state
      * @see {@link clear}
@@ -1420,6 +1471,7 @@ export const useMainStore = defineStore({
       new Toast("Logged Out", "default", 1500, require("@svonk/util/assets/info-locked-icon.svg"));
     },
     /**
+     * @memberOf .main.actions
      * @function get_remote
      * @description Get the user's document from the remote database, and create it if it doesn't exist. Preforms additional checks for personal accounts, and removes the linked account if it doesn't exist
      * @see {@link create_doc}
@@ -1448,6 +1500,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function update_remote
      * @description Update the active user's document in the remote database
      * @see {@link get_remote}
@@ -1460,6 +1513,7 @@ export const useMainStore = defineStore({
       _status.log("⏶ Pushed changes to remote");
     },
     /**
+     * @memberOf .main.actions
      * @function update_wrapper_acc_doc
      * @description Update the authenticated user's document in the remote database (for personal accounts only)
      * @see {@link update_remote}
@@ -1469,6 +1523,7 @@ export const useMainStore = defineStore({
       await setDoc(this.account_ref, this.account_doc, { merge: true });
     },
     /**
+     * @memberOf .main.actions
      * @function update_wrapper_acc_doc
      * @description Update the authenticated user's document in the remote database with the data given (for personal accounts only)
      * @see {@link update_remote}
@@ -1484,6 +1539,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function create_doc
      * @description Create the user's document in the remote database, create a teacher document if the user is a teacher, and create a personal account if the user is using a personal account. Also preforms onboarding for non-teacher
      * @see {@link create_teacher_doc}
@@ -1523,6 +1579,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function create_teacher_doc
      * @description Create the teacher document for the user, and redirect to the create class page
      * @see {@link create_doc}
@@ -1542,6 +1599,7 @@ export const useMainStore = defineStore({
       router.push("/portal/create");
     },
     /**
+     * @memberOf .main.actions
      * @function fetch_classes
      * @description Fetch all classes from the user's document and combine them into an array, while checking for duplicates and invalid classes
      * @returns {Array} Array of all (unique) classes from the user's document
@@ -1648,6 +1706,7 @@ export const useMainStore = defineStore({
       Promise.resolve();
     },
     /**
+     * @memberOf .main.actions
      * @function fetch_classes_by_email
      * @description Fetch all classes for a given email, and set the loaded classes to the result
      * @param {String} email The email to fetch classes for
@@ -1663,14 +1722,8 @@ export const useMainStore = defineStore({
         this.loaded_email = email;
         return;
       }
-      //let classes_maindoc = await getDoc(doc(db, "classes", email));
       _status.log("📄 Getting classes from email");
-      //if (classes_maindoc.exists()) {
       let classes = [];
-      /**
-       * This file contains the Vuex store for the application. It manages the state of the application and provides methods for adding, creating, and deleting classes and tasks.
-       * @file store/index.js
-       */
       let classes_subcollection = collection(doc(db, "classes", email), "classes");
       let classes_subcollection_snapshot = await getDocs(classes_subcollection);
       _status.log("📄 Got classes subcollection from email");
@@ -1693,6 +1746,7 @@ export const useMainStore = defineStore({
       this.loaded_email = email;
     },
     /**
+     * @memberOf .main.actions
      * @function add_class
      * @description Add a class to the active user's document, and show a toast saying that the class was added
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
@@ -1726,6 +1780,7 @@ export const useMainStore = defineStore({
       return Promise.resolve();
     },
     /**
+     * @memberOf .main.actions
      * @function create_class
      * @description Create a class with the given object, and add it to the active user's document. (for teachers)
      * @param {Object} class_obj The class object to with the class data, document will be created in /classes under the teacher's email with these contents
@@ -1767,6 +1822,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function create_task
      * @description Create a task with the given object, and add it to the classes specified in the object. (for teachers)
      * @param {Object} task_obj The task object to with the task data, data will be added to /classes docs
@@ -1823,6 +1879,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function update_class
      * @description Update an instance of a class (for teachers). Intended to be preformed from the EditClass Modal
      * @param {String} class_ref the "email/class_id" String representation of the class ref in firebase
@@ -1858,6 +1915,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function update_task
      * @description Update an instance of a task from a class (for teachers). Intended to be preformed from the EditTask Modal
      * @param {String} task_ref the "email/class_id/task_id" String representation of the task ref in firebase
@@ -1907,6 +1965,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function archive_task
      * @description Archive an instance of a task from a class (for teachers). Intended to be preformed from the ViewTask Modal
      * @param {String} task_ref the "email/class_id" String representation of the task ref in firebase
@@ -1944,6 +2003,7 @@ export const useMainStore = defineStore({
       return Promise.resolve();
     },
     /**
+     * @memberOf .main.actions
      * @function task_from_ref
      * @description Get the task object from a task reference
      * @param {String} ref The task reference to get the task object from
@@ -1977,6 +2037,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function class_from_ref
      * @description Get the class object from a class reference
      * @param {String} ref The class reference to get the class object from
@@ -2000,6 +2061,7 @@ export const useMainStore = defineStore({
       }
     },
     /**
+     * @memberOf .main.actions
      * @function upcoming_from_ref
      * @description Get the next 4 upcoming task objects for a given class reference
      * @param {String} ref
@@ -2049,6 +2111,7 @@ export const useMainStore = defineStore({
     },
 
     /**
+     * @memberOf .main.actions
      * @function show_timeout
      * @description Show a popup saying that the session has timed out
      * @see {@link hide_timeout}
@@ -2063,6 +2126,7 @@ export const useMainStore = defineStore({
     },
 
     /**
+     * @memberOf .main.actions
      * @function hide_timeout
      * @description Hide the popup saying that the session has timed out
      * @see {@link show_timeout}

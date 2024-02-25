@@ -1,5 +1,7 @@
 /**
- * @module common
+ * Holds common functions used throughout the application (mostly for debugging and logging)
+ * @file common/index.js
+ * @namespace common
  */
 
 /* eslint-disable */
