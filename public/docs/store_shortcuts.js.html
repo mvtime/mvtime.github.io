@@ -15,7 +15,7 @@ import { defineStore } from "pinia";
  * @function clean_key
  * @description Clean up keystrings for display
  * @param {String} key keystring to reformat
- * @returns formatted keystrings array
+ * @returns {Array} Formatted keystrings
  */
 function clean_key(key) {
   if (!key) return;
@@ -65,7 +65,7 @@ export const useShortcuts = defineStore({
      * @function get
      * @description Get a shortcut by object
      * @param {Object} shortcut
-     * @returns the shortcut object matching the object
+     * @returns {Object} the shortcut object matching the object
      */
     get(shortcut) {
       return this.shortcuts.find((s) => s === shortcut);
@@ -84,7 +84,7 @@ export const useShortcuts = defineStore({
      * @memberOf .shortcuts.getters
      * @function list
      * @description Get a list of shortcuts
-     * @returns an array of formatted shortcuts
+     * @returns {Array} The formatted shortcuts
      */
     list() {
       return this.shortcuts.map((s) => {
@@ -95,7 +95,7 @@ export const useShortcuts = defineStore({
      * @memberOf .shortcuts.getters
      * @function sections
      * @description Get a list of shortcuts by section
-     * @returns an array of formatted shortcuts by section
+     * @returns {Array} Formatted shortcuts sorted by section
      */
     sections() {
       //   take this.list and return an array of sections by tag
@@ -117,7 +117,7 @@ export const useShortcuts = defineStore({
    */
   actions: {
     /**
-     * @memberOf .shortcuts
+     * @memberOf .shortcuts.actions
      * @function register
      * @description Register a new shortcut
      * @param {Object} shortcut
