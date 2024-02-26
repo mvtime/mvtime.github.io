@@ -64,6 +64,21 @@ export const useMagic = defineStore({
         shortcuts: ["e"],
       },
     ],
+    /**
+     * @memberOf .magic.state
+     * @property {Object} prefixes List of prefixes for each task type
+     */
+    prefixes: {
+      note: "",
+      task: "Complete ",
+      // socratic: "",
+      test: "Study for ",
+      // summative: "",
+      // midterm: "",
+      project: "Prepare ",
+      quiz: "Study for ",
+      exam: "Study for ",
+    },
   }),
   /**
    * @namespace .magic.getters
@@ -75,6 +90,9 @@ export const useMagic = defineStore({
    * @memberOf .magic
    */
   actions: {
+    prefix(task) {
+      return this.prefixes[task.type];
+    },
     /**
      * @memberOf .magic.actions
      * @function type_full

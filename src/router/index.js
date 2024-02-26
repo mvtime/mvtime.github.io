@@ -258,6 +258,19 @@ const router = createRouter({
           },
         },
         {
+          path: "/portal/study/session",
+          name: "studysession",
+          component: () => import("../views/Portal/StudySession.vue"),
+          meta: {
+            page_title: "Study Session",
+            theme_color: {
+              light: "#f2f2f2",
+              dark: "#121212",
+            },
+            requiresAuth: true,
+          },
+        },
+        {
           path: "/portal/statistics",
           name: "stats",
           component: () => import("../views/Portal/StatsModal.vue"),

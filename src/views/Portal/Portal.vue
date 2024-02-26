@@ -183,7 +183,7 @@ export default {
       welcomes: ["Welcome", "Hi", "Hello", "Hey", "Howdy"],
       loaded: false,
       dragging_class: null,
-      is_study: this.$route.name == "study",
+      is_study: ["study", "studysession"].includes(this.$route.name),
       page: "block",
     };
   },

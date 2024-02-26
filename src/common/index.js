@@ -110,4 +110,19 @@ function compatDateObj(date) {
   return new Date(date.replace(/-/g, "/"));
 }
 
-export { _statuslog, _status, compatDateObj };
+/**
+ * @function msToTime
+ * @description Converts milliseconds to hours:minutes:seconds timestamp; only includes hours if non-zero
+ * @param {Number} ms
+ * @returns {String}
+ */
+function msToTime(ms) {
+  let seconds = Math.floor((ms / 1000) % 60);
+  let minutes = Math.floor((ms / (1000 * 60)) % 60);
+  let hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
+  let time = hours > 0 ? hours : "";
+  time += `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  return time;
+}
+
+export { _statuslog, _status, compatDateObj, msToTime };
