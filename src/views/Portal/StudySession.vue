@@ -143,7 +143,7 @@
           try using the button in the title!
         </div>
       </div>
-      <div class="contents_page timer_page">
+      <div class="contents_page timer_page" v-if="page == 'timer'">
         <div class="overlay_contents_text">
           Set a timer for the session to keep track of time spent on tasks
         </div>
@@ -157,13 +157,13 @@
     </div>
     <div class="bottom_actions">
       <button
-        v-if="page == 'select' || page == 'order'"
+        v-if="pages[page].button.back"
         class="close_action click_escape"
         @click="
-          if (page == 'select') {
+          if (page == 'select' || page == 'loading') {
             $emit('close');
           } else {
-            page = 'select';
+            page = pages[page].button.back;
           }
         "
       >
@@ -242,18 +242,21 @@ export default {
           title: "Create Session",
           button: {
             stopped: "Select",
+            back: true,
           },
         },
         select: {
           title: "Select Session Tasks",
           button: {
             stopped: "Select",
+            back: "select",
           },
         },
         order: {
           title: "Order Session Tasks",
           button: {
             stopped: "Confirm",
+            back: "select",
           },
           magic: "Generate",
         },
@@ -261,6 +264,7 @@ export default {
           title: "Set Session Timer",
           button: {
             stopped: "Start",
+            back: "order",
           },
         },
         time: {
