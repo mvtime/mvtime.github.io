@@ -646,9 +646,11 @@ export default {
 .tasks_list.selected:empty::before {
   content: "No more upcoming tasks";
 }
+.tasks_list {
+  --height-calendar-task: 30px;
+}
 .tasks_list.order_list,
 .tasks_list.drag_to_delete {
-  /* sizing */
   --height-calendar-task: 35px;
 }
 .tasks_list.order_list:empty::before {
