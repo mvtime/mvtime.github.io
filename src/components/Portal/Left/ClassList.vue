@@ -19,12 +19,15 @@
           "
           @dragstart="
             $emit('dragclass', class_obj);
-            //$emit('clear_filters');
+            // $emit('clear_filters');
+            $emit('set_filtered_classes', [class_obj.id]);
             dragging = class_obj;
+            prev_dragging = filtered_classes;
           "
           @dragend="
             dragging = null;
             $emit('dragclass', { ...class_obj, _done: true });
+            $emit('set_filtered_classes', prev_dragging);
           "
           :key="class_obj.name"
           @click="
@@ -94,6 +97,7 @@ export default {
   data() {
     return {
       dragging: null,
+      prev_dragging: [],
     };
   },
   computed: {
@@ -106,7 +110,7 @@ export default {
       });
     },
   },
-  emits: ["toggle_filtered_class", "clear_filters", "dragclass"],
+  emits: ["toggle_filtered_class", "clear_filters", "dragclass", "set_filtered_classes"],
   methods: {
     clean_ref(ref) {
       let [_email, _id] = ref.split("/");

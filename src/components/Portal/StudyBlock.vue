@@ -649,7 +649,7 @@ export default {
   background: transparent;
   border: solid var(--color-calendar-header) 2px;
 }
-@media (min-width: 630px) {
+@media (min-width: 675px) {
   main.study.study_fullpage {
     border: none;
     box-shadow: none;
@@ -690,7 +690,7 @@ export default {
 }
 </style>
 <style>
-@media (min-width: 630px) {
+@media (min-width: 675px) {
   .portal:has(main.study.study_fullpage) .portal_sidebar {
     z-index: 0;
   }

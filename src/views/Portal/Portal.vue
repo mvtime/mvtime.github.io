@@ -6,6 +6,7 @@
       :paged="page == 'left'"
       @toggle_filtered_class="toggle_filtered_class"
       @clear_filters="filtered_classes = []"
+      @set_filtered_classes="filtered_classes = $event || []"
       @close_right_bar="close_right_bar"
       :filtered_classes="filtered_classes"
       @dragclass="
@@ -99,16 +100,18 @@
       :class="{ out: $shortcuts.is_active('addTaskToast') && !$shortcuts.is_active('addTaskDown') }"
     >
       <img alt="icon" src="@/assets/img/general/toast-keyboard.svg" class="toast-icon" />
-      Waiting for rest of shortcut (&VeryThinSpace;<span
-        v-for="type of $magic.types"
-        :key="type.key"
-      >
-        <span style="text-decoration: underline">{{ type.shortcuts[0].toLowerCase() }}</span>
-        <span> {{ type.name.slice(1) }} </span>
-        <span v-if="$magic.types.indexOf(type) !== $magic.types.length - 1"
-          >,&MediumSpace;</span
-        > </span
-      >&VeryThinSpace;)
+      <div>
+        Waiting for rest of shortcut (&VeryThinSpace;<span
+          v-for="type of $magic.types"
+          :key="type.key"
+        >
+          <span style="text-decoration: underline">{{ type.shortcuts[0].toLowerCase() }}</span>
+          <span> {{ type.name.slice(1) }} </span>
+          <span v-if="$magic.types.indexOf(type) !== $magic.types.length - 1"
+            >,&MediumSpace;</span
+          > </span
+        >&VeryThinSpace;)
+      </div>
     </div>
     <!-- show bottom nav bar if on device 600px wide or lower -->
 

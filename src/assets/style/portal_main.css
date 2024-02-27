@@ -76,7 +76,7 @@ main.portal_main_block {
   height: var(--size-calendar-header);
   display: flex;
   flex-flow: row wrap;
-  justify-content: flex-end;
+  justify-content: flex-start;
   align-items: flex-start;
   gap: 10px;
 }
