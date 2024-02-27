@@ -102,6 +102,7 @@
             handle=".tasks_list_task__drag"
             @start="drag = true"
             @end="drag = false"
+            @remove="discard = []"
           >
             <template #item="{ element }">
               <a
@@ -138,6 +139,7 @@
           v-model="discard"
           group="tasks"
           item-key="ref"
+          ghost-class="ghost"
         >
           <template #item="{ element }">
             <span>{{ element && null }}</span>
@@ -148,11 +150,48 @@
         <div class="overlay_contents_text">
           Set a timer for the session to keep track of time spent on tasks
         </div>
-        <div class="timer_set" style="margin: 20px 0; text-align: center">TODO: Timer</div>
+        <form
+          class="timer_set_row inputs_row"
+          style="margin: 20px 0; text-align: center"
+          @submit="$event.preventDefault()"
+        >
+          <!-- time inputs -->
+          <input
+            ref="hours"
+            class="time_input styled_input"
+            type="number"
+            min="0"
+            max="5"
+            step="1"
+            :value="Math.floor(time.total / 60 / 60 / 1000)"
+            @input="time.total = ($event.target.value * 60 + $refs.minutes.value) * 60 * 1000"
+          />
+          <span class="time_input">:</span>
+          <input
+            ref="minutes"
+            class="time_input styled_input"
+            type="number"
+            :min="($refs && $refs.hours && $refs.hours.value > 0 ? -1 : 5) || 5"
+            max="61"
+            step="1"
+            :value="
+              Math.floor((time.total / 60 / 1000) % 60) < 10
+                ? '0' + Math.floor((time.total / 60 / 1000) % 60)
+                : Math.floor((time.total / 60 / 1000) % 60)
+            "
+            @input="time.total = ($refs.hours.value * 60 + $event.target.value) * 60 * 1000"
+          />
+        </form>
 
         <div class="overlay_contents_text">
           Once you're ready to go, hit the <span class="button_pointer_text">Start</span> button to
           begin!
+        </div>
+      </div>
+      <div class="contents_page time_page" v-if="page == 'time'">
+        <div class="overlay_contents_text">
+          You're currently in a session. Keep track of time spent on tasks and take breaks as
+          needed!
         </div>
       </div>
     </div>
@@ -170,30 +209,35 @@
       >
         {{ page == "select" ? (selected.length ? "Cancel" : "Close") : "Back" }}
       </button>
-      <div class="timer_info" v-if="running">
+      <div class="timer_info first_styled" v-if="running">
         <span class="time_info_part time_info__elapsed">{{ msToTime(time.elapsed) }}</span>
         &nbsp;/&nbsp;
         <span class="time_info_part time_info__total">{{ msToTime(time.total) }}</span>
       </div>
       <div class="flex_spacer"></div>
       <button
-        class="continue_action click_ctrlenter magic_button primary_styled"
+        class="continue_action magic_button primary_styled"
         title="Generate an order for the selected tasks"
         v-if="pages[page].magic"
         @click="generate_order"
         :disabled="true || !selected.length || loading"
       >
-        <span>{{ pages[page].magic }}</span>
+        {{ pages[page].magic }}
       </button>
       <button
-        class="continue_action click_ctrlenter"
-        @click="(running ? pause : begin)()"
-        :disabled="!selected.length"
+        v-if="!done && running && paused && page == 'time'"
+        class="leave_button"
+        @click="page = 'finish'"
       >
+        End
+      </button>
+      <button class="continue_action click_ctrlenter" @click="action" :disabled="!selected.length">
         {{
           (running
             ? paused
-              ? pages[page].button.paused
+              ? done
+                ? "Finish"
+                : pages[page].button.paused
               : pages[page].button.running
             : pages[page].button.stopped) || "Next"
         }}
@@ -219,12 +263,19 @@ export default {
     this.$smoothReflow({
       el: this.$refs.contents,
       childTransitions: true,
+      overflow: true,
     });
 
     if (this.$route?.query?.selected) {
       this.selected = this.$route.query.selected.split(",").map((path) => {
         return this.$store.ref_to_path(path);
       });
+    }
+    if (this.$route?.query?.time) {
+      this.time.total = this.$route.query.time * 60 * 1000;
+      if (this.$route.query.passed) {
+        this.time.acculmulated = this.$route.query.passed * 1000;
+      }
     }
     if (this.selected.length && this.$route?.params?.page && this.pages[this.$route.params.page]) {
       this.page = this.$route.params.page;
@@ -235,6 +286,7 @@ export default {
   data() {
     return {
       loading: true,
+      timer: null,
       discard: [],
       page: "loading",
       pages: {
@@ -276,6 +328,10 @@ export default {
         },
         finish: {
           title: "Finish Session",
+          button: {
+            stopped: "Review",
+            back: "time",
+          },
         },
         review: {
           title: "Review Session",
@@ -285,28 +341,68 @@ export default {
       running: false,
       paused: false,
       time: {
-        when: {
-          started: 0,
-          paused: 0,
-          last_paused: 0,
-          last_started: 0,
-        },
+        total: 45 * 60 * 1000,
         elapsed: 0,
-        total: 0,
+        repeat: 0,
+        acculmulated: 0,
+        last_started: 0,
       },
       selected: [],
       selected_map: {},
     };
   },
   methods: {
-    begin() {
+    action() {
       if (!this.selected.length) {
         this.page = "select";
       } else if (this.page == "select") {
         this.page = "order";
       } else if (this.page == "order") {
         this.page = "timer";
+      } else if (this.page == "timer") {
+        this.page = "time";
+        this.running = true;
+        this.paused = false;
+      } else if (this.page == "time") {
+        if (this.time.elapsed >= this.time.total) {
+          this.page = "finish";
+        } else {
+          this.page = "time";
+          this.update_path();
+          if (this.paused) {
+            this.resume();
+          }
+          if (!this.paused || this.done) {
+            this.pause();
+          }
+        }
       }
+    },
+    pause() {
+      // clear interval and save elapsed time
+      this.clear_interval();
+      this.time.acculmulated += Date.now() - this.time.last_started;
+      this.paused = true;
+    },
+    resume() {
+      this.time.last_started = Date.now();
+      this.time.repeat = 0;
+      this.interval();
+      this.running = true;
+      this.paused = false;
+    },
+    interval() {
+      this.timer = setInterval(() => {
+        this.time.elapsed = Date.now() - this.time.last_started + this.time.acculmulated;
+        if (this.time.elapsed >= this.time.total) {
+          this.time.elapsed = this.time.total;
+          this.pause();
+        }
+        this.time.repeat += 1;
+      }, 1000);
+    },
+    clear_interval() {
+      clearInterval(this.timer);
     },
     msToTime,
     toggle_task(ref) {
@@ -323,6 +419,11 @@ export default {
         query: {
           selected:
             this.selected.map((path) => this.$store.path_to_ref(path)).join(",") || undefined,
+          time:
+            this.time.total && this.time.total != 45 * 60 * 1000
+              ? this.time.total / 60 / 1000
+              : undefined,
+          passed: this.time.elapsed ? Math.floor(this.time.elapsed / 1000) : undefined,
         },
       });
     },
@@ -331,6 +432,9 @@ export default {
     },
   },
   computed: {
+    done() {
+      return this.time.elapsed >= this.time.total;
+    },
     upcoming() {
       return this.$store.upcoming_todo.filter(
         (task) => task.date && task.date.getTime() <= Date.now() + 7 * 24 * 60 * 60 * 1000
@@ -372,13 +476,44 @@ export default {
       });
     },
     page() {
+      if (this.page == "time") {
+        this.resume();
+      } else if (this.page == "finish") {
+        this.pause();
+        this.running = false;
+      }
       this.update_path();
+    },
+    "time.total"() {
+      this.time.total = Math.floor(
+        Math.min(Math.max(5, this.time.total / 60 / 1000), 300) * 60 * 1000
+      );
+      this.update_path();
+    },
+    "time.elapsed"() {
+      // if multiple of 10 seconds, update path
+      if (this.time.repeat && this.time.repeat % 15 === 0) {
+        this.update_path();
+      }
     },
   },
 };
 </script>
 
 <style scoped>
+/* timer */
+.timer_set_row span {
+  padding-left: 0;
+  padding-right: 0;
+}
+.time_input {
+  text-align: center;
+  font-weight: 600;
+  height: auto;
+  padding: var(--padding-overlay-input);
+  font-size: 4em;
+}
+/* drag & other */
 .ghost {
   opacity: 0.25;
 }
@@ -420,6 +555,7 @@ export default {
   line-height: var(--height-overlay-action);
   cursor: unset;
   user-select: none;
+  pointer-events: none;
 }
 .tasks_list_wrapper {
   position: relative;
@@ -496,11 +632,10 @@ export default {
   opacity: 0.5;
   text-align: center;
   width: 100%;
-  height: 100%;
+  height: var(--height-calendar-task);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: calc (var(--padding-overlay-input) * 2) 0;
 }
 .tasks_list.selected:empty::before {
   content: "No more upcoming tasks";
@@ -511,7 +646,9 @@ export default {
 .tasks_list.drag_to_delete {
   background: none;
   border: dashed 2px var(--color-overlay-input);
-  height: 100px;
+  height: calc(var(--height-calendar-task) + 2 * var(--padding-overlay-input));
+  display: flex;
+  justify-content: center;
 }
 .tasks_list.drag_to_delete:empty::before {
   content: "Drop here to remove";

@@ -84,7 +84,8 @@
   cursor: pointer;
   font-size: 14px;
 }
-.bottom_actions > *:first-child {
+.bottom_actions > *:first-child,
+.bottom_actions > .first_styled {
   margin-left: 0;
   background-color: #00000000;
   color: var(--color-text);

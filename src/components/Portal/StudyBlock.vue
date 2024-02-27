@@ -298,6 +298,16 @@ export default {
       },
       deep: true,
     },
+    $route: {
+      handler() {
+        if (this.$route.name == "study" && this.$route.query.selected) {
+          this.$router.replace({
+            query: { ...this.$route.query, selected: undefined, timer: undefined },
+          });
+        }
+      },
+      deep: true,
+    },
   },
 };
 </script>
