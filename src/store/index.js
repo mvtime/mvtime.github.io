@@ -45,6 +45,7 @@ provider.setCustomParameters({
 
 // import router
 import router from "@/router";
+import { useMagic } from "./magic";
 function validOrgAcc(userEmail) {
   return userEmail?.split("@")[1] == ORG_DOMAIN.substring(1);
 }
@@ -707,8 +708,23 @@ export const useMainStore = defineStore({
         }
         this.set_active(doc);
         await this.update_remote();
+
+        var task = this.tasks.find((e) => e.ref == ref);
+        new SuccessToast(
+          `${useMagic().done_prefix(task)} ${
+            finished ? "marked as finished" : "marked as unfinished"
+          }`,
+          2000
+        );
         return Promise.resolve();
       } catch (err) {
+        new ErrorToast(
+          `${useMagic().done_prefix(task)} could not be ${
+            finished ? "marked as finished" : "marked as unfinished"
+          }`,
+          err,
+          2000
+        );
         return Promise.reject(err);
       }
     },

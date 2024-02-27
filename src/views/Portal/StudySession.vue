@@ -91,26 +91,21 @@
           Order the tasks for completion during this session by dragging them into the desired order
         </div>
         <div class="tasks_list_wrapper order_wrapper selected_tasks_wrapper">
-          <div
-            class="order_list_loading loading_bg alt_bg"
-            style="height: 150px"
-            v-if="
-              !selected.length ||
-              !Object.keys(selected_map).length ||
-              Object.keys(selected_map).length != selected.length
-            "
-          ></div>
           <draggable
-            v-else
+            group="tasks"
             class="tasks_list order_list"
+            :class="{ empty: !selected.length, drag }"
             tag="div"
             :list="selected"
             item-key="ref"
             ghost-class="ghost"
             handle=".tasks_list_task__drag"
+            @start="drag = true"
+            @end="drag = false"
           >
             <template #item="{ element }">
-              <div
+              <a
+                :href="`/view/${$store.path_to_ref(task_from(element).ref)}`"
                 v-if="element && task_from(element)"
                 class="tasks_list_task"
                 :style="{
@@ -132,16 +127,22 @@
                     "Invalid Date"
                   }}
                 </div>
-              </div>
+              </a>
             </template>
           </draggable>
           <div class="tasks_list__cover"></div>
         </div>
-
-        <div class="overlay_contents_text">
-          Plus new generative features that will attempt to automatically order the tasks for you;
-          try using the button in the title!
-        </div>
+        <draggable
+          class="tasks_list drag_to_delete"
+          v-if="drag"
+          v-model="discard"
+          group="tasks"
+          item-key="ref"
+        >
+          <template #item="{ element }">
+            <span>{{ element && null }}</span>
+          </template>
+        </draggable>
       </div>
       <div class="contents_page timer_page" v-if="page == 'timer'">
         <div class="overlay_contents_text">
@@ -217,7 +218,6 @@ export default {
   mounted() {
     this.$smoothReflow({
       el: this.$refs.contents,
-      hideOverflow: true,
       childTransitions: true,
     });
 
@@ -235,8 +235,8 @@ export default {
   data() {
     return {
       loading: true,
+      discard: [],
       page: "loading",
-
       pages: {
         loading: {
           title: "Create Session",
@@ -359,6 +359,9 @@ export default {
           return map;
         }, {});
         this.update_path();
+        if (!this.selected.length && this.page !== "select") {
+          this.page = "select";
+        }
         this.loading = false;
       },
       deep: true,
@@ -502,6 +505,17 @@ export default {
 .tasks_list.selected:empty::before {
   content: "No more upcoming tasks";
 }
+.tasks_list.order_list:empty::before {
+  content: "No tasks selected";
+}
+.tasks_list.drag_to_delete {
+  background: none;
+  border: dashed 2px var(--color-overlay-input);
+  height: 100px;
+}
+.tasks_list.drag_to_delete:empty::before {
+  content: "Drop here to remove";
+}
 
 .tasks_list {
   display: flex;
@@ -592,7 +606,7 @@ div.tasks_list_task__drag {
 }
 </style>
 <style>
-.tasks_list.order_list:empty::before {
+.tasks_list.order_list:not(.empty, .drag):empty::before {
   background-image: url(@/assets/img/placeholder/load_dark.png) !important;
   background-size: contain;
   background-repeat: no-repeat;
@@ -601,7 +615,7 @@ div.tasks_list_task__drag {
   height: 130px;
   display: block;
 }
-#themed_body[_theme="dark"] .tasks_list.order_list:empty::before {
+#themed_body[_theme="dark"] .tasks_list.order_list:not(.empty, .drag):empty::before {
   background-image: url(@/assets/img/placeholder/load_light.png) !important;
 }
 </style>

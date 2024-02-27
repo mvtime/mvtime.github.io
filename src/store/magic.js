@@ -79,6 +79,21 @@ export const useMagic = defineStore({
       quiz: "Study for ",
       exam: "Study for ",
     },
+    /**
+     * @memberOf .magic.state
+     * @property {Object} done_prefixes List of prefixes for making a task finished/unfinished
+     */
+    done_prefixes: {
+      note: "",
+      task: "",
+      // socratic: "",
+      test: "Studying for ",
+      // summative: "",
+      // midterm: "",
+      project: "Preparation for ",
+      quiz: "Studying for ",
+      exam: "Studying for ",
+    },
   }),
   /**
    * @namespace .magic.getters
@@ -90,8 +105,34 @@ export const useMagic = defineStore({
    * @memberOf .magic
    */
   actions: {
+    /**
+     * @memberOf .magic.actions
+     * @function prefix
+     * @description get the prefix for a given task
+     * @param {Object} task - the task object
+     * @returns {String} text - the prefix for the task
+     * @see prefixes
+     * @see types
+     */
     prefix(task) {
       return this.prefixes[task.type];
+    },
+    /**
+     * @memberOf .magic.actions
+     * @function done_prefix
+     * @description get the done prefix for a given task
+     * @param {Object} task - the task object
+     * @returns {String} text - the done prefix for the task
+     * @see done_prefixes
+     * @see types
+     */
+    done_prefix(task) {
+      if (!task?.type || !task.name) return "Task";
+      return `${
+        this.done_prefixes[task.type]
+          ? this.done_prefixes[task.type] + task.type
+          : this.type_full(task.type)
+      } "${task.name}"`;
     },
     /**
      * @memberOf .magic.actions
