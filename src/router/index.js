@@ -258,7 +258,7 @@ const router = createRouter({
           },
         },
         {
-          path: "/portal/study/session",
+          path: "/portal/study/session/:page?",
           name: "studysession",
           component: () => import("../views/Portal/StudySession.vue"),
           meta: {
@@ -268,6 +268,7 @@ const router = createRouter({
               dark: "#121212",
             },
             requiresAuth: true,
+            block_close: true,
           },
         },
         {

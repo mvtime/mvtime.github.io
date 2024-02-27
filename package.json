@@ -35,7 +35,8 @@
     "vue-router": "^4.0.3",
     "vue-select": "^4.0.0-beta.6",
     "vue-smooth-reflow": "^0.1.12",
-    "vue3-apexcharts": "^1.4.4"
+    "vue3-apexcharts": "^1.4.4",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

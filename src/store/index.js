@@ -1547,6 +1547,7 @@ export const useMainStore = defineStore({
      * @see {@link get_remote}
      */
     async create_doc() {
+      if (!this.user) return _status.warn("🔥 No user to create doc for");
       _status.log("📄 User document doesn't exist, creating new one...");
       new WarningToast("User document doesn't exist, creating new one...", 2000);
       this.account_doc = {
