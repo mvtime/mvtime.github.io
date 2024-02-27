@@ -344,7 +344,7 @@ export default {
       running: false,
       paused: false,
       time: {
-        total: 45 * 60 * 1000,
+        total: 25 * 60 * 1000,
         elapsed: 0,
         repeat: 0,
         acculmulated: 0,
@@ -426,7 +426,7 @@ export default {
           selected:
             this.selected.map((path) => this.$store.path_to_ref(path)).join(",") || undefined,
           time:
-            this.time.total && this.time.total != 45 * 60 * 1000
+            this.time.total && this.time.total != 25 * 60 * 1000
               ? this.time.total / 60 / 1000
               : undefined,
           passed: this.time.elapsed ? Math.floor(this.time.elapsed / 1000) : undefined,

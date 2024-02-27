@@ -120,7 +120,7 @@ function msToTime(ms) {
   let seconds = Math.floor((ms / 1000) % 60);
   let minutes = Math.floor((ms / (1000 * 60)) % 60);
   let hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
-  let time = hours > 0 ? hours : "";
+  let time = hours > 0 ? hours + ":" + (minutes < 10 ? "0" : "") : "";
   time += `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   return time;
 }
