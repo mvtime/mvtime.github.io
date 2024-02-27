@@ -194,6 +194,12 @@
           needed!
         </div>
       </div>
+      <div class="contents_page review_page" v-if="page == 'review'">
+        <div class="overlay_contents_text">
+          Here's what you've accomplished during this session. You can review the tasks and time
+          spent on them below.
+        </div>
+      </div>
     </div>
     <div class="bottom_actions">
       <button
@@ -227,7 +233,7 @@
       <button
         v-if="!done && running && paused && page == 'time'"
         class="leave_button"
-        @click="page = 'finish'"
+        @click="page = 'review'"
       >
         End
       </button>
@@ -271,7 +277,7 @@ export default {
         return this.$store.ref_to_path(path);
       });
     }
-    if (this.$route?.query?.time) {
+    if (this.$route?.query?.time && !isNaN(this.$route.query.time)) {
       this.time.total = this.$route.query.time * 60 * 1000;
       if (this.$route.query.passed) {
         this.time.acculmulated = this.$route.query.passed * 1000;
@@ -326,15 +332,12 @@ export default {
             running: "Pause",
           },
         },
-        finish: {
-          title: "Finish Session",
-          button: {
-            stopped: "Review",
-            back: "time",
-          },
-        },
         review: {
           title: "Review Session",
+          button: {
+            stopped: "Done",
+            back: "time",
+          },
         },
       },
       drag: false,
@@ -365,7 +368,7 @@ export default {
         this.paused = false;
       } else if (this.page == "time") {
         if (this.time.elapsed >= this.time.total) {
-          this.page = "finish";
+          this.page = "review";
         } else {
           this.page = "time";
           this.update_path();
@@ -376,6 +379,8 @@ export default {
             this.pause();
           }
         }
+      } else if (this.page == "review") {
+        this.$emit("close");
       }
     },
     pause() {
@@ -417,6 +422,7 @@ export default {
         name: "studysession",
         params: { page: this.page },
         query: {
+          ...this.$route.query,
           selected:
             this.selected.map((path) => this.$store.path_to_ref(path)).join(",") || undefined,
           time:
@@ -478,7 +484,7 @@ export default {
     page() {
       if (this.page == "time") {
         this.resume();
-      } else if (this.page == "finish") {
+      } else if (this.page == "review") {
         this.pause();
         this.running = false;
       }

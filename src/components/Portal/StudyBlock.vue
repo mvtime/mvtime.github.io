@@ -30,6 +30,13 @@
         </nav>
         <button
           class="portal_main_block_action portal_main_block_action_alt"
+          title="Create Study Session (s)"
+          @click="start_session"
+        >
+          <div class="action_icon session-icon"></div>
+        </button>
+        <button
+          class="portal_main_block_action portal_main_block_action_alt"
           title="View Calendar (c)"
           @click="swap_to_calendar"
         >
@@ -156,6 +163,11 @@ export default {
           description: "Swap to calendar",
           top: true,
         },
+        {
+          key: "s",
+          description: "Create study session",
+          top: true,
+        },
         ...this.lengths.map((item) => {
           return {
             key: item[3],
@@ -246,6 +258,8 @@ export default {
         this.toggle_fullscreen();
       } else if (event.key == "c" || event.key == "`") {
         this.swap_to_calendar();
+      } else if (event.key == "s") {
+        this.start_session();
       } else {
         let length = this.lengths.find((item) => item[3] == event.key);
         if (length) {
@@ -255,6 +269,9 @@ export default {
     },
     swap_to_calendar() {
       this.$router.push({ name: "portal", query: this.$route.query });
+    },
+    start_session() {
+      this.$router.push({ name: "studysession", query: this.$route.query });
     },
     run_get_tasks() {
       this.tasks = this.$store.tasks;
@@ -302,7 +319,12 @@ export default {
       handler() {
         if (this.$route.name == "study" && this.$route.query.selected) {
           this.$router.replace({
-            query: { ...this.$route.query, selected: undefined, timer: undefined },
+            query: {
+              ...this.$route.query,
+              selected: undefined,
+              time: undefined,
+              passed: undefined,
+            },
           });
         }
       },

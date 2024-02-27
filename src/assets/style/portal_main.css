@@ -191,6 +191,11 @@ main.portal_main_block {
   background-image: url(@/assets/img/general/portal/todo-icon-alt.svg);
 }
 
+.portal_main_block_action .session-icon {
+  background-image: url(@/assets/img/general/portal/session-icon.png);
+  background-image: url(@/assets/img/general/portal/session-icon.svg);
+}
+
 .portal_main_block_action .cal-icon {
   background-image: url(@/assets/img/general/portal/cal-icon.png);
   background-image: url(@/assets/img/general/portal/cal-icon.svg);
