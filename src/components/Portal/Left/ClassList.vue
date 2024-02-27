@@ -19,7 +19,7 @@
           "
           @dragstart="
             $emit('dragclass', class_obj);
-            $emit('clear_filters');
+            //$emit('clear_filters');
             dragging = class_obj;
           "
           @dragend="
