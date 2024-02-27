@@ -1,7 +1,9 @@
 <template>
   <main class="entercode">
     <header class="modal_header">
-      <h2 class="header_style modal_header_title">{{ pages[page].title || "Study Session" }}</h2>
+      <h2 class="header_style modal_header_title">
+        {{ pages[page].title || "Study Session" }}
+      </h2>
     </header>
     <div class="overlay_contents" ref="contents">
       <div
@@ -116,7 +118,7 @@
                   '--color-class-alt': classes[task_from(element).class_id].color + '2d',
                 }"
               >
-                <div class="tasks_list_task__drag"></div>
+                <div class="tasks_list_task__drag"><div class="drag_icon"></div></div>
                 <div class="tasks_list_task__title">
                   {{ $magic.prefix(task_from(element)) }} {{ task_from(element).name }}
                 </div>
@@ -135,11 +137,37 @@
           </draggable>
           <div class="tasks_list__cover"></div>
         </div>
+
+        <div class="overlay_contents_text">
+          Plus new generative features that will attempt to automatically order the tasks for you;
+          try using the button in the title!
+        </div>
+      </div>
+      <div class="contents_page timer_page">
+        <div class="overlay_contents_text">
+          Set a timer for the session to keep track of time spent on tasks
+        </div>
+        <div class="timer_set" style="margin: 20px 0; text-align: center">TODO: Timer</div>
+
+        <div class="overlay_contents_text">
+          Once you're ready to go, hit the <span class="button_pointer_text">Start</span> button to
+          begin!
+        </div>
       </div>
     </div>
     <div class="bottom_actions">
-      <button v-if="page == 'select'" class="close_action click_escape" @click="$emit('close')">
-        {{ selected.length ? "Cancel" : "Close" }}
+      <button
+        v-if="page == 'select' || page == 'order'"
+        class="close_action click_escape"
+        @click="
+          if (page == 'select') {
+            $emit('close');
+          } else {
+            page = 'select';
+          }
+        "
+      >
+        {{ page == "select" ? (selected.length ? "Cancel" : "Close") : "Back" }}
       </button>
       <div class="timer_info" v-if="running">
         <span class="time_info_part time_info__elapsed">{{ msToTime(time.elapsed) }}</span>
@@ -149,9 +177,10 @@
       <div class="flex_spacer"></div>
       <button
         class="continue_action click_ctrlenter magic_button primary_styled"
+        title="Generate an order for the selected tasks"
         v-if="pages[page].magic"
         @click="generate_order"
-        :disabled="!selected.length || loading"
+        :disabled="true || !selected.length || loading"
       >
         <span>{{ pages[page].magic }}</span>
       </button>
@@ -229,7 +258,13 @@ export default {
           magic: "Generate",
         },
         timer: {
-          title: "Session Timer",
+          title: "Set Session Timer",
+          button: {
+            stopped: "Start",
+          },
+        },
+        time: {
+          title: "Session in Progress",
           button: {
             paused: "Resume",
             running: "Pause",
@@ -261,8 +296,12 @@ export default {
   },
   methods: {
     begin() {
-      if (this.page == "select") {
+      if (!this.selected.length) {
+        this.page = "select";
+      } else if (this.page == "select") {
         this.page = "order";
+      } else if (this.page == "order") {
+        this.page = "timer";
       }
     },
     msToTime,
@@ -315,8 +354,8 @@ export default {
           map[ref] = this.upcoming.find((task) => task.ref === ref);
           return map;
         }, {});
-        console.log(this.selected_map);
         this.update_path();
+        this.loading = false;
       },
       deep: true,
     },
@@ -460,9 +499,6 @@ export default {
   content: "No more upcoming tasks";
 }
 
-.tasks_list.order_list:empty::before {
-  content: "No tasks selected";
-}
 .tasks_list {
   display: flex;
   flex-flow: column nowrap;
@@ -497,18 +533,24 @@ export default {
   border-radius: 5px;
   text-align: center;
 }
-.tasks_list_task__drag {
+div.tasks_list_task__drag {
   flex: 0 0 var(--height-calendar-task);
   height: var(--height-calendar-task);
+  padding: 0;
   opacity: 0.6;
   margin-right: var(--gap-study-checkbox);
   cursor: grab;
-
+}
+.tasks_list_task__drag:active {
+  cursor: grabbing;
+}
+.tasks_list_task__drag > .drag_icon {
+  filter: var(--filter-icon);
+  width: 100%;
+  height: 100%;
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
-  user-select: none;
-
   background-image: url(@/assets/img/general/portal/drag-icon.png);
   background-image: url(@/assets/img/general/portal/drag-icon.svg);
 }
@@ -530,5 +572,32 @@ export default {
   width: 4em;
   opacity: 0.6;
   height: 100%;
+}
+
+.magic_button {
+  padding-left: calc(var(--padding-overlay-action) * 1.5);
+  background-position: calc(var(--padding-overlay-action) / 2.5);
+  background-repeat: no-repeat;
+  background-size: 24px;
+  background-image: url(@/assets/img/general/portal/magic-lighter.png);
+  background-image: url(@/assets/img/general/portal/magic-lighter.svg);
+}
+.magic_button[disabled] {
+  background-image: url(@/assets/img/general/portal/magic.png);
+  background-image: url(@/assets/img/general/portal/magic.svg);
+}
+</style>
+<style>
+.tasks_list.order_list:empty::before {
+  background-image: url(@/assets/img/placeholder/load_dark.png) !important;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+  color: #00000000 !important;
+  height: 130px;
+  display: block;
+}
+#themed_body[_theme="dark"] .tasks_list.order_list:empty::before {
+  background-image: url(@/assets/img/placeholder/load_light.png) !important;
 }
 </style>
