@@ -277,7 +277,7 @@ export default {
         return this.$store.ref_to_path(path);
       });
     }
-    if (this.$route?.query?.time && !isNaN(this.$route.query.time)) {
+    if (this.selected.length && this.$route?.query?.time && !isNaN(this.$route.query.time)) {
       this.time.total = this.$route.query.time * 60 * 1000;
       if (this.$route.query.passed) {
         this.time.acculmulated = this.$route.query.passed * 1000;
@@ -646,6 +646,11 @@ export default {
 .tasks_list.selected:empty::before {
   content: "No more upcoming tasks";
 }
+.tasks_list.order_list,
+.tasks_list.drag_to_delete {
+  /* sizing */
+  --height-calendar-task: 35px;
+}
 .tasks_list.order_list:empty::before {
   content: "No tasks selected";
 }
@@ -686,6 +691,9 @@ export default {
   align-items: center;
   z-index: 1;
 }
+main.parent.simplified .tasks_list_task {
+  background: var(--color-class);
+}
 .tasks_list_task > div {
   filter: var(--filter-calendar-task);
   padding: var(--padding-calendar-task);
@@ -693,6 +701,10 @@ export default {
   background-color: var(--color-class);
   border-radius: 5px;
   text-align: center;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
 }
 div.tasks_list_task__drag {
   flex: 0 0 var(--height-calendar-task);
@@ -736,7 +748,7 @@ div.tasks_list_task__drag {
 }
 
 .magic_button {
-  padding-left: calc(var(--padding-overlay-action) * 1.5);
+  padding-left: calc(var(--padding-overlay-action) * 1.5) !important;
   background-position: calc(var(--padding-overlay-action) / 2.5);
   background-repeat: no-repeat;
   background-size: 24px;

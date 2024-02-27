@@ -112,7 +112,7 @@
           />
           &nbsp;
           <span
-            >Finished tasks <b> {{ include_finished ? "shown" : "not shown" }}</b> in calendar</span
+            >Finished tasks <b> {{ include_finished ? "shown" : "hidden" }}</b> in calendar</span
           >
         </div>
       </div>
@@ -179,23 +179,35 @@
             redoing the tutorial </span
           >. We'll keep this updated as we add new features!
         </span>
-        <span class="simplified_view_section">
-          You can also
-          <span
-            class="button_pointer_text click-action"
-            @click="
-              changed = true;
-              $store.set_account_pref('simplified', !$store.simplified);
-            "
-          >
-            {{ $store.simplified ? "leave" : "enter" }} simplified view
-          </span>
-          to
-          <span v-if="!$store.simplified"
-            >make {{ $env.VUE_APP_BRAND_SHORT_NAME }} easier to use on slower devices</span
-          >
-          <span v-else>get back the classic interface</span>.
-        </span>
+      </div>
+      <div class="overlay_contents_text overlay_contents_section">
+        <div class="simplified_view_section">
+          <div class="inline_toggle">
+            <ToggleBar
+              class="click-action"
+              :value="$store.simplified"
+              @update="
+                update_account_pref('simplified', $event, [
+                  'You\'ll now see the classic view',
+                  'You\'ll now see the simplified view',
+                ]);
+                changed = true;
+              "
+              :loads="true"
+            />
+            &nbsp;
+            <span
+              >The <b>{{ $store.simplified ? "simplified" : "classic" }}</b> view is active</span
+            >
+          </div>
+          <div class="pause_popup_section__details overlay_contents_section_details">
+            {{ $store.simplified ? "Leave" : "Enter" }} the simplified view to
+            <span v-if="!$store.simplified"
+              >make {{ $env.VUE_APP_BRAND_SHORT_NAME }} easier to use on slower devices</span
+            >
+            <span v-else>get back the classic interface</span>.
+          </div>
+        </div>
       </div>
       <div class="overlay_contents_text overlay_contents_section">
         <p class="email_text">
@@ -462,6 +474,7 @@ export default {
 .pause_popup_section,
 .notes_priority_section,
 .show_finished_section,
+.inline_toggle,
 .email_section {
   line-height: 1.75;
   display: inline-flex;
