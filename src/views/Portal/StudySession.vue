@@ -6,23 +6,29 @@
       </h2>
     </header>
     <div class="overlay_contents" ref="contents">
-      <div
-        class="contents_page loading_page loading_bg"
-        v-if="page == 'loading'"
-        style="height: 300px"
-      ></div>
       <div class="contents_page select_page" v-if="page == 'select'">
         <div class="overlay_contents_text">
           Select tasks for completion during this session by
           <span class="desktop_only_text">click</span>
           <span class="mobile_only_text">tapp</span>ing them where they're listed below
         </div>
+        <nav class="filter_bar">
+          <button
+            class="filter_bar_option"
+            v-for="filter in filters"
+            :key="filter.name"
+            :class="{ active: filter_days === filter.days }"
+            @click="filter_days = filter.days"
+          >
+            {{ filter.name }}
+          </button>
+        </nav>
         <div class="tasks_list_wrapper unselected_tasks_wrapper">
           <transition-group
-            class="tasks_list"
+            class="tasks_list alt_bg"
             tag="div"
             name="tasks-list"
-            :class="{ selected: selected.length }"
+            :class="{ selected: selected.length, loading_bg: loading }"
           >
             <div
               class="tasks_list_task"
@@ -34,7 +40,11 @@
                 '--color-class-alt': classes[task.class_id].color + '2d',
               }"
             >
-              <div class="tasks_list_task__title">{{ $magic.prefix(task) }} {{ task.name }}</div>
+              <div class="tasks_list_task__title">
+                <span class="tasks_list_task__title_text"
+                  >{{ $magic.prefix(task) }} {{ task.name }}</span
+                >
+              </div>
               <div class="tasks_list_task__date">
                 {{
                   (task.date &&
@@ -66,7 +76,11 @@
                 '--color-class-alt': classes[task.class_id].color + '2d',
               }"
             >
-              <div class="tasks_list_task__title">{{ $magic.prefix(task) }} {{ task.name }}</div>
+              <div class="tasks_list_task__title">
+                <span class="tasks_list_task__title_text"
+                  >{{ $magic.prefix(task) }} {{ task.name }}</span
+                >
+              </div>
               <div class="tasks_list_task__date">
                 {{
                   (task.date &&
@@ -116,7 +130,9 @@
               >
                 <div class="tasks_list_task__drag"><div class="drag_icon"></div></div>
                 <div class="tasks_list_task__title">
-                  {{ $magic.prefix(task_from(element)) }} {{ task_from(element).name }}
+                  <span class="tasks_list_task__title_text">
+                    {{ $magic.prefix(task_from(element)) }} {{ task_from(element).name }}
+                  </span>
                 </div>
                 <div class="tasks_list_task__date">
                   {{
@@ -265,7 +281,14 @@ export default {
     draggable,
   },
   emits: ["close"],
+  beforeUnmount() {
+    this.$shortcuts.remove_tag("Session");
+    window.removeEventListener("keydown", this.keydown);
+  },
   mounted() {
+    this.$shortcuts.register_all(this.shortcuts, "Session");
+    window.addEventListener("keydown", this.keydown);
+
     this.$smoothReflow({
       el: this.$refs.contents,
       childTransitions: true,
@@ -292,9 +315,37 @@ export default {
   data() {
     return {
       loading: true,
+      filter_days: 7,
+      filters: {
+        day: {
+          name: "Day",
+          days: 1,
+          key: "d",
+          description: "tasks due today",
+        },
+        week: {
+          name: "Week",
+          days: 7,
+          key: "w",
+          description: "tasks due this week",
+        },
+        month: {
+          name: "Month",
+          days: 30,
+          key: "m",
+          description: "tasks due this month",
+        },
+        all: {
+          name: "All",
+          days: Infinity,
+          key: "a",
+          description: "all tasks",
+        },
+      },
+
       timer: null,
       discard: [],
-      page: "loading",
+      page: "select",
       pages: {
         loading: {
           title: "Create Session",
@@ -355,7 +406,17 @@ export default {
     };
   },
   methods: {
+    keydown(event) {
+      if (this.page != "select") return;
+      // if one of the keys in filter is pressed, change filter to that
+      for (let filter in this.filters) {
+        if (event.key.toLowerCase() == this.filters[filter].key) {
+          this.filter_days = this.filters[filter].days;
+        }
+      }
+    },
     action() {
+      this.$notify.register(this.page == "timer");
       if (!this.selected.length) {
         this.page = "select";
       } else if (this.page == "select") {
@@ -438,16 +499,25 @@ export default {
     },
   },
   computed: {
+    shortcuts() {
+      return Object.values(this.filters).map((filter) => {
+        return {
+          key: filter.key,
+          description: `Filter to ${filter.description}`,
+        };
+      });
+    },
     done() {
       return this.time.elapsed >= this.time.total;
     },
     upcoming() {
       return this.$store.upcoming_todo.filter(
-        (task) => task.date && task.date.getTime() <= Date.now() + 7 * 24 * 60 * 60 * 1000
+        (task) =>
+          task.date && task.date.getTime() <= Date.now() + this.filter_days * 24 * 60 * 60 * 1000
       );
     },
     upcoming_selected() {
-      return this.upcoming.filter((task) => this.selected.includes(task.ref));
+      return this.$store.upcoming_todo.filter((task) => this.selected.includes(task.ref));
     },
     upcoming_unselected() {
       return this.upcoming.filter((task) => !this.selected.includes(task.ref));
@@ -463,23 +533,24 @@ export default {
   },
   watch: {
     selected: {
-      handler() {
-        this.selected_map = this.selected.reduce((map, ref) => {
-          map[ref] = this.upcoming.find((task) => task.ref === ref);
+      handler(old_selected, new_selected) {
+        this.selected_map = new_selected.reduce((map, ref) => {
+          map[ref] = this.$store.upcoming_todo.find((task) => task.ref === ref);
           return map;
         }, {});
         this.update_path();
         if (!this.selected.length && this.page !== "select") {
           this.page = "select";
         }
-        this.loading = false;
       },
       deep: true,
     },
     "$store.upcoming_todo"() {
+      this.loading = true;
       this.selected = this.selected.filter((ref) => {
         return this.$store.upcoming_todo.some((task) => task.ref === ref);
       });
+      this.loading = false;
     },
     page() {
       if (this.page == "time") {
@@ -507,6 +578,49 @@ export default {
 </script>
 
 <style scoped>
+/* nav bar */
+nav.filter_bar {
+  display: flex;
+  flex-flow: row wrap;
+  margin-bottom: 2px;
+  gap: 2px;
+  margin-top: var(--padding-overlay-input);
+  /* edges */
+  border-radius: var(--radius-overlay-input);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  overflow: hidden;
+}
+nav.filter_bar .filter_bar_option {
+  height: 30px;
+  width: 100%;
+  display: flex;
+  flex-flow: row nowrap;
+  overflow: hidden;
+  width: fit-content;
+  flex: 1 0 auto;
+  background: var(--color-overlay-input-alt);
+  color: var(--color-on-overlay-input-alt);
+  border: none;
+  padding: 0 var(--padding-overlay-input);
+  font-size: 0.9em;
+  font-weight: 600;
+  user-select: none;
+  align-items: center;
+  justify-content: center;
+}
+
+nav.filter_bar .filter_bar_option.active {
+  background: var(--color-overlay-input-active);
+  color: var(--color-on-overlay-input);
+}
+
+nav.filter_bar + .tasks_list_wrapper,
+nav.filter_bar + .tasks_list_wrapper > .tasks_list {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  margin-top: 0;
+}
 /* timer */
 .timer_set_row span {
   padding-left: 0;
@@ -735,10 +849,15 @@ div.tasks_list_task__drag {
 .tasks_list_task__title {
   flex: 1 1 auto;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   padding-right: 5px;
   height: 100%;
+}
+
+.tasks_list_task__title_text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
 }
 .tasks_list_task__date {
   margin-left: var(--gap-study-checkbox);

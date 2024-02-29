@@ -101,7 +101,7 @@ export default {
     keydown(e) {
       const key = e.key.toLowerCase();
       // handle plus/equal case
-      if (key === "+" || key === "=") {
+      if (!e.metaKey && (key === "+" || key === "=")) {
         if (key === "+") {
           this.plusDown = true;
         } else if (key === "=") {

@@ -12,7 +12,7 @@
           <div class="action_icon expand-icon" :class="{ alt: fullpage }"></div>
         </button>
         <div class="study_name portal_main_block_title">
-          Upcoming<span class="desktop_only_text">&nbsp;Assignments</span>
+          Upcoming<span class="desktop_only_text may_break_text">&nbsp;Assignments</span>
         </div>
       </div>
       <div class="portal_main_block_actions_wrapper">
@@ -29,6 +29,7 @@
           </button>
         </nav>
         <button
+          v-if="$route.name != 'studysession'"
           class="portal_main_block_action portal_main_block_action_alt"
           title="Create Study Session (s)"
           @click="start_session"
@@ -410,6 +411,8 @@ export default {
 }
 .study_list_group:not(:empty)::-webkit-scrollbar {
   background: var(--color-calendar);
+  height: 16px;
+  width: 16px;
 }
 
 .study_list_group:not(:empty)::-webkit-scrollbar-thumb {
@@ -648,6 +651,11 @@ export default {
   display: none;
   background: transparent;
   border: solid var(--color-calendar-header) 2px;
+}
+@media (max-width: 1285px) and (min-width: /* [desktop size] */ 1270px) {
+  .may_break_text {
+    display: none;
+  }
 }
 @media (min-width: 675px) {
   main.study.study_fullpage {

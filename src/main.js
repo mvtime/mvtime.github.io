@@ -13,6 +13,7 @@ import VueLazyload from "vue-lazyload";
 import { useMainStore } from "@/store";
 import { useShortcuts } from "@/store/shortcuts";
 import { useMagic } from "@/store/magic";
+import { useNotifications } from "@/store/notifications";
 
 // create instances of app requisites
 const pinia = createPinia();
@@ -39,6 +40,9 @@ app.mixin({
     },
     $magic() {
       return useMagic();
+    },
+    $notify() {
+      return useNotifications();
     },
   },
 });
