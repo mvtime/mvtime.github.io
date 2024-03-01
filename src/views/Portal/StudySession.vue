@@ -26,6 +26,7 @@
         <div class="tasks_list_wrapper unselected_tasks_wrapper">
           <transition-group
             class="tasks_list alt_bg"
+            ref="unselected_list"
             tag="div"
             name="tasks-list"
             :class="{ selected: selected.length, loading_bg: loading }"
@@ -104,7 +105,7 @@
         <div class="overlay_contents_text">
           Order the tasks for completion during this session by dragging them into the desired order
         </div>
-        <div class="tasks_list_wrapper order_wrapper selected_tasks_wrapper">
+        <div class="tasks_list_wrapper order_wrapper selected_tasks_wrapper" ref="order_list">
           <draggable
             group="tasks"
             class="tasks_list order_list"
@@ -253,7 +254,14 @@
       >
         End
       </button>
-      <button class="continue_action click_ctrlenter" @click="action" :disabled="!selected.length">
+      <button
+        class="continue_action click_ctrlenter"
+        @click="action"
+        :disabled="!selected.length"
+        :class="{
+          click_escape: page == 'time' && !paused,
+        }"
+      >
         {{
           (running
             ? paused
@@ -879,6 +887,10 @@ div.tasks_list_task__drag {
 .magic_button[disabled] {
   background-image: url(@/assets/img/general/portal/magic.png);
   background-image: url(@/assets/img/general/portal/magic.svg);
+}
+
+.tasks_list.loading_bg {
+  height: 130px;
 }
 </style>
 <style>
