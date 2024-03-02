@@ -9,14 +9,12 @@
 
 // setup Pinia store
 import { _status } from "@/common";
-import { ErrorToast, SuccessToast } from "@svonk/util";
+import { ErrorToast, WarningToast } from "@svonk/util";
 import { defineStore } from "pinia";
 
 export const useNotifications = defineStore({
   id: "notifications",
-  state: () => ({
-    active: [],
-  }),
+  state: () => ({}),
   /**
    * @namespace .notify.getters
    * @memberof .notify
@@ -68,12 +66,23 @@ export const useNotifications = defineStore({
      * @param {Object} notification Notification object
      */
     add(notification) {
-      let n = new Notification(notification.title, {
-        body: notification.message,
-        icon: notification.icon,
-      });
-      new SuccessToast("Notification Sent", "Notification sent successfully", 2500);
-      this.active.push(n);
+      if (!this.enabled) {
+        _status.error("🔔 Notifications are not enabled");
+        new WarningToast("Cannot send notification: notifications are not enabled", 2500);
+      } else {
+        void new Notification(notification.title, {
+          body: notification.message,
+          icon: "/img/icons/app.png",
+        });
+      }
+    },
+    /**
+     * @function .notify.actions.play
+     * @description Play a sound file
+     * @param {String} file Path to sound file
+     */
+    play(file) {
+      void new Audio(file).play();
     },
   },
 });
