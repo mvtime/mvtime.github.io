@@ -4,7 +4,7 @@
       <h2 class="header_style">Our Mission;</h2>
       <br />
       <h3 class="secondary_home_text">
-        A better way to organize our cluttered lifes. By students, for the wellbeing of students.
+        A better way to organize our cluttered lives. By students, for the wellbeing of students.
       </h3>
     </div>
     <hr />
