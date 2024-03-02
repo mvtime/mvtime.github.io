@@ -90,7 +90,11 @@ export const useNotifications = defineStore({
      * @param {String} file Path to sound file
      */
     play(file) {
-      void new Audio(file).play();
+      try {
+        void new Audio(file).play();
+      } catch (error) {
+        _status.error(`🔔 Cannot play sound file "${file}"`, error);
+      }
     },
   },
 });
