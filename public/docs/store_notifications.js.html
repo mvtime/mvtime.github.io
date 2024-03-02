@@ -9,14 +9,12 @@
 
 // setup Pinia store
 import { _status } from "@/common";
-import { ErrorToast, SuccessToast } from "@svonk/util";
+import { ErrorToast, WarningToast } from "@svonk/util";
 import { defineStore } from "pinia";
 
 export const useNotifications = defineStore({
   id: "notifications",
-  state: () => ({
-    active: [],
-  }),
+  state: () => ({}),
   /**
    * @namespace .notify.getters
    * @memberof .notify
@@ -67,13 +65,36 @@ export const useNotifications = defineStore({
      * @description Create a web notification
      * @param {Object} notification Notification object
      */
-    add(notification) {
-      let n = new Notification(notification.title, {
-        body: notification.message,
-        icon: notification.icon,
-      });
-      new SuccessToast("Notification Sent", "Notification sent successfully", 2500);
-      this.active.push(n);
+    add(notification, onClick = () => {}) {
+      if (!this.enabled) {
+        _status.error("🔔 Notifications are not enabled");
+        new WarningToast("Cannot send notification: notifications are not enabled", 2500);
+        return null;
+      } else {
+        // show notification
+        new Notification(notification.title, {
+          ...notification,
+          icon: "/img/icons/app.png",
+          badge: "/img/icons/apple-touch-icon-60x60.png",
+          renotify: !!notification.tag,
+          timestamp: Date.now(),
+        });
+
+        // TODO: use action onclick with serviceworker showNotification
+        void onClick;
+      }
+    },
+    /**
+     * @function .notify.actions.play
+     * @description Play a sound file
+     * @param {String} file Path to sound file
+     */
+    play(file) {
+      try {
+        void new Audio(file).play();
+      } catch (error) {
+        _status.error(`🔔 Cannot play sound file "${file}"`, error);
+      }
     },
   },
 });

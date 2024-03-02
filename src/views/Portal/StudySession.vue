@@ -223,7 +223,7 @@
         v-if="pages[page].button.back"
         class="close_action click_escape"
         @click="
-          if (page == 'select' || page == 'loading') {
+          if (page == 'select') {
             $emit('close');
           } else {
             page = pages[page].button.back;
@@ -233,9 +233,10 @@
         {{ page == "select" ? (selected.length ? "Cancel" : "Close") : "Back" }}
       </button>
       <div class="timer_info first_styled" v-if="running">
-        <span class="time_info_part time_info__elapsed">{{ msToTime(time.elapsed) }}</span>
-        &nbsp;/&nbsp;
-        <span class="time_info_part time_info__total">{{ msToTime(time.total) }}</span>
+        <span class="time_info_part time_info__elapsed">{{ msToTime(time.elapsed) }}</span
+        >&ThinSpace;/&ThinSpace;<span class="time_info_part time_info__total">{{
+          msToTime(time.total)
+        }}</span>
       </div>
       <div class="flex_spacer"></div>
       <button
@@ -250,7 +251,7 @@
       <button
         v-if="!done && running && paused && page == 'time'"
         class="leave_button"
-        @click="page = 'review'"
+        @click="review"
       >
         End
       </button>
@@ -322,7 +323,15 @@ export default {
   },
   data() {
     return {
-      loading: true,
+      loading: false,
+      audio: {
+        back: require("@/assets/audio/back.wav"),
+        bubble: require("@/assets/audio/bubble.wav"),
+        lock: require("@/assets/audio/lock.wav"),
+        marimba: require("@/assets/audio/marimba.wav"),
+        select: require("@/assets/audio/select.wav"),
+        start: require("@/assets/audio/start.wav"),
+      },
       filter_days: 7,
       filters: {
         day: {
@@ -424,7 +433,7 @@ export default {
       }
     },
     action() {
-      this.$notify.register(this.page == "timer");
+      if (!this.$notify.enabled) this.$notify.register(this.page == "timer");
       if (!this.selected.length) {
         this.page = "select";
       } else if (this.page == "select") {
@@ -433,24 +442,28 @@ export default {
         this.page = "timer";
       } else if (this.page == "timer") {
         this.page = "time";
-        this.running = true;
-        this.paused = false;
+        this.$notify.play(this.audio.select);
+        this.resume();
       } else if (this.page == "time") {
         if (this.time.elapsed >= this.time.total) {
-          this.page = "review";
+          this.review();
         } else {
           this.page = "time";
           this.update_path();
           if (this.paused) {
             this.resume();
-          }
-          if (!this.paused || this.done) {
+          } else if (!this.paused || this.done) {
             this.pause();
           }
         }
       } else if (this.page == "review") {
         this.$emit("close");
       }
+    },
+    review() {
+      // this.$notify.play(this.audio.start);
+      this.pause();
+      this.page = "review";
     },
     pause() {
       // clear interval and save elapsed time
@@ -471,6 +484,19 @@ export default {
         if (this.time.elapsed >= this.time.total) {
           this.time.elapsed = this.time.total;
           this.pause();
+          this.$notify.play(this.audio.marimba);
+          this.$notify.add(
+            {
+              title: "Session completed",
+              body: `You've successfully completed your ${this.selected.length}-task ${
+                this.msToTime(this.time.total) || "25:00"
+              } study session! Head back to the portal to review your progress and save completion status!`,
+              tag: "session",
+              vibrate: [200, 100, 200],
+            },
+            this.review
+          );
+          this.clear_interval();
         }
         this.time.repeat += 1;
       }, 1000);
@@ -550,6 +576,14 @@ export default {
         if (!this.selected.length && this.page !== "select") {
           this.page = "select";
         }
+      },
+      deep: true,
+    },
+    $route: {
+      handler(to, from) {
+        // TODO: set as loading if opened directly from link instead of reload/link
+        void to, from;
+        // if (!from?.name) this.loading = true;
       },
       deep: true,
     },
@@ -684,6 +718,10 @@ nav.filter_bar + .tasks_list_wrapper > .tasks_list {
   cursor: unset;
   user-select: none;
   pointer-events: none;
+}
+.timer_info,
+.timer_info .time_info_part {
+  font-family: monospace;
 }
 .tasks_list_wrapper {
   position: relative;

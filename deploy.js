@@ -79,7 +79,7 @@ function deploy() {
   runCommand(`echo ${domain} > ./dist/CNAME`, "domain", `Writing domain ${domain} to CNAME`);
 
   runCommand("npm run publish", "publish", "Publishing to remote gh-pages branch");
-  centerMsg("\n\x1b[32m%s\x1b[0m", "[ finished deploying ]\n");
+  centerMsg("\n\x1b[32m%s\x1b[0m", "[ finished deploying ]\n\n");
 }
 
 deploy();
