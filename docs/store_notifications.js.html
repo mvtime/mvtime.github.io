@@ -65,15 +65,23 @@ export const useNotifications = defineStore({
      * @description Create a web notification
      * @param {Object} notification Notification object
      */
-    add(notification) {
+    add(notification, onClick = () => {}) {
       if (!this.enabled) {
         _status.error("🔔 Notifications are not enabled");
         new WarningToast("Cannot send notification: notifications are not enabled", 2500);
+        return null;
       } else {
-        void new Notification(notification.title, {
-          body: notification.message,
+        // show notification
+        new Notification(notification.title, {
+          ...notification,
           icon: "/img/icons/app.png",
+          badge: "/img/icons/apple-touch-icon-60x60.png",
+          renotify: !!notification.tag,
+          timestamp: Date.now(),
         });
+
+        // TODO: use action onclick with serviceworker showNotification
+        void onClick;
       }
     },
     /**
