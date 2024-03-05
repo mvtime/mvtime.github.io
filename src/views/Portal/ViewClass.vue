@@ -18,8 +18,9 @@
                   '--color-class': class_obj.color,
                   '--color-class-alt': class_obj.color + '2d',
                 }"
-                >P{{ class_obj.period }} - {{ class_obj.name }}</a
               >
+                {{ $store.class_text(class_obj) }}
+              </a>
             </span>
           </div>
           <div class="styled_obj">

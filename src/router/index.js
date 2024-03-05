@@ -270,6 +270,21 @@ const router = createRouter({
             requiresAuth: true,
             block_close: true,
           },
+          children: [
+            {
+              path: "/portal/study/session/:page?/view/:ref?",
+              name: "sessionview",
+              component: () => import("../views/Portal/ViewTask.vue"),
+              meta: {
+                page_title: "Session Session | View Task",
+                theme_color: {
+                  light: "#f2f2f2",
+                  dark: "#121212",
+                },
+                requiresAuth: true,
+              },
+            },
+          ],
         },
         {
           path: "/portal/statistics",

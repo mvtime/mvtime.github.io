@@ -667,3 +667,21 @@ textarea::-webkit-scrollbar-corner {
     backdrop-filter: none;
   }
 }
+
+/* overlay inlaid */
+
+.overlay_contents_inlaid.noheader header,
+.overlay_contents_inlaid.notext .overlay_contents_text,
+.overlay_contents_inlaid.noactions .bottom_actions {
+  display: none;
+}
+.overlay_contents_inlaid.noheader .overlay_contents {
+  border-top: none;
+}
+.overlay_contents_inlaid.noactions .overlay_contents {
+  border-bottom: none;
+}
+
+.overlay_contents_inlaid.noactions .spaced_contents {
+  margin-bottom: 0;
+}

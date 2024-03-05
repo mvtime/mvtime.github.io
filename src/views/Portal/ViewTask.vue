@@ -27,7 +27,7 @@
                   '--color-class': task._class.color,
                   '--color-class-alt': task._class.color + '2d',
                 }"
-                >{{ task.group || task.class_name }}</a
+                >{{ $store.class_text(task._class) }}</a
               >
             </span>
           </div>
@@ -158,15 +158,17 @@ export default {
     },
   },
   mounted() {
-    this.$smoothReflow({
-      el: this.$refs.contents,
-      hideOverflow: true,
-      childTransitions: true,
-    });
-    this.$smoothReflow({
-      el: this.$refs.title,
-      hideOverflow: true,
-    });
+    if (this.$route.name == "viewtask") {
+      this.$smoothReflow({
+        el: this.$refs.contents,
+        hideOverflow: true,
+        childTransitions: true,
+      });
+      this.$smoothReflow({
+        el: this.$refs.title,
+        hideOverflow: true,
+      });
+    }
     this.get_task();
   },
   methods: {
@@ -192,7 +194,6 @@ export default {
       }
     },
     edit_task() {
-      // this.$emit("close");
       this.$router.push({
         name: "edit",
         params: {
@@ -202,7 +203,6 @@ export default {
       });
     },
     notes_task() {
-      // this.$emit("close");
       this.$router.push({
         name: "notes",
         params: {

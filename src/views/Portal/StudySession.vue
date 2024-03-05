@@ -1,279 +1,331 @@
 <template>
-  <main class="entercode">
-    <header class="modal_header">
-      <h2 class="header_style modal_header_title">
-        {{ pages[page].title || "Study Session" }}
-      </h2>
-    </header>
-    <div class="overlay_contents" ref="contents">
-      <div class="contents_page select_page" v-if="page == 'select'">
-        <div class="overlay_contents_text">
-          Select tasks for completion during this session by
-          <span class="desktop_only_text">click</span>
-          <span class="mobile_only_text">tapp</span>ing them where they're listed below
-        </div>
-        <nav class="filter_bar">
-          <button
-            class="filter_bar_option"
-            v-for="filter in filters"
-            :key="filter.name"
-            :class="{ active: filter_days === filter.days }"
-            @click="filter_days = filter.days"
-          >
-            {{ filter.name }}
-          </button>
-        </nav>
-        <div class="tasks_list_wrapper unselected_tasks_wrapper">
-          <transition-group
-            class="tasks_list alt_bg"
-            ref="unselected_list"
-            tag="div"
-            name="tasks-list"
-            :class="{ selected: selected.length, loading_bg: loading }"
-          >
-            <div
-              class="tasks_list_task"
-              v-for="task in upcoming_unselected"
-              :key="task.ref"
-              @click="toggle_task(task.ref)"
-              :style="{
-                '--color-class': classes[task.class_id].color,
-                '--color-class-alt': classes[task.class_id].color + '2d',
-              }"
-            >
-              <div class="tasks_list_task__title">
-                <span class="tasks_list_task__title_text"
-                  >{{ $magic.prefix(task) }} {{ task.name }}</span
-                >
-              </div>
-              <div class="tasks_list_task__date">
-                {{
-                  (task.date &&
-                    task.date.toLocaleDateString(undefined, {
-                      month: "numeric",
-                      day: "numeric",
-                    })) ||
-                  "Invalid Date"
-                }}
-              </div>
+  <main class="session_wrapper">
+    <main class="session">
+      <header class="modal_header">
+        <h2 class="header_style modal_header_title">
+          {{ pages[page].title || "Study Session" }}
+        </h2>
+      </header>
+      <div class="overlay_contents">
+        <div class="overlay_contents_main" ref="contents">
+          <div class="contents_page select_page" v-if="page == 'select'">
+            <div class="overlay_contents_text">
+              Select tasks for completion during this session by
+              <span class="desktop_only_text">click</span>
+              <span class="mobile_only_text">tapp</span>ing them where they're listed below
             </div>
-          </transition-group>
-          <div class="tasks_list__cover"></div>
-        </div>
-        <div class="overlay_contents_text" v-if="upcoming_selected.length">
-          Selected tasks for this session. <span class="desktop_only_text">Click</span>
-          <span class="mobile_only_text">Tap</span> to remove or
-          <span class="click-action button_pointer_text" @click="selected = []">reset</span>
-        </div>
-        <div class="tasks_list_wrapper selected_tasks_wrapper" v-if="upcoming_selected.length">
-          <transition-group class="tasks_list tasks_list__selected" tag="div" name="tasks-list">
-            <div
-              class="tasks_list_task"
-              v-for="task in upcoming_selected"
-              :key="task.ref"
-              @click="toggle_task(task.ref)"
-              :style="{
-                '--color-class': classes[task.class_id].color,
-                '--color-class-alt': classes[task.class_id].color + '2d',
-              }"
-            >
-              <div class="tasks_list_task__title">
-                <span class="tasks_list_task__title_text"
-                  >{{ $magic.prefix(task) }} {{ task.name }}</span
+            <nav class="filter_bar">
+              <button
+                class="filter_bar_option"
+                v-for="filter in filters"
+                :key="filter.name"
+                :class="{ active: filter_days === filter.days }"
+                @click="filter_days = filter.days"
+              >
+                {{ filter.name }}
+              </button>
+            </nav>
+            <div class="tasks_list_wrapper unselected_tasks_wrapper">
+              <transition-group
+                class="tasks_list alt_bg"
+                ref="unselected_list"
+                tag="div"
+                name="tasks-list"
+                :class="{ selected: selected.length, loading_bg: loading }"
+              >
+                <div
+                  class="tasks_list_task"
+                  v-for="task in upcoming_unselected"
+                  :key="task.ref"
+                  @click="toggle_task(task.ref)"
+                  :style="{
+                    '--color-class': classes[task.class_id].color,
+                    '--color-class-alt': classes[task.class_id].color + '2d',
+                  }"
                 >
-              </div>
-              <div class="tasks_list_task__date">
-                {{
-                  (task.date &&
-                    task.date.toLocaleDateString(undefined, {
-                      month: "numeric",
-                      day: "numeric",
-                    })) ||
-                  "Invalid Date"
-                }}
-              </div>
+                  <div class="tasks_list_task__title">
+                    <span class="tasks_list_task__title_text"
+                      >{{ $magic.prefix(task) }} {{ task.name }}</span
+                    >
+                  </div>
+                  <div class="tasks_list_task__date">
+                    {{
+                      (task.date &&
+                        task.date.toLocaleDateString(undefined, {
+                          month: "numeric",
+                          day: "numeric",
+                        })) ||
+                      "Invalid Date"
+                    }}
+                  </div>
+                </div>
+              </transition-group>
+              <div class="tasks_list__cover"></div>
             </div>
-          </transition-group>
-          <div class="tasks_list__cover"></div>
-        </div>
-        <div class="overlay_contents_text" v-if="!selected">
-          If a task is not listed, it may be due to the task being completed or having already
-          passed its due date.
-        </div>
-      </div>
-      <div class="contents_page order_page" v-if="page == 'order'">
-        <div class="overlay_contents_text">
-          Order the tasks for completion during this session by dragging them into the desired order
-        </div>
-        <div class="tasks_list_wrapper order_wrapper selected_tasks_wrapper" ref="order_list">
-          <draggable
-            group="tasks"
-            class="tasks_list order_list"
-            :class="{ empty: !selected.length, drag }"
-            tag="div"
-            :list="selected"
-            item-key="ref"
-            ghost-class="ghost"
-            handle=".tasks_list_task__drag"
-            @start="drag = true"
-            @end="drag = false"
-            @remove="discard = []"
-          >
-            <template #item="{ element }">
-              <a
-                :href="`/view/${$store.path_to_ref(task_from(element).ref)}`"
-                v-if="element && task_from(element)"
+            <div class="overlay_contents_text" v-if="upcoming_selected.length">
+              Selected tasks for this session. <span class="desktop_only_text">Click</span>
+              <span class="mobile_only_text">Tap</span> to remove or
+              <span class="click-action button_pointer_text" @click="selected = []">reset</span>
+            </div>
+            <div class="tasks_list_wrapper selected_tasks_wrapper" v-if="upcoming_selected.length">
+              <transition-group class="tasks_list tasks_list__selected" tag="div" name="tasks-list">
+                <div
+                  class="tasks_list_task"
+                  v-for="task in upcoming_selected"
+                  :key="task.ref"
+                  @click="toggle_task(task.ref)"
+                  :style="{
+                    '--color-class': classes[task.class_id].color,
+                    '--color-class-alt': classes[task.class_id].color + '2d',
+                  }"
+                >
+                  <div class="tasks_list_task__title">
+                    <span class="tasks_list_task__title_text"
+                      >{{ $magic.prefix(task) }} {{ task.name }}</span
+                    >
+                  </div>
+                  <div class="tasks_list_task__date">
+                    {{
+                      (task.date &&
+                        task.date.toLocaleDateString(undefined, {
+                          month: "numeric",
+                          day: "numeric",
+                        })) ||
+                      "Invalid Date"
+                    }}
+                  </div>
+                </div>
+              </transition-group>
+              <div class="tasks_list__cover"></div>
+            </div>
+            <div class="overlay_contents_text" v-if="!selected">
+              If a task is not listed, it may be due to the task being completed or having already
+              passed its due date.
+            </div>
+          </div>
+          <div class="contents_page order_page" v-if="page == 'order'">
+            <div class="overlay_contents_text">
+              Order the tasks for completion during this session by dragging them into the desired
+              order
+            </div>
+            <div class="tasks_list_wrapper order_wrapper selected_tasks_wrapper" ref="order_list">
+              <draggable
+                group="tasks"
+                class="tasks_list order_list"
+                :class="{ empty: !selected.length, drag }"
+                tag="div"
+                :list="selected"
+                item-key="ref"
+                ghost-class="ghost"
+                handle=".tasks_list_task__drag"
+                @start="drag = true"
+                @end="drag = false"
+                @remove="discard = []"
+              >
+                <template #item="{ element }">
+                  <a
+                    :href="`/view/${$store.path_to_ref(task_from(element).ref)}`"
+                    @click="$event.preventDefault()"
+                    v-if="element && task_from(element)"
+                    class="tasks_list_task"
+                    :style="{
+                      '--color-class': classes[task_from(element).class_id].color,
+                      '--color-class-alt': classes[task_from(element).class_id].color + '2d',
+                    }"
+                  >
+                    <div class="tasks_list_task__drag"><div class="drag_icon"></div></div>
+                    <div class="tasks_list_task__title">
+                      <span class="tasks_list_task__title_text">
+                        {{ $magic.prefix(task_from(element)) }} {{ task_from(element).name }}
+                      </span>
+                    </div>
+                    <div class="tasks_list_task__date">
+                      {{
+                        (task_from(element).date &&
+                          task_from(element).date.toLocaleDateString(undefined, {
+                            month: "numeric",
+                            day: "numeric",
+                          })) ||
+                        "Invalid Date"
+                      }}
+                    </div>
+                  </a>
+                </template>
+              </draggable>
+              <div class="tasks_list__cover"></div>
+            </div>
+            <draggable
+              class="tasks_list drag_to_delete"
+              v-if="drag"
+              v-model="discard"
+              group="tasks"
+              item-key="ref"
+              ghost-class="ghost"
+            >
+              <template #item="{ element }">
+                <span>{{ element && null }}</span>
+              </template>
+            </draggable>
+          </div>
+          <div class="contents_page timer_page" v-if="page == 'timer'">
+            <div class="overlay_contents_text">
+              Set a timer for the session to keep track of time spent on tasks
+            </div>
+            <form
+              class="timer_set_row inputs_row"
+              style="margin: 20px 0; text-align: center"
+              @submit="$event.preventDefault()"
+            >
+              <!-- time inputs -->
+              <input
+                ref="hours"
+                class="time_input styled_input"
+                type="number"
+                min="0"
+                max="5"
+                step="1"
+                :value="Math.floor(time.total / 60 / 60 / 1000)"
+                @input="time.total = ($event.target.value * 60 + $refs.minutes.value) * 60 * 1000"
+              />
+              <span class="time_input">:</span>
+              <input
+                ref="minutes"
+                class="time_input styled_input"
+                type="number"
+                :min="($refs && $refs.hours && $refs.hours.value > 0 ? -1 : 5) || 5"
+                max="61"
+                step="1"
+                :value="
+                  Math.floor((time.total / 60 / 1000) % 60) < 10
+                    ? '0' + Math.floor((time.total / 60 / 1000) % 60)
+                    : Math.floor((time.total / 60 / 1000) % 60)
+                "
+                @input="time.total = ($refs.hours.value * 60 + $event.target.value) * 60 * 1000"
+              />
+            </form>
+
+            <div class="overlay_contents_text">
+              Once you're ready to go, hit the <span class="button_pointer_text">Start</span> button
+              to begin!
+            </div>
+          </div>
+          <div class="contents_page time_page" v-if="page == 'time'">
+            <div class="overlay_contents_text">
+              You're currently in a session. Keep track of time spent on tasks and take breaks as
+              needed!
+            </div>
+            <transition-group
+              class="tasks_list tasks_list__session"
+              tag="div"
+              name="tasks-list"
+              style="margin-bottom: 0"
+            >
+              <div
                 class="tasks_list_task"
+                v-for="task in upcoming_selected"
+                :key="task.ref"
+                @click="
+                  $route.params && $route.params.ref == $store.path_to_ref(task.ref)
+                    ? close_view()
+                    : open_view(task)
+                "
                 :style="{
-                  '--color-class': classes[task_from(element).class_id].color,
-                  '--color-class-alt': classes[task_from(element).class_id].color + '2d',
+                  '--color-class': classes[task.class_id].color,
+                  '--color-class-alt': classes[task.class_id].color + '2d',
                 }"
               >
-                <div class="tasks_list_task__drag"><div class="drag_icon"></div></div>
                 <div class="tasks_list_task__title">
-                  <span class="tasks_list_task__title_text">
-                    {{ $magic.prefix(task_from(element)) }} {{ task_from(element).name }}
-                  </span>
+                  <span class="tasks_list_task__title_text"
+                    >{{ $magic.prefix(task) }} {{ task.name }}</span
+                  >
                 </div>
                 <div class="tasks_list_task__date">
                   {{
-                    (task_from(element).date &&
-                      task_from(element).date.toLocaleDateString(undefined, {
+                    (task.date &&
+                      task.date.toLocaleDateString(undefined, {
                         month: "numeric",
                         day: "numeric",
                       })) ||
                     "Invalid Date"
                   }}
                 </div>
-              </a>
-            </template>
-          </draggable>
-          <div class="tasks_list__cover"></div>
+              </div>
+            </transition-group>
+          </div>
+          <div class="contents_page review_page" v-if="page == 'review'">
+            <div class="overlay_contents_text">
+              Here's what you've accomplished during this session. You can review the tasks and time
+              spent on them below.
+            </div>
+          </div>
+          <div class="flex_spacer"></div>
         </div>
-        <draggable
-          class="tasks_list drag_to_delete"
-          v-if="drag"
-          v-model="discard"
-          group="tasks"
-          item-key="ref"
-          ghost-class="ghost"
+      </div>
+      <div class="bottom_actions">
+        <button
+          v-if="pages[page].button.back"
+          class="close_action click_escape"
+          @click="
+            if (page == 'select') {
+              $emit('close');
+            } else {
+              page = pages[page].button.back;
+            }
+          "
         >
-          <template #item="{ element }">
-            <span>{{ element && null }}</span>
-          </template>
-        </draggable>
-      </div>
-      <div class="contents_page timer_page" v-if="page == 'timer'">
-        <div class="overlay_contents_text">
-          Set a timer for the session to keep track of time spent on tasks
+          {{ page == "select" ? (selected.length ? "Cancel" : "Close") : "Back" }}
+        </button>
+        <div class="timer_info first_styled" v-if="running">
+          <span class="time_info_part time_info__elapsed">{{ msToTime(time.elapsed) }}</span
+          >&ThinSpace;/&ThinSpace;<span class="time_info_part time_info__total">{{
+            msToTime(time.total)
+          }}</span>
         </div>
-        <form
-          class="timer_set_row inputs_row"
-          style="margin: 20px 0; text-align: center"
-          @submit="$event.preventDefault()"
+        <div class="flex_spacer"></div>
+        <button
+          class="continue_action magic_button primary_styled"
+          title="Generate an order for the selected tasks"
+          v-if="pages[page].magic"
+          @click="generate_order"
+          :disabled="true || !selected.length || loading"
         >
-          <!-- time inputs -->
-          <input
-            ref="hours"
-            class="time_input styled_input"
-            type="number"
-            min="0"
-            max="5"
-            step="1"
-            :value="Math.floor(time.total / 60 / 60 / 1000)"
-            @input="time.total = ($event.target.value * 60 + $refs.minutes.value) * 60 * 1000"
-          />
-          <span class="time_input">:</span>
-          <input
-            ref="minutes"
-            class="time_input styled_input"
-            type="number"
-            :min="($refs && $refs.hours && $refs.hours.value > 0 ? -1 : 5) || 5"
-            max="61"
-            step="1"
-            :value="
-              Math.floor((time.total / 60 / 1000) % 60) < 10
-                ? '0' + Math.floor((time.total / 60 / 1000) % 60)
-                : Math.floor((time.total / 60 / 1000) % 60)
-            "
-            @input="time.total = ($refs.hours.value * 60 + $event.target.value) * 60 * 1000"
-          />
-        </form>
-
-        <div class="overlay_contents_text">
-          Once you're ready to go, hit the <span class="button_pointer_text">Start</span> button to
-          begin!
-        </div>
+          {{ pages[page].magic }}
+        </button>
+        <button
+          v-if="!done && running && paused && page == 'time'"
+          class="leave_button"
+          @click="review"
+        >
+          End
+        </button>
+        <button
+          class="continue_action click_ctrlenter"
+          @click="action"
+          :disabled="!selected.length"
+          :class="{
+            click_escape: page == 'time' && !paused,
+          }"
+        >
+          {{
+            (running
+              ? paused
+                ? done
+                  ? "Finish"
+                  : pages[page].button.paused
+                : pages[page].button.running
+              : pages[page].button.stopped) || "Next"
+          }}
+        </button>
       </div>
-      <div class="contents_page time_page" v-if="page == 'time'">
-        <div class="overlay_contents_text">
-          You're currently in a session. Keep track of time spent on tasks and take breaks as
-          needed!
-        </div>
-      </div>
-      <div class="contents_page review_page" v-if="page == 'review'">
-        <div class="overlay_contents_text">
-          Here's what you've accomplished during this session. You can review the tasks and time
-          spent on them below.
-        </div>
-      </div>
-    </div>
-    <div class="bottom_actions">
-      <button
-        v-if="pages[page].button.back"
-        class="close_action click_escape"
-        @click="
-          if (page == 'select') {
-            $emit('close');
-          } else {
-            page = pages[page].button.back;
-          }
-        "
-      >
-        {{ page == "select" ? (selected.length ? "Cancel" : "Close") : "Back" }}
-      </button>
-      <div class="timer_info first_styled" v-if="running">
-        <span class="time_info_part time_info__elapsed">{{ msToTime(time.elapsed) }}</span
-        >&ThinSpace;/&ThinSpace;<span class="time_info_part time_info__total">{{
-          msToTime(time.total)
-        }}</span>
-      </div>
-      <div class="flex_spacer"></div>
-      <button
-        class="continue_action magic_button primary_styled"
-        title="Generate an order for the selected tasks"
-        v-if="pages[page].magic"
-        @click="generate_order"
-        :disabled="true || !selected.length || loading"
-      >
-        {{ pages[page].magic }}
-      </button>
-      <button
-        v-if="!done && running && paused && page == 'time'"
-        class="leave_button"
-        @click="review"
-      >
-        End
-      </button>
-      <button
-        class="continue_action click_ctrlenter"
-        @click="action"
-        :disabled="!selected.length"
-        :class="{
-          click_escape: page == 'time' && !paused,
-        }"
-      >
-        {{
-          (running
-            ? paused
-              ? done
-                ? "Finish"
-                : pages[page].button.paused
-              : pages[page].button.running
-            : pages[page].button.stopped) || "Next"
-        }}
-      </button>
-    </div>
+    </main>
+    <hr class="view_separator" />
+    <main
+      class="sessionview overlay_contents_inlaid noheader"
+      v-if="$route.name != 'studysession' && show_view"
+      style="max-width: 350px"
+    >
+      <router-view @close="close_view"></router-view>
+    </main>
   </main>
 </template>
 
@@ -324,6 +376,7 @@ export default {
   data() {
     return {
       loading: false,
+      show_view: true,
       audio: {
         back: require("@/assets/audio/back.wav"),
         bubble: require("@/assets/audio/bubble.wav"),
@@ -432,6 +485,23 @@ export default {
         }
       }
     },
+    open_view(task) {
+      this.$router.push({
+        name: "sessionview",
+        params: {
+          ref: this.$store.path_to_ref(task.ref),
+          page: this.page,
+        },
+        query: { ...this.$route.query },
+      });
+    },
+    close_view() {
+      this.$router.push({
+        name: "studysession",
+        params: { page: this.page },
+        query: { ...this.$route.query },
+      });
+    },
     action() {
       if (!this.$notify.enabled) this.$notify.register(this.page == "timer");
       if (!this.selected.length) {
@@ -514,8 +584,11 @@ export default {
     },
     update_path() {
       this.$router.replace({
-        name: "studysession",
-        params: { page: this.page },
+        name: this.$route.name,
+        params: {
+          page: this.page,
+          ref: this.$route.name == "sessionview" ? this.$route.params.ref : undefined,
+        },
         query: {
           ...this.$route.query,
           selected:
@@ -615,11 +688,68 @@ export default {
         this.update_path();
       }
     },
+    "$route.params.ref"() {
+      this.show_view = false;
+      this.$nextTick(() => {
+        this.show_view = true;
+      });
+    },
   },
 };
 </script>
+<style>
+.session_wrapper {
+  align-items: stretch;
+  justify-content: stretch;
+}
+.session_wrapper .overlay_contents,
+.session_wrapper h2.header_style {
+  padding: var(--padding-overlay);
+}
 
+.sessionview {
+  display: flex;
+  flex-flow: column nowrap;
+}
+.sessionview main {
+  height: 100%;
+  flex-grow: 1;
+}
+.session_wrapper main {
+  width: 100%;
+  height: 100%;
+}
+</style>
 <style scoped>
+.session_wrapper main {
+  flex: 1 0 50%;
+  width: auto;
+  padding: 0 !important;
+  display: flex;
+  flex-flow: column nowrap;
+  height: 100%;
+}
+
+.session_wrapper main > .overlay_contents {
+  flex-grow: 1;
+}
+
+.session_wrapper:has(.sessionview) {
+  max-width: calc(450px + 350px - var(--thickness-overlay-border) * 3);
+  flex-direction: row;
+}
+.session_wrapper:has(.sessionview) main {
+  height: auto;
+}
+
+main.session_wrapper hr.view_separator {
+  padding: 0;
+  margin: 0;
+  flex: 0 0 var(--thickness-overlay-border);
+  width: var(--thickness-overlay-border);
+  background-color: var(--color-overlay-border);
+  border: none;
+}
 /* nav bar */
 nav.filter_bar {
   display: flex;
@@ -832,6 +962,11 @@ nav.filter_bar + .tasks_list_wrapper > .tasks_list {
   flex-flow: column nowrap;
   gap: 7px;
   height: auto;
+}
+
+.tasks_list__session:not(:empty) {
+  padding: 0;
+  background: none;
 }
 
 /* tasks */
