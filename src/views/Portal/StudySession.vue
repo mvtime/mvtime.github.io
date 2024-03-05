@@ -320,7 +320,7 @@
     </main>
     <hr class="view_separator" />
     <main
-      class="sessionview overlay_contents_inlaid noheader"
+      class="sessionview overlay_contents_inlaid noheader notext -noactions"
       v-if="$route.name != 'studysession' && show_view"
       style="max-width: 350px"
     >
@@ -945,6 +945,9 @@ nav.filter_bar + .tasks_list_wrapper > .tasks_list {
 }
 .tasks_list.order_list:empty::before {
   content: "No tasks selected";
+}
+.tasks_list.tasks_list__session:empty::before {
+  content: "No active tasks";
 }
 .tasks_list.drag_to_delete {
   background: none;

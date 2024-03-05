@@ -682,6 +682,7 @@ textarea::-webkit-scrollbar-corner {
   border-bottom: none;
 }
 
-.overlay_contents_inlaid.noactions .spaced_contents {
+.overlay_contents_inlaid.noactions .spaced_contents,
+.overlay_contents_inlaid.notext .spaced_contents {
   margin-bottom: 0;
 }
