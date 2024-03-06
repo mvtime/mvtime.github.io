@@ -12,7 +12,7 @@
           <div class="action_icon expand-icon" :class="{ alt: fullpage }"></div>
         </button>
         <div class="study_name portal_main_block_title">
-          Upcoming<span class="desktop_only_text may_break_text">&nbsp;Assignments</span>
+          Upcoming<span class="desktop_only may_break_text">&nbsp;Assignments</span>
         </div>
       </div>
       <div class="portal_main_block_actions_wrapper">

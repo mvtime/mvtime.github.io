@@ -32,7 +32,7 @@
     </div>
     <div class="bottom_actions">
       <button class="skip_action" ref="skip_action" @click="to_onboard">
-        Skip <span class="desktop_only_text">Videos</span>
+        Skip <span class="desktop_only">Videos</span>
       </button>
       <div class="flex_spacer"></div>
       <button

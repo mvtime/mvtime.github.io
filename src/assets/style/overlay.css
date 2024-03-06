@@ -56,13 +56,13 @@
   padding: var(--padding-overlay);
 }
 @media (max-width: 500px) {
-  .desktop_only_text {
-    display: none;
+  .desktop_only {
+    display: none !important;
   }
 }
 @media (min-width: 501px) {
-  .mobile_only_text {
-    display: none;
+  .mobile_only {
+    display: none !important;
   }
 }
 @media (min-width: 800px) {

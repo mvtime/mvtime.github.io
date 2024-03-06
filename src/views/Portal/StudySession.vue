@@ -11,8 +11,8 @@
           <div class="contents_page select_page" v-if="page == 'select'">
             <div class="overlay_contents_text">
               Select tasks for completion during this session by
-              <span class="desktop_only_text">click</span>
-              <span class="mobile_only_text">tapp</span>ing them where they're listed below
+              <span class="desktop_only">click</span>
+              <span class="mobile_only">tapp</span>ing them where they're listed below
             </div>
             <nav class="filter_bar">
               <button
@@ -63,8 +63,8 @@
               <div class="tasks_list__cover"></div>
             </div>
             <div class="overlay_contents_text" v-if="upcoming_selected.length">
-              Selected tasks for this session. <span class="desktop_only_text">Click</span>
-              <span class="mobile_only_text">Tap</span> to remove or
+              Selected tasks for this session. <span class="desktop_only">Click</span>
+              <span class="mobile_only">Tap</span> to remove or
               <span class="click-action button_pointer_text" @click="selected = []">reset</span>
             </div>
             <div class="tasks_list_wrapper selected_tasks_wrapper" v-if="upcoming_selected.length">
@@ -314,11 +314,11 @@
       </div>
     </main>
     <hr
-      class="view_separator"
+      class="view_separator desktop_only"
       v-if="page == 'time' && $route.name != 'studysession' && show_view"
     />
     <main
-      class="sessionview overlay_contents_inlaid noheader notext -noactions"
+      class="sessionview overlay_contents_inlaid noheader notext -noactions desktop_only"
       v-if="page == 'time' && $route.name != 'studysession' && show_view"
       style="max-width: 350px"
     >
@@ -699,6 +699,11 @@ export default {
 };
 </script>
 <style>
+@media (max-width: 670px) {
+  .desktop_only {
+    display: none !important;
+  }
+}
 .session_wrapper {
   align-items: stretch;
   justify-content: stretch;
@@ -712,6 +717,17 @@ export default {
 }
 
 .sessionview {
+  display: flex;
+  flex-flow: column nowrap;
+}
+.sessionview .overlay_contents > div {
+  justify-content: center;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: stretch;
+  flex: 1 0 auto;
+}
+.sessionview .overlay_contents {
   display: flex;
   flex-flow: column nowrap;
 }
@@ -738,13 +754,19 @@ export default {
 .session_wrapper main > .overlay_contents {
   flex-grow: 1;
 }
-
-.session_wrapper:has(.sessionview) {
-  max-width: calc(450px + 350px - var(--thickness-overlay-border) * 3);
-  flex-direction: row;
+@media (min-width: 670px) {
+  .session_wrapper:has(.sessionview) {
+    max-width: calc(450px + 350px - var(--thickness-overlay-border) * 3);
+    flex-direction: row;
+  }
+  .session_wrapper:has(.sessionview) main {
+    height: auto;
+  }
 }
-.session_wrapper:has(.sessionview) main {
-  height: auto;
+@media (max-width: 850px) {
+  .session_wrapper:has(.sessionview) {
+    max-width: calc(100% - var(--thickness-overlay-border) * 2 - 40px);
+  }
 }
 
 main.session_wrapper hr.view_separator {

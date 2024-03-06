@@ -42,7 +42,7 @@
       </button>
       <div class="flex_spacer"></div>
       <button class="continue_action" :disabled="!contents_ready" @click="action">
-        {{ continue_text[0] }}<span class="desktop_only_text">{{ continue_text[1] }}</span>
+        {{ continue_text[0] }}<span class="desktop_only">{{ continue_text[1] }}</span>
       </button>
     </div>
   </main>
