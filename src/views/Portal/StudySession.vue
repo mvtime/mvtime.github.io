@@ -730,10 +730,16 @@ export default {
 .sessionview .overlay_contents {
   display: flex;
   flex-flow: column nowrap;
+  justify-content: flex-start;
 }
 .session {
   height: auto;
   max-height: 500px;
+}
+@media (max-height: 540px) {
+  .session {
+    max-height: calc(100vh - 40px - (var(--thickness-overlay-border) * 2));
+  }
 }
 .session_wrapper main {
   width: 100%;
@@ -763,7 +769,7 @@ export default {
     height: auto;
   }
 }
-@media (max-width: 850px) {
+@media (max-width: 850px) and (min-width: 670px) {
   .session_wrapper:has(.sessionview) {
     max-width: calc(100% - var(--thickness-overlay-border) * 2 - 40px);
   }

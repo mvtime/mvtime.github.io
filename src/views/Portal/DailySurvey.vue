@@ -77,9 +77,10 @@ export default {
   methods: {
     /** Save the responses to the database and close the modal */
     saveResponses(responses) {
-      this.$store.save_daily_survey(responses);
-      window.onbeforeunload = null;
-      this.$emit("close");
+      this.$store.save_daily_survey(responses).then(() => {
+        window.onbeforeunload = null;
+        this.$emit("close");
+      });
     },
   },
   /** If the user has already completed the survey when opened, close the modal */
