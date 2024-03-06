@@ -214,12 +214,7 @@
               You're currently in a session. Keep track of time spent on tasks and take breaks as
               needed!
             </div>
-            <transition-group
-              class="tasks_list tasks_list__session"
-              tag="div"
-              name="tasks-list"
-              style="margin-bottom: 0"
-            >
+            <div class="tasks_list tasks_list__session" style="margin-bottom: 0">
               <div
                 class="tasks_list_task"
                 v-for="task in upcoming_selected"
@@ -250,7 +245,7 @@
                   }}
                 </div>
               </div>
-            </transition-group>
+            </div>
           </div>
           <div class="contents_page review_page" v-if="page == 'review'">
             <div class="overlay_contents_text">
@@ -318,10 +313,13 @@
         </button>
       </div>
     </main>
-    <hr class="view_separator" />
+    <hr
+      class="view_separator"
+      v-if="page == 'time' && $route.name != 'studysession' && show_view"
+    />
     <main
       class="sessionview overlay_contents_inlaid noheader notext -noactions"
-      v-if="$route.name != 'studysession' && show_view"
+      v-if="page == 'time' && $route.name != 'studysession' && show_view"
       style="max-width: 350px"
     >
       <router-view @close="close_view"></router-view>
@@ -584,10 +582,13 @@ export default {
     },
     update_path() {
       this.$router.replace({
-        name: this.$route.name,
+        name: this.page != "review" ? this.$route.name : "studysession",
         params: {
           page: this.page,
-          ref: this.$route.name == "sessionview" ? this.$route.params.ref : undefined,
+          ref:
+            this.$route.name == "sessionview" && this.page != "review"
+              ? this.$route.params.ref
+              : undefined,
         },
         query: {
           ...this.$route.query,
@@ -701,6 +702,9 @@ export default {
 .session_wrapper {
   align-items: stretch;
   justify-content: stretch;
+  flex-basis: 0;
+  flex-grow: 1;
+  flex-direction: row;
 }
 .session_wrapper .overlay_contents,
 .session_wrapper h2.header_style {
@@ -711,13 +715,14 @@ export default {
   display: flex;
   flex-flow: column nowrap;
 }
-.sessionview main {
-  height: 100%;
-  flex-grow: 1;
+.session {
+  height: auto;
+  max-height: 500px;
 }
 .session_wrapper main {
   width: 100%;
-  height: 100%;
+  height: auto;
+  overflow-y: auto;
 }
 </style>
 <style scoped>
@@ -970,6 +975,7 @@ nav.filter_bar + .tasks_list_wrapper > .tasks_list {
 .tasks_list__session:not(:empty) {
   padding: 0;
   background: none;
+  max-height: unset;
 }
 
 /* tasks */
