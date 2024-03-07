@@ -214,8 +214,8 @@
           </div>
           <div class="contents_page time_page" v-if="page == 'time'">
             <div class="overlay_contents_text">
-              You're currently in a session. Keep track of time spent on tasks and take breaks as
-              needed!
+              You're currently in a session. Click on a task to view it and add your own personal
+              notes.
             </div>
             <div class="tasks_list tasks_list__session" style="margin-bottom: 0">
               <div
@@ -733,11 +733,15 @@ export default {
   display: flex;
   flex-flow: column nowrap;
 }
-.session_side .overlay_contents .inputs_row {
+/* Option to have contents fill right container 
+.session_side .overlay_contents .spaced_contents {
+  min-height: 100%;
+} */
+.session_side.notext .overlay_contents .inputs_row {
   height: 100%;
   align-items: stretch;
 }
-.session_side .overlay_contents .inputs_row textarea:only-child {
+.session_side.notext .overlay_contents .inputs_row textarea:only-child {
   min-height: 100%;
 }
 
