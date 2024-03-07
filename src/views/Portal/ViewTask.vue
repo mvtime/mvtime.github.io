@@ -122,7 +122,7 @@ import "@/assets/style/markdown.css";
 let converter = new showdown.Converter();
 export default {
   name: "ViewTaskView",
-  emits: ["close"],
+  emits: ["close", "notes"],
   mixins: [smoothReflow],
   data() {
     return {
@@ -203,13 +203,17 @@ export default {
       });
     },
     notes_task() {
-      this.$router.push({
-        name: "notes",
-        params: {
-          ref: this.$route?.params?.ref,
-        },
-        query: this.$route.query,
-      });
+      if (!this.$route.name == "notes") {
+        this.$router.push({
+          name: "notes",
+          params: {
+            ref: this.$route?.params?.ref,
+          },
+          query: this.$route.query,
+        });
+      } else {
+        this.$emit("notes", this.task);
+      }
     },
     async get_task() {
       // get task ref from route params

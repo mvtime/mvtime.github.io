@@ -284,6 +284,19 @@ const router = createRouter({
                 requiresAuth: true,
               },
             },
+            {
+              path: "/portal/study/session/:page?/notes/:ref?",
+              name: "sessionnotes",
+              component: () => import("../views/Portal/NotesTask.vue"),
+              meta: {
+                page_title: "Session Session | Task Notes",
+                theme_color: {
+                  light: "#f2f2f2",
+                  dark: "#121212",
+                },
+                requiresAuth: true,
+              },
+            },
           ],
         },
         {

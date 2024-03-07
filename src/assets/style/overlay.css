@@ -690,3 +690,7 @@ textarea::-webkit-scrollbar-corner {
 .overlay_contents_inlaid.notext .spaced_contents {
   margin-bottom: 0;
 }
+
+.overlay_contents_inlaid.notext .inputs_row {
+  margin-top: 0;
+}

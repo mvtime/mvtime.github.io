@@ -37,6 +37,7 @@
                   class="tasks_list_task"
                   v-for="task in upcoming_unselected"
                   :key="task.ref"
+                  :title="`Select ${task.name}`"
                   @click="toggle_task(task.ref)"
                   :style="{
                     '--color-class': classes[task.class_id].color,
@@ -71,6 +72,7 @@
               <transition-group class="tasks_list tasks_list__selected" tag="div" name="tasks-list">
                 <div
                   class="tasks_list_task"
+                  :title="`Remove ${task.name}`"
                   v-for="task in upcoming_selected"
                   :key="task.ref"
                   @click="toggle_task(task.ref)"
@@ -127,6 +129,7 @@
                     :href="`/view/${$store.path_to_ref(task_from(element).ref)}`"
                     @click="$event.preventDefault()"
                     v-if="element && task_from(element)"
+                    :title="`Rearrange ${task_from(element).name}`"
                     class="tasks_list_task"
                     :style="{
                       '--color-class': classes[task_from(element).class_id].color,
@@ -217,12 +220,20 @@
             <div class="tasks_list tasks_list__session" style="margin-bottom: 0">
               <div
                 class="tasks_list_task"
+                :title="`${
+                  $route.name != 'studysession' && $store.path_to_ref(task.ref) == $route.params.ref
+                    ? 'Close'
+                    : 'View'
+                } ${task.name}`"
                 v-for="task in upcoming_selected"
                 :key="task.ref"
                 @click="
-                  $route.params && $route.params.ref == $store.path_to_ref(task.ref)
-                    ? close_view()
-                    : open_view(task)
+                  if (
+                    $route.name == 'sessionview' &&
+                    $route.params.ref == $store.path_to_ref(task.ref)
+                  )
+                    close_view();
+                  else open_side('sessionview', task);
                 "
                 :style="{
                   '--color-class': classes[task.class_id].color,
@@ -318,11 +329,15 @@
       v-if="page == 'time' && $route.name != 'studysession' && show_view"
     />
     <main
-      class="sessionview overlay_contents_inlaid noheader notext -noactions desktop_only"
+      class="session_side overlay_contents_inlaid noheader notext -noactions desktop_only"
       v-if="page == 'time' && $route.name != 'studysession' && show_view"
       style="max-width: 350px"
     >
-      <router-view @close="close_view"></router-view>
+      <router-view
+        @close="close_view"
+        @notes="open_side('sessionnotes', $event)"
+        @view="open_side('sessionview', $event)"
+      ></router-view>
     </main>
   </main>
 </template>
@@ -483,9 +498,10 @@ export default {
         }
       }
     },
-    open_view(task) {
+    open_side(name, task) {
+      this.$status.log(`ℹ️ Opening sidebar "${name}"`);
       this.$router.push({
-        name: "sessionview",
+        name,
         params: {
           ref: this.$store.path_to_ref(task.ref),
           page: this.page,
@@ -586,7 +602,7 @@ export default {
         params: {
           page: this.page,
           ref:
-            this.$route.name == "sessionview" && this.page != "review"
+            this.$route.name != "studysession" && this.page != "review"
               ? this.$route.params.ref
               : undefined,
         },
@@ -594,10 +610,7 @@ export default {
           ...this.$route.query,
           selected:
             this.selected.map((path) => this.$store.path_to_ref(path)).join(",") || undefined,
-          time:
-            this.time.total && this.time.total != 25 * 60 * 1000
-              ? this.time.total / 60 / 1000
-              : undefined,
+          time: this.time.total ? this.time.total / 60 / 1000 : undefined,
           passed: this.time.elapsed ? Math.floor(this.time.elapsed / 1000) : undefined,
         },
       });
@@ -716,21 +729,32 @@ export default {
   padding: var(--padding-overlay);
 }
 
-.sessionview {
+.session_side {
   display: flex;
   flex-flow: column nowrap;
 }
-.sessionview .overlay_contents > div {
+.session_side .overlay_contents .inputs_row {
+  height: 100%;
+  align-items: stretch;
+}
+.session_side .overlay_contents .inputs_row textarea:only-child {
+  min-height: 100%;
+}
+
+.session_side .overlay_contents > div {
   justify-content: center;
   display: flex;
   flex-flow: column nowrap;
   align-items: stretch;
   flex: 1 0 auto;
 }
-.sessionview .overlay_contents {
+.session_side .overlay_contents {
   display: flex;
   flex-flow: column nowrap;
   justify-content: flex-start;
+}
+.session_side .overlay_contents:has(.loading_icon) {
+  justify-content: center;
 }
 .session {
   height: auto;
@@ -761,16 +785,16 @@ export default {
   flex-grow: 1;
 }
 @media (min-width: 670px) {
-  .session_wrapper:has(.sessionview) {
+  .session_wrapper:has(.session_side) {
     max-width: calc(450px + 350px - var(--thickness-overlay-border) * 3);
     flex-direction: row;
   }
-  .session_wrapper:has(.sessionview) main {
+  .session_wrapper:has(.session_side) main {
     height: auto;
   }
 }
 @media (max-width: 850px) and (min-width: 670px) {
-  .session_wrapper:has(.sessionview) {
+  .session_wrapper:has(.session_side) {
     max-width: calc(100% - var(--thickness-overlay-border) * 2 - 40px);
   }
 }

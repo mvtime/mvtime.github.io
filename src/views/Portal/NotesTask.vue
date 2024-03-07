@@ -1,5 +1,5 @@
 <template>
-  <div class="edit_task">
+  <main class="notes_task">
     <header class="modal_header" ref="title">
       <h2 class="header_style modal_header_title">
         {{ original_note ? "Update" : "Add" }} {{ task.type || "task" }} notes
@@ -60,7 +60,7 @@
         {{ original_note ? "Update" : "Add" }}
       </button>
     </div>
-  </div>
+  </main>
 </template>
 
 <script>
@@ -79,7 +79,7 @@ import smoothReflow from "vue-smooth-reflow";
 
 export default {
   name: "EditTaskView",
-  emits: ["close"],
+  emits: ["close", "view"],
   mixins: [smoothReflow],
   data() {
     return {
@@ -121,13 +121,17 @@ export default {
       }
     },
     back() {
-      this.$router.push({
-        name: "viewtask",
-        params: {
-          ref: this.$route.params.ref,
-        },
-        query: this.$route.query,
-      });
+      if (this.$route.name == "notes") {
+        this.$router.push({
+          name: "viewtask",
+          params: {
+            ref: this.$route.params.ref,
+          },
+          query: this.$route.query,
+        });
+      } else {
+        this.$emit("view", this.task);
+      }
     },
     async update_note() {
       this.loading = true;
