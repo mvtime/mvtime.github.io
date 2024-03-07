@@ -220,13 +220,17 @@
             <div class="tasks_list tasks_list__session" style="margin-bottom: 0">
               <div
                 class="tasks_list_task"
+                :class="{
+                  unselected:
+                    $route.params.ref && $store.path_to_ref(task.ref) != $route.params.ref,
+                }"
+                v-for="task in selected_map"
+                :key="task.ref"
                 :title="`${
                   $route.name != 'studysession' && $store.path_to_ref(task.ref) == $route.params.ref
                     ? 'Close'
                     : 'View'
                 } ${task.name}`"
-                v-for="task in selected_map"
-                :key="task.ref"
                 @click="
                   if (
                     $route.name == 'sessionview' &&
@@ -1052,6 +1056,10 @@ nav.filter_bar + .tasks_list_wrapper > .tasks_list {
   justify-content: center;
   align-items: center;
   z-index: 1;
+}
+
+.tasks_list_task.unselected {
+  opacity: 0.4;
 }
 
 main.parent.simplified .tasks_list_task {
