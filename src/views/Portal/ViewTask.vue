@@ -82,8 +82,13 @@
       <button class="close_action click_escape" @click="$emit('close')">Close</button>
       <div class="flex_spacer"></div>
       <button
-        class="edit_action primary_styled"
-        v-if="!$store.is_teacher && $store.user && task && task.type != 'note'"
+        class="notes_action primary_styled"
+        v-if="
+          ($route.name != 'viewtask' || !$store.is_teacher) &&
+          $store.user &&
+          task &&
+          task.type != 'note'
+        "
         @click="notes_task"
       >
         Notes
@@ -91,6 +96,7 @@
       <button
         class="edit_action primary_styled"
         v-if="
+          $route.name == 'viewtask' &&
           $store.is_teacher &&
           $store.user &&
           task &&
