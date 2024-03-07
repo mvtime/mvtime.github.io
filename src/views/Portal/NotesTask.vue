@@ -24,7 +24,7 @@
               '--color-class': task._class.color,
               '--color-class-alt': task._class.color + '2d',
             }"
-            >{{ $store.class_text(class_obj) }}</a
+            >{{ $store.class_text(task._class) }}</a
           >
         </div>
         <div class="inputs_row">
@@ -43,7 +43,7 @@
       <button
         class="back_action click_escape"
         :class="{ loading_bg: loading }"
-        v-if="ready"
+        v-if="ready && $route.name == 'notes'"
         :disabled="loading"
         @click="back"
       >
@@ -51,6 +51,15 @@
       </button>
       <button v-else class="close_action click_escape" @click="$emit('close')">Close</button>
       <div class="flex_spacer"></div>
+      <button
+        class="primary_styled"
+        :class="{ loading_bg: loading }"
+        v-if="ready && $route.name != 'notes'"
+        :disabled="loading"
+        @click="back"
+      >
+        View
+      </button>
       <button
         class="continue_action click_ctrlenter"
         :class="{ loading_bg: loading }"

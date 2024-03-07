@@ -209,7 +209,7 @@ export default {
       });
     },
     notes_task() {
-      if (!this.$route.name == "notes") {
+      if (this.$route.name == "viewtask") {
         this.$router.push({
           name: "notes",
           params: {

@@ -98,7 +98,8 @@
 .bottom_actions > *:first-child:hover {
   text-decoration: underline;
 }
-.bottom_actions > .close_action:first-child {
+.bottom_actions > .close_action:first-child,
+.bottom_actions > .back_action:first-child {
   padding: 0 calc(var(--padding-overlay) / 2);
 }
 .bottom_actions > *:last-child,
