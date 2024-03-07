@@ -1053,9 +1053,15 @@ nav.filter_bar + .tasks_list_wrapper > .tasks_list {
   align-items: center;
   z-index: 1;
 }
+
 main.parent.simplified .tasks_list_task {
   background: var(--color-class);
+  filter: var(--filter-calendar-task);
 }
+main.parent.simplified .tasks_list_task * {
+  filter: none;
+}
+
 .tasks_list_task > div {
   filter: var(--filter-calendar-task);
   padding: var(--padding-calendar-task);
