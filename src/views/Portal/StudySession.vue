@@ -225,7 +225,7 @@
                     ? 'Close'
                     : 'View'
                 } ${task.name}`"
-                v-for="task in upcoming_selected"
+                v-for="task in selected_map"
                 :key="task.ref"
                 @click="
                   if (
