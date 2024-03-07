@@ -513,7 +513,7 @@ export default {
 
       // add the placeholders for the first week
       for (let i = first_day.getDay(); i > 0; i--) {
-        const preflow_day = new Date(get_this_date().setDate(-i));
+        const preflow_day = new Date(get_this_date().setDate(1 - i));
         days.push({
           date: preflow_day,
           tasks: this.get_day_tasks(preflow_day),
