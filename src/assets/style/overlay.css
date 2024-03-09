@@ -33,11 +33,12 @@
   max-width: 450px;
   max-height: 500px;
 }
+
 .overlay_center_view > .router_center_view .center_height_limited {
   max-height: calc(500px - 2 * var(--thickness-overlay-border));
 }
 
-.overlay_center_view > .router_center_view,
+.overlay_center_view .router_center_view,
 .modaltype {
   background-color: var(--color-bg);
   box-shadow: var(--shadow-overlay-highlight);

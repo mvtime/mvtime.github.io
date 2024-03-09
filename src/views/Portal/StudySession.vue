@@ -12,7 +12,13 @@
             <div class="overlay_contents_text">
               Select tasks for completion during this session by
               <span class="desktop_only">click</span>
-              <span class="mobile_only">tapp</span>ing them where they're listed below
+              <span class="mobile_only">tapp</span>ing them where they're listed below, or
+              <span class="desktop_only">click</span> <span class="mobile_only">tap</span> to
+              <span
+                class="click-action button_pointer_text"
+                @click="selected = upcoming.map((task) => task.ref)"
+                >select all</span
+              >
             </div>
             <nav class="filter_bar">
               <button
@@ -267,6 +273,50 @@
               Here's what you've accomplished during this session. You can review the tasks and time
               spent on them below.
             </div>
+            <br />
+            <div class="overlay_contents_text">
+              In <b>{{ msToTime(time.elapsed) }}</b
+              >, you've completed <b>{{ selected.length }}</b> task{{
+                selected.length == 1 ? "s" : ""
+              }}:
+            </div>
+            <div class="tasks_list tasks_list__review">
+              <a
+                class="tasks_list_task"
+                :class="{
+                  unselected:
+                    $route.params.ref && $store.path_to_ref(task.ref) != $route.params.ref,
+                }"
+                v-for="task in selected_map"
+                :key="task.ref"
+                :title="task.name"
+                :href="`/view/${$store.path_to_ref(task.ref)}`"
+                @click="$event.preventDefault()"
+                :style="{
+                  '--color-class': classes[task.class_id].color,
+                  '--color-class-alt': classes[task.class_id].color + '2d',
+                }"
+              >
+                <div class="tasks_list_task__title">
+                  <span class="tasks_list_task__title_text"
+                    >{{ $magic.prefix(task) }} {{ task.name }}</span
+                  >
+                </div>
+                <div class="tasks_list_task__date">
+                  {{
+                    (task.date &&
+                      task.date.toLocaleDateString(undefined, {
+                        month: "numeric",
+                        day: "numeric",
+                      })) ||
+                    "Invalid Date"
+                  }}
+                </div>
+              </a>
+            </div>
+            <div class="overlay_contents_text">
+              Ending this session will mark {{ selected.length == 1 ? "it" : "them" }} as completed
+            </div>
           </div>
           <div class="flex_spacer"></div>
         </div>
@@ -333,7 +383,7 @@
       v-if="page == 'time' && $route.name != 'studysession' && show_view"
     />
     <main
-      class="session_side overlay_contents_inlaid noheader notext -noactions desktop_only"
+      class="session_side overlay_contents_inlaid noheader notext mobile_popup"
       v-if="page == 'time' && $route.name != 'studysession' && show_view"
       style="max-width: 350px"
     >
@@ -362,10 +412,14 @@ export default {
   beforeUnmount() {
     this.$shortcuts.remove_tag("Session");
     window.removeEventListener("keydown", this.keydown);
+    window.removeEventListener("resize", this.resize);
+    this.clear_interval();
   },
   mounted() {
+    this.resize();
     this.$shortcuts.register_all(this.shortcuts, "Session");
     window.addEventListener("keydown", this.keydown);
+    window.addEventListener("resize", this.resize);
 
     this.$smoothReflow({
       el: this.$refs.contents,
@@ -392,6 +446,7 @@ export default {
   },
   data() {
     return {
+      mobile: false,
       loading: false,
       show_view: true,
       audio: {
@@ -402,7 +457,7 @@ export default {
         select: require("@/assets/audio/select.wav"),
         start: require("@/assets/audio/start.wav"),
       },
-      filter_days: 7,
+      filter_days: 1,
       filters: {
         day: {
           name: "Day",
@@ -502,6 +557,9 @@ export default {
         }
       }
     },
+    resize() {
+      this.mobile = window.innerWidth < 670;
+    },
     open_side(name, task) {
       this.$status.log(`ℹ️ Opening sidebar "${name}"`);
       this.$router.push({
@@ -545,6 +603,9 @@ export default {
           }
         }
       } else if (this.page == "review") {
+        // set tasks as complete
+        this.$store.set_finished(true, this.selected);
+
         this.$emit("close");
       }
     },
@@ -567,11 +628,13 @@ export default {
       this.paused = false;
     },
     interval() {
+      this.clear_interval();
       this.timer = setInterval(() => {
         this.time.elapsed = Date.now() - this.time.last_started + this.time.acculmulated;
         if (this.time.elapsed >= this.time.total) {
           this.time.elapsed = this.time.total;
           this.pause();
+          this.clear_interval();
           this.$notify.play(this.audio.marimba);
           this.$notify.add(
             {
@@ -584,7 +647,6 @@ export default {
             },
             this.review
           );
-          this.clear_interval();
         }
         this.time.repeat += 1;
       }, 1000);
@@ -622,6 +684,16 @@ export default {
     task_from(ref) {
       return this.selected_map[ref] || false;
     },
+    update_map(new_selected) {
+      this.selected_map = new_selected.reduce((map, ref) => {
+        map[ref] = this.$store.upcoming_todo.find((task) => task?.ref === ref);
+        return map;
+      }, {});
+      this.update_path();
+      if (!this.selected.length && this.page !== "select") {
+        this.page = "select";
+      }
+    },
   },
   computed: {
     shortcuts() {
@@ -642,10 +714,10 @@ export default {
       );
     },
     upcoming_selected() {
-      return this.$store.upcoming_todo.filter((task) => this.selected.includes(task.ref));
+      return this.$store.upcoming_todo.filter((task) => this.selected.includes(task?.ref));
     },
     upcoming_unselected() {
-      return this.upcoming.filter((task) => !this.selected.includes(task.ref));
+      return this.upcoming.filter((task) => !this.selected.includes(task?.ref));
     },
     classes() {
       // turn classes array into an object with class_id as key
@@ -659,14 +731,7 @@ export default {
   watch: {
     selected: {
       handler(old_selected, new_selected) {
-        this.selected_map = new_selected.reduce((map, ref) => {
-          map[ref] = this.$store.upcoming_todo.find((task) => task.ref === ref);
-          return map;
-        }, {});
-        this.update_path();
-        if (!this.selected.length && this.page !== "select") {
-          this.page = "select";
-        }
+        this.update_map(new_selected);
       },
       deep: true,
     },
@@ -683,6 +748,7 @@ export default {
       this.selected = this.selected.filter((ref) => {
         return this.$store.upcoming_todo.some((task) => task.ref === ref);
       });
+      this.update_map(this.selected);
       this.loading = false;
     },
     page() {
@@ -720,7 +786,23 @@ export default {
   .desktop_only {
     display: none !important;
   }
+  .mobile_popup {
+    background: var(--color-bg);
+    position: fixed;
+    left: 0;
+    top: 0;
+    max-width: unset !important;
+    width: 100% !important;
+    height: 100%;
+    z-index: 2;
+  }
 }
+@media (min-width: 670px) {
+  .mobile_only {
+    display: none !important;
+  }
+}
+
 .session_wrapper {
   align-items: stretch;
   justify-content: stretch;
@@ -804,6 +886,9 @@ export default {
 @media (max-width: 850px) and (min-width: 670px) {
   .session_wrapper:has(.session_side) {
     max-width: calc(100% - var(--thickness-overlay-border) * 2 - 40px);
+  }
+  .session_wrapper:has(.session_side) .bottom_actions:has(.leave_button) .timer_info {
+    display: none;
   }
 }
 
@@ -1013,6 +1098,10 @@ nav.filter_bar + .tasks_list_wrapper > .tasks_list {
 }
 .tasks_list.tasks_list__session:empty::before {
   content: "No active tasks";
+}
+
+.tasks_list.tasks_list__review:empty::before {
+  content: "No tasks to review";
 }
 .tasks_list.drag_to_delete {
   background: none;

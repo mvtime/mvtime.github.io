@@ -589,7 +589,6 @@ export default {
 main.calendar {
   overscroll-behavior-x: none;
 }
-
 @media (min-width: 675px) {
   main.calendar.calendar_fullpage {
     border: none;

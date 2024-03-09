@@ -1,12 +1,16 @@
 <template>
   <div class="class_list">
     <div class="class_list__not_empty" :class="{ filtering: !!filtered_classes.length }">
-      <h5
-        @click="$emit('clear_filters')"
-        :title="filtered_classes.length ? 'Click to clear filters' : ''"
-      >
-        Classes
-      </h5>
+      <div class="class_list_header">
+        <h5>Classes</h5>
+        <button
+          @click="$emit('clear_filters')"
+          v-if="!!filtered_classes.length"
+          title="Clear class section filters"
+        >
+          Clear
+        </button>
+      </div>
       <hr class="class_list_hr" />
       <div class="classes_container" :class="{ filtering: !!filtered_classes.length }">
         <a
@@ -140,6 +144,29 @@ export default {
 </script>
 
 <style scoped>
+/* header */
+.class_list_header {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: stretch;
+  margin: 0;
+  height: 27px;
+  width: 100%;
+  user-select: none;
+  gap: var(--spacing-classes);
+}
+.class_list_header h5 {
+  flex-grow: 1;
+}
+.class_list_header button {
+  background-color: var(--color-on-bg);
+  padding: var(--spacing-classes-alt) calc(var(--spacing-classes-alt) * 2);
+  border-radius: 5px;
+  border: none;
+  height: 100%;
+}
+/* list */
 .class_list {
   margin: auto 0;
   width: 100%;
@@ -163,9 +190,6 @@ h5 {
   text-align: center;
   border-radius: 8px;
   user-select: none;
-}
-.filtering h5:hover {
-  background-color: var(--color-on-bg);
 }
 .class_list_hr {
   margin: 5px 0;
