@@ -71,8 +71,10 @@
         v-for="list in arranged"
         :key="list[0].class_id"
         :style="{
-          '--color-class': sort == 'classes' ? classes[list[0].class_id].color : null,
-          '--color-class-alt': sort == 'classes' ? classes[list[0].class_id].color + '2d' : null,
+          '--color-class':
+            sort == 'classes' ? classes[list[0].class_id].color : 'var(--color-on-calendar)',
+          '--color-class-alt':
+            sort == 'classes' ? classes[list[0].class_id].color + '2d' : 'var(--color-on-bg)',
         }"
       >
         <a
