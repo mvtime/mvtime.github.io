@@ -123,7 +123,11 @@ export default {
         },
         {
           key: "Ctrl + \\",
-          description: "Toggle dark mode",
+          description: "Switch light/dark theme",
+        },
+        {
+          key: "Ctrl + '",
+          description: "Toggle simplified view",
         },
         {
           key: "Ctrl + / or Ctrl + ?",
@@ -220,6 +224,9 @@ export default {
         el = $(".click_ctrlenter");
       } else if (!e.shiftKey && e.key == "\\" && (e.ctrlKey || e.metaKey)) {
         this.$store.toggle_theme();
+        ignore = true;
+      } else if (!e.shiftKey && e.key == "'" && (e.ctrlKey || e.metaKey)) {
+        this.$store.toggle_simplified();
         ignore = true;
       } else if (
         (e.key == "/" && (e.ctrlKey || e.metaKey)) ||
