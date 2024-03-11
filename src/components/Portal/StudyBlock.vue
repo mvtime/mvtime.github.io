@@ -69,7 +69,7 @@
       <div
         class="study_list"
         v-for="list in arranged"
-        :key="list[0].class_id"
+        :key="sort == 'classes' ? list[0].class_id : list[0].date.toISOString().split('T')[0]"
         :style="{
           '--color-class':
             sort == 'classes' ? classes[list[0].class_id].color : 'var(--color-on-calendar)',
