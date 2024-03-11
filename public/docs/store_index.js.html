@@ -350,6 +350,7 @@ export const useMainStore = defineStore({
     done_daily_survey() {
       if (!this.done_tutorial) return true;
       if (!this.active_doc) return false;
+      if (this.active_doc?.prefs?.skip_survey) return "skipped";
       // if (this.is_teacher) return true;
       return this.active_doc?.done_surveys &amp;&amp; this.active_doc.done_surveys?.includes(today);
     },
@@ -695,35 +696,38 @@ export const useMainStore = defineStore({
     async set_finished(finished, ref) {
       try {
         if (!this.active_doc) throw "No active doc";
-        if (!ref) throw "No ref provided";
-        // let path = this.ref_to_path(ref);
-        let path = ref;
+        if (!ref) throw "No reference(s) provided";
+        let paths = Array.isArray(ref) ? ref : [ref];
         let doc = this.active_doc;
         if (!doc.finished) {
           doc.finished = [];
         }
         // if finished, add to finished array, else remove from finished array
         if (finished) {
-          doc.finished.push(path);
+          for (let p of paths) {
+            if (!doc.finished.includes(p)) {
+              doc.finished.push(p);
+            }
+          }
         } else {
-          doc.finished = doc.finished.filter((p) => p != path);
+          doc.finished = doc.finished.filter((p) => !paths.includes(p));
         }
+
         this.set_active(doc);
         await this.update_remote();
 
-        var task = this.tasks.find((e) => e.ref == ref);
         new SuccessToast(
-          `${useMagic().done_prefix(task)} ${
-            finished ? "marked as finished" : "marked as unfinished"
-          }`,
+          (paths.length > 1
+            ? "Tasks"
+            : useMagic().done_prefix(this.tasks.find((e) => e.ref == paths[0]))) +
+            (finished ? " marked as finished" : " marked as unfinished"),
           2000
         );
+
         return Promise.resolve();
       } catch (err) {
         new ErrorToast(
-          `${useMagic().done_prefix(task)} could not be ${
-            finished ? "marked as finished" : "marked as unfinished"
-          }`,
+          `Task(s) could not be ${finished ? "marked as finished" : "marked as unfinished"}`,
           err,
           2000
         );

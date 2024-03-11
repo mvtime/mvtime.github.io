@@ -18,7 +18,6 @@ import { useNotifications } from "@/store/notifications";
 // create instances of app requisites
 const pinia = createPinia();
 const app = createApp(App);
-// setup env vars
 
 // setup app requisites
 app.use(router);

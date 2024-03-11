@@ -348,6 +348,7 @@ export const useMainStore = defineStore({
     done_daily_survey() {
       if (!this.done_tutorial) return true;
       if (!this.active_doc) return false;
+      if (this.active_doc?.prefs?.skip_survey) return "skipped";
       // if (this.is_teacher) return true;
       return this.active_doc?.done_surveys && this.active_doc.done_surveys?.includes(today);
     },

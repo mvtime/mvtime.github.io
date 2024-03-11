@@ -88,7 +88,12 @@ export default {
     if (this.$store.done_daily_survey) {
       window.onbeforeunload = null;
       this.$emit("close");
-      new WarningToast("You already completed the daily survey today!", 2000);
+      new WarningToast(
+        this.$store.done_daily_survey == "skipped"
+          ? "Daily survey was skipped due to a system override"
+          : "You already completed the daily survey today!",
+        2000
+      );
     }
   },
   /** If we find out the user has already completed the survey at any time, close the modal */
@@ -99,7 +104,11 @@ export default {
           window.onbeforeunload = null;
           this.$emit("close");
           if (this.done_tutorial) {
-            new SuccessToast("Thanks for completing the survey!", 2000);
+            if (this.$store.done_daily_survey == "skipped") {
+              new WarningToast("Daily survey was skipped due to a system override", 2000);
+            } else {
+              new SuccessToast("Thanks for completing the survey!", 2000);
+            }
           }
         }
       },
