@@ -1269,6 +1269,24 @@ export const useMainStore = defineStore({
     },
     /**
      * @memberOf .main.actions
+     * @function toggle_simplified
+     * @description Toggle the simplified display view
+     * @see {@link account_doc}
+     */
+    async toggle_simplified() {
+      if (!this.account_doc) return;
+      let simplified = !this.account_doc.prefs?.simplified;
+      this.account_doc.prefs = { ...this.account_doc.prefs, simplified: simplified };
+
+      await this.update_wrapper_acc_doc();
+
+      new SuccessToast(
+        `Switched to ${simplified ? "simplified" : "detailed (classic)"} view`,
+        2000
+      );
+    },
+    /**
+     * @memberOf .main.actions
      * @function remove_class_id_helper
      * @description Helper function to remove a class from the active user's document and save changes to remote
      * @see {@link remove_class}
