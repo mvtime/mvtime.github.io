@@ -19,6 +19,18 @@
         <nav class="portal_main_block_actions portal_main_block_actions_freeform">
           <button
             class="portal_main_block_action portal_main_block_action_freeform portal_main_block_action__text"
+            @click="sort = group[0]"
+            :title="`${group[2]} (${group[3]})`"
+            v-for="group in sorts"
+            :key="group[0]"
+            :class="{ active: sort == group[0] }"
+          >
+            {{ group[1] }}
+          </button>
+        </nav>
+        <nav class="portal_main_block_actions portal_main_block_actions_freeform">
+          <button
+            class="portal_main_block_action portal_main_block_action_freeform portal_main_block_action__text"
             @click="days = length[0]"
             :title="`${length[2]} (${length[3]})`"
             v-for="length in lengths"
@@ -49,8 +61,8 @@
       </div>
     </div>
     <transition-group
-      name="study-group"
       class="study_list_group"
+      name="study-group"
       tag="div"
       :class="{ filtered: filtered_classes.length }"
     >
@@ -59,16 +71,20 @@
         v-for="list in arranged"
         :key="list[0].class_id"
         :style="{
-          '--color-class': classes[list[0].class_id].color,
-          '--color-class-alt': classes[list[0].class_id].color + '2d',
+          '--color-class': sort == 'classes' ? classes[list[0].class_id].color : null,
+          '--color-class-alt': sort == 'classes' ? classes[list[0].class_id].color + '2d' : null,
         }"
       >
         <a
-          class="study_list__name"
-          :href="'/view/' + $store.path_to_ref(classes[list[0].class_id].ref)"
+          class="study_list__name study_list__name__classes"
+          v-if="sort == 'classes'"
+          :href="`/view/${$store.path_to_ref(classes[list[0].class_id].ref)}`"
         >
           {{ list[0].class_name }}</a
         >
+        <div class="study_list__name study_list__name__days" v-else>
+          {{ list[0].date.toLocaleDateString(undefined, { month: "long", day: "numeric" }) }}
+        </div>
         <hr class="study_list__separator" />
         <transition-group class="study_list_tasks" name="study-list" tag="div">
           <div
@@ -76,6 +92,10 @@
             v-for="task in list"
             :key="task.ref"
             :finished="is_finished(task.ref)"
+            :style="{
+              '--color-class': classes[task.class_id].color,
+              '--color-class-alt': classes[task.class_id].color + '2d',
+            }"
           >
             <label
               :for="task.ref"
@@ -126,6 +146,11 @@ export default {
   emits: ["taskclick", "mounted"],
   data() {
     return {
+      sort: "classes",
+      sorts: [
+        ["classes", "Class", "Group tasks by course section", "g"],
+        ["dates", "Date", "Group tasks by end date", "t"],
+      ],
       tasks: [],
       is_ready: false,
       days: 7,
@@ -224,18 +249,30 @@ export default {
       let tasks = this.filtered_tasks;
       let arranged = {};
       for (let task of tasks) {
-        if (!arranged[task.class_id]) arranged[task.class_id] = [];
-        arranged[task.class_id].push(task);
+        if (this.sort == "classes") {
+          if (!arranged[task.class_id]) arranged[task.class_id] = [];
+          arranged[task.class_id].push(task);
+        } else {
+          let date = task.date.toISOString().split("T")[0];
+          if (!arranged[date]) arranged[date] = [];
+          arranged[date].push(task);
+        }
       }
       // create an array of arrays, order by the period value of each class
       let arranged_array = [];
-      for (let class_id in arranged) {
-        arranged_array.push(arranged[class_id]);
+      for (let sort in arranged) {
+        arranged_array.push(arranged[sort]);
       }
       arranged_array.sort((a, b) => {
-        let a_class = this.classes[a[0].class_id];
-        let b_class = this.classes[b[0].class_id];
-        return a_class.period - b_class.period;
+        if (this.sort == "classes") {
+          let a_class = this.classes[a[0].class_id];
+          let b_class = this.classes[b[0].class_id];
+          return a_class.period - b_class.period;
+        } else {
+          if (a[0].date < b[0].date) return -1;
+          if (a[0].date > b[0].date) return 1;
+          return 0;
+        }
       });
       return arranged_array;
     },
