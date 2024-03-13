@@ -691,12 +691,13 @@ export default {
   background: transparent;
   border: solid var(--color-calendar-header) 2px;
 }
-@media (max-width: 1285px) and (min-width: /* [desktop size] */ 1270px) {
+@media (max-width: 1285px) and (min-width: /* [desktop size] */ 1270px),
+  (min-width: 630px) and (max-width: 805px) {
   .may_break_text {
     display: none;
   }
 }
-@media (min-width: 675px) {
+@media (min-width: 695px) {
   main.study.study_fullpage {
     border: none;
     box-shadow: none;

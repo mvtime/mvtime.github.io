@@ -133,9 +133,14 @@ main.portal_main_block {
   border: none;
   padding: 0;
 }
+.portal_main_block_actions_freeform {
+  justify-content: stretch;
+}
 .portal_main_block_action.portal_main_block_action_freeform {
   width: unset;
   padding: 0 calc(var(--padding-calendar) / 2);
+  flex-grow: 1;
+  text-align: center;
 }
 .portal_main_block_action.portal_main_block_action_alt {
   border-radius: calc(var(--radius-calendar) / 2);
