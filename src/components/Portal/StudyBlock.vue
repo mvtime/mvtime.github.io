@@ -61,20 +61,91 @@
       </div>
     </div>
     <transition-group
-      class="study_list_group"
+      v-if="sort == 'classes'"
+      class="study_list_group study_list_group__classes"
       name="study-group"
       tag="div"
       :class="{ filtered: filtered_classes.length }"
     >
       <div
         class="study_list"
-        v-for="list in arranged"
+        v-for="list in arranged_classes"
         :key="sort == 'classes' ? list[0].class_id : list[0].date.toISOString().split('T')[0]"
         :style="{
           '--color-class':
             sort == 'classes' ? classes[list[0].class_id].color : 'var(--color-on-calendar)',
           '--color-class-alt':
             sort == 'classes' ? classes[list[0].class_id].color + '2d' : 'var(--color-on-bg)',
+        }"
+      >
+        <a
+          class="study_list__name study_list__name__classes"
+          v-if="sort == 'classes'"
+          :href="`/view/${$store.path_to_ref(classes[list[0].class_id].ref)}`"
+        >
+          {{ list[0].class_name }}</a
+        >
+        <div class="study_list__name study_list__name__days" v-else>
+          {{ list[0].date.toLocaleDateString(undefined, { month: "long", day: "numeric" }) }}
+        </div>
+        <hr class="study_list__separator" />
+        <transition-group class="study_list_tasks" name="study-list" tag="div">
+          <div
+            class="study_list_task"
+            v-for="task in list"
+            :key="task.ref"
+            :finished="is_finished(task.ref)"
+            :style="{
+              '--color-class': classes[task.class_id].color,
+              '--color-class-alt': classes[task.class_id].color + '2d',
+            }"
+          >
+            <label
+              :for="task.ref"
+              class="study_list_task_checkbox"
+              :title="'Mark task as ' + (is_finished(task.ref) ? 'unfinished' : 'finished')"
+              @click="toggle_finished(task.ref)"
+            >
+              <div class="study_list_task_checkbox__fixed">
+                <span class="study_list_task_checkbox__dot"></span>
+              </div>
+            </label>
+            <a
+              class="study_list_task__name study_list_task__boxed"
+              :for="task.ref"
+              @click="
+                $emit('taskclick', task);
+                $event.preventDefault();
+              "
+              :href="'/view/' + $store.path_to_ref(task.ref)"
+            >
+              <span class="study_list_task__name__text"
+                >{{ $magic.prefix(task) }} {{ task.name }}</span
+              >
+            </a>
+            <span class="study_list_task__date study_list_task__boxed">{{
+              (task.date &&
+                task.date.toLocaleDateString(undefined, { month: "numeric", day: "numeric" })) ||
+              "Invalid Date"
+            }}</span>
+          </div>
+        </transition-group>
+      </div>
+    </transition-group>
+    <transition-group
+      v-else
+      class="study_list_group study_list_group__dates"
+      name="study-group"
+      tag="div"
+      :class="{ filtered: filtered_classes.length }"
+    >
+      <div
+        class="study_list"
+        v-for="list in arranged_dates"
+        :key="list[0].date.toISOString().split('T')[0]"
+        :style="{
+          '--color-class': 'var(--color-on-calendar)',
+          '--color-class-alt': 'var(--color-on-bg)',
         }"
       >
         <a
@@ -246,12 +317,20 @@ export default {
       });
       return filtered;
     },
-    arranged() {
+    arranged_classes() {
+      return this.arranged("classes");
+    },
+    arranged_dates() {
+      return this.arranged("dates");
+    },
+  },
+  methods: {
+    arranged(sort) {
       // sort tasks into an array of arrays, where each array is a class and its tasks are sorted by date
       let tasks = this.filtered_tasks;
       let arranged = {};
       for (let task of tasks) {
-        if (this.sort == "classes") {
+        if (sort == "classes") {
           if (!arranged[task.class_id]) arranged[task.class_id] = [];
           arranged[task.class_id].push(task);
         } else {
@@ -266,7 +345,7 @@ export default {
         arranged_array.push(arranged[sort]);
       }
       arranged_array.sort((a, b) => {
-        if (this.sort == "classes") {
+        if (sort == "classes") {
           let a_class = this.classes[a[0].class_id];
           let b_class = this.classes[b[0].class_id];
           return a_class.period - b_class.period;
@@ -278,8 +357,6 @@ export default {
       });
       return arranged_array;
     },
-  },
-  methods: {
     toggle_fullscreen() {
       // toggle fullpage mode (route.query.calendar)
       const new_fullpage = !this.fullpage;
@@ -389,6 +466,7 @@ export default {
   animation: scale-out 0.15s ease-in;
   /* transform-origin: left center; */
 }
+
 .parent.simplified .study_list_group * {
   transition: none !important;
   animation: none !important;
