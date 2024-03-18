@@ -38,6 +38,7 @@
     - track by hash for updated versions, perhaps preference for specificity
   - ~~ability to mark tasks as done~~
   - ~~notes on tasks~~
+  - ~~sort as classes/dates in study view~~
 - Admin / Contact
   - Add/implement analytics
   - Send messages from w/i the app using mail system
@@ -82,6 +83,9 @@
 - Classes
   - **add from pre-set list**
     - setup from json / claim pre-set class feature (cloud?)
+  - view students in class for teacher
+    - backend listener to use & keep updated class documents with students array?
+  - more unique/protected join codes, invite/accepted-only?
   - display join code to class
   - ~~class view page~~
   - ~~make classes editable~~
