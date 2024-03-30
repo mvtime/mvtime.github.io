@@ -138,11 +138,27 @@ export default {
 
 <style scoped>
 .class_bar {
-  display: flex;
+  display: none;
+}
+@media (min-width: 675px) {
+  :has(main.calendar) > .class_bar {
+    display: flex;
+  }
+}
+@media (min-width: 695px) {
+  .class_bar {
+    display: flex;
+  }
+}
+.class_bar {
   flex-flow: row nowrap;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  overflow-x: auto;
+}
+.class_bar::-webkit-scrollbar {
+  display: none;
 }
 .class_bar_item {
   border-radius: calc(var(--radius-bottom-bar) - 10px);
@@ -150,6 +166,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex: 0 0 auto;
 }
 .class_bar_item__button {
   padding: 0 10px;

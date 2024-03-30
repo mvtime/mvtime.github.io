@@ -57,7 +57,7 @@
         <!-- bottom draggable for fullscreen -->
         <ClassBar
           class="portal_bottom_bar class_add_bar"
-          v-if="fullpage && $store.is_teacher && $route.name != 'study'"
+          v-if="loaded && fullpage"
           @dragclass="drag_class($event)"
           @toggle_filtered_class="toggle_filtered_class"
           @clear_filters="filtered_classes = []"
