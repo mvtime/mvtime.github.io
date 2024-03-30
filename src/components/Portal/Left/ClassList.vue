@@ -68,11 +68,7 @@
             ></div>
             <div v-else class="class_swatch__icon class_swatch_edit__icon"></div>
           </div>
-
-          <span v-if="class_obj.period" class="class_name"
-            >P{{ class_obj.period }} - {{ class_obj.name }}</span
-          >
-          <span v-else class="class_name">{{ class_obj.name }}</span>
+          <span class="class_name">{{ $store.class_text(class_obj) }}</span>
         </a>
         <div
           v-if="!$store.is_teacher || true"

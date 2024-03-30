@@ -215,6 +215,7 @@ export default {
   props: {
     filtered_classes: { Array, default: () => [] },
     dragging_class: { Object, default: () => null },
+    fullpage: { Boolean, default: false },
   },
   emits: ["taskclick", "mounted"],
   data() {
@@ -489,9 +490,6 @@ export default {
     },
   },
   computed: {
-    fullpage() {
-      return JSON.parse(this.$route.query.calendar || "false");
-    },
     tasks_loaded_month() {
       return this.tasks.some((task) => {
         const task_date = compatDateObj(task.date);
@@ -607,7 +605,9 @@ main.calendar {
   .fullpage_toggle_button {
     display: flex;
   }
-
+  .portal_bottom_bar + main.calendar.calendar_fullpage {
+    padding-bottom: calc(var(--height-bottom-bar) + var(--padding-calendar));
+  }
   main.calendar.calendar_fullpage .calendar_days_container {
     height: 100%;
     width: 100%;

@@ -215,6 +215,7 @@ export default {
   },
   props: {
     filtered_classes: { Array, default: () => [] },
+    fullpage: { Boolean, default: false },
   },
   emits: ["taskclick", "mounted"],
   data() {
@@ -247,9 +248,6 @@ export default {
     this.$shortcuts.remove_tag("Study Portal");
   },
   computed: {
-    fullpage() {
-      return JSON.parse(this.$route.query.calendar || "false");
-    },
     shortcuts() {
       return [
         {

@@ -7,8 +7,8 @@
       @toggle_filtered_class="toggle_filtered_class"
       @clear_filters="filtered_classes = []"
       @set_filtered_classes="filtered_classes = $event || []"
-      @close_right_bar="close_right_bar"
       :filtered_classes="filtered_classes"
+      @close_right_bar="close_right_bar"
       @dragclass="
         close_left_bar();
         drag_class($event);
@@ -54,12 +54,24 @@
             {{ name }}!
           </div>
         </header>
-        <!-- calendar -->
-        <!-- on mounted, if this.loaded, run run_get_tasks -->
+        <!-- bottom draggable for fullscreen -->
+        <ClassBar
+          class="portal_bottom_bar class_add_bar"
+          v-if="fullpage && $store.is_teacher && $route.name != 'study'"
+          @dragclass="drag_class($event)"
+          @toggle_filtered_class="toggle_filtered_class"
+          @clear_filters="filtered_classes = []"
+          @set_filtered_classes="filtered_classes = $event || []"
+          :filtered_classes="filtered_classes"
+          @drag="$refs.calendar.check_leave($event)"
+          @dragend="$refs.calendar.drop_class($event)"
+        />
 
+        <!-- block contents -->
         <StudyBlock
           v-if="is_study"
           :filtered_classes="filtered_classes"
+          :fullpage="fullpage"
           @taskclick="show_task($event)"
           ref="study"
           @mounted="
@@ -71,6 +83,7 @@
         <CalendarBlock
           v-else
           :filtered_classes="filtered_classes"
+          :fullpage="fullpage"
           @taskclick="show_task($event)"
           ref="calendar"
           :dragging_class="dragging_class"
@@ -166,6 +179,7 @@ import LeftBar from "@/components/Portal/LeftBar.vue";
 import RightBar from "@/components/Portal/RightBar.vue";
 import StudyBlock from "@/components/Portal/StudyBlock.vue";
 import CalendarBlock from "@/components/Portal/CalendarBlock.vue";
+import ClassBar from "@/components/Portal/ClassBar.vue";
 import OverlayWrapper from "@/components/Modal/OverlayWrapper.vue";
 import { WarningToast } from "@svonk/util";
 import "@/assets/style/overlay.css";
@@ -174,6 +188,7 @@ export default {
   components: {
     LeftBar,
     RightBar,
+    ClassBar,
     StudyBlock,
     CalendarBlock,
     OverlayWrapper,
@@ -191,6 +206,10 @@ export default {
     };
   },
   computed: {
+    /** Whether the page is in fullpage mode */
+    fullpage() {
+      return JSON.parse(this.$route.query.calendar || "false");
+    },
     /** The width of the page */
     width() {
       return window.innerWidth;
@@ -248,7 +267,7 @@ export default {
         query: this.$route.query,
       });
     },
-    /** Toggle on or off a class in the filtered ClassList from showing in the Block */
+    /** Toggle on or off a class in the filtered ClassList/ClassBar from showing in the Block */
     toggle_filtered_class(c) {
       if (this.filtered_classes.includes(c)) {
         this.filtered_classes = this.filtered_classes.filter((id) => id !== c);
@@ -356,6 +375,20 @@ main.portal .portal_sidebar {
   position: relative;
   box-sizing: border-box;
   padding: 0;
+}
+
+main.portal .portal_bottom_bar {
+  position: fixed;
+  z-index: 5;
+  bottom: calc(var(--padding-calendar) / 2);
+  left: 50%;
+  max-width: calc(100% - 20px);
+  transform: translateX(-50%);
+  height: var(--height-bottom-bar);
+  background-color: var(--color-bg);
+  border: 3px solid var(--color-on-bg);
+  border-radius: var(--radius-bottom-bar);
+  padding: var(--padding-bottom-bar);
 }
 
 main.portal .portal_sidebar {

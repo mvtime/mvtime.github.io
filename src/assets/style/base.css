@@ -18,6 +18,10 @@ body,
   --radius-calendar: 15px;
   --padding-portal: 60px;
   --padding-portal-mobile: 20px 30px;
+  /* portal bottom bar */
+  --height-bottom-bar: calc(48px + 2 * 3px);
+  --padding-bottom-bar: 7px;
+  --radius-bottom-bar: 15px;
   /* sidebar */
   --radius-sidebar: 20px;
   --padding-sidebar: 20px;
