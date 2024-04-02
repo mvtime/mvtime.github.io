@@ -191,7 +191,7 @@ export default {
   filter: var(--filter-calendar-task);
   color: var(--color-class);
   background: var(--color-class-alt);
-  border: solid 2px #00000000;
+  border: solid 2px var(--color-class);
 }
 .parent.simplified .class_bar_class {
   color: var(--color-on-calendar-task);
@@ -201,10 +201,6 @@ export default {
 .class_bar.filtering .class_bar_class.filter_active {
   background: var(--color-class);
   color: var(--color-on-calendar-task);
-}
-.class_bar.filtering .class_bar_class:not(.filter_active) {
-  background: none;
-  border-color: var(--color-class);
 }
 .parent.simplified .class_bar.filtering .class_bar_class:not(.filter_active) {
   background: var(--color-class-alt);
