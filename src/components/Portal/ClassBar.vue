@@ -202,6 +202,9 @@ export default {
   background: var(--color-class);
   color: var(--color-on-calendar-task);
 }
+.class_bar.filtering .class_bar_class:not(.filter_active) {
+  background: none;
+}
 .parent.simplified .class_bar.filtering .class_bar_class:not(.filter_active) {
   background: var(--color-class-alt);
 }
