@@ -20,27 +20,40 @@
   - sync from that huge json file
 - **Tutorial Videos**
 - **Daily emails / EoD updates**
+  - reminders the day before tests/exams
   - ~~better email prefs~~
-- **~~AI/ML/Just "seems like magic" features, can be hardcoded~~**
+- **AI/ML/Just "seems like magic" features, can be hardcoded**
+  - automatic session plans & time management alerts
   - ~~through API~~
   - ~~things like automatic link names, task typing~~
 
 ## Working on Now / Planned Soon (Sander)
 
+- Classes
+  - **add from pre-set list**
+    - setup from json / claim pre-set class feature (cloud?)
+  - view students in class for teacher/current students
+    - backend listener to use & keep updated class documents with students array?
+  - more unique/protected join codes, invite/accepted-only?
+  - display join code to class
+  - ~~class view page~~
+  - ~~make classes editable~~
+  - ~~join from code~~
 - Task Creation
   - ~~better keyboard shortcuts (+ and t,p,e,q=quiz, etc)~~
   - ~~shortcuts on `position:fixed` layouts, fullscreen~~
     - ~~migrate to new system that puts it outside of the sidebar element~~
   - class selection popup on creation hotkey
 - Studying
-  - system for studying/working on tasks
+  - save sessions and review them later
+  - ~~system for studying/working on tasks~~
   - ~~track task completion based on id~~
     - track by hash for updated versions, perhaps preference for specificity
   - ~~ability to mark tasks as done~~
   - ~~notes on tasks~~
   - ~~sort as classes/dates in study view~~
 - Admin / Contact
-  - Add/implement analytics
+  - **Add/implement analytics**
   - Send messages from w/i the app using mail system
     - user will receive a copy
   - District portal
@@ -54,9 +67,10 @@
   - way for students to access teacher features for their peers / as a proxy for the teacher
   - student self "classes" for things specific to them to keep track of, all in one place
 - Tasks
+
   - AI/ML/Maybe just hardcoded features
-    - **auto-suggested link names based on domain**
-    - auto-suggested task types based on title
+    - ~~**auto-suggested link names based on domain**~~
+    - ~~auto-suggested task types based on title~~
     - automatic / algorithm-driven study suggestions?
   - Links
     - allow / encourage links to other classes / through selector
@@ -69,27 +83,20 @@
   - ~~store proxy in class doc - load from there for efficiency / read & write count~~
   - ~~disallow finish when link still in-progress~~
   - ~~drag tasks on calendar to change date~~
+
 - Surveys
+
   - Create survey / check-in modal
-    - add graphics / illustrations (on weekly at least)
     - time-based variations
       - on mondays, more in-depth, before first use
+    - ~~add graphics / illustrations (on weekly at least)~~
       - ~~during the week, short non-intrusive~~
   - ~~make a way for users to see their own responses over time~~
     - include major assignments in this timeline
   - weekly / major surveys
   - ~~show upcoming tasks at end of daily surveys~~
   - ~~daily surveys~~
-- Classes
-  - **add from pre-set list**
-    - setup from json / claim pre-set class feature (cloud?)
-  - view students in class for teacher
-    - backend listener to use & keep updated class documents with students array?
-  - more unique/protected join codes, invite/accepted-only?
-  - display join code to class
-  - ~~class view page~~
-  - ~~make classes editable~~
-  - ~~join from code~~
+
 - Onboarding
 
   - **setup from pre-defined classes**, add your own
@@ -108,8 +115,8 @@
   - ~~join modal~~
 
 - Emails
-  - exclude tasks marked as finished from weekly summary emails
   - setup cloud functions to send **daily**(?) emails
+  - ~~exclude tasks marked as finished from weekly summary emails~~
   - ~~setup cloud functions to send task change/create/archive emails~~
   - ~~setup cloud functions to send weekly emails~~
   - ~~link personal account email~~
