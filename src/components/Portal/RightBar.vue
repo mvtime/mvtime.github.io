@@ -91,6 +91,7 @@ export default {
 }
 /* display image at 24x24px size */
 .linked_acc_icon {
+  filter: var(--filter-icon);
   flex: 0 0 30px;
   height: 30px;
   width: 30px;

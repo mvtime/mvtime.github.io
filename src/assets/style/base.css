@@ -424,3 +424,13 @@ img.loading_icon {
   scale: unset !important;
   transform: unset !important;
 }
+
+#root:has(.parent.simplified) ~ .toast.default {
+  --toast-bg: var(--color-bg);
+  --toast-bg-transparent: var(--color-bg-alt);
+  --toast-text: var(--color-text);
+  box-shadow: var(--shadow-overlay-highlight);
+  --toast-secondary: var(--color-secondary);
+  border: solid var(--thickness-overlay-border) var(--color-overlay-border);
+  border-radius: var(--radius-overlay);
+}
