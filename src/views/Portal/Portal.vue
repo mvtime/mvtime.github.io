@@ -112,7 +112,7 @@
       v-if="$shortcuts.is_active('addTaskDown') || $shortcuts.is_active('addTaskToast')"
       :class="{ out: $shortcuts.is_active('addTaskToast') && !$shortcuts.is_active('addTaskDown') }"
     >
-      <img alt="icon" src="@/assets/img/general/toast-keyboard.svg" class="toast-icon" />
+      <img alt="icon" src="@/assets/img/general/toast/keyboard.svg" class="toast-icon" />
       <div>
         Waiting for rest of shortcut (&VeryThinSpace;<span
           v-for="type of $magic.types"

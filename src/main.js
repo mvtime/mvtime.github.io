@@ -3,7 +3,7 @@ import { createPinia } from "pinia";
 import App from "@/App.vue";
 import router from "@/router";
 import VueApexCharts from "vue3-apexcharts";
-import { placeholderToast /*Popup*/ } from "@svonk/util";
+import { placeholderToast } from "@svonk/util";
 import { _status } from "@/common";
 
 import { Toast } from "@svonk/util";
@@ -71,6 +71,34 @@ window.addEventListener("storage", (e) => {
     _status.log("🏫 Detected teacher mode change, reloading");
     window.location.reload();
   }
+});
+// setup connectin listeners
+_status.log("🛜 Started " + (window?.navigator?.onLine ? "online" : "offline"));
+if (!window?.navigator?.onLine) {
+  new Toast(
+    "Features may not work as intended offline",
+    "default",
+    7500,
+    require("@/assets/img/general/toast/connection-warn.svg")
+  );
+}
+window.addEventListener("offline", () => {
+  new Toast(
+    "Connection lost",
+    "default",
+    3500,
+    require("@/assets/img/general/toast/connection-error.svg")
+  );
+  _status.warn("🛜 Connection lost");
+});
+window.addEventListener("online", () => {
+  new Toast(
+    "You're back online!",
+    "default",
+    3500,
+    require("@/assets/img/general/toast/connection-success.svg")
+  );
+  _status.log("🛜 Connection restored");
 });
 
 // styles
