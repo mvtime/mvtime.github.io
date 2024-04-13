@@ -78,7 +78,7 @@ if (!window?.navigator?.onLine) {
   new Toast(
     "Features may not work as intended offline",
     "default",
-    7500,
+    1e4,
     require("@/assets/img/general/toast/connection-warn.svg")
   );
 }
