@@ -1,6 +1,7 @@
 <template>
   <header>
     <h1 class="gohome hideoverflow">{{ $env.VUE_APP_BRAND_LONG_NAME }}</h1>
+
     <!-- Theme Button -->
     <button
       :_theme="$store.get_theme"
@@ -23,6 +24,7 @@
         v-if="mobile"
         @click="mobile_menu_open = !mobile_menu_open"
       ></button>
+      <hr />
       <nav class="base-pages-nav">
         <router-link class="click-action-inline" to="/" @click="closeMenu">Home</router-link>
         <router-link class="click-action-inline" to="/about" @click="closeMenu">About</router-link>
@@ -129,8 +131,19 @@ header nav a {
   background-image: url(@/assets/img/general/menu/menu-close-icon.svg);
   margin-left: auto;
 }
+hr {
+  display: none;
+}
 /* mobile */
 @media (max-width: 800px) {
+  hr {
+    /* display: unset; */
+    margin: 0;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    height: 2px;
+    background: var(--color-button-display);
+  }
   header .nav-actions,
   header .nav-actions nav {
     display: flex;
@@ -146,9 +159,22 @@ header nav a {
     border-radius: 10px;
     padding: 10px;
     z-index: 1;
-    box-shadow: var(--shadow-highlight), 0px 0px 3px #fff;
     width: 200px;
-    height: 300px;
+    max-height: 300px;
+    overflow-y: auto;
+    border: solid 2px var(--color-button-display);
+  }
+  header .nav-actions::-webkit-scrollbar {
+    width: 18px;
+    border-radius: 10px;
+    margin: 10px 0;
+  }
+  header .nav-actions::-webkit-scrollbar-thumb {
+    background: var(--color-on-bg);
+    border-radius: 18px;
+    border: solid 6px var(--color-secondary);
+  }
+  header .nav-actions:hover::-webkit-scrollbar-thumb {
   }
   header {
     flex-flow: row nowrap;

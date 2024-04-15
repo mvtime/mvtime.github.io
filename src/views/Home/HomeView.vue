@@ -110,6 +110,7 @@ export default {
 
 .home_to_roadmap {
   color: var(--color-theme);
+  user-select: unset;
 }
 .home_art {
   /* layout */

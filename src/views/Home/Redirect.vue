@@ -19,7 +19,7 @@
  */
 
 import Modal from "@/components/Modal/Modal.vue";
-import { WarningToast, SuccessToast } from "@svonk/util";
+import { WarningToast } from "@svonk/util";
 export default {
   name: "RedirectView",
   components: {
@@ -40,16 +40,29 @@ export default {
     }
     try {
       const url = new URL(this.path);
+      // check against brand domain
       if (
         this.$env.VUE_APP_BRAND_DOMAIN == url.host ||
         url.host.endsWith("." + this.$env.VUE_APP_BRAND_DOMAIN)
       ) {
-        new SuccessToast(`Redirecting to ${this.$env.VUE_APP_BRAND_SHORT_NAME}`);
+        this.$status.log(`🔗 Redirecting to ${this.$env.VUE_APP_BRAND_SHORT_NAME}`);
+        this.open();
+        return;
+      }
+      // check against allowed domains (may have * for wildcards) in this.$env.VUE_APP_BRAND_ALLOWED_HOSTS
+      const allowed_pattern = (this.$env.VUE_APP_BRAND_ALLOWED_HOSTS || "")
+        .split(",")
+        .some((host) => {
+          return host.includes("*") ? url.host.endsWith(host.replace("*", "")) : url.host == host;
+        });
+      if (allowed_pattern) {
+        this.$status.log(`🔗 Redirecting to permitted pattern ${allowed_pattern} automatically`);
+
         this.open();
       }
     } catch {
       this.$status.log(
-        `Couldn not verify path domain is not ${this.$env.VUE_APP_BRAND_SHORT_NAME}`
+        `Couldn't not verify path domain is not ${this.$env.VUE_APP_BRAND_SHORT_NAME}`
       );
     }
   },

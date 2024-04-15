@@ -6,6 +6,10 @@
 
 /* eslint-disable */
 
+//TODO: Save messages to cloud in case of failure
+/** Save log messages for future debug */
+const log = [];
+
 /** Imperfect helper for _status.log() */
 function getFirstNonStandardCharacter(str) {
   try {
@@ -25,6 +29,7 @@ function getFirstNonStandardCharacter(str) {
  * @example _log("Hello world!");
  * */
 function _log() {
+  log.push({ time: Date.now() || "log", message: arguments[0], type: this });
   if (arguments.length == 0) return;
   // check for very large messages and warn them in the console with the first 100 characters (make sure this catches the message, even if it's not the first argument, or in a object format)
   let args = Array.from(arguments);
@@ -74,7 +79,9 @@ const _status = {
   debug: _log.bind("debug"),
   warn: _log.bind("warn"),
   error: _log.bind("error"),
-
+  _stream: (types = []) => {
+    return types.length > 0 ? log.filter((entry) => types.includes(entry.type)) : log;
+  },
   _getTone: () => {
     return tone;
   },
@@ -93,7 +100,7 @@ const _status = {
 const _statuslog = _log.bind("info");
 try {
   window._status = _status;
-  _status.log("🔧 Initialized logger");
+  _status.log("📜 Initialized logger");
 } catch (err) {
   _status.log("⚠ Couldn't set window._status", err);
 }
