@@ -82,7 +82,7 @@ const _status = {
   warn: _log.bind("warn"),
   error: _log.bind("error"),
   _stream: (types = []) => {
-    return types.length > 0 ? log.filter((entry) => types.includes(entry.type)) : log;
+    return types &amp;&amp; types.length > 0 ? log.filter((entry) => types.includes(entry.type)) : log;
   },
   _getTone: () => {
     return tone;
