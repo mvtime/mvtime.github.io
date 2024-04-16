@@ -8,7 +8,23 @@
 
 //TODO: Save messages to cloud in case of failure
 /** Save log messages for future debug */
-const log = [];
+let log = [],
+  log_time = new Date();
+
+/** Save log to file */
+function save(content, download = "log.txt") {
+  let a = window.document.createElement("a");
+  a.href = window.URL.createObjectURL(new Blob([content], { type: "text/plain" }));
+  a.download = download;
+  a.click();
+}
+function format_stream(stream) {
+  return stream.length
+    ? stream
+        .map((line) => `${line.time} [${line.type}]: ${JSON.stringify(line.message)}`)
+        .join("\n\n")
+    : `No log entries found; last cleared ${log_time.toISOString()}`;
+}
 
 /** Imperfect helper for _status.log() */
 function getFirstNonStandardCharacter(str) {
@@ -79,8 +95,34 @@ const _status = {
   debug: _log.bind("debug"),
   warn: _log.bind("warn"),
   error: _log.bind("error"),
-  _stream: (types = []) => {
+  clearStream: () => {
+    log = [];
+    console.clear();
+    log_time = new Date();
+  },
+  getStream: (types = []) => {
     return types && types.length > 0 ? log.filter((entry) => types.includes(entry.type)) : log;
+  },
+  textStream() {
+    return format_stream(_status.getStream(...arguments));
+  },
+  saveStream: () => {
+    let date = new Date(),
+      formatted = _status.textStream(...arguments);
+    date.setSeconds(0, 0);
+    try {
+      save(
+        formatted,
+        `${process.env.VUE_APP_BRAND_SHORT_NAME}-log ${date
+          .toISOString()
+          .split(":00.0")[0]
+          .replace("T", " ")
+          .replace(":", "h")}m.log`
+      );
+      _status.log("📜 Saved log stream to disk");
+    } catch (err) {
+      _status.error("📜 Couldn't save log stream", err);
+    }
   },
   _getTone: () => {
     return tone;
