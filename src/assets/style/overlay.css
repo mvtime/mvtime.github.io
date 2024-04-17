@@ -556,19 +556,19 @@ textarea::-webkit-scrollbar-corner {
   flex: 0 0 var(--thickness-overlay-border);
   min-height: unset;
 }
-/* simplified modal actions */
-.parent.simplified div.bottom_actions .flex_spacer ~ button {
+/* simplified modal actions - merged to main; prefix with .parent.siimplified otherwise */
+div.bottom_actions .flex_spacer ~ button {
   border-radius: 0px;
   margin-left: 2px;
 }
-.parent.simplified div.bottom_actions:has(:nth-child(4)) .flex_spacer ~ button {
+div.bottom_actions:has(:nth-child(4)) .flex_spacer ~ button {
   padding: 0 calc(var(--padding-overlay-action) / 1.15);
 }
-.parent.simplified div.bottom_actions .flex_spacer + button {
+div.bottom_actions .flex_spacer + button {
   border-top-left-radius: 10px;
   border-bottom-left-radius: 10px;
 }
-.parent.simplified div.bottom_actions .flex_spacer ~ button:last-child {
+div.bottom_actions .flex_spacer ~ button:last-child {
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
 }
