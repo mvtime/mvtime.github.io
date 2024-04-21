@@ -45,7 +45,14 @@
             {{ loading ? "Loading..." : "No classes found" }}
           </option>
           <option v-else value="" disabled hidden selected>
-            {{ teacher_email && classes && classes.length ? "Select a Class" : "" }}
+            {{
+              teacher_email &&
+              classes &&
+              classes.length &&
+              teacher_email.endsWith($env.VUE_APP_ORG_DOMAIN)
+                ? "Select a Class"
+                : ""
+            }}
           </option>
         </select>
       </div>
