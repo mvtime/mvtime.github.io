@@ -70,7 +70,7 @@
                     "
                   ></ExamCard>
                 </div>
-                <span v-else>No Upcoming Tasks</span>
+                <span v-else>No upcoming tasks</span>
               </div>
             </span>
           </div>

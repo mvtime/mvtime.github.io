@@ -27,7 +27,7 @@
       <img v-else class="loading_tasks loading_icon" alt="Loading..." />
     </div>
     <div v-else class="upcoming_tasks__empty">
-      <h5>No Upcoming Tasks!</h5>
+      <h5>No upcoming tasks!</h5>
     </div>
   </div>
 </template>
