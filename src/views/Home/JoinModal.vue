@@ -17,12 +17,16 @@
             placeholder="Your Name"
           />
           <select class="styled_input styled_obj" v-model="form.grade">
-            <option class="placeholder_text" value="" hidden disabled selected>Grade Level</option>
-            <option value="9">9th</option>
-            <option value="10">10th</option>
-            <option value="11">11th</option>
-            <option value="12">12th</option>
-            <option value="teacher">Teacher</option>
+            <option class="placeholder_text" value="" hidden disabled selected>Campus Role</option>
+            <option
+              v-for="grade in JSON.parse($env.VUE_APP_ORG_GRADES || default_grades)"
+              :key="grade[0]"
+              :value="grade[0]"
+            >
+              {{ grade[1] }}
+            </option>
+            <option class="break_text" value="" disabled>-----</option>
+            <option value="teacher">{{ $env.VUE_APP_ORG_TEACHER_GRADE || "Teacher" }}</option>
           </select>
           <textarea
             v-model="form.usage"
@@ -55,6 +59,7 @@ export default {
   emits: ["close"],
   data() {
     return {
+      default_grades: `[["student", "Student"]]`,
       page: "form",
       form: {
         name: "",
