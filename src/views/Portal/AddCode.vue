@@ -68,6 +68,7 @@ export default {
 
 <style scoped>
 .code_input {
+  font-family: "Roboto Mono", monospace;
   text-align: center;
   font-weight: 600;
   height: auto;

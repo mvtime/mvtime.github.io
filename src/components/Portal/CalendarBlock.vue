@@ -295,6 +295,7 @@ export default {
       }
       if (e.deltaX) {
         e.preventDefault();
+        e.stopPropagation();
         return false;
       }
     },
@@ -585,7 +586,7 @@ export default {
 }
 
 main.calendar {
-  overscroll-behavior-x: none;
+  overscroll-behavior-x: contain;
 }
 @media (min-width: 675px) {
   main.calendar.calendar_fullpage {
