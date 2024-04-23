@@ -77,7 +77,15 @@
       class="classes_container_class classes_container_class__add_class class_bar_item class_bar_item__button"
       @click="$router.push({ name: 'addclass', query: $route.query })"
     >
-      <span> Join a Class</span>
+      <span> {{ $store.is_teacher ? "Join" : "Join a Class" }}</span>
+    </div>
+
+    <div
+      v-if="$store.is_teacher"
+      class="classes_container_class classes_container_class__create_class class_bar_item class_bar_item__button"
+      @click="$router.push({ name: 'addclass', query: $route.query })"
+    >
+      <span> Create</span>
     </div>
   </div>
 </template>
