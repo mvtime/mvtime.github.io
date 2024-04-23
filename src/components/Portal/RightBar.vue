@@ -154,26 +154,7 @@ export default {
   display: block;
   bottom: calc(var(--padding-sidebar) / 1.5);
   right: calc(var(--padding-sidebar) / 1.5);
-  height: var(--size-sidebar-button);
-  width: var(--size-sidebar-button);
-  cursor: pointer;
   z-index: 1;
-  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) / 3);
-  border: none;
-  background-color: var(--color-on-bg);
-  padding: 0;
-}
-.settings_icon {
-  height: 100%;
-  width: 100%;
-  filter: var(--filter-icon);
-  background-image: url(@/assets/img/general/portal/settings.png);
-  background-image: url(@/assets/img/general/portal/settings.svg);
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
-  user-select: none;
-  pointer-events: none;
 }
 .sidebar_overflow::-webkit-scrollbar {
   display: none;

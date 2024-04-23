@@ -606,7 +606,7 @@ main.calendar {
   .fullpage_toggle_button {
     display: flex;
   }
-  .portal_bottom_bar + main.calendar.calendar_fullpage {
+  .portal_bottom_bar_container + main.calendar.calendar_fullpage {
     padding-bottom: calc(var(--height-bottom-bar) + var(--padding-calendar));
   }
   main.calendar.calendar_fullpage .calendar_days_container {

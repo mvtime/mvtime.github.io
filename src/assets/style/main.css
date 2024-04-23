@@ -234,8 +234,8 @@ main.parent:not(.simplified) .button_pointer_icon.click-action:active {
   font-family: "Roboto", "Lato", "Inter", sans-serif;
   padding-right: 10px;
 }
-.theme_button:hover,
-.theme_button:active {
+.theme_button:has(.toggle_text):hover,
+.theme_button:has(.toggle_text):active {
   width: calc(var(--width-sidebar-button-showing));
 }
 .theme_icon,
@@ -257,4 +257,27 @@ main.parent:not(.simplified) .button_pointer_icon.click-action:active {
   background-image: url(@/assets/img/general/portal/theme/dark.png);
   background-image: url(@/assets/img/general/portal/theme/dark.svg);
   transform: rotate(360deg);
+}
+
+/* button */
+.settings_button {
+  height: var(--size-sidebar-button);
+  width: var(--size-sidebar-button);
+  cursor: pointer;
+  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) / 3);
+  border: none;
+  background-color: var(--color-on-bg);
+  padding: 0;
+}
+.settings_icon {
+  height: 100%;
+  width: 100%;
+  filter: var(--filter-icon);
+  background-image: url(@/assets/img/general/portal/settings.png);
+  background-image: url(@/assets/img/general/portal/settings.svg);
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  user-select: none;
+  pointer-events: none;
 }

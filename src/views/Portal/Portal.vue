@@ -55,18 +55,37 @@
           </div>
         </header>
         <!-- bottom draggable for fullscreen -->
-        <ClassBar
-          class="portal_bottom_bar class_add_bar"
-          v-if="loaded && fullpage"
-          @dragclass="drag_class($event)"
-          @toggle_filtered_class="toggle_filtered_class"
-          @clear_filters="filtered_classes = []"
-          @set_filtered_classes="filtered_classes = $event || []"
-          :filtered_classes="filtered_classes"
-          @drag="$refs.calendar.check_leave($event)"
-          @dragend="$refs.calendar.drop_class($event)"
-        />
-
+        <div class="portal_bottom_bar_container" v-if="loaded && fullpage">
+          <div class="portal_bottom_button_wrapper">
+            <button
+              class="portal_bottom_button theme_button click-action"
+              title="Switch Theme"
+              :_theme="$store.get_theme"
+              @click="$store.toggle_theme"
+            >
+              <div class="theme_icon"></div>
+            </button>
+          </div>
+          <ClassBar
+            class="portal_bottom_bar class_add_bar"
+            @dragclass="drag_class($event)"
+            @toggle_filtered_class="toggle_filtered_class"
+            @clear_filters="filtered_classes = []"
+            @set_filtered_classes="filtered_classes = $event || []"
+            :filtered_classes="filtered_classes"
+            @drag="$refs.calendar.check_leave($event)"
+            @dragend="$refs.calendar.drop_class($event)"
+          />
+          <div class="portal_bottom_button_wrapper">
+            <button
+              class="portal_bottom_button settings_button click-action"
+              title="Settings"
+              @click="$router.push({ name: 'settings', query: $route.query })"
+            >
+              <div class="settings_icon"></div>
+            </button>
+          </div>
+        </div>
         <!-- block contents -->
         <StudyBlock
           v-if="is_study"
@@ -376,19 +395,30 @@ main.portal .portal_sidebar {
   box-sizing: border-box;
   padding: 0;
 }
-
-main.portal .portal_bottom_bar {
+main.portal .portal_bottom_bar_container {
   position: fixed;
   z-index: 5;
   bottom: calc(var(--padding-calendar) / 2);
   left: 50%;
   max-width: calc(100% - 20px);
   transform: translateX(-50%);
+  gap: 10px;
   height: var(--height-bottom-bar);
+}
+main.portal .portal_bottom_bar_container .portal_bottom_bar {
   background-color: var(--color-bg);
   border: 3px solid var(--color-on-bg);
   border-radius: var(--radius-bottom-bar);
   padding: var(--padding-bottom-bar);
+  display: flex;
+  height: var(--height-bottom-bar);
+}
+main.portal .portal_bottom_bar_container .portal_bottom_button_wrapper {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  align-items: center;
+  height: var(--height-bottom-bar);
 }
 
 main.portal .portal_sidebar {
@@ -632,6 +662,20 @@ header.portal_info {
     display: none;
   }
   main.portal .portal_mobile_nav {
+    display: flex;
+  }
+}
+
+.portal_bottom_bar_container {
+  display: none;
+}
+@media (min-width: 675px) {
+  :has(main.calendar) > .portal_bottom_bar_container {
+    display: flex;
+  }
+}
+@media (min-width: 695px) {
+  .portal_bottom_bar_container {
     display: flex;
   }
 }

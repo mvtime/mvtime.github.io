@@ -788,7 +788,7 @@ export default {
     overflow-y: hidden;
     z-index: 4;
   }
-  .portal_bottom_bar + main.study.study_fullpage {
+  .portal_bottom_bar_container + main.study.study_fullpage {
     padding-bottom: calc(var(--height-bottom-bar) + var(--padding-calendar));
   }
   .fullpage_toggle_button {
@@ -814,7 +814,7 @@ export default {
         ) / 2
     );
   }
-  .portal_bottom_bar + main.study.study_fullpage .study_list_group:not(:empty) {
+  .portal_bottom_bar_container + main.study.study_fullpage .study_list_group:not(:empty) {
     margin-top: calc(
       (
           100vh - (var(--padding-calendar) * 1.5 + var(--size-calendar-header)) -

@@ -138,19 +138,6 @@ export default {
 
 <style scoped>
 .class_bar {
-  display: none;
-}
-@media (min-width: 675px) {
-  :has(main.calendar) > .class_bar {
-    display: flex;
-  }
-}
-@media (min-width: 695px) {
-  .class_bar {
-    display: flex;
-  }
-}
-.class_bar {
   flex-flow: row nowrap;
   align-items: center;
   justify-content: space-between;
