@@ -523,6 +523,42 @@ export const useMainStore = defineStore({
   actions: {
     /**
      * @memberOf .main.actions
+     * @function report_logs
+     * @description save logs to server for debugging later, with some session data attached
+     * @returns {Promise}
+     */
+    report_logs() {
+      try {
+        // get stream types
+        const streamObj = _status.getStream();
+        const streamText = _status.textStream();
+
+        // write to new firebase doc in db/logs/ and save the ID
+        const docRef = doc(collection(db, "logs"));
+
+        setDoc(docRef, {
+          date: new Date(),
+          user: this.user ? this.user.uid : "no user",
+          email: this.user ? this.user.email : "no user",
+          stream: {
+            json: streamObj,
+            text: streamText,
+          },
+        });
+
+        new SuccessToast("Logs reported and saved locally, check console for details", 3500);
+        _status.log(`📊 Reported logs to serve as '${docRef.id}'`);
+
+        // save to disk
+        void _status.saveStream(docRef.id);
+
+        return Promise.resolve(docRef.id);
+      } catch (err) {
+        return Promise.reject("Failed to report logs:" + err);
+      }
+    },
+    /**
+     * @memberOf .main.actions
      * @function class_text
      * @description get the smart text associated with a given class
      * @param {String} class_obj
