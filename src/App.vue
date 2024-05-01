@@ -116,22 +116,32 @@ export default {
         {
           key: "Ctrl + Enter",
           description: "Submit current form",
+          top: true,
         },
         {
           key: "Escape",
           description: "Close current modal",
+          top: true,
         },
         {
           key: "Ctrl + \\",
           description: "Switch light/dark theme",
+          top: true,
+        },
+        {
+          key: "Ctrl + !, Ctrl + 1",
+          description: "Report logs (check console)",
+          top: true,
         },
         {
           key: "Ctrl + '",
           description: "Toggle simplified view",
+          top: true,
         },
         {
           key: "Ctrl + / or Ctrl + ?",
           description: "Toggle shortcuts menu",
+          top: true,
         },
       ],
     };
@@ -233,6 +243,9 @@ export default {
         (e.key == "?" && (e.ctrlKey || e.metaKey))
       ) {
         this.show_shortcuts = !this.show_shortcuts;
+        ignore = true;
+      } else if ((e.key == "!" || e.key == "1") && (e.ctrlKey || e.metaKey)) {
+        this.$store.report_logs();
         ignore = true;
       }
       // Modal Controls

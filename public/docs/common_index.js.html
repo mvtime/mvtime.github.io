@@ -108,20 +108,20 @@ const _status = {
   textStream() {
     return format_stream(_status.getStream(...arguments));
   },
-  saveStream: () => {
+  saveStream: (id = "manual") => {
     let date = new Date(),
       formatted = _status.textStream(...arguments);
     date.setSeconds(0, 0);
     try {
       save(
         formatted,
-        `${process.env.VUE_APP_BRAND_SHORT_NAME}-log ${date
+        `${process.env.VUE_APP_BRAND_SHORT_NAME}-log ${id} ${date
           .toISOString()
           .split(":00.0")[0]
           .replace("T", " ")
           .replace(":", "h")}m.log`
       );
-      _status.log("📜 Saved log stream to disk");
+      _status.log("📜 Saved log stream to disk; run `_status.clearStream()` to purge");
     } catch (err) {
       _status.error("📜 Couldn't save log stream", err);
     }
