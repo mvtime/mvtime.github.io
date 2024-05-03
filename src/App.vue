@@ -131,7 +131,6 @@ export default {
         {
           key: "Ctrl + !, Ctrl + 1",
           description: "Report logs (check console)",
-          top: true,
         },
         {
           key: "Ctrl + '",
