@@ -1,7 +1,7 @@
 <template>
   <div class="right-bar portal_sidebar" :class="{ active: sidebar_open }" @click="show_if_inactive">
     <div class="sidebar_overflow">
-      <div class="sidebar_first_block auth-action doprompt">
+      <div class="sidebar_first_block auth-action can-logout doprompt">
         <div class="linked_acc_icon" v-if="$store && $store.personal_account">
           <img
             class="linked_acc_icon__img"
@@ -25,7 +25,7 @@
             alt="Account Profile Image"
           />
         </div>
-        <div class="auth_logout can-logout">Log Out</div>
+        <div class="auth_logout can_logout">Log Out</div>
       </div>
       <div class="flex_spacer"></div>
       <UpcomingTasks :loading="loading" />
@@ -145,7 +145,7 @@ export default {
 .auth-action {
   cursor: pointer;
 }
-.can-logout {
+.can_logout {
   height: 30px;
   font-size: 18px;
   line-height: 30px;
@@ -157,7 +157,7 @@ export default {
   justify-content: space-between;
   user-select: none;
 }
-.can-logout::after {
+.can_logout::after {
   content: "";
   height: 30px;
   width: 30px;
