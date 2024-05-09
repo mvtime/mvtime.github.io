@@ -438,6 +438,7 @@ main.portal .portal_sidebar {
 }
 @media (min-width: /* [desktop size] */ 1270px) and (max-height: 1200px), (max-width: 600px) {
   main.portal .portal_sidebar {
+    --radius-sidebar: 15px;
     border-radius: 0px !important;
     box-shadow: none !important;
     height: 100%;
