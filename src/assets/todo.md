@@ -26,6 +26,7 @@
   - automatic session plans & time management alerts
   - ~~through API~~
   - ~~things like automatic link names, task typing~~
+- Schedule Builder
 
 ## Working on Now / Planned Soon (Sander)
 

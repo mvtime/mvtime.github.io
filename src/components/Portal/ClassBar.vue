@@ -83,7 +83,7 @@
     <div
       v-if="$store.is_teacher"
       class="classes_container_class classes_container_class__create_class class_bar_item class_bar_item__button"
-      @click="$router.push({ name: 'addclass', query: $route.query })"
+      @click="$router.push({ name: 'createclass', query: $route.query })"
     >
       <span> Create</span>
     </div>
