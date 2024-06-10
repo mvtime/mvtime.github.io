@@ -3,7 +3,17 @@
     <div class="admin_sidebar">
       <div class="admin_sidebar_scrollable admin_section">
         <div class="admin_sidebar_header">
-          <div class="branding-title gohome">{{ $env.VUE_APP_BRAND_LONG_NAME }}</div>
+          <div class="branding-title gohome">
+            {{ $env.VUE_APP_BRAND_SHORT_NAME }}
+            <span
+              class="branding-admin"
+              @click="
+                $router.push({ name: 'portal' });
+                $event.stopPropagation();
+              "
+              >Admin Panel</span
+            >
+          </div>
         </div>
         <div class="admin_sidebar_items">
           <a
@@ -160,6 +170,10 @@ export default {
 </script>
 
 <style scoped>
+.branding-admin {
+  color: var(--color-theme);
+}
+
 /* major section styles */
 main.admin {
   background-color: var(--color-secondary);
@@ -197,7 +211,7 @@ main.admin,
   flex-flow: column nowrap;
   gap: var(--padding-sidebar);
   overflow-y: auto;
-  padding-bottom: calc(var(--padding-sidebar) + 10px + 50px);
+  padding-bottom: calc(var(--padding-sidebar) + 20px + 50px);
   max-height: 100%;
 }
 .admin_sidebar_scrollable::-webkit-scrollbar {

@@ -299,6 +299,17 @@ export const useMainStore = defineStore({
     },
     /**
      * @memberOf .main.getters
+     * @function is_admin
+     * @description Check if user is a admin - currently true for all users for testing purposes TODO
+     * @returns {Boolean} if the user is an admin
+     * @default false
+     */
+    //TODO: update this to use actual permissions
+    is_admin() {
+      return this.is_teacher;
+    },
+    /**
+     * @memberOf .main.getters
      * @function is_teacher
      * @description Check if user is a teacher, or is in teacher mode locally (for testing)
      * @returns {Boolean} if the user is a teacher
@@ -331,7 +342,8 @@ export const useMainStore = defineStore({
 
       let email = this.user.email;
       let [first, last] = email.split("@");
-      if ("@" + last == this.ORG_DOMAIN &amp;&amp; !/\d/.test(first)) {
+      //TODO: add .env option for teacher/student pattern
+      if ("@" + last == this.ORG_DOMAIN &amp;&amp; !/\d/.test(first) &amp;&amp; this.ORG_DOMAIN == "@mvla.net") {
         _status.log("🏫 Teacher mode enabled for non-student district account");
         return true;
       } else {
