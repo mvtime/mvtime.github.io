@@ -11,7 +11,7 @@
         <input
           type="text"
           class="docs_nav_search"
-          placeholder="Log Reference [unfinished]"
+          placeholder="Log Reference [Coming Soon]"
           disabled
         />
         <button
@@ -25,18 +25,22 @@
         <div class="doc" v-for="doc in page" :key="doc.id" :class="{ active: active == doc.id }">
           <button
             class="doc_details__toggle"
+            :class="{ click_escape: active == doc.id }"
             @click="active = active == doc.id ? null : doc.id"
             title="Close details pane"
           >
-            <div class="doc_details__toggle__icon themed_icon"></div>
+            <div
+              class="doc_details__toggle__icon themed_icon"
+              :title="`${active == doc.id ? 'Collapse' : 'Expand'} log ${doc.id}`"
+            ></div>
           </button>
           <div class="doc_title" v-if="active != doc.id">
-            <span class="doc_title__email">{{ doc.data().email }}</span>
+            <span class="doc_title__email">
+              <span class="doc_title__email_user">{{ doc.data().email.split("@")[0] }}</span
+              ><span class="doc_title__email_domain">@{{ doc.data().email.split("@")[1] }} </span>
+            </span>
             <span class="doc_title__user">{{ doc.data().user }}</span>
             <span class="doc_title__time">{{ doc.data().date.toDate().getTime() }}</span>
-            <button class="doc_title__toggle" :title="`Expand log ${doc.id}`">
-              <div class="doc_title__toggle__icon themed_icon"></div>
-            </button>
           </div>
           <div class="doc_details" v-else>
             <table class="doc_details_table">
@@ -58,7 +62,7 @@
               </tr>
             </table>
             <button
-              class="doc_save"
+              class="doc_save click_ctrlenter"
               @click="
                 downloadLogData(
                   doc.data().stream.json,
@@ -91,7 +95,7 @@ export default {
     return {
       active: null,
       page_index: 0,
-      page_size: 5,
+      page_size: 10,
       pages: [],
     };
   },
@@ -109,9 +113,27 @@ export default {
           (this.page_index == this.pages.length - 1 || this.pages[this.page_index + 1]?.length))
       );
     },
+    shortcuts() {
+      return [
+        {
+          key: "Ctrl + Enter",
+          description: "Download active log",
+          top: true,
+        },
+        {
+          key: "Escape",
+          description: "Collapse active log",
+          top: true,
+        },
+      ];
+    },
   },
   async mounted() {
+    this.$shortcuts.register_all(this.shortcuts, "Admin - Logs & Debugging");
     await this.init();
+  },
+  beforeUnmount() {
+    this.$shortcuts.remove_tag("Admin - Logs & Debugging");
   },
   methods: {
     async init() {
@@ -127,7 +149,7 @@ export default {
       }
     },
     async next() {
-      if (this.page_index < this.pages.length - 1) {
+      if (this.page_index < this.pages.length - 1 && this.pages[this.page_index + 1].length) {
         this.page_index++;
         return;
       } else if (this.page.length && this.page.length === this.page_size) {
@@ -201,6 +223,9 @@ export default {
   font-family: "Source Code Pro", monospace;
   flex-grow: 1;
   text-align: right;
+  margin-right: 35px;
+  line-height: 25px;
+  display: block;
 }
 .doc_title__toggle {
   visibility: hidden;
@@ -256,6 +281,7 @@ nav.docs_nav .docs_nav_search {
   padding: 0 10px;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: center;
 }
 nav.docs_nav .docs_nav_search[disabled] {
   cursor: not-allowed;
@@ -300,5 +326,11 @@ nav.docs_nav .docs_nav_button[disabled] {
   color: var(--color-bg);
   cursor: not-allowed;
   opacity: 0.5;
+}
+@media (max-width: 670px) {
+  .docs .doc .doc_title .doc_title__user,
+  .docs .doc .doc_title .doc_title__email_domain {
+    display: none;
+  }
 }
 </style>

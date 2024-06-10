@@ -166,6 +166,9 @@ export default {
         ? this.$store.user.photoURL.replace("s96-c", "s26-c")
         : null;
     },
+    shortcuts() {
+      return [];
+    },
   },
   methods: {
     keydown(e) {
@@ -192,9 +195,11 @@ export default {
       this.$router.replace({ query: { page: this.active } });
     }
     window.addEventListener("keydown", this.keydown);
+    this.$shortcuts.register_all(this.shortcuts, "Admin");
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.keydown);
+    this.$shortcuts.remove_tag("Admin");
   },
 };
 </script>
