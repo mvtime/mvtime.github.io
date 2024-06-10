@@ -28,7 +28,12 @@
             v-for="p in pages"
             :key="p.short"
           >
+            <div
+              class="admin_sidebar_item__icon themed_icon"
+              :style="{ backgroundImage: `url(${p.img.png})` }"
+            ></div>
             <span class="admin_sidebar_item__text">{{ p.name }}</span>
+            <span class="flex_spacer"></span>
             <button
               class="admin_sidebar_item__outlink click-action"
               :title="`Open ${p.title} in a new tab`"
@@ -72,6 +77,7 @@
       </div>
     </div>
     <div class="admin_main_wrapper">
+      Page: {{ page.short }}
       <component class="admin_main" :is="page.src" />
     </div>
   </main>
@@ -99,30 +105,55 @@ export default {
     return {
       active: "usrs",
       pages: [
-        { name: "Users & Teachers", short: "usrs", title: "user", src: shallowRef(UserTeacher) },
+        {
+          name: "Users & Teachers",
+          short: "usrs",
+          title: "user",
+          src: shallowRef(UserTeacher),
+          img: {
+            png: require("@/assets/img/general/portal/admin/usrs.png"),
+            svg: require("@/assets/img/general/portal/admin/usrs.svg"),
+          },
+        },
         {
           name: "Logs & Debugging",
           short: "logs",
           title: "log and debug",
           src: shallowRef(LogDebug),
+          img: {
+            png: require("@/assets/img/general/portal/admin/logs.png"),
+            svg: require("@/assets/img/general/portal/admin/logs.svg"),
+          },
         },
         {
           name: "District & .env",
           short: "opts",
           title: "customization",
           src: shallowRef(DistrictEnv),
+          img: {
+            png: require("@/assets/img/general/portal/admin/opts.png"),
+            svg: require("@/assets/img/general/portal/admin/opts.svg"),
+          },
         },
         {
           name: "Messages & Alerts",
           short: "msgs",
           title: "alerts and messaging",
           src: shallowRef(MessagesAlerts),
+          img: {
+            png: require("@/assets/img/general/portal/admin/msgs.png"),
+            svg: require("@/assets/img/general/portal/admin/msgs.svg"),
+          },
         },
         {
           name: "Usage & Analytics",
           short: "usge",
           title: "usage and analytics",
           src: shallowRef(UsageAnalytics),
+          img: {
+            png: require("@/assets/img/general/portal/admin/usge.png"),
+            svg: require("@/assets/img/general/portal/admin/usge.svg"),
+          },
         },
       ],
     };
@@ -209,6 +240,7 @@ main.admin,
 .admin_sidebar .admin_sidebar_scrollable {
   display: flex;
   flex-flow: column nowrap;
+  flex-shrink: 1;
   gap: var(--padding-sidebar);
   overflow-y: auto;
   padding-bottom: calc(var(--padding-sidebar) + 20px + 50px);
@@ -227,8 +259,8 @@ main.admin,
   display: flex;
   flex-flow: row nowrap;
   align-items: flex-start;
-  justify-content: space-between;
-  padding: 10px 10px 10px 15px;
+  justify-content: flex-start;
+  padding: 10px;
   color: var(--color-text);
   font-weight: 400;
   border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) / 2);
@@ -242,6 +274,18 @@ main.admin,
   background-color: var(--color-on-bg);
   /* border-color: var(--color-primary); */
 }
+
+.admin_sidebar_item__icon {
+  flex: 0 0 20px;
+  width: 20px;
+  min-height: 20px;
+  height: 100%;
+  margin-right: 15px;
+}
+.admin_sidebar_items .admin_sidebar_item .flex_spacer {
+  flex: 1 0 10px;
+}
+
 .admin_sidebar_item.active .admin_sidebar_item__outlink {
   visibility: hidden;
 }
