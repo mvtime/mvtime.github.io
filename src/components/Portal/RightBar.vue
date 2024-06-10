@@ -66,7 +66,6 @@ export default {
   },
   computed: {
     user_pfp() {
-      console.log(this.$store.user);
       return this.$store && this.$store.user && this.$store.user.photoURL
         ? this.$store.user.photoURL.replace("s96-c", "s26-c")
         : null;
@@ -102,6 +101,9 @@ export default {
 </script>
 
 <style scoped>
+.right-bar {
+  border-radius: var(--radius-sidebar) 0 0 var(--radius-sidebar);
+}
 .sidebar_first_block {
   display: flex;
   flex-flow: row nowrap;
@@ -138,9 +140,6 @@ export default {
 }
 .auth_logout {
   flex: 1 1 auto;
-}
-.right-bar {
-  border-radius: var(--radius-sidebar) 0 0 var(--radius-sidebar);
 }
 .auth-action {
   cursor: pointer;

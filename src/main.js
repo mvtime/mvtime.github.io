@@ -161,7 +161,6 @@ window.$ = $;
 // router guard
 router.beforeEach((to) => {
   const store = useMainStore();
-
   if (to.meta && to.meta.requiresAuth && store && !store.user) {
     // launch auth popup through store action
     new Toast(
@@ -176,9 +175,16 @@ router.beforeEach((to) => {
       query: { redirect: to.fullPath },
     };
   } else if (to.meta && to.meta.requiresTeacher && store.user && !store.is_teacher) {
-    // launch auth popup through store action
     new Toast(
       "You must be a teacher to access this page",
+      "default",
+      1500,
+      require("@svonk/util/assets/info-locked-icon.svg")
+    );
+    return { name: "portal" };
+  } else if (to.meta && to.meta.requiresAdmin && store.user && !store.is_admin) {
+    new Toast(
+      "Only administrators can access this page",
       "default",
       1500,
       require("@svonk/util/assets/info-locked-icon.svg")

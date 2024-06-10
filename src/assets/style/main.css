@@ -259,6 +259,14 @@ main.parent:not(.simplified) .button_pointer_icon.click-action:active {
   transform: rotate(360deg);
 }
 
+.branding-title {
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 40px;
+  text-align: center;
+  user-select: none;
+}
+
 /* button */
 .settings_button {
   height: var(--size-sidebar-button);

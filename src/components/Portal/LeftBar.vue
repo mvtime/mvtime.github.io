@@ -103,13 +103,6 @@ export default {
   }
 }
 
-.branding-title {
-  font-weight: 700;
-  font-size: 20px;
-  line-height: 40px;
-  text-align: center;
-  user-select: none;
-}
 /* theme icon */
 .theme_button {
   /* sizebar specific styling */

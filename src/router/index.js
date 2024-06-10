@@ -204,6 +204,20 @@ const router = createRouter({
       ],
     },
     {
+      path: "/portal/admin",
+      name: "admin",
+      component: () => import("../views/Admin/Admin.vue"),
+      meta: {
+        page_title: "Administrator Portal",
+        theme_color: {
+          light: "#f2f2f2",
+          dark: "#121212",
+        },
+        requiresAuth: true,
+        requiresAdmin: true,
+      },
+    },
+    {
       path: "/portal",
       name: "portal",
       component: () => import("../views/Portal/Portal.vue"),
