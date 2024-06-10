@@ -77,7 +77,6 @@
       </div>
     </div>
     <div class="admin_main_wrapper">
-      Page: {{ page.short }}
       <component class="admin_main" :is="page.src" />
     </div>
   </main>
@@ -103,7 +102,7 @@ export default {
   },
   data() {
     return {
-      active: "usrs",
+      active: "logs",
       pages: [
         {
           name: "Users & Teachers",
@@ -231,8 +230,8 @@ main.admin,
 .admin_sidebar {
   display: flex;
   flex-flow: column nowrap;
-  flex: 0 0 300px;
-  width: 300px;
+  flex: 0 0 270px;
+  width: 270px;
   position: relative;
   height: fit-content;
   max-height: 100%;

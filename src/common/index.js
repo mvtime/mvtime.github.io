@@ -103,26 +103,15 @@ const _status = {
   getStream: (types = []) => {
     return types && types.length > 0 ? log.filter((entry) => types.includes(entry.type)) : log;
   },
+  // unused
   textStream() {
     return format_stream(_status.getStream(...arguments));
   },
   saveStream: (id = "manual") => {
     let date = new Date(),
-      formatted = _status.textStream(...arguments);
+      data = _status.getStream(...arguments);
     date.setSeconds(0, 0);
-    try {
-      save(
-        formatted,
-        `${process.env.VUE_APP_BRAND_SHORT_NAME}-log ${id} ${date
-          .toISOString()
-          .split(":00.0")[0]
-          .replace("T", " ")
-          .replace(":", "h")}m.log`
-      );
-      _status.log("📜 Saved log stream to disk; run `_status.clearStream()` to purge");
-    } catch (err) {
-      _status.error("📜 Couldn't save log stream", err);
-    }
+    downloadLogData(data, date, id);
   },
   _getTone: () => {
     return tone;
@@ -134,6 +123,25 @@ const _status = {
     tone = "info";
   },
 };
+/**
+ * @function downloadLogData
+ * @description downloads a file with given log data
+ * */
+function downloadLogData(data, date, id = "manual") {
+  try {
+    save(
+      format_stream(data),
+      `${process.env.VUE_APP_BRAND_SHORT_NAME}-log ${id} ${date
+        .toISOString()
+        .split(":00.0")[0]
+        .replace("T", " ")
+        .replace(":", "h")}m.log`
+    );
+    _status.log("📜 Saved log stream to disk; run `_status.clearStream()` to purge if local");
+  } catch (err) {
+    _status.error("📜 Couldn't save log stream", err);
+  }
+}
 /**
  * @function _statuslog
  * @description A bound version of _log with the tone set to "info"
@@ -174,4 +182,4 @@ function msToTime(ms) {
   return time;
 }
 
-export { _statuslog, _status, compatDateObj, msToTime };
+export { _statuslog, _status, compatDateObj, msToTime, downloadLogData };

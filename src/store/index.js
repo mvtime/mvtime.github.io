@@ -548,6 +548,7 @@ export const useMainStore = defineStore({
 
         setDoc(docRef, {
           date: new Date(),
+          date_inversed: new Date().getTime() * -1,
           user: this.user ? this.user.uid : "no user",
           email: this.user ? this.user.email : "no user",
           stream: {

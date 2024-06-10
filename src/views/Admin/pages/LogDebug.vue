@@ -1,9 +1,304 @@
 <template>
-  <div class="logdebug"><div class="placeholder">Logs & Debugging</div></div>
+  <div class="logdebug">
+    <div class="docs_wrapper">
+      <nav class="docs_nav" v-if="pages.length">
+        <button
+          class="docs_nav_button prev"
+          @click="prev"
+          :disabled="!(total || pages.length) || !page_index"
+          title="Previous Page"
+        ></button>
+        <input
+          type="text"
+          class="docs_nav_search"
+          placeholder="Log Reference [unfinished]"
+          disabled
+        />
+        <button
+          class="docs_nav_button next"
+          @click="next"
+          :disabled="!(total || pages.length) || !more"
+          title="Next Page"
+        ></button>
+      </nav>
+      <div class="docs" v-if="pages.length && total">
+        <div class="doc" v-for="doc in page" :key="doc.id" :class="{ active: active == doc.id }">
+          <button
+            class="doc_details__toggle"
+            @click="active = active == doc.id ? null : doc.id"
+            title="Close details pane"
+          >
+            <div class="doc_details__toggle__icon themed_icon"></div>
+          </button>
+          <div class="doc_title" v-if="active != doc.id">
+            <span class="doc_title__email">{{ doc.data().email }}</span>
+            <span class="doc_title__user">{{ doc.data().user }}</span>
+            <span class="doc_title__time">{{ doc.data().date.toDate().getTime() }}</span>
+            <button class="doc_title__toggle" :title="`Expand log ${doc.id}`">
+              <div class="doc_title__toggle__icon themed_icon"></div>
+            </button>
+          </div>
+          <div class="doc_details" v-else>
+            <table class="doc_details_table">
+              <tr>
+                <th>Email</th>
+                <td>{{ doc.data().email }}</td>
+              </tr>
+              <tr>
+                <th>User</th>
+                <td>{{ doc.data().user }}</td>
+              </tr>
+              <tr>
+                <th>Date</th>
+                <td>{{ doc.data().date.toDate() }}</td>
+              </tr>
+              <tr>
+                <th>Ref</th>
+                <td>{{ doc.id }}</td>
+              </tr>
+            </table>
+            <button
+              class="doc_save"
+              @click="
+                downloadLogData(
+                  doc.data().stream.json,
+                  doc.data().date.toDate(),
+                  `cloud-${doc.data().email}-${doc.data().user}`
+                )
+              "
+            >
+              Download
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="docs_placeholder docs_placeholder__empty" v-else-if="!total && pages.length">
+        No logs to display
+      </div>
+      <div class="docs_placeholder docs_placeholder__loading" v-else>
+        <i>Loading logs</i>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-export default {};
+import { collection, query, orderBy, startAfter, limit, getDocs } from "firebase/firestore";
+import { db } from "@/firebase";
+import { downloadLogData } from "@/common";
+export default {
+  data() {
+    return {
+      active: null,
+      page_index: 0,
+      page_size: 5,
+      pages: [],
+    };
+  },
+  computed: {
+    page() {
+      return this.pages[this.page_index];
+    },
+    total() {
+      return this.pages.reduce((acc, page) => acc + page.length, 0);
+    },
+    more() {
+      return (
+        !this.page ||
+        (this.page.length === this.page_size &&
+          (this.page_index == this.pages.length - 1 || this.pages[this.page_index + 1]?.length))
+      );
+    },
+  },
+  async mounted() {
+    await this.init();
+  },
+  methods: {
+    async init() {
+      const q = query(collection(db, "logs"), orderBy("date"), limit(this.page_size));
+      const docs = await getDocs(q);
+      this.pages = [[...docs.docs]];
+      this.$status.log(`📜 Loaded first ${this.page_size} documents`);
+    },
+    downloadLogData,
+    prev() {
+      if (this.page_index > 0) {
+        this.page_index--;
+      }
+    },
+    async next() {
+      if (this.page_index < this.pages.length - 1) {
+        this.page_index++;
+        return;
+      } else if (this.page.length && this.page.length === this.page_size) {
+        const q = query(
+          collection(db, "logs"),
+          orderBy("date"),
+          startAfter(this.page[this.page.length - 1]),
+          limit(this.page_size)
+        );
+        const docs = await getDocs(q);
+        this.pages[this.page_index + 1] = [...docs.docs];
+        this.$status.log(`📜 Loaded next ${docs.docs.length} of ${this.page_size} documents`);
+        this.next();
+      } else {
+        this.$status.log(`📜 No more documents to load (${this.total} loaded)`);
+      }
+    },
+  },
+};
 </script>
 
-<style></style>
+<style scoped>
+.logdebug {
+  --padding-sidebar: 10px;
+}
+.docs_wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.docs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+}
+.docs_placeholder {
+  padding: 20px 40px;
+  text-align: center;
+  width: 100%;
+  display: blocks;
+}
+.docs .doc {
+  background-color: var(--color-on-bg);
+  padding: 7px 7px 7px 15px;
+  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar));
+  position: relative;
+}
+.docs .doc.active {
+  padding: 10px 15px 15px 15px;
+}
+.docs .doc .doc_title {
+  display: flex;
+  flex-flow: row;
+  justify-content: stretch;
+  gap: 20px;
+  align-items: center;
+}
+
+.docs .doc .doc_title span {
+  flex: 0 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.docs .doc .doc_title span.doc_title__email {
+  font-weight: 500;
+}
+.docs .doc .doc_title .doc_title__time {
+  font-family: "Source Code Pro", monospace;
+  flex-grow: 1;
+  text-align: right;
+}
+.doc_title__toggle {
+  visibility: hidden;
+}
+.doc_title__toggle,
+.doc_details__toggle {
+  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) - 7px);
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  border: none;
+  background: var(--color-bg);
+}
+
+.doc .doc_details__toggle {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+}
+
+.doc_details__toggle__icon {
+  width: 100%;
+  height: 100%;
+  background-image: url("@/assets/img/general/portal/admin/add.png");
+  background-image: url("@/assets/img/general/portal/admin/add.svg");
+  transition: rotate 0.2s cubic-bezier(0.49, -0.02, 0.16, 1.94);
+}
+
+.doc.active .doc_details__toggle__icon {
+  rotate: 45deg;
+}
+
+.doc_details_table th {
+  font-weight: 500;
+  text-align: left;
+  padding-right: 10px;
+}
+
+nav.docs_nav {
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 10px;
+  justify-content: stretch;
+}
+nav.docs_nav .docs_nav_search {
+  background: var(--color-on-bg);
+  color: var(--color-text);
+  border: none;
+  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar));
+  width: unset;
+  flex: 1 1 auto;
+  font-size: 14px;
+  padding: 0 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+nav.docs_nav .docs_nav_search[disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+nav.docs_nav .docs_nav_button,
+.doc_save {
+  flex: 0 0 35px;
+  height: 35px;
+  width: 35px;
+  background-size: contain;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  background-color: var(--color-overlay-action);
+  color: var(--color-on-overlay-action);
+  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar));
+}
+
+.doc_save {
+  padding: 10px 20px;
+  height: auto;
+  width: auto;
+  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) - 5px);
+  position: relative;
+  bottom: -8px;
+  right: -8px;
+  float: right;
+}
+
+.docs_nav_button.prev {
+  background-image: url("@/assets/img/general/portal/admin/prev.png");
+  background-image: url("@/assets/img/general/portal/admin/prev.svg");
+}
+.docs_nav_button.next {
+  background-image: url("@/assets/img/general/portal/admin/next.png");
+  background-image: url("@/assets/img/general/portal/admin/next.svg");
+}
+nav.docs_nav .docs_nav_button[disabled] {
+  background-color: var(--color-on-bg);
+  color: var(--color-bg);
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+</style>
