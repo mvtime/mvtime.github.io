@@ -345,6 +345,53 @@ main.admin,
   display: flex;
   flex-flow: column nowrap;
 }
+@media (max-width: 670px) {
+  main.admin {
+    display: flex;
+    flex-flow: column nowrap;
+    overflow-y: auto;
+    gap: var(--padding-sidebar);
+    flex: 0 0 auto;
+  }
+  .admin_sidebar,
+  .admin_sidebar_scrollable,
+  .admin_main_wrapper {
+    height: unset;
+    max-height: unset;
+    overflow-y: unset;
+    width: 100%;
+    flex: 0 0 auto;
+  }
+
+  .admin_sidebar {
+    border-radius: var(--radius-sidebar);
+    box-shadow: var(--shadow-highlight);
+    padding: var(--padding-sidebar);
+    background-color: var(--color-bg);
+    flex-shrink: 0;
+    padding-bottom: 10px;
+  }
+
+  main.admin .admin_sidebar_scrollable {
+    border-radius: unset;
+    box-shadow: none;
+    padding: 0;
+    background-color: none;
+  }
+
+  .sidebar_last_block {
+    margin-top: 35px;
+    position: relative;
+    left: -10px;
+    top: 0;
+    width: calc(100% + 20px);
+  }
+
+  .admin_main_wrapper {
+    padding: 0;
+    position: unset;
+  }
+}
 </style>
 <style>
 main.admin .admin_section,
@@ -353,5 +400,6 @@ main.admin .admin_main > div {
   box-shadow: var(--shadow-highlight);
   padding: var(--padding-sidebar);
   background-color: var(--color-bg);
+  flex-shrink: 0;
 }
 </style>
