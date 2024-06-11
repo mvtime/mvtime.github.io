@@ -393,6 +393,7 @@ main.admin,
   display: flex;
   flex-flow: column nowrap;
 }
+
 @media (max-width: 670px) {
   main.admin {
     display: flex;
@@ -449,5 +450,10 @@ main.admin .admin_main > div {
   padding: var(--padding-sidebar);
   background-color: var(--color-bg);
   flex-shrink: 0;
+}
+/* TODO: Remove */
+main.admin .admin_main .placeholder::before {
+  content: "Coming soon: ";
+  font-weight: 500;
 }
 </style>
