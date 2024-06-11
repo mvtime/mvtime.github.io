@@ -12,6 +12,8 @@
           class="styled_input"
           type="text"
           placeholder="Teacher's Email"
+          enterkeyhint="next"
+          @keydown.enter="$refs.class_id.focus()"
         />
         <select
           v-model="class_id"

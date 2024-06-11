@@ -13,6 +13,7 @@
           v-model="search"
           class="docs_nav_search"
           placeholder="Search Log Reference, User ID, or Email"
+          enterkeyhint="search"
           @keydown.enter="submit"
         />
         <button

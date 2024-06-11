@@ -25,8 +25,11 @@
           class="styled_input"
           type="text"
           placeholder="Teacher's Email"
+          enterkeyhint="next"
+          @keydown.enter="$refs.class_id.focus()"
         />
         <select
+          ref="class_id"
           v-model="class_id"
           class="styled_input"
           :disabled="!classes || !classes.length"
@@ -63,6 +66,8 @@
           :class="{ code: code, ref: $route.params.ref }"
           type="text"
           placeholder="Join Code / Reference"
+          enterkeyhint="send"
+          @keydown.enter="add_class"
         >
           {{ code || $route.params.ref || "" }}
         </div>

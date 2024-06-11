@@ -42,6 +42,8 @@
             class="styled_input class_name"
             type="text"
             placeholder="Name"
+            enterkeyhint="done"
+            @keydown.enter="update_class"
           />
           <div class="color_input_container styled_input" title="Class Theme Color">
             <input

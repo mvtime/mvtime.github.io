@@ -46,6 +46,8 @@
           type="text"
           :placeholder="type_full + ' Name'"
           :disabled="is_note"
+          enterkeyhint="next"
+          @keydown.enter="$refs.date.focus()"
         />
         <input
           type="date"
@@ -53,9 +55,12 @@
           class="styled_input input_task__date"
           v-model="task.date"
           :style="{ maxWidth: is_note ? '100%' : null }"
+          enterkeyhint="next"
+          @keydown.enter="$refs.description.focus()"
         />
         <div class="flex-break"></div>
         <textarea
+          ref="description"
           v-model="task.description"
           class="styled_input styled_textarea task_description"
           type="text"
@@ -82,12 +87,11 @@
           <hr class="styled_links_separator" />
           <div
             class="styled_links_add"
-            @keydown="
-              if ($event.key === 'Enter') {
-                $event.preventDefault();
-                add_newlink();
-              }
+            @keydown.enter="
+              $event.preventDefault();
+              add_newlink();
             "
+            enterkeyhint="done"
           >
             <input
               class="styled_links_add__path"
@@ -95,6 +99,7 @@
               v-model="newlink.path"
               @blur="fix_newlink_path"
               placeholder="Link URL (https://example.com)"
+              enterkeyhint="done"
             />
             <div class="magic_wrapper styled_links_add__sized">
               <input
@@ -102,6 +107,7 @@
                 type="text"
                 v-model="newlink.text"
                 placeholder="Link Text (what students see)"
+                enterkeyhint="done"
               />
               <div
                 class="magic magic_in styled_magic alt_bg click-action"

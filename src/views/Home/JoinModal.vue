@@ -11,12 +11,21 @@
         </h2>
         <div class="overlay_inputs inputs_column">
           <input
+            ref="name"
             class="styled_input styled_obj"
             type="text"
             v-model="form.name"
             placeholder="Your Name"
+            enterkeyhint="next"
+            @keydown.enter="$refs.grade.focus()"
           />
-          <select class="styled_input styled_obj" v-model="form.grade">
+          <select
+            class="styled_input styled_obj"
+            v-model="form.grade"
+            ref="grade"
+            enterkeyhint="next"
+            @keydown.enter="$refs.detail.focus()"
+          >
             <option class="placeholder_text" value="" hidden disabled selected>Campus Role</option>
             <option
               v-for="grade in JSON.parse($env.VUE_APP_ORG_GRADES || default_grades)"
@@ -29,6 +38,9 @@
             <option value="teacher">{{ $env.VUE_APP_ORG_TEACHER_GRADE || "Teacher" }}</option>
           </select>
           <textarea
+            ref="detail"
+            enterkeyhint="done"
+            @keydown.enter="action"
             v-model="form.usage"
             class="styled_input styled_textarea styled_obj"
             type="text"
@@ -112,6 +124,9 @@ export default {
   },
   methods: {
     action() {
+      if (!this.contents_ready) {
+        return;
+      }
       if (this.page == "form") {
         // move to auth page
         // update router so that this page will redirect to /portal/onboarding
