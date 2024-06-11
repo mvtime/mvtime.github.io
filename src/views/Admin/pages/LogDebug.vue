@@ -15,7 +15,7 @@
           placeholder="Search Log Reference, User ID, or Email"
         />
         <button
-          v-if="manual && loaded"
+          v-if="manual && loaded && loaded == search"
           class="docs_nav_button clear"
           @click="clear"
           :title="`Clear query '${this.loaded}'`"
@@ -192,7 +192,7 @@ export default {
   },
   methods: {
     async init() {
-      const q = query(collection(db, "logs"), orderBy("date"), limit(this.page_size));
+      const q = query(collection(db, "logs"), orderBy("date_inversed"), limit(this.page_size));
       const docs = await getDocs(q);
       this.pages = [[...docs.docs]];
       this.$status.log(`📜 Loaded first ${this.page_size} documents`);
@@ -210,7 +210,7 @@ export default {
       } else if (this.page.length && this.page.length === this.page_size) {
         const q = query(
           collection(db, "logs"),
-          orderBy("date"),
+          orderBy("date_inversed"),
           startAfter(this.page[this.page.length - 1]),
           limit(this.page_size)
         );
@@ -234,7 +234,7 @@ export default {
       if (this.search.includes("@")) {
         // get logs where email == this.search
         const emailDocs = await getDocs(
-          query(collection(db, "logs"), where("email", "==", this.search), orderBy("date"))
+          query(collection(db, "logs"), where("email", "==", this.search), orderBy("date_inversed"))
         );
         if (emailDocs.docs.length) {
           this.manual_page = [...emailDocs.docs];
@@ -258,7 +258,11 @@ export default {
           );
           new WarningToast(`No logs found with that reference, checking for matching users`, 3500);
           const userDocs = await getDocs(
-            query(collection(db, "logs"), where("user", "==", this.search), orderBy("date"))
+            query(
+              collection(db, "logs"),
+              where("user", "==", this.search),
+              orderBy("date_inversed")
+            )
           );
           if (userDocs.docs.length) {
             this.manual_page = [...userDocs.docs];
