@@ -180,7 +180,7 @@ export default {
   },
   watch: {
     page() {
-      this.$router.push({ query: { page: this.active, ...this.$route.query, search: null } });
+      this.$router.push({ query: { page: this.active, ...this.$route.query, search: undefined } });
     },
     "$route.query.page"(page) {
       if (this.pages.some((p) => p.short === page)) {

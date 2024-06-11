@@ -227,7 +227,7 @@ export default {
       this.loaded = "";
       this.manual_page = [];
       // clear search from query
-      this.$router.push({ query: { ...this.$route.query, search: null } });
+      this.$router.push({ query: { ...this.$route.query, search: undefined } });
     },
     async submit() {
       // EMAIL
