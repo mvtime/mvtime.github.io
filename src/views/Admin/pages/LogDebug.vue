@@ -19,6 +19,7 @@
           class="docs_nav_button clear"
           @click="clear"
           :title="`Clear query '${this.loaded}'`"
+          :class="{ click_escape: active == null }"
         ></button>
         <button
           v-else-if="search"
@@ -26,6 +27,11 @@
           :disabled="(search.length < 10 && !search.includes('@')) || search.length > 100"
           @click="submit"
           title="Submit query (10+ characters or user email)"
+          :class="{
+            click_ctrlenter:
+              active == null &&
+              !((search.length < 10 && !search.includes('@')) || search.length > 100),
+          }"
         ></button>
         <div class="docs_nav__loaded">
           <span v-if="manual"
@@ -165,12 +171,12 @@ export default {
       return [
         {
           key: "Ctrl + Enter",
-          description: "Download active log",
+          description: "Download active log, submit search",
           top: true,
         },
         {
           key: "Escape",
-          description: "Collapse active log",
+          description: "Collapse active log, clear search",
           top: true,
         },
       ];
