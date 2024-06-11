@@ -5,23 +5,54 @@
         <button
           class="docs_nav_button prev"
           @click="prev"
-          :disabled="!(total || pages.length) || !page_index"
+          :disabled="!(total.length || pages.length) || !page_index"
           title="Previous Page"
         ></button>
         <input
           type="text"
+          v-model="search"
           class="docs_nav_search"
-          placeholder="Log Reference [Coming Soon]"
-          disabled
+          placeholder="Search Log Reference, User ID, or Email"
         />
         <button
+          v-if="manual && loaded"
+          class="docs_nav_button clear"
+          @click="clear"
+          :title="`Clear query '${this.loaded}'`"
+        ></button>
+        <button
+          v-else-if="search"
+          class="docs_nav_button search"
+          :disabled="(search.length < 10 && !search.includes('@')) || search.length > 100"
+          @click="submit"
+          title="Submit query (10+ characters or user email)"
+        ></button>
+        <div class="docs_nav__loaded">
+          <span v-if="manual"
+            >{{ manual_page.length }} Result{{ manual_page.length == 1 ? "" : "s" }}</span
+          >
+          <span v-else>
+            {{
+              total.length +
+              (more &&
+              pages.length &&
+              pages[pages.length - 1].length &&
+              pages[pages.length - 1].length == page_size
+                ? "+"
+                : "")
+            }}
+            Result{{ total.length == 1 ? "" : "s" }}</span
+          >
+        </div>
+        <button
+          v-if="!(manual && search)"
           class="docs_nav_button next"
           @click="next"
-          :disabled="!(total || pages.length) || !more"
+          :disabled="!(total.length || pages.length) || !more"
           title="Next Page"
         ></button>
       </nav>
-      <div class="docs" v-if="pages.length && total">
+      <div class="docs" v-if="pages.length && total.length">
         <div class="doc" v-for="doc in page" :key="doc.id" :class="{ active: active == doc.id }">
           <button
             class="doc_details__toggle"
@@ -39,25 +70,25 @@
               <span class="doc_title__email_user">{{ doc.data().email.split("@")[0] }}</span
               ><span class="doc_title__email_domain">@{{ doc.data().email.split("@")[1] }} </span>
             </span>
-            <span class="doc_title__user">{{ doc.data().user }}</span>
+            <span class="doc_title__ref">{{ doc.id }}</span>
             <span class="doc_title__time">{{ doc.data().date.toDate().getTime() }}</span>
           </div>
           <div class="doc_details" v-else>
             <table class="doc_details_table">
               <tr>
-                <th>Email</th>
+                <th>Email:</th>
                 <td>{{ doc.data().email }}</td>
               </tr>
               <tr>
-                <th>User</th>
+                <th>User:</th>
                 <td>{{ doc.data().user }}</td>
               </tr>
               <tr>
-                <th>Date</th>
+                <th>Date:</th>
                 <td>{{ doc.data().date.toDate() }}</td>
               </tr>
               <tr>
-                <th>Ref</th>
+                <th>Ref:</th>
                 <td>{{ doc.id }}</td>
               </tr>
             </table>
@@ -76,7 +107,10 @@
           </div>
         </div>
       </div>
-      <div class="docs_placeholder docs_placeholder__empty" v-else-if="!total && pages.length">
+      <div
+        class="docs_placeholder docs_placeholder__empty"
+        v-else-if="!total.length && pages.length"
+      >
         No logs to display
       </div>
       <div class="docs_placeholder docs_placeholder__loading" v-else>
@@ -87,9 +121,20 @@
 </template>
 
 <script>
-import { collection, query, orderBy, startAfter, limit, getDocs } from "firebase/firestore";
+import {
+  collection,
+  query,
+  orderBy,
+  startAfter,
+  limit,
+  getDocs,
+  getDoc,
+  doc,
+  where,
+} from "firebase/firestore";
 import { db } from "@/firebase";
 import { downloadLogData } from "@/common";
+import { WarningToast } from "@svonk/util";
 export default {
   data() {
     return {
@@ -97,14 +142,17 @@ export default {
       page_index: 0,
       page_size: 10,
       pages: [],
+      search: "",
+      loaded: "",
+      manual_page: [],
     };
   },
   computed: {
     page() {
-      return this.pages[this.page_index];
+      return this.manual ? this.manual_page : this.pages[this.page_index];
     },
     total() {
-      return this.pages.reduce((acc, page) => acc + page.length, 0);
+      return this.pages.flat(1);
     },
     more() {
       return (
@@ -127,9 +175,16 @@ export default {
         },
       ];
     },
+    manual() {
+      return this.loaded && this.manual_page.length;
+    },
   },
   async mounted() {
     this.$shortcuts.register_all(this.shortcuts, "Admin - Logs & Debugging");
+    if (this.$route.query.search) {
+      this.search = this.$route.query.search;
+      this.submit();
+    }
     await this.init();
   },
   beforeUnmount() {
@@ -164,8 +219,63 @@ export default {
         this.$status.log(`📜 Loaded next ${docs.docs.length} of ${this.page_size} documents`);
         this.next();
       } else {
-        this.$status.log(`📜 No more documents to load (${this.total} loaded)`);
+        this.$status.log(`📜 No more documents to load (${this.total.length} loaded)`);
       }
+    },
+    clear() {
+      this.search = "";
+      this.loaded = "";
+      this.manual_page = [];
+      // clear search from query
+      this.$router.push({ query: { ...this.$route.query, search: null } });
+    },
+    async submit() {
+      // EMAIL
+      if (this.search.includes("@")) {
+        // get logs where email == this.search
+        const emailDocs = await getDocs(
+          query(collection(db, "logs"), where("email", "==", this.search), orderBy("date"))
+        );
+        if (emailDocs.docs.length) {
+          this.manual_page = [...emailDocs.docs];
+        } else {
+          this.$status.warn(`🔍 No logs found with email <${this.search}>`);
+          new WarningToast(`No logs found with that email address`, 3500);
+          this.clear();
+        }
+      }
+      // REF / USER
+      else if (this.search.length >= 10) {
+        // REF
+        const logDoc = await getDoc(doc(db, "logs", this.search));
+        if (logDoc.exists()) {
+          this.manual_page = [logDoc];
+        }
+        // USER
+        else {
+          this.$status.warn(
+            `🔍 No logs found with reference <${this.search}>, searching for matching user`
+          );
+          new WarningToast(`No logs found with that reference, checking for matching users`, 3500);
+          const userDocs = await getDocs(
+            query(collection(db, "logs"), where("user", "==", this.search), orderBy("date"))
+          );
+          if (userDocs.docs.length) {
+            this.manual_page = [...userDocs.docs];
+          } else {
+            this.$status.warn(`🔍 No logs found with user <${this.search}>`);
+            new WarningToast(`No logs found with that user id or reference`, 3500);
+            this.clear();
+          }
+        }
+      }
+      // FAIL
+      else {
+        this.$status.warn("🔍 Invalid search query for logs");
+        new WarningToast("Invalid search query for logs, must be 10+ characters or email", 3500);
+      }
+      this.loaded = this.search;
+      this.$router.push({ query: { ...this.$route.query, search: this.search } });
     },
   },
 };
@@ -210,7 +320,7 @@ export default {
 }
 
 .docs .doc .doc_title span {
-  flex: 0 1 auto;
+  flex: 1 1 200px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -221,12 +331,13 @@ export default {
 }
 .docs .doc .doc_title .doc_title__time {
   font-family: "Source Code Pro", monospace;
-  flex-grow: 1;
+  flex-grow: 10;
   text-align: right;
   margin-right: 35px;
   line-height: 25px;
   display: block;
 }
+
 .doc_title__toggle {
   visibility: hidden;
 }
@@ -270,19 +381,33 @@ nav.docs_nav {
   gap: 10px;
   justify-content: stretch;
 }
-nav.docs_nav .docs_nav_search {
+nav.docs_nav .docs_nav_search,
+nav.docs_nav .docs_nav__loaded {
   background: var(--color-on-bg);
   color: var(--color-text);
+  line-height: 35px;
   border: none;
   border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar));
   width: unset;
   flex: 1 1 auto;
   font-size: 14px;
-  padding: 0 10px;
+  padding: 0 15px;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-align: center;
+  text-align: left;
 }
+nav.docs_nav .docs_nav__loaded {
+  width: max-content;
+  flex: 0 0 auto;
+  color: var(--color-text);
+  user-select: none;
+  padding: 0 10px;
+}
+nav.docs_nav .docs_nav__loaded span {
+  opacity: 0.5;
+  font-weight: 500;
+}
+
 nav.docs_nav .docs_nav_search[disabled] {
   cursor: not-allowed;
   opacity: 0.5;
@@ -321,6 +446,14 @@ nav.docs_nav .docs_nav_button,
   background-image: url("@/assets/img/general/portal/admin/next.png");
   background-image: url("@/assets/img/general/portal/admin/next.svg");
 }
+.docs_nav_button.search {
+  background-image: url("@/assets/img/general/portal/admin/search.png");
+  background-image: url("@/assets/img/general/portal/admin/search.svg");
+}
+.docs_nav_button.clear {
+  background-image: url("@/assets/img/general/portal/admin/clear.png");
+  background-image: url("@/assets/img/general/portal/admin/clear.svg");
+}
 nav.docs_nav .docs_nav_button[disabled] {
   background-color: var(--color-on-bg);
   color: var(--color-bg);
@@ -328,8 +461,9 @@ nav.docs_nav .docs_nav_button[disabled] {
   opacity: 0.5;
 }
 @media (max-width: 670px) {
-  .docs .doc .doc_title .doc_title__user,
-  .docs .doc .doc_title .doc_title__email_domain {
+  .docs .doc .doc_title .doc_title__ref,
+  .docs .doc .doc_title .doc_title__email_domain,
+  .docs_nav .docs_nav__loaded {
     display: none;
   }
 }
