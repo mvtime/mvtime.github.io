@@ -13,6 +13,7 @@
           v-model="search"
           class="docs_nav_search"
           placeholder="Search Log Reference, User ID, or Email"
+          @keydown.enter="submit"
         />
         <button
           v-if="manual && loaded && loaded == search"
@@ -170,8 +171,12 @@ export default {
     shortcuts() {
       return [
         {
+          key: "Enter",
+          description: "Submit search",
+        },
+        {
           key: "Ctrl + Enter",
-          description: "Download active log, submit search",
+          description: "Download active log",
           top: true,
         },
         {
@@ -395,7 +400,6 @@ nav.docs_nav .docs_nav_search,
 nav.docs_nav .docs_nav__loaded {
   background: var(--color-on-bg);
   color: var(--color-text);
-  line-height: 35px;
   border: none;
   border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar));
   width: unset;
@@ -412,6 +416,7 @@ nav.docs_nav .docs_nav__loaded {
   color: var(--color-text);
   user-select: none;
   padding: 0 10px;
+  line-height: 35px;
 }
 nav.docs_nav .docs_nav__loaded span {
   opacity: 0.5;
