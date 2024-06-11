@@ -64,7 +64,7 @@ const router = createRouter({
             },
             // redirect page
             {
-              path: "to/:path?",
+              path: "/to/:path?",
               name: "redirect",
               component: () => import("../views/Home/Redirect.vue"),
               meta: {
@@ -78,7 +78,7 @@ const router = createRouter({
             },
             // join form
             {
-              path: "join",
+              path: "/join",
               name: "join",
               component: () => import("@/views/Home/JoinModal.vue"),
               meta: {
@@ -95,7 +95,7 @@ const router = createRouter({
               },
             },
             {
-              path: "link/:code?",
+              path: "/link/:code?",
               name: "link",
               component: () => import("@/views/Home/LinkModal.vue"),
               props: true,
@@ -112,7 +112,7 @@ const router = createRouter({
           ],
         },
         {
-          path: "about",
+          path: "/about",
           name: "about",
           component: () => import("../views/Home/AboutView.vue"),
           meta: {
@@ -125,7 +125,7 @@ const router = createRouter({
           },
         },
         {
-          path: "legal/privacy",
+          path: "/legal/privacy",
           name: "privacy",
           component: () => import("../views/Home/Legal/PrivacyView.vue"),
           meta: {
@@ -138,7 +138,7 @@ const router = createRouter({
           },
         },
         {
-          path: "legal/tos",
+          path: "/legal/tos",
           name: "tos",
           component: () => import("../views/Home/Legal/TermsView.vue"),
           meta: {
@@ -151,7 +151,7 @@ const router = createRouter({
           },
         },
         {
-          path: "download",
+          path: "/download",
           name: "download",
           component: () => import("../views/Home/DownloadView.vue"),
           meta: {
@@ -164,7 +164,7 @@ const router = createRouter({
           },
         },
         {
-          path: "roadmap",
+          path: "/roadmap",
           name: "roadmap",
           component: () => import("../views/Home/TodoView.vue"),
           meta: {
@@ -177,7 +177,7 @@ const router = createRouter({
           },
         },
         {
-          path: "contact",
+          path: "/contact",
           name: "contact",
           component: () => import("../views/Home/ContactView.vue"),
           meta: {
