@@ -84,6 +84,14 @@
             >
               <div class="settings_icon"></div>
             </button>
+            <button
+              v-if="$store.is_admin"
+              class="portal_bottom_button admin_button click-action"
+              title="Admin Panel"
+              @click="$router.push({ name: 'admin', query: $route.query })"
+            >
+              <div class="admin_icon"></div>
+            </button>
           </div>
         </div>
         <!-- block contents -->
@@ -415,6 +423,7 @@ main.portal .portal_bottom_bar_container .portal_bottom_bar {
 }
 main.portal .portal_bottom_bar_container .portal_bottom_button_wrapper {
   display: flex;
+  gap: 10px;
   flex: 0 0 auto;
   justify-content: center;
   align-items: center;

@@ -38,6 +38,15 @@
     >
       <div class="settings_icon"></div>
     </button>
+
+    <button
+      v-if="$store.is_admin"
+      class="portal_bottom_button admin_button click-action"
+      title="Admin Panel"
+      @click="$router.push({ name: 'admin', query: $route.query })"
+    >
+      <div class="admin_icon"></div>
+    </button>
     <SidebarToggle @click="close_sidebar" />
   </div>
 </template>
@@ -188,12 +197,16 @@ export default {
 }
 
 /* info icon */
-.settings_button {
+.settings_button,
+.admin_button {
   position: absolute;
   display: block;
   bottom: calc(var(--padding-sidebar) / 1.5);
   right: calc(var(--padding-sidebar) / 1.5);
   z-index: 1;
+}
+.admin_button {
+  right: calc(var(--padding-sidebar) / 0.75 + var(--size-sidebar-button));
 }
 .sidebar_overflow::-webkit-scrollbar {
   display: none;

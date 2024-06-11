@@ -268,7 +268,8 @@ main.parent:not(.simplified) .button_pointer_icon.click-action:active {
 }
 
 /* button */
-.settings_button {
+.settings_button,
+.admin_button {
   height: var(--size-sidebar-button);
   width: var(--size-sidebar-button);
   cursor: pointer;
@@ -277,15 +278,22 @@ main.parent:not(.simplified) .button_pointer_icon.click-action:active {
   background-color: var(--color-on-bg);
   padding: 0;
 }
-.settings_icon {
+.settings_icon,
+.admin_icon {
   height: 100%;
   width: 100%;
   filter: var(--filter-icon);
-  background-image: url(@/assets/img/general/portal/settings.png);
-  background-image: url(@/assets/img/general/portal/settings.svg);
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
   user-select: none;
   pointer-events: none;
+}
+.settings_icon {
+  background-image: url(@/assets/img/general/portal/settings.png);
+  background-image: url(@/assets/img/general/portal/settings.svg);
+}
+.admin_icon {
+  background-image: url(@/assets/img/general/portal/admin.png);
+  background-image: url(@/assets/img/general/portal/admin.svg);
 }

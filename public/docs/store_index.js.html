@@ -560,7 +560,7 @@ export const useMainStore = defineStore({
         });
 
         new SuccessToast("Logs reported and saved locally, check console for details", 3500);
-        _status.log(`📊 Reported logs to serve as '${docRef.id}'`);
+        _status.log(`📊 Reported logs to server as '${docRef.id}'`);
 
         // save to disk
         void _status.saveStream(docRef.id);
