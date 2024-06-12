@@ -1,7 +1,7 @@
 <template>
   <Modal
     :can_continue="true"
-    :title="'Leaving ' + $env.VUE_APP_BRAND_SHORT_NAME"
+    :title="'Leaving ' + $env.VUE_APP_BRAND_NAME_SHORT"
     :html="contents"
     :continue_action="open"
     :skippable="true"
@@ -45,7 +45,7 @@ export default {
         this.$env.VUE_APP_BRAND_DOMAIN == url.host ||
         url.host.endsWith("." + this.$env.VUE_APP_BRAND_DOMAIN)
       ) {
-        this.$status.log(`🔗 Redirecting to ${this.$env.VUE_APP_BRAND_SHORT_NAME}`);
+        this.$status.log(`🔗 Redirecting to ${this.$env.VUE_APP_BRAND_NAME_SHORT}`);
         this.open();
         return;
       }
@@ -62,7 +62,7 @@ export default {
       }
     } catch {
       this.$status.log(
-        `Couldn't not verify path domain is not ${this.$env.VUE_APP_BRAND_SHORT_NAME}`
+        `Couldn't not verify path domain is not ${this.$env.VUE_APP_BRAND_NAME_SHORT}`
       );
     }
   },
@@ -72,7 +72,7 @@ export default {
         ? `You are being redirected to <a href="${this.path}">${new URL(this.path).host}</a>
             <br><br>
            Content outside of ${
-             this.$env.VUE_APP_BRAND_SHORT_NAME
+             this.$env.VUE_APP_BRAND_NAME_SHORT
            } is not vetted by our team, and may be harmful.`
         : "Missing redirect path";
     },

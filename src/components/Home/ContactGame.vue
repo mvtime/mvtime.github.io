@@ -70,8 +70,8 @@ export default {
           },
           lines: [
             `Hi there! You can find me on <a href="https://linkedin.com/in/sandercvonk/" target="_blank">LinkedIn</a>, email me at <a href="mailto:sander@svonk.me" target="_blank">sander@svonk.me</a> or just <a href="https://svonk.me/ecard" download target="_blank">add me to your contacts!<a>`,
-            `Thanks for using ${process.env.VUE_APP_BRAND_SHORT_NAME}! We really hope you find it useful, and if you have any feedback, please reach out!`,
-            `By the way, did you know we have an API? You can use it to build your own apps that integrate with ${process.env.VUE_APP_BRAND_SHORT_NAME}. Try it out at <a href="https://${process.env.VUE_APP_BRAND_DOMAIN__API}">${process.env.VUE_APP_BRAND_DOMAIN__API}</a>, and contact me to get things set up!`,
+            `Thanks for using ${process.env.VUE_APP_BRAND_NAME_SHORT}! We really hope you find it useful, and if you have any feedback, please reach out!`,
+            `By the way, did you know we have an API? You can use it to build your own apps that integrate with ${process.env.VUE_APP_BRAND_NAME_SHORT}. Try it out at <a href="https://${process.env.VUE_APP_BRAND_DOMAIN__API}">${process.env.VUE_APP_BRAND_DOMAIN__API}</a>, and contact me to get things set up!`,
           ],
         },
         {

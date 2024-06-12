@@ -1,7 +1,7 @@
 <template>
   <div class="left-bar portal_sidebar" :class="{ active: sidebar_open }" @click="show_if_inactive">
     <div class="sidebar_overflow">
-      <div class="branding-title gohome">{{ $env.VUE_APP_BRAND_LONG_NAME }}</div>
+      <div class="branding-title gohome">{{ $env.VUE_APP_BRAND_NAME_LONG }}</div>
       <div class="flex_spacer"></div>
       <!-- Actions Panel -->
       <ActionsPanel v-if="$store && $store.is_teacher" />

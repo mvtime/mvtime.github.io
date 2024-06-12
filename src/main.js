@@ -59,7 +59,7 @@ watch(
   pinia.state,
   (state) => {
     window.localStorage.setItem(
-      `${process.env.VUE_APP_BRAND_SHORT_NAME}_app_state`,
+      `${process.env.VUE_APP_BRAND_NAME_SHORT}_app_state`,
       JSON.stringify(state.main)
     );
   },
@@ -67,7 +67,7 @@ watch(
 );
 // when window.localStorage. _teacher_mode changes, reload
 window.addEventListener("storage", (e) => {
-  if (e.key === `${process.env.VUE_APP_BRAND_SHORT_NAME}_teacher_mode`) {
+  if (e.key === `${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`) {
     _status.log("🏫 Detected teacher mode change, reloading");
     window.location.reload();
   }
@@ -129,9 +129,9 @@ $(document.body).on("click", ".gohome", function () {
 import { removePopup } from "@svonk/util";
 router.afterEach((to) => {
   if (to.meta && to.meta.page_title) {
-    document.title = `${process.env.VUE_APP_BRAND_LONG_NAME} | ` + to.meta.page_title;
+    document.title = `${process.env.VUE_APP_BRAND_NAME_LONG} | ` + to.meta.page_title;
   } else {
-    document.title = process.env.VUE_APP_BRAND_LONG_NAME;
+    document.title = process.env.VUE_APP_BRAND_NAME_LONG;
   }
   let theme_light = to.meta?.theme_color?.light || `#${process.env.VUE_APP_THEME_COLOR}`;
   let theme_dark = to.meta?.theme_color?.dark || `#${process.env.VUE_APP_THEME_COLOR}`;

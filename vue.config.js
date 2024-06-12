@@ -50,8 +50,8 @@ module.exports = defineConfig({
     electronBuilder: {
       builderOptions: {
         appId: process.env.VUE_APP_BRAND_DOMAIN.split(".").reverse().join("."),
-        productName: process.env.VUE_APP_BRAND_LONG_NAME,
-        copyright: `© 2022-2023 ${process.env.VUE_APP_BRAND_LONG_NAME}`,
+        productName: process.env.VUE_APP_BRAND_NAME_LONG,
+        copyright: `© 2022-2023 ${process.env.VUE_APP_BRAND_NAME_LONG}`,
         win: {
           icon: "public/img/icons/app.ico",
           target: "nsis",
@@ -64,12 +64,12 @@ module.exports = defineConfig({
           icon: "public/img/icons/app.png",
           target: "AppImage",
         },
-        artifactName: process.env.VUE_APP_BRAND_SHORT_NAME + "-setup.${ext}",
+        artifactName: process.env.VUE_APP_BRAND_NAME_SHORT + "-setup.${ext}",
         protocols: [
           {
-            name: `${process.env.VUE_APP_BRAND_SHORT_NAME} App`,
+            name: `${process.env.VUE_APP_BRAND_NAME_SHORT} App`,
             role: "Viewer",
-            schemes: ["app", process.env.VUE_APP_BRAND_SHORT_NAME.toLowerCase()],
+            schemes: ["app", process.env.VUE_APP_BRAND_NAME_SHORT.toLowerCase()],
           },
         ],
       },
@@ -87,11 +87,11 @@ module.exports = defineConfig({
     appleMobileWebAppStatusBarStyle: "black-translucent",
     display: "standalone",
     manifestOptions: {
-      name: process.env.VUE_APP_BRAND_LONG_NAME,
+      name: process.env.VUE_APP_BRAND_NAME_LONG,
       id: process.env.VUE_APP_BRAND_DOMAIN,
-      short_name: process.env.VUE_APP_BRAND_SHORT_NAME,
+      short_name: process.env.VUE_APP_BRAND_NAME_SHORT,
       theme_color: `#${process.env.VUE_APP_THEME_COLOR}`,
-      description: `${process.env.VUE_APP_BRAND_LONG_NAME} provides a more effective way to manage your upcoming tests and exams.`,
+      description: `${process.env.VUE_APP_BRAND_NAME_LONG} provides a more effective way to manage your upcoming tests and exams.`,
       screenshots: [
         // in ./img/ss/
         {

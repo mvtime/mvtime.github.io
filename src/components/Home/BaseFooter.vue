@@ -3,8 +3,8 @@
     <p>
       <span
         >&copy; 2022-2023
-        <span class="desktop_only">{{ $env.VUE_APP_BRAND_LONG_NAME }}</span>
-        <span class="mobile_only">{{ $env.VUE_APP_BRAND_SHORT_NAME }}</span
+        <span class="desktop_only">{{ $env.VUE_APP_BRAND_NAME_LONG }}</span>
+        <span class="mobile_only">{{ $env.VUE_APP_BRAND_NAME_SHORT }}</span
         >.&nbsp;</span
       >
       &ThickSpace;<span>Website by <a href="https://svonk.me/">Sander Vonk</a>.</span>

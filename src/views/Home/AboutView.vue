@@ -9,12 +9,12 @@
     </div>
     <hr />
     <p class="about_body">
-      At {{ $env.VUE_APP_BRAND_SHORT_NAME }}, we're working to lighten the load on both students and
+      At {{ $env.VUE_APP_BRAND_NAME_SHORT }}, we're working to lighten the load on both students and
       teachers. Far too many times have students realized that they had 2, 3, or even 4 major tests
       <i>on the same day</i>! Students should never have to sacrifice their ability to demonstrate
       what they've learned, and teachers should never have to see their students stressed, simply
       because of scheduling issues. <br /><br />
-      {{ $env.VUE_APP_BRAND_LONG_NAME }} exists to help everyone involved in the testing process to
+      {{ $env.VUE_APP_BRAND_NAME_LONG }} exists to help everyone involved in the testing process to
       make better use of their time, and to remove as much the stress and uncertainty around it as
       possible. Our tool is made for <i>you</i>, and your feedback and ideas are an essencial part
       of our mission. We'd love for you to be involved in the development process, you can see what
@@ -24,7 +24,7 @@
       Thank you for your support,
       <br />
       <b class="team-signature"
-        ><router-link to="/contact">The {{ $env.VUE_APP_BRAND_LONG_NAME }} Team</router-link></b
+        ><router-link to="/contact">The {{ $env.VUE_APP_BRAND_NAME_LONG }} Team</router-link></b
       >
     </p>
   </main>

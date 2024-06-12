@@ -4,7 +4,7 @@
       <div class="admin_sidebar_scrollable admin_section">
         <div class="admin_sidebar_header">
           <div class="branding-title gohome">
-            {{ $env.VUE_APP_BRAND_SHORT_NAME }}
+            {{ $env.VUE_APP_BRAND_NAME_SHORT }}
             <span
               class="branding-admin"
               @click="

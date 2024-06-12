@@ -1,11 +1,11 @@
 <template>
   <div>
-    <h1>Privacy Policy for {{ $env.VUE_APP_BRAND_LONG_NAME }}</h1>
+    <h1>Privacy Policy for {{ $env.VUE_APP_BRAND_NAME_LONG }}</h1>
 
     <p>
-      At {{ $env.VUE_APP_BRAND_LONG_NAME }}, accessible from {{ $env.VUE_APP_BRAND_DOMAIN }}, one of
+      At {{ $env.VUE_APP_BRAND_NAME_LONG }}, accessible from {{ $env.VUE_APP_BRAND_DOMAIN }}, one of
       our main priorities is the privacy of our visitors. This Privacy Policy document contains
-      types of information that is collected and recorded by {{ $env.VUE_APP_BRAND_LONG_NAME }} and
+      types of information that is collected and recorded by {{ $env.VUE_APP_BRAND_NAME_LONG }} and
       how we use it.
     </p>
 
@@ -117,7 +117,7 @@
     <h2>Log Files</h2>
 
     <p>
-      {{ $env.VUE_APP_BRAND_LONG_NAME }} follows a standard procedure of using log files. These
+      {{ $env.VUE_APP_BRAND_NAME_LONG }} follows a standard procedure of using log files. These
       files log visitors when they visit websites. All hosting companies do this and a part of
       hosting services' analytics. The information collected by log files include internet protocol
       (IP) addresses, browser type, Internet Service Provider (ISP), date and time stamp,
@@ -131,7 +131,7 @@
 
     <p>
       You may consult this list to find the Privacy Policy for each of the advertising partners of
-      {{ $env.VUE_APP_BRAND_LONG_NAME }}.
+      {{ $env.VUE_APP_BRAND_NAME_LONG }}.
     </p>
 
     <p>
@@ -144,14 +144,14 @@
     </p>
 
     <p>
-      Note that {{ $env.VUE_APP_BRAND_LONG_NAME }} has no access to or control over these cookies
+      Note that {{ $env.VUE_APP_BRAND_NAME_LONG }} has no access to or control over these cookies
       that are used by third-party advertisers.
     </p>
 
     <h2>Third Party Privacy Policies</h2>
 
     <p>
-      {{ $env.VUE_APP_BRAND_LONG_NAME }}'s Privacy Policy does not apply to other advertisers or
+      {{ $env.VUE_APP_BRAND_NAME_LONG }}'s Privacy Policy does not apply to other advertisers or
       websites. Thus, we are advising you to consult the respective Privacy Policies of these
       third-party ad servers for more detailed information. It may include their practices and
       instructions about how to opt-out of certain options.
@@ -172,7 +172,7 @@
     </p>
 
     <p>
-      {{ $env.VUE_APP_BRAND_LONG_NAME }} does not knowingly collect any Personal Identifiable
+      {{ $env.VUE_APP_BRAND_NAME_LONG }} does not knowingly collect any Personal Identifiable
       Information from children under the age of 13. If you think that your child provided this kind
       of information on our website, we strongly encourage you to contact us immediately and we will
       do our best efforts to promptly remove such information from our records.
@@ -183,7 +183,7 @@
     <p>
       This Privacy Policy applies only to our online activities and is valid for visitors to our
       website with regards to the information that they shared and/or collect in
-      {{ $env.VUE_APP_BRAND_LONG_NAME }}. This policy is not applicable to any information collected
+      {{ $env.VUE_APP_BRAND_NAME_LONG }}. This policy is not applicable to any information collected
       offline or via channels other than this website.
     </p>
 

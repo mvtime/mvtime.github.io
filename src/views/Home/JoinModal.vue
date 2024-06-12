@@ -7,7 +7,7 @@
         class="overlay_contents overlay_contents__page overlay_more_pad_horizontal pad_overlay"
       >
         <h2 class="header_style modal_header_title overlay_title">
-          Join the {{ $env.VUE_APP_BRAND_SHORT_NAME }} Beta
+          Join the {{ $env.VUE_APP_BRAND_NAME_SHORT }} Beta
         </h2>
         <div class="overlay_inputs inputs_column">
           <input
@@ -44,7 +44,7 @@
             v-model="form.usage"
             class="styled_input styled_textarea styled_obj"
             type="text"
-            :placeholder="`How will you use ${$env.VUE_APP_BRAND_SHORT_NAME} (optional)`"
+            :placeholder="`How will you use ${$env.VUE_APP_BRAND_NAME_SHORT} (optional)`"
           />
         </div>
       </div>

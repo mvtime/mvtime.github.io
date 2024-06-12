@@ -31,7 +31,7 @@
           </div>
           <br />
           <div class="overlay_contents_text">
-            Please click anywhere to resume using {{ $env.VUE_APP_BRAND_SHORT_NAME }}.
+            Please click anywhere to resume using {{ $env.VUE_APP_BRAND_NAME_SHORT }}.
           </div>
         </div>
       </main>

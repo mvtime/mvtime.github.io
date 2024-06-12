@@ -188,7 +188,7 @@ export default {
             navigator
               .share({
                 title: this.$store.class_text(this.class_obj),
-                text: `Join my class on ${this.$env.VUE_APP_BRAND_SHORT_NAME}!`,
+                text: `Join my class on ${this.$env.VUE_APP_BRAND_NAME_SHORT}!`,
                 url: url.href,
               })
               .then(() => new SuccessToast("Opened share dialog", 1000))

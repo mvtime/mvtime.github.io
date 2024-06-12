@@ -192,7 +192,7 @@ export default {
           .share({
             title: this.class_obj.name,
             text: `Check out ${this.class_obj.name || "this class"} on ${
-              this.$env.VUE_APP_BRAND_SHORT_NAME
+              this.$env.VUE_APP_BRAND_NAME_SHORT
             }!`,
             url: url.href,
           })

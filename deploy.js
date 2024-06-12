@@ -70,7 +70,7 @@ function deploy() {
   runCommand(
     `vue-cli-service build${mode ? ` --mode ${mode}` : ""}`,
     "build",
-    `Building "${env.parsed.VUE_APP_BRAND_LONG_NAME}" (${env.parsed.VUE_APP_BRAND_SHORT_NAME})`
+    `Building "${env.parsed.VUE_APP_BRAND_NAME_LONGNAME}" (${env.parsed.VUE_APP_BRAND_NAME_SHORT})`
   );
 
   runCommand("npm run postbuild", "postbuild", "Running postbuild script");

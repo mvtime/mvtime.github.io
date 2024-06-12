@@ -1,21 +1,21 @@
 <template>
   <div>
     <h1>
-      Terms and Conditions for <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}</b>
+      Terms and Conditions for <b>{{ $env.VUE_APP_BRAND_NAME_LONG }}</b>
     </h1>
 
     <p>
-      Welcome to <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}!</b>
+      Welcome to <b>{{ $env.VUE_APP_BRAND_NAME_LONG }}!</b>
     </p>
     <p>
       These terms and conditions outline the rules and regulations for the use of
-      <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}.</b>, Website, located at
+      <b>{{ $env.VUE_APP_BRAND_NAME_LONG }}.</b>, Website, located at
       <b>{{ $env.VUE_APP_BRAND_DOMAIN }}</b>
     </p>
 
     <p>
       By accessing this website we assume you accept these terms and conditions. Do not continue to
-      use <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}</b> if you do not agree to take all of the terms and
+      use <b>{{ $env.VUE_APP_BRAND_NAME_LONG }}</b> if you do not agree to take all of the terms and
       conditions stated on this page.
     </p>
 
@@ -37,8 +37,8 @@
 
     <p>
       We employ the use of cookies. By accessing
-      <b>{{ $env.VUE_APP_BRAND_LONG_NAME }},</b> you agreed to use cookies in agreement with the
-      <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}'s</b> Privacy Policy.
+      <b>{{ $env.VUE_APP_BRAND_NAME_LONG }},</b> you agreed to use cookies in agreement with the
+      <b>{{ $env.VUE_APP_BRAND_NAME_LONG }}'s</b> Privacy Policy.
     </p>
     <p>
       Most interactive websites use cookies to let us retrieve the user's details for each visit.
@@ -50,25 +50,25 @@
     <h2>License</h2>
 
     <p>
-      Unless otherwise stated, <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}</b> and/or its licensors own
+      Unless otherwise stated, <b>{{ $env.VUE_APP_BRAND_NAME_LONG }}</b> and/or its licensors own
       the intellectual property rights for all material on
-      <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}.</b> All intellectual property rights are reserved. You
-      may access this from <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}</b> for your own personal use
+      <b>{{ $env.VUE_APP_BRAND_NAME_LONG }}.</b> All intellectual property rights are reserved. You
+      may access this from <b>{{ $env.VUE_APP_BRAND_NAME_LONG }}</b> for your own personal use
       subjected to restrictions set in these terms and conditions.
     </p>
     <p>You must not:</p>
     <ul>
       <li>
-        Republish material from <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}</b>
+        Republish material from <b>{{ $env.VUE_APP_BRAND_NAME_LONG }}</b>
       </li>
       <li>
-        Sell, rent or sub-license material from <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}</b>
+        Sell, rent or sub-license material from <b>{{ $env.VUE_APP_BRAND_NAME_LONG }}</b>
       </li>
       <li>
-        Reproduce, duplicate or copy material from <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}</b>
+        Reproduce, duplicate or copy material from <b>{{ $env.VUE_APP_BRAND_NAME_LONG }}</b>
       </li>
       <li>
-        Redistribute content from <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}</b>
+        Redistribute content from <b>{{ $env.VUE_APP_BRAND_NAME_LONG }}</b>
       </li>
     </ul>
 
@@ -77,17 +77,17 @@
     <p>
       Parts of this website offer an opportunity for users to post and exchange opinions and
       information in certain areas of the website.
-      <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}'s</b> does not filter, edit, publish or review Comments
+      <b>{{ $env.VUE_APP_BRAND_NAME_LONG }}'s</b> does not filter, edit, publish or review Comments
       prior to their presence on the website. Comments do not reflect the views and opinions of
-      <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}'s</b> its agents and/or affiliates. Comments reflect the
+      <b>{{ $env.VUE_APP_BRAND_NAME_LONG }}'s</b> its agents and/or affiliates. Comments reflect the
       views and opinions of the person who post their views and opinions. To the extent permitted by
-      applicable laws, <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}'s</b> shall not be liable for the
+      applicable laws, <b>{{ $env.VUE_APP_BRAND_NAME_LONG }}'s</b> shall not be liable for the
       Comments or for any liability, damages or expenses caused and/or suffered as a result of any
       use of and/or posting of and/or appearance of the Comments on this website.
     </p>
 
     <p>
-      <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}'s</b> reserves the right to monitor all Comments and to
+      <b>{{ $env.VUE_APP_BRAND_NAME_LONG }}'s</b> reserves the right to monitor all Comments and to
       remove any Comments which can be considered inappropriate, offensive or causes breach of these
       Terms and Conditions.
     </p>
@@ -167,7 +167,7 @@
       not make us look unfavorably to ourselves or to our accredited businesses; (b) the
       organization does not have any negative records with us; (c) the benefit to us from the
       visibility of the hyperlink compensates the absence of
-      <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}</b
+      <b>{{ $env.VUE_APP_BRAND_NAME_LONG }}</b
       >; and (d) the link is in the context of general resource information.
     </p>
     <p>
@@ -179,7 +179,7 @@
     <p>
       If you are one of the organizations listed in paragraph 2 above and are interested in linking
       to our website, you must inform us by sending an e-mail to
-      <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}</b
+      <b>{{ $env.VUE_APP_BRAND_NAME_LONG }}</b
       >. Please include your name, your organization name, contact information as well as the URL of
       your site, a list of any URLs from which you intend to link to our Website, and a list of the
       URLs on our site to which you would like to link. Wait 2-3 weeks for a response.
@@ -197,7 +197,7 @@
     </ul>
 
     <p>
-      No use of <b>{{ $env.VUE_APP_BRAND_LONG_NAME }}'s</b> logo or other artwork will be allowed
+      No use of <b>{{ $env.VUE_APP_BRAND_NAME_LONG }}'s</b> logo or other artwork will be allowed
       for linking absent a trademark license agreement.
     </p>
 

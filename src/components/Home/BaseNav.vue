@@ -1,6 +1,6 @@
 <template>
   <header>
-    <h1 class="gohome hideoverflow">{{ $env.VUE_APP_BRAND_LONG_NAME }}</h1>
+    <h1 class="gohome hideoverflow">{{ $env.VUE_APP_BRAND_NAME_LONG }}</h1>
 
     <!-- Theme Button -->
     <button

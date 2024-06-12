@@ -204,7 +204,7 @@ export default {
           // do prompt on tutorial ready and elements showing
           if (!this.done_welcome) {
             new SuccessToast(
-              `Welcome to ${this.$env.VUE_APP_BRAND_SHORT_NAME}, let's get you comfortable!`,
+              `Welcome to ${this.$env.VUE_APP_BRAND_NAME_SHORT}, let's get you comfortable!`,
               3500
             );
             this.done_welcome = true;

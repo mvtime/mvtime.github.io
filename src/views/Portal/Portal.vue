@@ -46,7 +46,7 @@
           <div class="portal_info_welcome">
             {{
               $store.recently_joined
-                ? `Welcome to ${this.$env.VUE_APP_BRAND_SHORT_NAME}`
+                ? `Welcome to ${this.$env.VUE_APP_BRAND_NAME_SHORT}`
                 : $store.non_recent_signin
                 ? "Welcome Back"
                 : random_welcome
@@ -272,7 +272,7 @@ export default {
         },
       });
       new WarningToast(
-        `Please complete the daily survey to use ${this.$env.VUE_APP_BRAND_SHORT_NAME} today!`,
+        `Please complete the daily survey to use ${this.$env.VUE_APP_BRAND_NAME_SHORT} today!`,
         3000
       );
     },
@@ -319,7 +319,7 @@ export default {
           },
         });
         new WarningToast(
-          `Please fill out the join form to use ${this.$env.VUE_APP_BRAND_SHORT_NAME}!`,
+          `Please fill out the join form to use ${this.$env.VUE_APP_BRAND_NAME_SHORT}!`,
           3000
         );
       }
