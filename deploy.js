@@ -27,7 +27,7 @@ function centerMsg(opt, message) {
   if (message.length > width) {
     message = message.slice(0, width - 3) + "...";
   }
-  const spaces = " ".repeat(Math.floor((width - message.length) / 2));
+  const spaces = " ".repeat(Math.max(Math.floor((width - message.length) / 2), 9));
 
   console.log(opt, spaces + message);
 }
@@ -36,8 +36,8 @@ function runCommand(command, tag, message) {
   const width = Math.floor((process.stdout.columns - 10) / 2);
   console.log(
     "\x1b[33m%s\x1b[0m",
-    `\n|${"-".repeat(width - Math.ceil(tag.length / 2))} START ${tag} ${"-".repeat(
-      width - Math.floor(tag.length / 2)
+    `\n|${"-".repeat(Math.max(width - Math.ceil(tag.length / 2), 0))} START ${tag} ${"-".repeat(
+      Math.max(width - Math.floor(tag.length / 2), 0)
     )}|\n`
   );
   centerMsg("\x1b[34m%s\x1b[0m", message);
@@ -46,8 +46,8 @@ function runCommand(command, tag, message) {
 
   console.log(
     "\x1b[33m%s\x1b[0m",
-    `\n|${"-".repeat(width + 1 - Math.ceil(tag.length / 2))} END ${tag} ${"-".repeat(
-      width + 1 - Math.floor(tag.length / 2)
+    `\n|${"-".repeat(Math.max(width + 1 - Math.ceil(tag.length / 2), 0))} END ${tag} ${"-".repeat(
+      Math.max(width + 1 - Math.floor(tag.length / 2), 0)
     )}|\n`
   );
 }

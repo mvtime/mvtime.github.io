@@ -8,7 +8,13 @@
             <span
               class="branding-admin"
               @click="
-                $router.push({ name: 'portal' });
+                $router.push({
+                  name: 'portal',
+                  query: {
+                    ...$route.query,
+                    search: undefined,
+                  },
+                });
                 $event.stopPropagation();
               "
               >Admin Panel</span
@@ -180,7 +186,8 @@ export default {
   },
   watch: {
     page() {
-      this.$router.push({ query: { page: this.active, ...this.$route.query, search: undefined } });
+      this.$router.push({ query: { ...this.$route.query, page: this.active, search: undefined } });
+      this.$status.log("Admin page changed to", this.active);
     },
     "$route.query.page"(page) {
       if (this.pages.some((p) => p.short === page)) {
