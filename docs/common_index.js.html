@@ -51,7 +51,7 @@ function _log() {
   // check for very large messages and warn them in the console with the first 100 characters (make sure this catches the message, even if it's not the first argument, or in a object format)
   let args = Array.from(arguments);
   let extras = [
-    `%c${process.env.VUE_APP_BRAND_SHORT_NAME}`,
+    `%c${process.env.VUE_APP_BRAND_NAME_SHORT}`,
     `background:#${process.env.VUE_APP_BRAND_CONSOLE_COLOR_BG || "272727"};color:#${
       process.env.VUE_APP_BRAND_CONSOLE_COLOR_TEXT || "C9B092"
     };padding:7px 12px;font-family:Lato,sans-serif;font-weight:bold;font-size:1.3em`,
@@ -132,7 +132,7 @@ function downloadLogData(data, date, id = "manual") {
   try {
     save(
       format_stream(data),
-      `${process.env.VUE_APP_BRAND_SHORT_NAME}-log ${id} ${date
+      `${process.env.VUE_APP_BRAND_NAME_SHORT}-log ${id} ${date
         .toISOString()
         .split(":00.0")[0]
         .replace("T", " ")

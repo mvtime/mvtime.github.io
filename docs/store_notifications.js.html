@@ -49,7 +49,7 @@ export const useNotifications = defineStore({
           if (permission === "granted") {
             this.add({
               title: "Notifications Enabled",
-              message: `You can now receive notifications from ${process.env.VUE_APP_BRAND_SHORT_NAME}`,
+              message: `You can now receive notifications from ${process.env.VUE_APP_BRAND_NAME_SHORT}`,
             });
           } else {
             _status.error("🔔 Notifications permission denied");
