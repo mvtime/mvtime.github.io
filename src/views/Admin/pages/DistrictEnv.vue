@@ -48,9 +48,9 @@ export default {
           .filter(([key]) => {
             return key.startsWith("VUE_APP_");
           })
-          // .sort(([key1], [key2]) => {
-          //   return key1.localeCompare(key2);
-          // })
+          .sort(([key1], [key2]) => {
+            return key1.localeCompare(key2);
+          })
           .map(([key, value]) => {
             return [key.replace("VUE_APP_", ""), this.make_safe(value)];
           })
