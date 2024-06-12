@@ -69,7 +69,7 @@ export const useMainStore = defineStore({
   state: () => {
     let state = {};
     // setting up store
-    let local = window.localStorage.getItem(`${process.env.VUE_APP_BRAND_SHORT_NAME}_app_state`);
+    let local = window.localStorage.getItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_app_state`);
     if (local &amp;&amp; local != "undefined" &amp;&amp; local != "null") {
       try {
         _status.log("↻ State from local storage");
@@ -320,10 +320,10 @@ export const useMainStore = defineStore({
       if (!this.user) return false;
       if (
         this.active_doc?.teacher_mode == true ||
-        window?.localStorage?.[`${process.env.VUE_APP_BRAND_SHORT_NAME}_teacher_mode`] == "true"
+        window?.localStorage?.[`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`] == "true"
       ) {
         if (this.active_doc?.teacher_mode == true || this.active_doc?.teacher_mode == null) {
-          window.localStorage.setItem(`${process.env.VUE_APP_BRAND_SHORT_NAME}_teacher_mode`, true);
+          window.localStorage.setItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`, true);
           if (this.personal_account) {
             _status.log("🏫 No teacher mode for personal account");
             return false;
@@ -333,7 +333,7 @@ export const useMainStore = defineStore({
           }
         } else {
           window.localStorage.setItem(
-            `${process.env.VUE_APP_BRAND_SHORT_NAME}_teacher_mode`,
+            `${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`,
             false
           );
           _status.log("🏫 Teacher mode disabled locally to reflect remote changes");
@@ -907,9 +907,9 @@ export const useMainStore = defineStore({
       if (!this.user) return;
       let prev =
         this.active_doc?.teacher_mode ||
-        window.localStorage.getItem(`${process.env.VUE_APP_BRAND_SHORT_NAME}_teacher_mode`) ==
+        window.localStorage.getItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`) ==
           "true";
-      window.localStorage.setItem(`${process.env.VUE_APP_BRAND_SHORT_NAME}_teacher_mode`, !prev);
+      window.localStorage.setItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`, !prev);
       let new_text = !prev ? "on" : "off";
       if (this.active_doc) {
         this.active_doc.teacher_mode = !prev;
@@ -998,7 +998,7 @@ export const useMainStore = defineStore({
         doc_ref: null,
         collection_ref: null,
       };
-      window.localStorage.removeItem(`${process.env.VUE_APP_BRAND_SHORT_NAME}_app_state`);
+      window.localStorage.removeItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_app_state`);
       // if page requires auth, redirect to home
       if (router.currentRoute?.value?.meta?.requiresAuth) {
         router.push("/");
@@ -1113,8 +1113,8 @@ export const useMainStore = defineStore({
         let sent_email = await addDoc(email_queue, {
           to: email,
           cc: this.user.email,
-          from: `${this.active_doc.name} via ${process.env.VUE_APP_BRAND_LONG_NAME} &lt;${process.env.VUE_APP_BRAND_MAIL_ADDRESS}>`,
-          fromname: this.active_doc.name + ` via ${process.env.VUE_APP_BRAND_LONG_NAME}`,
+          from: `${this.active_doc.name} via ${process.env.VUE_APP_BRAND_NAME_LONG} &lt;${process.env.VUE_APP_BRAND_MAIL_ADDRESS}>`,
+          fromname: this.active_doc.name + ` via ${process.env.VUE_APP_BRAND_NAME_LONG}`,
           template: {
             name: "link_invite",
             data: {
