@@ -19,8 +19,14 @@
             <td class="key">{{ key }}</td>
             <div></div>
             <td class="value">
+              <span
+                class="value_color"
+                v-if="value && key.includes('COLOR')"
+                :style="{ backgroundColor: `#${value}` }"
+              ></span>
               <pre v-if="value">{{ value }}</pre>
-              <span v-else>No value currently set</span>
+
+              <span v-else class="unset">No value currently set</span>
             </td>
           </template>
         </tr>
@@ -126,6 +132,17 @@ tr.blank {
   display: flex;
   flex-flow: row nowrap;
 }
+
+td.value .value_color {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  border-radius: calc(var(--inner-radius) - 5px);
+  position: relative;
+  left: -10px;
+  box-shadow: var(--shadow-highlight);
+}
+
 .env_pairs .env_pair td.value pre {
   white-space: pre-wrap;
   text-overflow: ellipsis;
@@ -133,7 +150,7 @@ tr.blank {
   flex: 1 1 20em;
   width: 20em;
 }
-.env_pairs .env_pair td.value span {
+.env_pairs .env_pair td.value span.unset {
   opacity: 0.4;
   user-select: none;
 }
@@ -160,6 +177,7 @@ tr.blank {
   .env_pairs .env_pair div {
     height: 2px;
     width: 100%;
+    opacity: 1;
   }
   .env_pairs .env_pair td.key,
   .env_pairs .env_pair td.value {
