@@ -100,10 +100,11 @@ export default {
   flex-flow: row nowrap;
   justify-content: stretch;
   align-items: stretch;
-  margin-top: 7px;
+  margin-top: 5px;
 }
 tr.blank {
   margin-top: 2px;
+  user-select: none;
 }
 .env_pairs .env_pair td {
   display: block;
@@ -141,6 +142,7 @@ td.value .value_color {
   position: relative;
   left: -10px;
   box-shadow: var(--shadow-highlight);
+  user-select: none;
 }
 
 .env_pairs .env_pair td.value pre {

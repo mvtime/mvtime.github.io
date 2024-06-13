@@ -30,7 +30,7 @@
               $event.preventDefault();
             "
             :class="{ active: active === p.short }"
-            :href="`?page=${p.short}`"
+            :href="`../${p.short}`"
             v-for="p in pages"
             :key="p.short"
           >
@@ -83,48 +83,22 @@
       </div>
     </div>
     <div class="admin_main_wrapper">
-      <component class="admin_main" :is="page.src" />
+      <router-view class="admin_main"></router-view>
     </div>
   </main>
 </template>
 
 <script>
-import { shallowRef } from "vue";
-// import pages
-import UserTeacher from "./pages/UserTeacher.vue";
-import LogDebug from "./pages/LogDebug.vue";
-import DistrictEnv from "./pages/DistrictEnv.vue";
-import MessagesAlerts from "./pages/MessagesAlerts.vue";
-import UsageAnalytics from "./pages/UsageAnalytics.vue";
-
 export default {
   name: "AdminPortal",
-  components: {
-    UserTeacher,
-    LogDebug,
-    DistrictEnv,
-    MessagesAlerts,
-    UsageAnalytics,
-  },
   data() {
     return {
       active: "logs",
       pages: [
         {
-          name: "Users & Teachers",
-          short: "usrs",
-          title: "user",
-          src: shallowRef(UserTeacher),
-          img: {
-            png: require("@/assets/img/general/portal/admin/usrs.png"),
-            svg: require("@/assets/img/general/portal/admin/usrs.svg"),
-          },
-        },
-        {
           name: "Logs & Debugging",
           short: "logs",
           title: "log and debug",
-          src: shallowRef(LogDebug),
           img: {
             png: require("@/assets/img/general/portal/admin/logs.png"),
             svg: require("@/assets/img/general/portal/admin/logs.svg"),
@@ -134,17 +108,24 @@ export default {
           name: "District & .env",
           short: "opts",
           title: "customization",
-          src: shallowRef(DistrictEnv),
           img: {
             png: require("@/assets/img/general/portal/admin/opts.png"),
             svg: require("@/assets/img/general/portal/admin/opts.svg"),
           },
         },
         {
+          name: "Users & Teachers",
+          short: "usrs",
+          title: "user",
+          img: {
+            png: require("@/assets/img/general/portal/admin/usrs.png"),
+            svg: require("@/assets/img/general/portal/admin/usrs.svg"),
+          },
+        },
+        {
           name: "Messages & Alerts",
           short: "msgs",
           title: "alerts and messaging",
-          src: shallowRef(MessagesAlerts),
           img: {
             png: require("@/assets/img/general/portal/admin/msgs.png"),
             svg: require("@/assets/img/general/portal/admin/msgs.svg"),
@@ -154,7 +135,6 @@ export default {
           name: "Usage & Analytics",
           short: "usge",
           title: "usage and analytics",
-          src: shallowRef(UsageAnalytics),
           img: {
             png: require("@/assets/img/general/portal/admin/usge.png"),
             svg: require("@/assets/img/general/portal/admin/usge.svg"),
@@ -181,26 +161,19 @@ export default {
       void e;
     },
     open_outlink(page) {
-      window.open(`?page=${page}`, "_blank");
+      window.open(`./${page}`, "_blank");
     },
   },
   watch: {
     page() {
-      this.$router.push({ query: { ...this.$route.query, page: this.active, search: undefined } });
+      this.$router.push({
+        name: "admin_" + this.active,
+        query: { ...this.$route.query, search: undefined },
+      });
       this.$status.log("Admin page changed to", this.active);
-    },
-    "$route.query.page"(page) {
-      if (this.pages.some((p) => p.short === page)) {
-        this.active = page;
-      }
     },
   },
   mounted() {
-    if (this.$route.query.page && this.pages.some((p) => p.short === this.$route.query.page)) {
-      this.active = this.$route.query.page;
-    } else {
-      this.$router.replace({ query: { page: this.active } });
-    }
     window.addEventListener("keydown", this.keydown);
     this.$shortcuts.register_all(this.shortcuts, "Admin");
   },

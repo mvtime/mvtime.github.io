@@ -207,8 +207,9 @@ const router = createRouter({
       path: "/portal/admin",
       name: "admin",
       component: () => import("../views/Admin/Admin.vue"),
+      redirect: "/portal/admin/logs",
       meta: {
-        page_title: "Administrator Portal",
+        page_title: "Administrator Panel",
         theme_color: {
           light: "#f2f2f2",
           dark: "#121212",
@@ -216,6 +217,83 @@ const router = createRouter({
         requiresAuth: true,
         requiresAdmin: true,
       },
+      children: [
+        // logs
+        {
+          path: "/portal/admin/logs",
+          name: "admin_logs",
+          component: () => import("../views/Admin/pages/LogDebug.vue"),
+          meta: {
+            page_title: "Admin Panel | Logs",
+            theme_color: {
+              light: "#f2f2f2",
+              dark: "#121212",
+            },
+            requiresAuth: true,
+            requiresAdmin: true,
+          },
+        },
+        // opts
+        {
+          path: "/portal/admin/opts",
+          name: "admin_opts",
+          component: () => import("../views/Admin/pages/DistrictEnv.vue"),
+          meta: {
+            page_title: "Admin Panel | District Options",
+            theme_color: {
+              light: "#f2f2f2",
+              dark: "#121212",
+            },
+            requiresAuth: true,
+            requiresAdmin: true,
+          },
+        },
+        // usrs
+        {
+          path: "/portal/admin/usrs",
+          name: "admin_usrs",
+          component: () => import("../views/Admin/pages/UserTeacher.vue"),
+          meta: {
+            page_title: "Admin Panel | Users and Teachers",
+            theme_color: {
+              light: "#f2f2f2",
+              dark: "#121212",
+            },
+            requiresAuth: true,
+            requiresAdmin: true,
+          },
+        },
+        // msgs
+        {
+          path: "/portal/admin/msgs",
+          name: "admin_msgs",
+          component: () => import("../views/Admin/pages/MessagesAlerts.vue"),
+          meta: {
+            page_title: "Admin Panel | Messages and Alerts",
+            theme_color: {
+              light: "#f2f2f2",
+              dark: "#121212",
+            },
+            requiresAuth: true,
+            requiresAdmin: true,
+          },
+        },
+        // usge
+        {
+          path: "/portal/admin/usge",
+          name: "admin_usge",
+          component: () => import("../views/Admin/pages/UsageAnalytics.vue"),
+          meta: {
+            page_title: "Admin Panel | Usage Analytics",
+            theme_color: {
+              light: "#f2f2f2",
+              dark: "#121212",
+            },
+            requiresAuth: true,
+            requiresAdmin: true,
+          },
+        },
+      ],
     },
     {
       path: "/portal",
