@@ -84,10 +84,11 @@
               class="doc_title__email"
               :href="`./logs?search=${doc.data().email}`"
               @click="
-                $router.push({
-                  name: 'admin_logs',
-                  query: { ...this.$route.query, search: doc.data().email },
-                })
+                if (!search || loaded != search) {
+                  search = doc.data().email;
+                  submit();
+                }
+                $event.preventDefault();
               "
             >
               <span class="doc_title__email_user">{{ doc.data().email.split("@")[0] }}</span

@@ -37,7 +37,7 @@
       </table>
     </div>
     <div class="users_empty" v-else-if="users_loaded">No Users Found</div>
-    <div class="user_wrapper part_wrapper" v-if="teachers.length">
+    <div class="teachers_wrapper part_wrapper" v-if="teachers.length">
       <table class="teachers">
         <tr
           class="teacher admin_in"
@@ -63,6 +63,7 @@
             >
               <a
                 :href="`/view/${$store.path_to_ref(teacher.email + '/' + class_obj.id)}`"
+                :title="`View '${$store.class_text(class_obj)}'`"
                 @click="
                   $event.preventDefault();
                   $router.push({
@@ -217,9 +218,18 @@ td.user_pfp img.user_pfp__img {
   opacity: 0.75;
 }
 
-.class_name_wrapper {
+tr > td > span.class_name_wrapper {
   background-color: var(--color-bg);
   border-radius: var(--radius-button-display);
+  overflow: hidden;
+  max-width: 100%;
+  height: auto;
+  display: flex;
+}
+.class_name_wrapper .class_name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 .teacher td.teacher_classes {
   display: flex;
@@ -240,6 +250,19 @@ td.user_pfp img.user_pfp__img {
   .users .user,
   .teachers .teacher {
     flex-flow: wrap;
+  }
+  .teachers .teacher {
+    padding: 7px;
+  }
+  .teachers .teacher .teacher_classes {
+    flex-flow: row wrap;
+    flex-basis: 100%;
+    justify-content: flex-start;
+  }
+  .teachers .teacher .teacher_classes .class_name_wrapper,
+  .teachers .teacher .teacher_classes .class_name {
+    flex: 1 1 auto;
+    text-align: center;
   }
 }
 </style>
