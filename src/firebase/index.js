@@ -5,6 +5,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore, onSnapshot, doc } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 // firebase config
 const firebaseConfig = {
@@ -22,9 +23,10 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const analytics = getAnalytics(app);
+const functions = getFunctions(app);
 
 // export firebase
-export { app, auth, db, analytics, authChangeAction, refreshTimeout };
+export { app, auth, db, analytics, functions, httpsCallable, authChangeAction, refreshTimeout };
 
 // handle auth updates (user login/logout) and set user data in store
 import { useMainStore } from "../store";

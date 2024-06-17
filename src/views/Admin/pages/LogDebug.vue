@@ -322,7 +322,6 @@ export default {
   padding: 20px 40px;
   text-align: center;
   width: 100%;
-  display: blocks;
 }
 .docs .doc {
   background-color: var(--color-on-bg);
