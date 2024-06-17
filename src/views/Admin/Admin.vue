@@ -213,6 +213,7 @@ main.admin,
 .admin_main {
   display: flex;
   gap: var(--padding-sidebar);
+  overflow-x: visible;
 }
 
 .parent.simplified .admin_section {
@@ -396,6 +397,7 @@ main.admin,
   height: calc(100% + var(--padding-sidebar) * 2);
   padding: var(--padding-sidebar) 0;
   overflow-y: auto;
+  overflow-x: visible;
 }
 .admin_main_wrapper::-webkit-scrollbar {
   display: none;

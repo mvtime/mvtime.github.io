@@ -80,10 +80,19 @@
             ></div>
           </button>
           <div class="doc_title" v-if="active != doc.id">
-            <span class="doc_title__email">
+            <a
+              class="doc_title__email"
+              :href="`./logs?search=${doc.data().email}`"
+              @click="
+                $router.push({
+                  name: 'admin_logs',
+                  query: { ...this.$route.query, search: doc.data().email },
+                })
+              "
+            >
               <span class="doc_title__email_user">{{ doc.data().email.split("@")[0] }}</span
               ><span class="doc_title__email_domain">@{{ doc.data().email.split("@")[1] }} </span>
-            </span>
+            </a>
             <span class="doc_title__ref">{{ doc.id }}</span>
             <span class="doc_title__time">{{ doc.data().date.toDate().getTime() }}</span>
           </div>
@@ -148,7 +157,7 @@ import {
 } from "firebase/firestore";
 import { db } from "@/firebase";
 import { downloadLogData } from "@/common";
-import { WarningToast } from "@svonk/util";
+import { WarningToast, SuccessToast } from "@svonk/util";
 export default {
   data() {
     return {
@@ -256,6 +265,12 @@ export default {
         );
         if (emailDocs.docs.length) {
           this.manual_page = [...emailDocs.docs];
+          new SuccessToast(
+            `Found ${emailDocs.docs.length} log${
+              emailDocs.docs.length == 1 ? "" : "s"
+            } with email ${this.search}`,
+            3500
+          );
         } else {
           this.$status.warn(`🔍 No logs found with email <${this.search}>`);
           new WarningToast(`No logs found with that email address`, 3500);
@@ -268,6 +283,7 @@ export default {
         const logDoc = await getDoc(doc(db, "logs", this.search));
         if (logDoc.exists()) {
           this.manual_page = [logDoc];
+          new SuccessToast(`Found log with reference ${this.search}`, 3500);
         }
         // USER
         else {
@@ -284,6 +300,12 @@ export default {
           );
           if (userDocs.docs.length) {
             this.manual_page = [...userDocs.docs];
+            new SuccessToast(
+              `Found ${userDocs.docs.length} log${userDocs.docs.length == 1 ? "" : "s"} with user ${
+                this.search
+              }`,
+              3500
+            );
           } else {
             this.$status.warn(`🔍 No logs found with user <${this.search}>`);
             new WarningToast(`No logs found with that user id or reference`, 3500);
@@ -316,7 +338,6 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  cursor: pointer;
 }
 .docs_placeholder {
   padding: 20px 40px;
@@ -349,6 +370,7 @@ export default {
 
 .docs .doc .doc_title span.doc_title__email {
   font-weight: 500;
+  cursor: pointer;
 }
 .docs .doc .doc_title .doc_title__time {
   font-family: "Source Code Pro", monospace;
