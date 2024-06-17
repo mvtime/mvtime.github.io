@@ -245,19 +245,29 @@ tr > td > span.class_name_wrapper {
   text-align: center;
   width: 100%;
 }
+/* new inline teacher classes style */
+.teachers .teacher {
+  flex-flow: wrap;
+}
+.teachers .teacher {
+  padding: 7px;
+}
+.teachers .teacher .teacher_classes {
+  flex-flow: row wrap;
+  flex-basis: 100%;
+  justify-content: flex-start;
+}
+.teachers .teacher .teacher_classes .class_name_wrapper,
+.teachers .teacher .teacher_classes .class_name {
+  flex: 0 1 auto;
+}
 
 @media (max-width: 750px) {
-  .users .user,
-  .teachers .teacher {
+  .users .user {
     flex-flow: wrap;
   }
   .teachers .teacher {
     padding: 7px;
-  }
-  .teachers .teacher .teacher_classes {
-    flex-flow: row wrap;
-    flex-basis: 100%;
-    justify-content: flex-start;
   }
   .teachers .teacher .teacher_classes .class_name_wrapper,
   .teachers .teacher .teacher_classes .class_name {
