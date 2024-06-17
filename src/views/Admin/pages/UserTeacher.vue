@@ -43,19 +43,22 @@
           class="teacher admin_in"
           v-for="(teacher, index) in teachers"
           :key="teacher.id"
-          :style="{ animationDelay: `${(index + 2) * 0.03}s` }"
+          :style="{ animationDelay: `${(index + 2) * 0.15}s` }"
         >
           <td>{{ teacher.name }}</td>
           <td>{{ teacher.email }}</td>
           <td>{{ teacher.id }}</td>
           <td class="teacher_classes">
             <span
-              class="class_name_wrapper"
-              v-for="class_obj in teacher.classes"
+              class="class_name_wrapper admin_in"
+              v-for="(class_obj, index2) in teacher.classes"
               :key="class_obj.id"
               :style="{
                 '--color-class': class_obj.color,
                 '--color-class-alt': class_obj.color + '80',
+                animationDelay: `${
+                  (index + 2.5) * 0.15 + ((index2 + 1) / teacher.classes.length) * 0.1
+                }s`,
               }"
             >
               <a
