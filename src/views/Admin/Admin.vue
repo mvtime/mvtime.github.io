@@ -1,6 +1,7 @@
 <template>
   <main class="admin">
     <div class="admin_sidebar">
+      <span class="admin_sidebar__tophaze"></span>
       <div class="admin_sidebar_scrollable admin_section">
         <div class="admin_sidebar_header">
           <div class="branding-title gohome">
@@ -23,15 +24,19 @@
         </div>
         <div class="admin_sidebar_items">
           <a
-            class="admin_sidebar_item"
+            :style="{ animationDelay: `${(index + 1) * 0.05}s` }"
+            class="admin_sidebar_item admin_in"
             :title="`View ${p.title} info and options`"
             @click="
+              if (active === p.short) {
+                key++;
+              }
               active = p.short;
               $event.preventDefault();
             "
             :class="{ active: active === p.short }"
             :href="`../${p.short}`"
-            v-for="p in pages"
+            v-for="(p, index) in pages"
             :key="p.short"
           >
             <div
@@ -54,6 +59,7 @@
           </a>
         </div>
       </div>
+      <span class="admin_sidebar__bottomhaze"></span>
 
       <div class="sidebar_last_block auth-action can-logout doprompt">
         <div class="linked_acc_icon" v-if="$store && $store.personal_account">
@@ -83,7 +89,7 @@
       </div>
     </div>
     <div class="admin_main_wrapper">
-      <router-view class="admin_main"></router-view>
+      <router-view class="admin_main" :key="key"></router-view>
     </div>
   </main>
 </template>
@@ -94,6 +100,7 @@ export default {
   data() {
     return {
       active: "logs",
+      key: 0,
       pages: [
         {
           name: "Logs & Debugging",
@@ -176,6 +183,7 @@ export default {
   mounted() {
     window.addEventListener("keydown", this.keydown);
     this.$shortcuts.register_all(this.shortcuts, "Admin");
+    this.active = this.$route.name.replace("admin_", "") || "logs";
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.keydown);
@@ -230,6 +238,27 @@ main.admin,
   padding-bottom: calc(var(--padding-sidebar) + 20px + 50px);
   max-height: 100%;
 }
+.admin_sidebar .admin_sidebar__tophaze,
+.admin_sidebar .admin_sidebar__bottomhaze {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.admin_sidebar .admin_sidebar__tophaze {
+  top: 0;
+  height: calc(var(--padding-sidebar) + 10px);
+  background: linear-gradient(to bottom, var(--color-bg) 0%, #00000000 100%);
+  border-radius: var(--radius-sidebar) var(--radius-sidebar) 0 0;
+}
+.admin_sidebar .admin_sidebar__bottomhaze {
+  bottom: calc(var(--padding-sidebar) / 2 + 50px);
+  height: calc(var(--padding-sidebar) + 10px);
+  background: linear-gradient(to top, var(--color-bg) 0%, #00000000 100%);
+  border-radius: 0 0 var(--radius-sidebar) var(--radius-sidebar);
+}
+
 .admin_sidebar_scrollable::-webkit-scrollbar {
   display: none;
 }
@@ -423,6 +452,16 @@ main.admin,
 }
 </style>
 <style>
+@keyframes adminin {
+  from {
+    opacity: 0;
+    scale: 0.9;
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
 main.admin .admin_section,
 main.admin .admin_main > div {
   border-radius: var(--radius-sidebar);
@@ -430,6 +469,12 @@ main.admin .admin_main > div {
   padding: var(--padding-sidebar);
   background-color: var(--color-bg);
   flex-shrink: 0;
+  transform-origin: center var(--padding-sidebar);
+}
+main.admin .admin_in,
+main.admin .admin_main > div {
+  opacity: 0;
+  animation: adminin 0.3s cubic-bezier(0.49, -0.02, 0, 1.38) forwards;
 }
 /* TODO: Remove */
 main.admin .admin_main .placeholder::before {

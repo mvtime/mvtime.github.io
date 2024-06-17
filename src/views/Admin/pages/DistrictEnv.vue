@@ -3,7 +3,9 @@
     <div class="env_pairs_wrappers">
       <table class="env_pairs">
         <tr
-          v-for="[key, value, start, end] in pairs"
+          class="admin_in"
+          v-for="([key, value, start, end], index) in pairs"
+          :style="{ animationDelay: `${(index + 1) * 0.015}s` }"
           :key="key"
           :class="{
             env_pair: key,
@@ -85,9 +87,9 @@ export default {
 </script>
 
 <style scoped>
-.districtenv div {
-  padding: 10px;
-  --inner-radius: calc(var(--radius-sidebar) - 10px);
+.districtenv > div.env_pairs_wrappers {
+  padding: calc(var(--padding-sidebar) / 2);
+  --inner-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) / 2);
 }
 .env_pairs {
   display: flex;
@@ -101,6 +103,7 @@ export default {
   justify-content: stretch;
   align-items: stretch;
   margin-top: 5px;
+  border-radius: 3px;
 }
 tr.blank {
   margin-top: 2px;

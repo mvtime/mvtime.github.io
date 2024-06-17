@@ -1,7 +1,7 @@
 <template>
   <div class="logdebug">
     <div class="docs_wrapper">
-      <nav class="docs_nav" v-if="pages.length">
+      <nav class="docs_nav admin_in" v-if="pages.length">
         <button
           class="docs_nav_button prev"
           @click="prev"
@@ -61,7 +61,13 @@
         ></button>
       </nav>
       <div class="docs" v-if="pages.length && total.length">
-        <div class="doc" v-for="doc in page" :key="doc.id" :class="{ active: active == doc.id }">
+        <div
+          class="doc admin_in"
+          v-for="(doc, index) in page"
+          :key="doc.id"
+          :class="{ active: active == doc.id }"
+          :style="{ animationDelay: `${(index + 2) * 0.03}s` }"
+        >
           <button
             class="doc_details__toggle"
             :class="{ click_escape: active == doc.id }"
