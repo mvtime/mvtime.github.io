@@ -253,9 +253,13 @@ main.admin,
   border-radius: var(--radius-sidebar) var(--radius-sidebar) 0 0;
 }
 .admin_sidebar .admin_sidebar__bottomhaze {
-  bottom: calc(var(--padding-sidebar) / 2 + 50px);
-  height: calc(var(--padding-sidebar) + 10px);
-  background: linear-gradient(to top, var(--color-bg) 0%, #00000000 100%);
+  bottom: 0;
+  height: calc(var(--padding-sidebar) + 70px);
+  background: linear-gradient(
+    to top,
+    var(--color-bg) calc(var(--padding-sidebar) / 2 + 50px),
+    #00000000 100%
+  );
   border-radius: 0 0 var(--radius-sidebar) var(--radius-sidebar);
 }
 
@@ -330,6 +334,7 @@ main.admin,
   position: absolute;
   bottom: calc(var(--padding-sidebar) - 10px);
   left: 10px;
+  z-index: 2;
 
   width: calc(100% - 20px);
   padding: 10px 8px 10px 10px;
