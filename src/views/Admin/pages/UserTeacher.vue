@@ -48,6 +48,7 @@
           <td>{{ teacher.name }}</td>
           <td>{{ teacher.email }}</td>
           <td>{{ teacher.id }}</td>
+          <hr class="teacher_separator" />
           <td class="teacher_classes">
             <span
               class="class_name_wrapper admin_in"
@@ -237,6 +238,18 @@ tr > td > span.class_name_wrapper {
   gap: 5px;
   align-items: flex-end;
   justify-content: center;
+}
+.teacher .teacher_separator {
+  width: calc(100% + 2 * 7px);
+  flex: 0 0 calc(100% + 2 * 7px);
+  position: relative;
+  left: -7px;
+  top: 6px;
+  height: 0;
+  border: none;
+  border-top: 2px solid var(--color-bg);
+  background: none;
+  margin: -6px 0;
 }
 /* empty state */
 .users_empty,
