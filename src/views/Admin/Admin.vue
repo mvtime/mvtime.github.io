@@ -31,7 +31,8 @@
               if (active === p.short) {
                 key++;
               }
-              active = p.short;
+              open_page(p.short);
+
               $event.preventDefault();
             "
             :class="{ active: active === p.short }"
@@ -99,7 +100,6 @@ export default {
   name: "AdminPortal",
   data() {
     return {
-      active: "logs",
       key: 0,
       pages: [
         {
@@ -151,6 +151,9 @@ export default {
     };
   },
   computed: {
+    active() {
+      return this.$route.name.replace("admin_", "") || "logs";
+    },
     page() {
       return this.pages.find((p) => p.short === this.active);
     },
@@ -170,6 +173,12 @@ export default {
     open_outlink(page) {
       window.open(`./${page}`, "_blank");
     },
+    open_page(page) {
+      this.$router.push({
+        name: "admin_" + page,
+        query: { ...this.$route.query, search: undefined },
+      });
+    },
   },
   watch: {
     page() {
@@ -183,7 +192,6 @@ export default {
   mounted() {
     window.addEventListener("keydown", this.keydown);
     this.$shortcuts.register_all(this.shortcuts, "Admin");
-    this.active = this.$route.name.replace("admin_", "") || "logs";
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.keydown);
