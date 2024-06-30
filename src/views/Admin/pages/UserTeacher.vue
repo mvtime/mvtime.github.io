@@ -54,7 +54,7 @@
     </div>
     <div
       class="teachers_wrapper part_wrapper"
-      v-if="teachers.length || teachers_loaded"
+      v-if="teachers_loaded"
       :class="{ teachers_empty: !teachers.length, part__empty: !teachers.length }"
     >
       <div v-if="!teachers.length" class="teachers_empty part__empty">No Teachers Found</div>
@@ -68,6 +68,9 @@
           <td>{{ teacher.name }}</td>
           <td>{{ teacher.email }}</td>
           <td>{{ teacher.id }}</td>
+          <button class="unmake_teacher" @click="unmake_teacher(teacher.id)">
+            <div class="themed_icon unmake_teacher__icon" />
+          </button>
           <hr class="teacher_separator" />
           <td class="teacher_classes">
             <span
@@ -158,6 +161,9 @@
         <div
           class="part__loading_placeholder part_loading_animation teacher_add__loading_placeholder"
         ></div>
+        <div
+          class="part__loading_placeholder part_loading_animation teacher_add__loading_placeholder"
+        ></div>
       </div>
     </div>
   </div>
@@ -184,6 +190,22 @@ export default {
     this.getTeachers();
   },
   methods: {
+    async unmake_teacher(teacher_id) {
+      const start = Date.now();
+      const unmakeTeacher = httpsCallable(functions, "unmakeTeacher");
+      try {
+        const { data } = await unmakeTeacher({ teacher_id });
+        if (data.error || !data.success) throw data.error;
+        this.$status.log(`👤 Removed teacher ${teacher_id} in ${Date.now() - start}ms`);
+        new SuccessToast("Removed teacher", 3500);
+      } catch (e) {
+        this.$status.error("👤 Error removing teacher", e);
+        new ErrorToast("Something went wrong removing that teacher", e, 3500);
+        return;
+      }
+
+      this.teachers = this.teachers.filter((teacher) => teacher.id != teacher_id);
+    },
     async add_teachers() {
       const start = Date.now();
       const makeTeachers = httpsCallable(functions, "makeTeachers");
@@ -259,6 +281,7 @@ export default {
       this.getTeachers();
     },
     async getTeachers() {
+      this.teachers_loaded = false;
       const start = Date.now();
       const getTeachers = httpsCallable(functions, "getTeachers");
       const { data } = await getTeachers();
@@ -395,17 +418,19 @@ tr > td > span.class_name_wrapper {
   align-items: flex-end;
   justify-content: center;
 }
+.teacher button {
+  margin-left: 5px;
+}
 .teacher .teacher_separator {
   width: calc(100% + 2 * 7px);
   flex: 0 0 calc(100% + 2 * 7px);
   position: relative;
   left: -7px;
-  top: 6px;
   height: 0;
   border: none;
   border-top: 2px solid var(--color-bg);
   background: none;
-  margin: -6px 0;
+  margin: 0;
 }
 /* empty and loading states */
 .part__empty,
@@ -413,6 +438,10 @@ tr > td > span.class_name_wrapper {
   padding: 20px 40px;
   text-align: center;
   width: 100%;
+}
+
+.teachers_empty {
+  margin-bottom: 7px;
 }
 
 @keyframes loading_swipe {
@@ -471,9 +500,20 @@ tr > td > span.class_name_wrapper {
 .teacher__loading_placeholder {
   min-height: 81px;
 }
-.teacher_add__loading_placeholder,
+.teacher_add__loading_placeholder_wrapper {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: stretch;
+  align-items: flex-start;
+  gap: 7px;
+}
+.teacher_add__loading_placeholder:first-child,
 .teacher_add textarea.teacher_add_list {
   min-height: 100px;
+}
+.teacher_add__loading_placeholder_wrapper .teacher_add__loading_placeholder:last-child {
+  width: 40px;
+  height: 40px;
 }
 
 /* new inline teacher classes style */
@@ -481,7 +521,7 @@ tr > td > span.class_name_wrapper {
   border: none;
   margin: 10px auto;
   width: 30%;
-  max-width: 200px;
+  max-width: 350px;
   min-width: 100px;
   height: 5px;
   border-radius: 5px;
@@ -500,7 +540,8 @@ tr > td > span.class_name_wrapper {
   border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) / 2);
 }
 
-.teacher_add > * {
+.teacher_add textarea,
+.teacher_add button {
   border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) / 2);
   background: var(--color-on-bg);
   border: none;
@@ -535,12 +576,26 @@ tr > td > span.class_name_wrapper {
   background-image: url(@/assets/img/general/portal/link.png);
   background-image: url(@/assets/img/general/portal/link.svg);
 }
+button.unmake_teacher {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 3px;
+  background: var(--color-bg);
+  border: none;
+}
+button.unmake_teacher .unmake_teacher__icon {
+  height: 100%;
+  width: 100%;
+  background-image: url(@/assets/img/general/portal/remove.png);
+  background-image: url(@/assets/img/general/portal/remove.svg);
+}
 
 .teachers .teacher {
   flex-flow: wrap;
-}
-.teachers .teacher {
   padding: 7px;
+  gap: 5px;
 }
 .teachers .teacher .teacher_classes {
   flex-flow: row wrap;
