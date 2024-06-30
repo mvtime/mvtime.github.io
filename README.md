@@ -1,4 +1,4 @@
-## Test Tracker Framework
+## Task Tracker Framework
 
 ### Project setup
 
@@ -20,7 +20,7 @@ npm run serve
 npm run deploy
 ```
 
-#### Builds the documentation
+#### Builds the [documentation](https://mvtt.app/docs)
 
 ```
 jsdoc -c jsdoc.config
@@ -32,4 +32,5 @@ jsdoc -c jsdoc.config
 
 [Home](https://mvtt.app) ·
 [About](https://mvtt.app/about) ·
-[Contact](https://mvtt.app/contact)
+[Contact](https://mvtt.app/contact) ·
+[Documentation](https://mvtt.app/docs)

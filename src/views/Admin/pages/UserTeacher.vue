@@ -36,9 +36,29 @@
         </tr>
       </table>
     </div>
-    <div class="users_empty" v-else-if="users_loaded">No Users Found</div>
-    <div class="teachers_wrapper part_wrapper" v-if="teachers.length">
-      <table class="teachers">
+    <div class="users_empty part__empty" v-else-if="users_loaded">No Users Found</div>
+    <div v-else class="users_loading part__loading">
+      <div
+        class="admin_in"
+        v-for="(j, i) in user_placeholders"
+        :key="j"
+        :style="{ animationDelay: `${(i + 2) * 0.03}s` }"
+      >
+        <div
+          class="part__loading_placeholder user__loading_placeholder part_loading_animation"
+          title="Loading Users"
+        >
+          <div class="user__loading_placeholder_img part_loading_animation"></div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="teachers_wrapper part_wrapper"
+      v-if="teachers.length || teachers_loaded"
+      :class="{ teachers_empty: !teachers.length, part__empty: !teachers.length }"
+    >
+      <div v-if="!teachers.length" class="teachers_empty part__empty">No Teachers Found</div>
+      <table v-else class="teachers">
         <tr
           class="teacher admin_in"
           v-for="(teacher, index) in teachers"
@@ -85,28 +105,159 @@
           </td>
         </tr>
       </table>
+      <hr
+        v-if="teachers.length"
+        class="teacher_add__separator admin_in"
+        :style="{ animationDelay: `${(teachers.length + 3) * 0.1}s` }"
+      />
+      <div
+        class="teacher_add admin_in"
+        :style="{ animationDelay: `${(teachers.length + 4) * 0.1}s` }"
+      >
+        <textarea
+          @keydown.enter="
+            add_teachers();
+            $event.preventDefault();
+          "
+          title="User emails to make teachers (comma or space separated)"
+          class="teacher_add_list"
+          :placeholder="`(Make teachers) user1@${$env.VUE_APP_ORG_DOMAIN}, user2`"
+          v-model="teacher_add_list"
+          enterkeyhint="send"
+        ></textarea>
+        <button
+          @click="add_teachers"
+          title="Make listed emails teachers"
+          class="teacher_add_button"
+          :disabled="!teacher_add_list.trim().length"
+        >
+          <div class="themed_icon teacher_add_button__icon" />
+        </button>
+      </div>
     </div>
-    <div class="teachers_empty" v-else-if="teachers_loaded">No Teachers Found</div>
+    <div v-else class="teachers_loading part__loading">
+      <div
+        class="admin_in"
+        v-for="(j, i) in teacher_placeholders"
+        :key="j"
+        :style="{ animationDelay: `${(i + 2) * 0.15}s` }"
+      >
+        <div
+          class="part__loading_placeholder teacher__loading_placeholder part_loading_animation"
+          title="Loading Teachers"
+        ></div>
+      </div>
+      <hr
+        class="teacher_add__separator admin_in"
+        :style="{ animationDelay: `${(teacher_placeholders.length + 3) * 0.1}s` }"
+      />
+      <div
+        class="admin_in teacher_add__loading_placeholder_wrapper"
+        :style="{ animationDelay: `${(teacher_placeholders.length + 4) * 0.1}s` }"
+      >
+        <div
+          class="part__loading_placeholder part_loading_animation teacher_add__loading_placeholder"
+        ></div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { functions, httpsCallable } from "@/firebase";
+import { ErrorToast, SuccessToast, WarningToast } from "@svonk/util";
 export default {
   name: "UserTeacher",
   data() {
     return {
+      teacher_add_list: "",
       teachers: [],
       teachers_loaded: false,
       users: [],
       users_loaded: false,
+      user_placeholders: Array.from({ length: 3 }, (_, i) => i),
+      teacher_placeholders: Array.from({ length: 1 }, (_, i) => i),
     };
   },
-  async created() {
+  async mounted() {
     this.getUsers();
     this.getTeachers();
   },
   methods: {
+    async add_teachers() {
+      const start = Date.now();
+      const makeTeachers = httpsCallable(functions, "makeTeachers");
+      try {
+        // map to userids
+        let emails = this.teacher_add_list.trim().split(/[\s,]+/);
+        // check that all emails have no domain, or end with the org domain; if no domain, add it
+        emails = emails.map((email) =>
+          email.includes("@") ? email : email + "@" + this.$env.VUE_APP_ORG_DOMAIN
+        );
+        // fail out if non-org domain email is present
+        if (emails.some((email) => !email.endsWith(this.$env.VUE_APP_ORG_DOMAIN))) {
+          this.$status.error(
+            "👤 Error setting new teachers from emails/userids",
+            "Non-org domain email found"
+          );
+          new WarningToast(
+            `Cannot make linked (non-@${this.$env.VUE_APP_ORG_DOMAIN}) users teachers`,
+            2500
+          );
+          return;
+        } else if (!emails.length) {
+          this.$status.error(
+            "👤 Error setting new teachers from emails/userids",
+            "No emails found"
+          );
+          new WarningToast("No emails found to make teachers", 2500);
+          return;
+        } else {
+          // use loaded user objects to get userids
+          const users = this.users.filter((user) => emails.includes(user.email));
+          if (!users.length) {
+            this.$status.error(
+              "👤 Error setting new teachers from emails/userids",
+              "No users found"
+            );
+            new WarningToast("No matching loaded users found", 2500);
+            return;
+          }
+          this.$status.log(
+            `👤 Setting ${users.length} found teacher${users.length != 1 ? "s" : ""}: ${users
+              .map((user) => `${user.email}->${user.uid}`)
+              .join(", ")}`
+          );
+          const { data } = await makeTeachers({
+            emails: users.map((user) => user.email),
+          });
+
+          if (data.error) throw data.error;
+
+          let unchanged = users.filter((user) =>
+            this.teachers.some((teacher) => teacher.id == user.uid)
+          ).length;
+
+          this.$status.log(
+            `👤 ${data?.users?.length} teacher${data?.users?.length != 1 ? "s" : ""} set in ${
+              Date.now() - start
+            }ms; ${unchanged} ${unchanged != 1 ? "were already teachers" : "was already a teacher"}`
+          );
+          new SuccessToast(
+            `Added ${data?.users?.length - unchanged} teacher${
+              data?.users?.length - unchanged != 1 ? "s" : ""
+            }, ${unchanged} ${unchanged != 1 ? "were already teachers" : "was already a teacher"}`,
+            3500
+          );
+          this.teacher_add_list = "";
+        }
+      } catch (e) {
+        this.$status.error("👤 Error setting new teachers from emails/userids", e);
+        new ErrorToast("Something went wrong making those users teachers", e, 3500);
+        return;
+      }
+      this.getTeachers();
+    },
     async getTeachers() {
       const start = Date.now();
       const getTeachers = httpsCallable(functions, "getTeachers");
@@ -139,6 +290,11 @@ export default {
   align-items: stretch;
   justify-content: center;
   gap: 5px;
+}
+.part__loading .admin_in {
+  animation: none !important;
+  opacity: 1;
+  scale: 1;
 }
 
 .users .user,
@@ -251,14 +407,135 @@ tr > td > span.class_name_wrapper {
   background: none;
   margin: -6px 0;
 }
-/* empty state */
-.users_empty,
-.teachers_empty {
+/* empty and loading states */
+.part__empty,
+.part__loading {
   padding: 20px 40px;
   text-align: center;
   width: 100%;
 }
+
+@keyframes loading_swipe {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+@keyframes loading_throb {
+  0% {
+    background: var(--color-theme-alt);
+  }
+  50% {
+    background: var(--color-theme);
+  }
+  100% {
+    background: var(--color-theme-alt);
+  }
+}
+.userteacher > .part__loading {
+  padding: calc(var(--padding-sidebar) / 2);
+  gap: 7px;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+/* background shimmer */
+.part_loading_animation {
+  outline: 1px solid var(--color-theme-alt);
+  outline-offset: -1px;
+  opacity: 0.75;
+  background: linear-gradient(90deg, #00000000 0%, var(--color-theme-alt) 50%, #00000000 100%);
+  background-size: 200% 100%;
+  animation: loading_swipe 2.5s infinite;
+}
+.part_loading_animation .part_loading_animation {
+  background: var(--color-theme);
+  animation: loading_throb 2.5s infinite;
+  opacity: 0.5;
+}
+.part__loading_placeholder {
+  width: 100%;
+  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) / 2);
+  padding: 7px;
+}
+
+.user__loading_placeholder_img {
+  width: 30px;
+  height: 30px;
+  border-radius: 3px;
+}
+
+.teacher__loading_placeholder {
+  min-height: 81px;
+}
+.teacher_add__loading_placeholder,
+.teacher_add textarea.teacher_add_list {
+  min-height: 100px;
+}
+
 /* new inline teacher classes style */
+.teacher_add__separator {
+  border: none;
+  margin: 10px auto;
+  width: 30%;
+  max-width: 200px;
+  min-width: 100px;
+  height: 5px;
+  border-radius: 5px;
+  background: var(--color-on-bg);
+}
+.teachers_loading .teacher_add__separator {
+  margin: 3px auto;
+}
+
+.teacher_add {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: stretch;
+  align-items: flex-start;
+  gap: 5px;
+  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) / 2);
+}
+
+.teacher_add > * {
+  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) / 2);
+  background: var(--color-on-bg);
+  border: none;
+}
+
+.teacher_add textarea.teacher_add_list {
+  padding: 7px;
+  max-height: 350px;
+  flex: 1 1 40px;
+  padding: 7px;
+  margin: 0;
+  font-size: 1em;
+}
+
+.teacher_add button.teacher_add_button {
+  cursor: pointer;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+}
+
+.teacher_add button.teacher_add_button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.teacher_add button.teacher_add_button .teacher_add_button__icon {
+  filter: var(--filter-icon);
+  height: 100%;
+  width: 100%;
+  background-image: url(@/assets/img/general/portal/link.png);
+  background-image: url(@/assets/img/general/portal/link.svg);
+}
+
 .teachers .teacher {
   flex-flow: wrap;
 }
@@ -269,6 +546,9 @@ tr > td > span.class_name_wrapper {
   flex-flow: row wrap;
   flex-basis: 100%;
   justify-content: flex-start;
+}
+.teachers .teacher .teacher_classes__empty {
+  font-style: italic;
 }
 .teachers .teacher .teacher_classes .class_name_wrapper,
 .teachers .teacher .teacher_classes .class_name {
