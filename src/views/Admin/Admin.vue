@@ -186,7 +186,6 @@ export default {
         name: "admin_" + this.active,
         query: { ...this.$route.query, search: undefined },
       });
-      this.$status.log("Admin page changed to", this.active);
     },
   },
   mounted() {

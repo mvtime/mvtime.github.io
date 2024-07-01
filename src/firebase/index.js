@@ -23,7 +23,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const analytics = getAnalytics(app);
-const functions = getFunctions(app);
+const functions = getFunctions(app, process.env.FIREBASE_region);
 
 // export firebase
 export { app, auth, db, analytics, functions, httpsCallable, authChangeAction, refreshTimeout };

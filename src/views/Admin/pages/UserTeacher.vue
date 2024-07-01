@@ -207,6 +207,7 @@ export default {
         if (data.error || !data.success) throw data.error;
         this.$status.log(`👤 Removed teacher ${teacher_id} in ${Date.now() - start}ms`);
         new SuccessToast("Removed teacher", 3500);
+        this.teachers = this.teachers.filter((teacher) => teacher.id != teacher_id);
       } catch (e) {
         this.$status.error(
           "👤 Error removing teacher",
@@ -217,11 +218,8 @@ export default {
           e?.errorInfo?.message || e?.message || e,
           3500
         );
-        this.teachers_loaded = true;
-        return;
       }
 
-      this.teachers = this.teachers.filter((teacher) => teacher.id != teacher_id);
       this.teachers_loaded = true;
     },
     async add_teachers() {
@@ -653,6 +651,17 @@ button.unmake_teacher .unmake_teacher__icon {
   .teachers .teacher .teacher_classes .class_name {
     flex: 1 1 auto;
     text-align: center;
+  }
+}
+@media (min-width: 1700px) {
+  .userteacher {
+    flex-flow: row nowrap;
+    align-items: flex-start;
+    justify-content: stretch;
+  }
+  .userteacher > div {
+    flex: 1 1 600px;
+    width: 600px;
   }
 }
 </style>
