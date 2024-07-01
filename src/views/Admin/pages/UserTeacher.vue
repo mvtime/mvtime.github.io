@@ -57,7 +57,13 @@
       v-if="teachers_loaded"
       :class="{ teachers_empty: !teachers.length, part__empty: !teachers.length }"
     >
-      <div v-if="!teachers.length" class="teachers_empty part__empty">No Teachers Found</div>
+      <div
+        v-if="!teachers.length"
+        class="teachers_empty part__empty"
+        :style="{ animationDelay: `${2 * 0.15}s` }"
+      >
+        No Teachers Found
+      </div>
       <table v-else class="teachers">
         <tr
           class="teacher admin_in"
@@ -195,13 +201,22 @@ export default {
       const unmakeTeacher = httpsCallable(functions, "unmakeTeacher");
       try {
         this.teachers_loaded = false;
+
+        this.teacher_placeholders = Array.from({ length: this.teachers.length - 1 }, (_, i) => i);
         const { data } = await unmakeTeacher({ uid: teacher_id });
         if (data.error || !data.success) throw data.error;
         this.$status.log(`👤 Removed teacher ${teacher_id} in ${Date.now() - start}ms`);
         new SuccessToast("Removed teacher", 3500);
       } catch (e) {
-        this.$status.error("👤 Error removing teacher", e);
-        new ErrorToast("Something went wrong removing that teacher", e, 3500);
+        this.$status.error(
+          "👤 Error removing teacher",
+          e?.errorInfo?.code || e?.errorInfo?.message || e?.message || e
+        );
+        new ErrorToast(
+          "Something went wrong removing that teacher",
+          e?.errorInfo?.message || e?.message || e,
+          3500
+        );
         this.teachers_loaded = true;
         return;
       }
@@ -238,7 +253,6 @@ export default {
           new WarningToast("No emails found to make teachers", 2500);
           return;
         } else {
-          this.teachers_loaded = false;
           // use loaded user objects to get userids
           const users = this.users.filter((user) => emails.includes(user.email));
           if (!users.length) {
@@ -254,15 +268,20 @@ export default {
               .map((user) => `${user.email}->${user.uid}`)
               .join(", ")}`
           );
+
+          let unchanged = users.filter((user) =>
+            this.teachers.some((teacher) => teacher.id == user.uid)
+          ).length;
+          this.teacher_placeholders = Array.from(
+            { length: this.teachers.length + (users.length - unchanged) },
+            (_, i) => i
+          );
+          this.teachers_loaded = false;
           const { data } = await makeTeachers({
             emails: users.map((user) => user.email),
           });
 
           if (data.error) throw data.error;
-
-          let unchanged = users.filter((user) =>
-            this.teachers.some((teacher) => teacher.id == user.uid)
-          ).length;
 
           this.$status.log(
             `👤 ${data?.users?.length} teacher${data?.users?.length != 1 ? "s" : ""} set in ${
@@ -278,8 +297,16 @@ export default {
           this.teacher_add_list = "";
         }
       } catch (e) {
-        this.$status.error("👤 Error setting new teachers from emails/userids", e);
-        new ErrorToast("Something went wrong making those users teachers", e, 3500);
+        this.$status.error(
+          "👤 Error setting new teachers from emails/userids",
+          e?.errorInfo?.message || e?.message || e
+        );
+        new ErrorToast(
+          "Something went wrong making those users teachers",
+          e?.errorInfo?.message || e?.message || e,
+          3500
+        );
+        this.teachers_loaded = true;
         return;
       }
       this.getTeachers();
