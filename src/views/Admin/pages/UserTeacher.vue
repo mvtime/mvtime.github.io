@@ -194,17 +194,20 @@ export default {
       const start = Date.now();
       const unmakeTeacher = httpsCallable(functions, "unmakeTeacher");
       try {
-        const { data } = await unmakeTeacher({ teacher_id });
+        this.teachers_loaded = false;
+        const { data } = await unmakeTeacher({ uid: teacher_id });
         if (data.error || !data.success) throw data.error;
         this.$status.log(`👤 Removed teacher ${teacher_id} in ${Date.now() - start}ms`);
         new SuccessToast("Removed teacher", 3500);
       } catch (e) {
         this.$status.error("👤 Error removing teacher", e);
         new ErrorToast("Something went wrong removing that teacher", e, 3500);
+        this.teachers_loaded = true;
         return;
       }
 
       this.teachers = this.teachers.filter((teacher) => teacher.id != teacher_id);
+      this.teachers_loaded = true;
     },
     async add_teachers() {
       const start = Date.now();
@@ -235,6 +238,7 @@ export default {
           new WarningToast("No emails found to make teachers", 2500);
           return;
         } else {
+          this.teachers_loaded = false;
           // use loaded user objects to get userids
           const users = this.users.filter((user) => emails.includes(user.email));
           if (!users.length) {
@@ -514,6 +518,7 @@ tr > td > span.class_name_wrapper {
 .teacher_add__loading_placeholder_wrapper .teacher_add__loading_placeholder:last-child {
   width: 40px;
   height: 40px;
+  flex: 0 0 40px;
 }
 
 /* new inline teacher classes style */
