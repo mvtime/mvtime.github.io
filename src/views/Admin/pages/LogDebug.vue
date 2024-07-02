@@ -327,9 +327,6 @@ export default {
 </script>
 
 <style scoped>
-.logdebug {
-  --padding-sidebar: 10px;
-}
 .docs_wrapper {
   display: flex;
   flex-direction: column;

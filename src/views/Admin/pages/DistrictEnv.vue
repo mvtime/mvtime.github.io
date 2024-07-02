@@ -88,8 +88,7 @@ export default {
 
 <style scoped>
 .districtenv > div.env_pairs_wrappers {
-  padding: calc(var(--padding-sidebar) / 2);
-  --inner-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) / 2);
+  --inner-radius: calc(var(--radius-sidebar) - var(--padding-sidebar));
 }
 .env_pairs {
   display: flex;

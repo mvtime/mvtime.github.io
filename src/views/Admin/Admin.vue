@@ -14,6 +14,7 @@
                   query: {
                     ...$route.query,
                     search: undefined,
+                    action: undefined,
                   },
                 });
                 $event.stopPropagation();
@@ -36,9 +37,10 @@
               $event.preventDefault();
             "
             :class="{ active: active === p.short }"
-            :href="`../${p.short}`"
+            :href="`/portal/admin/${p.short}`"
             v-for="(p, index) in pages"
             :key="p.short"
+            :disabled="p.disabled"
           >
             <div
               class="admin_sidebar_item__icon themed_icon"
@@ -96,6 +98,7 @@
 </template>
 
 <script>
+import { WarningToast } from "@svonk/util";
 export default {
   name: "AdminPortal",
   data() {
@@ -146,6 +149,7 @@ export default {
             png: require("@/assets/img/general/portal/admin/usge.png"),
             svg: require("@/assets/img/general/portal/admin/usge.svg"),
           },
+          disabled: true,
         },
       ],
     };
@@ -171,26 +175,35 @@ export default {
       void e;
     },
     open_outlink(page) {
-      window.open(`./${page}`, "_blank");
+      window.open(`/portal/admin/${page}`, "_blank");
     },
     open_page(page) {
       this.$router.push({
         name: "admin_" + page,
-        query: { ...this.$route.query, search: undefined },
+        query: { ...this.$route.query, search: undefined, action: undefined },
       });
     },
   },
   watch: {
-    page() {
+    page(newpage) {
+      if (newpage.disabled) {
+        this.open_page("logs");
+        new WarningToast("Sorry, that page is not available yet", 2500);
+        return;
+      }
       this.$router.push({
         name: "admin_" + this.active,
-        query: { ...this.$route.query, search: undefined },
+        query: { ...this.$route.query, search: undefined, action: undefined },
       });
     },
   },
   mounted() {
     window.addEventListener("keydown", this.keydown);
     this.$shortcuts.register_all(this.shortcuts, "Admin");
+    if (this.page.disabled) {
+      this.open_page("logs");
+      new WarningToast("Sorry, that page is not available yet", 2500);
+    }
   },
   beforeUnmount() {
     window.removeEventListener("keydown", this.keydown);
@@ -251,8 +264,8 @@ main.admin,
   position: absolute;
   width: 100%;
   left: 0;
-  pointer-events: none;
   z-index: 1;
+  pointer-events: none;
 }
 .admin_sidebar .admin_sidebar__tophaze {
   top: 0;
@@ -476,8 +489,21 @@ main.admin,
     transform: scale(1);
   }
 }
+@keyframes adminindisabled {
+  from {
+    opacity: 0;
+    scale: 0.9;
+  }
+  to {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+}
+main.admin .admin_main {
+  --padding-sidebar: 10px;
+}
 main.admin .admin_section,
-main.admin .admin_main > div {
+main.admin .admin_main > div/*:not(.plain)*/ {
   border-radius: var(--radius-sidebar);
   box-shadow: var(--shadow-highlight);
   padding: var(--padding-sidebar);
@@ -489,6 +515,11 @@ main.admin .admin_in,
 main.admin .admin_main > div {
   opacity: 0;
   animation: adminin 0.3s cubic-bezier(0.49, -0.02, 0, 1.38) forwards;
+}
+main.admin .admin_in[disabled] {
+  opacity: 0;
+  animation: adminindisabled 0.3s cubic-bezier(0.49, -0.02, 0, 1.38) forwards;
+  cursor: not-allowed;
 }
 /* TODO: Remove */
 main.admin .admin_main .placeholder::before {

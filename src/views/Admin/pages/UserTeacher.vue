@@ -206,7 +206,12 @@ export default {
         const { data } = await unmakeTeacher({ uid: teacher_id });
         if (data.error || !data.success) throw data.error;
         this.$status.log(`👤 Removed teacher ${teacher_id} in ${Date.now() - start}ms`);
-        new SuccessToast("Removed teacher", 3500);
+        new SuccessToast(
+          `Removed teacher status from ${
+            this.teachers.find((teacher) => teacher.id == teacher_id).name
+          }`,
+          3500
+        );
         this.teachers = this.teachers.filter((teacher) => teacher.id != teacher_id);
       } catch (e) {
         this.$status.error(
@@ -332,9 +337,6 @@ export default {
 
 <style scoped>
 /* columns */
-.userteacher .part_wrapper {
-  padding: calc(var(--padding-sidebar) / 2);
-}
 .users,
 .teachers {
   display: flex;
@@ -357,7 +359,7 @@ export default {
   align-items: stretch;
   background-color: var(--color-on-bg);
   padding: 7px 7px 7px 15px;
-  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) / 2);
+  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar));
   position: relative;
   gap: 10px;
 }
@@ -493,7 +495,6 @@ tr > td > span.class_name_wrapper {
   }
 }
 .userteacher > .part__loading {
-  padding: calc(var(--padding-sidebar) / 2);
   gap: 7px;
   display: flex;
   flex-flow: column nowrap;
@@ -516,7 +517,7 @@ tr > td > span.class_name_wrapper {
 }
 .part__loading_placeholder {
   width: 100%;
-  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) / 2);
+  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar));
   padding: 7px;
 }
 
@@ -567,12 +568,12 @@ tr > td > span.class_name_wrapper {
   justify-content: stretch;
   align-items: flex-start;
   gap: 5px;
-  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) / 2);
+  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar));
 }
 
 .teacher_add textarea,
 .teacher_add button {
-  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) / 2);
+  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar));
   background: var(--color-on-bg);
   border: none;
 }
@@ -654,7 +655,7 @@ button.unmake_teacher .unmake_teacher__icon {
   }
 }
 @media (min-width: 1700px) {
-  .userteacher {
+  .admin_main.userteacher {
     flex-flow: row nowrap;
     align-items: flex-start;
     justify-content: stretch;
