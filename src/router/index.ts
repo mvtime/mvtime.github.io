@@ -8,7 +8,7 @@ const router = createRouter({
     {
       path: "/",
       name: "home",
-      component: Home,
+      component: () => Home,
       meta: {
         page_title: "Home",
         theme_color: {
@@ -192,7 +192,7 @@ const router = createRouter({
         {
           path: "/:pathMatch(.*)*",
           name: "404",
-          component: NotFound,
+          component: () => NotFound,
           meta: {
             page_title: "404",
             theme_color: {
