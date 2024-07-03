@@ -5,9 +5,21 @@
  * @memberOf store
  */
 
+// Typescript Things
+interface Shortcut {
+  key: string;
+  description: string;
+  tag: string;
+  top?: boolean;
+  keys?: string[];
+}
+interface Section {
+  tag: string;
+  list: Shortcut[];
+}
 // setup Pinia store
 import { _status } from "@/common";
-import { defineStore } from "pinia";
+import { defineStore, type StoreDefinition } from "pinia";
 /**
  * @memberOf .shortcuts
  * @function clean_key
@@ -46,12 +58,12 @@ function clean_key(key) {
   });
 }
 
-export const useShortcuts = defineStore({
+export const useShortcuts: StoreDefinition = defineStore({
   id: "shortcuts",
   state: () => ({
-    shortcuts: [],
-    keys: [],
-    active: {},
+    shortcuts: [] as Shortcut[],
+    keys: [] as string[],
+    active: {} as { [key: string]: boolean },
   }),
   /**
    * @namespace .shortcuts.getters
@@ -60,44 +72,24 @@ export const useShortcuts = defineStore({
   getters: {
     /**
      * @memberOf .shortcuts.getters
-     * @function get
-     * @description Get a shortcut by object
-     * @param {Object} shortcut
-     * @returns {Object} the shortcut object matching the object
-     */
-    get(shortcut) {
-      return this.shortcuts.find((s) => s === shortcut);
-    },
-    /**
-     * @memberOf .shortcuts.getters
-     * @function get_key
-     * @description Get a shortcut by key
-     * @param {String} key
-     */
-    get_key(key) {
-      if (!this.keys.includes(key)) return;
-      return this.shortcuts.find((s) => s.key === key);
-    },
-    /**
-     * @memberOf .shortcuts.getters
      * @function list
      * @description Get a list of shortcuts
      * @returns {Array} The formatted shortcuts
      */
-    list() {
-      return this.shortcuts.map((s) => {
-        return { ...s, keys: clean_key(s.key) };
+    list(): Shortcut[] {
+      return this.shortcuts.map((s: Shortcut) => {
+        return { ...s, keys: clean_key(s.key) } as Shortcut;
       });
     },
     /**
      * @memberOf .shortcuts.getters
      * @function sections
      * @description Get a list of shortcuts by section
-     * @returns {Array} Formatted shortcuts sorted by section
+     * @returns {} Formatted shortcuts sorted by section
      */
     sections() {
       //   take this.list and return an array of sections by tag
-      let sections = [];
+      let sections: Section[] = [];
       let tags = this.shortcuts.map((s) => s.tag);
       tags = [...new Set(tags)];
       for (let i = 0; i < tags.length; i++) {
@@ -114,6 +106,26 @@ export const useShortcuts = defineStore({
    * @memberof .shortcuts
    */
   actions: {
+    /**
+     * @memberOf .shortcuts.actions
+     * @function get
+     * @description Get a shortcut by object
+     * @param {Object} shortcut
+     * @returns {Object} the shortcut object matching the object
+     */
+    get(shortcut: Shortcut) {
+      return this.shortcuts.find((s: Shortcut) => s === shortcut);
+    },
+    /**
+     * @memberOf .shortcuts.actions
+     * @function get_key
+     * @description Get a shortcut by key
+     * @param {String} key
+     */
+    get_key(key: string): Shortcut | null {
+      if (!this.keys.includes(key)) return null;
+      return this.shortcuts.find((s: Shortcut) => s.key === key) || null;
+    },
     /**
      * @memberOf .shortcuts.actions
      * @function register
