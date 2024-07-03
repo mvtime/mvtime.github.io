@@ -1,23 +1,40 @@
 /**
  * Holds common functions used throughout the application (mostly for debugging and logging)
- * @file common/index.js
+ * @file common/index.ts
  * @namespace common
  */
 
-/* eslint-disable */
+declare global {
+  interface Window {
+    _status: object; // Replace 'any' with a more specific type according to your needs
+  }
+}
+enum LogTone {
+  Log = "log",
+  Info = "info",
+  Debug = "debug",
+  Warn = "warn",
+  Error = "error",
+}
 
+let tone: LogTone = LogTone.Info;
 /** Save log messages for future debug */
-let log = [],
-  log_time = new Date();
+interface LogEntry {
+  time: Number;
+  message: any;
+  type: LogTone;
+}
+let log: LogEntry[] = [],
+  log_time: Date = new Date();
 
 /** Save log to file */
-function save(content, download = "log.txt") {
+function save(content: string, download = "log.txt"): void {
   let a = window.document.createElement("a");
   a.href = window.URL.createObjectURL(new Blob([content], { type: "text/plain" }));
   a.download = download;
   a.click();
 }
-function format_stream(stream) {
+function format_stream(stream: LogEntry[]): string {
   return stream.length
     ? stream
         .map((line) => `${line.time} [${line.type}]: ${JSON.stringify(line.message)}`)
@@ -26,7 +43,7 @@ function format_stream(stream) {
 }
 
 /** Imperfect helper for _status.log() */
-function getFirstNonStandardCharacter(str) {
+function getFirstNonStandardCharacter(str: string): string | null {
   try {
     const match = str.match(
       /^([\P{L}\p{Extended_Pictographic}]|(?:[\uD800-\uDBFF][\uDC00-\uDFFF]))/u
@@ -36,6 +53,7 @@ function getFirstNonStandardCharacter(str) {
     return null;
   }
 }
+
 /**
  * @function _log
  * @description Log function, takes any number of arguments. If the first character is nonstandard and followed by a space, it'll use that as a tag
@@ -43,11 +61,10 @@ function getFirstNonStandardCharacter(str) {
  * @note This function is not exported, but is used by _status. It should be used with a tone through a bind, like _log.bind("info")
  * @example _log("Hello world!");
  * */
-function _log() {
-  log.push({ time: Date.now() || "log", message: arguments[0], type: this });
+function _log(this: LogTone, ...args: any[]): void {
+  log.push({ time: Date.now(), message: arguments[0], type: tone || LogTone.Log });
   if (arguments.length == 0) return;
   // check for very large messages and warn them in the console with the first 100 characters (make sure this catches the message, even if it's not the first argument, or in a object format)
-  let args = Array.from(arguments);
   let extras = [
     `%c${process.env.VUE_APP_BRAND_NAME_SHORT}`,
     `background:#${process.env.VUE_APP_THEME_CONSOLE_COLOR_BG || "272727"};color:#${
@@ -73,7 +90,6 @@ function _log() {
   }
 }
 
-let tone = "info";
 /**
  * @object _status
  * @property {Function} print - Prints a message to the console with the current tone
@@ -89,44 +105,43 @@ let tone = "info";
  */
 const _status = {
   print: _log.bind(tone),
-  log: _log.bind("log"),
-  info: _log.bind("info"),
-  debug: _log.bind("debug"),
-  warn: _log.bind("warn"),
-  error: _log.bind("error"),
-  clearStream: () => {
+  log: _log.bind(LogTone.Log),
+  info: _log.bind(LogTone.Info),
+  debug: _log.bind(LogTone.Debug),
+  warn: _log.bind(LogTone.Warn),
+  error: _log.bind(LogTone.Error),
+  clearStream: (): void => {
     log = [];
     console.clear();
     log_time = new Date();
   },
-  getStream: (types = []) => {
+  getStream: (types: string[] = []) => {
     return types && types.length > 0 ? log.filter((entry) => types.includes(entry.type)) : log;
   },
-  // unused
-  textStream() {
-    return format_stream(_status.getStream(...arguments));
+  textStream(types: string[] = []): string {
+    return format_stream(_status.getStream(types));
   },
-  saveStream: (id = "manual") => {
+  saveStream: (id: string = "manual"): void => {
     let date = new Date(),
-      data = _status.getStream(...arguments);
+      data = _status.getStream();
     date.setSeconds(0, 0);
     downloadLogData(data, date, id);
   },
-  _getTone: () => {
+  _getTone: (): string => {
     return tone;
   },
-  _setTone: (new_tone) => {
+  _setTone: (new_tone: LogTone): void => {
     tone = new_tone;
   },
   _resetTone: () => {
-    tone = "info";
+    tone = LogTone.Info;
   },
 };
 /**
  * @function downloadLogData
  * @description downloads a file with given log data
  * */
-function downloadLogData(data, date, id = "manual") {
+function downloadLogData(data: LogEntry[], date: Date, id: string = "manual"): void {
   try {
     save(
       format_stream(data),
@@ -146,7 +161,7 @@ function downloadLogData(data, date, id = "manual") {
  * @description A bound version of _log with the tone set to "info"
  * @example _statuslog("Hello world!");
  * */
-const _statuslog = _log.bind("info");
+const _statuslog: Function = _log.bind(LogTone.Info);
 try {
   window._status = _status;
   _status.log("📜 Initialized logger");
@@ -161,7 +176,7 @@ try {
  * @param {String} date
  * @returns {Date}
  */
-function compatDateObj(date) {
+function compatDateObj(date: string | any): Date | any {
   if (typeof date != "string") return date;
   return new Date(date.replace(/-/g, "/"));
 }
@@ -172,7 +187,7 @@ function compatDateObj(date) {
  * @param {Number} ms
  * @returns {String}
  */
-function msToTime(ms) {
+function msToTime(ms: number): string {
   let seconds = Math.floor((ms / 1000) % 60);
   let minutes = Math.floor((ms / (1000 * 60)) % 60);
   let hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
