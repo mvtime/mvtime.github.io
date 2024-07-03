@@ -10,8 +10,27 @@
  * @memberOf store
  */
 
+// Typescript Types
+export enum Theme {
+  Light = "light",
+  Dark = "dark",
+}
+// TODO: TS implement these types
+export interface ClassInfo {
+  id?: string;
+  ref: string;
+  name: string;
+  period: number;
+  [key: string]: any | never;
+  tasks: TaskInfo[];
+}
+
+export interface TaskInfo {
+  [key: string]: any | never;
+}
+
 // setup Pinia store
-import { defineStore } from "pinia";
+import { defineStore, type StoreDefinition } from "pinia";
 import { _status, compatDateObj } from "@/common";
 import { Toast, ErrorToast, cleanError, WarningToast, SuccessToast } from "@svonk/util";
 
@@ -26,10 +45,14 @@ import {
   writeBatch,
   updateDoc,
   deleteDoc,
+  DocumentReference,
+  CollectionReference,
+  WriteBatch,
+  type DocumentData,
 } from "firebase/firestore";
 import CryptoJS from "crypto-js";
 import { auth, db, authChangeAction, refreshTimeout } from "../firebase";
-import { signInWithPopup, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
+import { signInWithPopup, GoogleAuthProvider, signInWithRedirect, type User } from "firebase/auth";
 const provider = new GoogleAuthProvider();
 const isElectron = navigator?.userAgent?.toLowerCase()?.indexOf(" electron/") > -1;
 let ORG_DOMAIN = `@${process.env.VUE_APP_ORG_DOMAIN}`;
@@ -57,15 +80,119 @@ function isIFrame() {
   }
 }
 // get date in local time but with ISO format
-let today = new Date();
-today = new Date(today.getTime() - today.getTimezoneOffset() * 60 * 1000);
-today = today.toISOString().split("T")[0];
+const today = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000)
+  .toISOString()
+  .split("T")[0];
 // define store
-export const useMainStore = defineStore({
+export const useMainStore: StoreDefinition = defineStore({
   id: "main",
   /** Function to create a clean store state, used for initialization. Will attempt to load from window.localStorage variable to save on firebase calls -> isn't always stable after app update that changes state keyings */
   state: () => {
-    let state = {};
+    /**
+     * @namespace .main.state
+     * @description The state of the main store
+     * @memberOf .main
+     */
+    /* Set default store state */
+    let state = {
+      /**
+       * @memberOf .main.state
+       * @property {Object} user The user object from firebase auth
+       * @default null
+       */
+      user: null as User | null,
+      /**
+       * @memberOf .main.state
+       * @property {Object} account_doc The authenticated user's document from the users collection in firestore
+       * @default null
+       * @see {@link active_doc}
+       */
+      account_doc: null as DocumentData | null,
+      /**
+       * @memberOf .main.state
+       * @property {Object} linked_account_doc The linked account document from the users collection in firestore
+       * @default null
+       * @see {@link active_doc}
+       */
+      linked_account_doc: null as DocumentData | null,
+      /**
+       * @memberOf .main.state
+       * @property {Array} classes Collection of the firebase document ids of classes that the user is in
+       * @default []
+       * @see {@link fetch_classes}
+       * @see {@link get_tasks}
+       * @see {@link tasks}
+       */
+      classes: [] as ClassInfo[],
+      /**
+       * @memberOf .main.state
+       * @property {Array} tasks Collection of the processed task objects
+       * @default []
+       * @see {@link get_tasks}
+       */
+      tasks: [] as TaskInfo[],
+      /**
+       * @memberOf .main.state
+       * @property {String} loaded_email The email of the user that the classes have been loaded for (for previews in AddClass.vue)
+       * @default null
+       * @see {@link loaded_classes}
+       * @see {@link fetch_classes_by_email}
+       */
+      loaded_email: null as string | null,
+      /**
+       * @memberOf .main.state
+       * @property {Array} loaded_classes The classes that have been loaded for the loaded_email (for previews in AddClass.vue)
+       * @default null
+       * @see {@link loaded_email}
+       * @see {@link fetch_classes_by_email}
+       */
+      loaded_classes: null as ClassInfo[] | null,
+      /**
+       * @memberOf .main.state
+       * @property {Object} teacher The teacher object, with doc_ref and collection_ref
+       * @default {doc_ref: null, collection_ref: null}
+       * @see {@link is_teacher}
+       * @see {@link create_teacher_doc}
+       */
+      teacher: {
+        doc_ref: null as DocumentReference | null,
+        collection_ref: null as CollectionReference | null,
+      },
+      /**
+       * @memberOf .main.state
+       * @property {Theme} theme The theme of the app, either Theme.Light or Theme.Dark
+       * @default null
+       * @see {@link get_theme}
+       * @see {@link toggle_theme}
+       * @see {@link clear}
+       * @note This is a local variable, and is while it may reflect what's in the user's document, it's not always accurate, though it is preferred locally, and persists across sessions / store {@link clear}s
+       */
+      theme: null as Theme | null,
+      /**
+       * @memberOf .main.state
+       * @property {Boolean} personal_account If the user is using their personal account (true) or a valid org account (false)
+       * @default false
+       * @see {@link linked_account_doc}
+       * @see {@link linked_account_ref}
+       * @see {@link active_doc}
+       * @see {@link active_ref}
+       */
+      personal_account: false as boolean,
+      /**
+       * @memberOf .main.state
+       * @property {Boolean} paused If the app is paused (true) or not (false)
+       * @default false
+       * @see {@link show_timeout}
+       * @see {@link hide_timeout}
+       */
+      paused: false as boolean,
+      /**
+       * @memberOf .main.state
+       * @property {Boolean} logout_prompt If the app is showing a logout prompt (true) or not (false)
+       * @default false
+       */
+      logout_prompt: false as boolean,
+    };
     // setting up store
     let local = window.localStorage.getItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_app_state`);
     if (local && local != "undefined" && local != "null") {
@@ -81,111 +208,7 @@ export const useMainStore = defineStore({
     }
     // if no local storage, set up store
     _status.log("🔨 Setting up store from scratch");
-    /**
-     * @namespace .main.state
-     * @description The state of the main store
-     * @memberOf .main
-     */
-    /* Set default store state */
-    return (state = {
-      /**
-       * @memberOf .main.state
-       * @property {Object} user The user object from firebase auth
-       * @default null
-       */
-      user: null,
-      /**
-       * @memberOf .main.state
-       * @property {Object} account_doc The authenticated user's document from the users collection in firestore
-       * @default null
-       * @see {@link active_doc}
-       */
-      account_doc: null,
-      /**
-       * @memberOf .main.state
-       * @property {Object} linked_account_doc The linked account document from the users collection in firestore
-       * @default null
-       * @see {@link active_doc}
-       */
-      linked_account_doc: null,
-      /**
-       * @memberOf .main.state
-       * @property {Array} classes Collection of the firebase document ids of classes that the user is in
-       * @default []
-       * @see {@link fetch_classes}
-       * @see {@link get_tasks}
-       * @see {@link tasks}
-       */
-      classes: [],
-      /**
-       * @memberOf .main.state
-       * @property {Array} tasks Collection of the processed task objects
-       * @default []
-       * @see {@link get_tasks}
-       */
-      tasks: [],
-      /**
-       * @memberOf .main.state
-       * @property {String} loaded_email The email of the user that the classes have been loaded for (for previews in AddClass.vue)
-       * @default null
-       * @see {@link loaded_classes}
-       * @see {@link fetch_classes_by_email}
-       */
-      loaded_email: null,
-      /**
-       * @memberOf .main.state
-       * @property {Array} loaded_classes The classes that have been loaded for the loaded_email (for previews in AddClass.vue)
-       * @default null
-       * @see {@link loaded_email}
-       * @see {@link fetch_classes_by_email}
-       */
-      loaded_classes: null,
-      /**
-       * @memberOf .main.state
-       * @property {Object} teacher The teacher object, with doc_ref and collection_ref
-       * @default {doc_ref: null, collection_ref: null}
-       * @see {@link is_teacher}
-       * @see {@link create_teacher_doc}
-       */
-      teacher: {
-        doc_ref: null,
-        collection_ref: null,
-      },
-      /**
-       * @memberOf .main.state
-       * @property {Object} theme The theme of the app, either "light" or "dark"
-       * @default null
-       * @see {@link get_theme}
-       * @see {@link toggle_theme}
-       * @see {@link clear}
-       * @note This is a local variable, and is while it may reflect what's in the user's document, it's not always accurate, though it is preferred locally, and persists across sessions / store {@link clear}s
-       */
-      theme: null,
-      /**
-       * @memberOf .main.state
-       * @property {Boolean} personal_account If the user is using their personal account (true) or a valid org account (false)
-       * @default false
-       * @see {@link linked_account_doc}
-       * @see {@link linked_account_ref}
-       * @see {@link active_doc}
-       * @see {@link active_ref}
-       */
-      personal_account: false,
-      /**
-       * @memberOf .main.state
-       * @property {Boolean} paused If the app is paused (true) or not (false)
-       * @default false
-       * @see {@link show_timeout}
-       * @see {@link hide_timeout}
-       */
-      paused: false,
-      /**
-       * @memberOf .main.state
-       * @property {Boolean} logout_prompt If the app is showing a logout prompt (true) or not (false)
-       * @default false
-       */
-      logout_prompt: false,
-    });
+    return state;
   },
   /** The getters to get data that's based off of the store state, but requires manipulation
    * @namespace .main.getters
@@ -273,10 +296,9 @@ export const useMainStore = defineStore({
     non_recent_signin() {
       // return true if user signed in within the last 24 hours
       if (!this.user) return false;
-      let last_signin = this.user?.metadata?.lastSignInTime;
+      let last_signin = this.user.metadata?.lastSignInTime as string | null;
       if (!last_signin) return false;
-      last_signin = new Date(last_signin);
-      let diff = new Date().getTime() - last_signin.getTime();
+      let diff = new Date().getTime() - new Date(last_signin).getTime();
       return diff > 24 * 60 * 60 * 1000;
     },
     /**
@@ -289,10 +311,9 @@ export const useMainStore = defineStore({
     recently_joined() {
       // return true if user joined within the last 12 hours
       if (!this.user) return false;
-      let creation_time = this.user?.metadata?.creationTime;
+      let creation_time = this.user.metadata?.creationTime as string | null;
       if (!creation_time) return false;
-      creation_time = new Date(creation_time);
-      let diff = new Date().getTime() - creation_time.getTime();
+      let diff = new Date().getTime() - new Date(creation_time).getTime();
       return diff < 12 * 60 * 60 * 1000;
     },
     /**
@@ -321,7 +342,10 @@ export const useMainStore = defineStore({
         window?.localStorage?.[`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`] == "true"
       ) {
         if (this.active_doc?.teacher_mode == true || this.active_doc?.teacher_mode == null) {
-          window.localStorage.setItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`, true);
+          window.localStorage.setItem(
+            `${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`,
+            "true"
+          );
           if (this.personal_account) {
             _status.log("🏫 No teacher mode for personal account");
             return false;
@@ -332,13 +356,13 @@ export const useMainStore = defineStore({
         } else {
           window.localStorage.setItem(
             `${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`,
-            false
+            "false"
           );
           _status.log("🏫 Teacher mode disabled locally to reflect remote changes");
         }
       }
 
-      let email = this.user.email;
+      let email = this.user.email as string;
       let [first, last] = email.split("@");
       //TODO: add .env option for teacher/student pattern
       if ("@" + last == this.ORG_DOMAIN && !/\d/.test(first) && this.ORG_DOMAIN == "@mvla.net") {
@@ -441,16 +465,18 @@ export const useMainStore = defineStore({
      * @memberOf .main.getters
      * @function get_theme
      * @description Get theme from local storage or user doc
-     * @returns {String} "light" or "dark"
-     * @default "light"
+     * @returns {String} Theme.Light or Theme.Dark
+     * @default Theme.Light
      */
     get_theme() {
       // get local
-      let local_theme = this.theme || window.localStorage.getItem("theme");
+      let local_theme = this.theme || (window.localStorage.getItem("theme") as Theme | null);
       // get userdoc theme
-      let account_doc_theme = this.account_doc?.prefs?.theme;
+      let account_doc_theme = this.account_doc?.prefs?.theme as Theme | null;
       // set new to system by default
-      let new_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      let new_theme = window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? Theme.Dark
+        : Theme.Light;
       // if not userdoc theme, use local theme, and set userdoc theme to local theme
       if (!account_doc_theme) {
         if (local_theme) {
@@ -464,14 +490,14 @@ export const useMainStore = defineStore({
           this.account_doc.prefs = { ...this.account_doc.prefs, theme: new_theme };
           this.update_wrapper_acc_doc();
         }
-        return local_theme || "light";
+        return local_theme || Theme.Light;
       }
       // if userdoc theme, use userdoc theme, and set local theme to userdoc theme
       else {
         if (local_theme != account_doc_theme) {
           window.localStorage.setItem("theme", account_doc_theme);
         }
-        return account_doc_theme ? account_doc_theme : "light";
+        return account_doc_theme ? account_doc_theme : Theme.Light;
       }
     },
     /**
@@ -609,7 +635,8 @@ export const useMainStore = defineStore({
      * @see {@link save_daily_survey}
      * @see {@link done_daily_survey}
      */
-    get_surveys(dates) {
+    get_surveys(dates): Promise<any[] | PromiseRejectedResult> {
+      if (!this.user) return Promise.reject("Missing user");
       // get all the firebase surveys in "/survey/{date}/{uid}" format, in parallel
       try {
         let survey_refs = dates.map((date) =>
@@ -618,7 +645,7 @@ export const useMainStore = defineStore({
             "survey",
             "daily",
             date,
-            this.personal_account ? this.account_doc.linked_to : this.user.uid
+            this.personal_account ? this.account_doc?.linked_to : this.user?.uid
           )
         );
         let survey_promises = survey_refs.map((ref) => getDoc(ref));
@@ -644,11 +671,12 @@ export const useMainStore = defineStore({
      * @see {@link done_daily_survey}
      */
     async get_cached_surveys(dates, force_refresh = false) {
+      if (!this.user) return Promise.reject("Missing user");
       try {
         const processed_ref = doc(
           db,
           "processed_surveys",
-          this.personal_account ? this.account_doc.linked_to : this.user.uid
+          this.personal_account ? this.account_doc?.linked_to : this?.user.uid
         );
         // check if active doc has survey data for the given dates, and if so, return it
         const current_get = await getDoc(processed_ref);
@@ -676,7 +704,7 @@ export const useMainStore = defineStore({
           // use get_surveys to get the ungotten data
           const added_surveys = await this.get_surveys(added_dates);
           // add the new surveys to the current surveys without doubling up, keep them in order
-          let new_surveys = [];
+          let new_surveys: any[] = [];
           for (let date of dates) {
             if (added_dates.includes(date)) {
               // add the new survey
@@ -864,7 +892,7 @@ export const useMainStore = defineStore({
 
           // add code to class doc
           const class_ref = doc(db, "classes", _email, "classes", _id);
-          await updateDoc(class_ref, { code: code }, { merge: true });
+          await updateDoc(class_ref, { code: code as string });
         }
         return Promise.resolve(code);
       } catch (err) {
@@ -907,7 +935,10 @@ export const useMainStore = defineStore({
         this.active_doc?.teacher_mode ||
         window.localStorage.getItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`) ==
           "true";
-      window.localStorage.setItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`, !prev);
+      window.localStorage.setItem(
+        `${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`,
+        !prev as unknown as string
+      );
       let new_text = !prev ? "on" : "off";
       if (this.active_doc) {
         this.active_doc.teacher_mode = !prev;
@@ -930,8 +961,8 @@ export const useMainStore = defineStore({
       try {
         if (!this.classes?.length) return Promise.resolve([]);
         // get all the classes with this.classes(), then get all their tasks and combine them into an array
-        let tasks = [];
-        let classes = this.classes;
+        let tasks: TaskInfo[] = [];
+        let classes: ClassInfo[] = this.classes;
         for (let i = 0; i < classes.length; i++) {
           let class_tasks = classes[i].tasks;
           class_tasks = class_tasks ? class_tasks : [];
@@ -1008,7 +1039,7 @@ export const useMainStore = defineStore({
      * @description Set the active document (the signed-in account's doc, or the linked account's if it exists) to the provided document
      * @param {Object} data The document data to replace the active document (account_doc or linked_doc) with
      */
-    set_active(data) {
+    set_active(data: DocumentData) {
       try {
         if (!data) throw "No data provided";
         if (this.personal_account) {
@@ -1053,7 +1084,7 @@ export const useMainStore = defineStore({
      * @see {@link invite_linked}
      */
     async link_account_uid(uid) {
-      if (!uid) return;
+      if (!uid || !this.account_doc) return;
       if (!this.personal_account) {
         new WarningToast("This account is a primary account and cannot be linked", 3000);
         return;
@@ -1082,7 +1113,7 @@ export const useMainStore = defineStore({
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      */
     async invite_linked(email) {
-      if (!this.user || !this.active_doc) return;
+      if (!this.user || !this.active_doc || !this.account_doc) return;
       if (this.personal_account) {
         new WarningToast("This account is already linked!", 2000);
       }
@@ -1098,7 +1129,7 @@ export const useMainStore = defineStore({
       }
       // add to doc.linked
       if (!this.active_doc.linked) {
-        if (this.personal_account) {
+        if (this.personal_account && this.linked_account_doc) {
           this.linked_account_doc.linked = [];
         } else {
           this.account_doc.linked = [];
@@ -1127,7 +1158,7 @@ export const useMainStore = defineStore({
         let checks = 1;
         while (
           !email_doc.exists() ||
-          (!!email_doc.data()?.delivery?.attempts == 0 && checks <= 3)
+          ((!!email_doc.data()?.delivery?.attempts as number | boolean) == 0 && checks <= 3)
         ) {
           await new Promise((resolve) => setTimeout(resolve, (2 ^ checks) * 2000));
           email_doc = await getDoc(email_doc_ref);
@@ -1143,7 +1174,7 @@ export const useMainStore = defineStore({
         }
 
         // update remote
-        if (this.personal_account) {
+        if (this.personal_account && this.linked_account_doc) {
           this.linked_account_doc.linked.push(email);
         } else {
           this.account_doc.linked.push(email);
@@ -1169,9 +1200,9 @@ export const useMainStore = defineStore({
         // if exists in userdoc.linked, remove and save
         if (this.active_doc.linked.includes(email)) {
           let filtered_linked = this.active_doc.linked.filter((e) => e != email);
-          if (this.personal_account) {
+          if (this.personal_account && this.linked_account_doc) {
             this.linked_account_doc.linked = filtered_linked;
-          } else {
+          } else if (this.account_doc) {
             this.account_doc.linked = filtered_linked;
           }
           await this.update_remote();
@@ -1277,7 +1308,7 @@ export const useMainStore = defineStore({
           "survey",
           "daily",
           today,
-          this.personal_account ? this.account_doc?.linked_to : this.user.uid
+          this.personal_account ? this.account_doc?.linked_to : this.user?.uid
         );
         let response_obj = {
           time: new Date().getTime(),
@@ -1287,9 +1318,9 @@ export const useMainStore = defineStore({
         // update user doc to have date in "done_surveys"
         let updated_surveys = this.active_doc?.done_surveys ? this.active_doc.done_surveys : [];
         updated_surveys.push(today);
-        if (this.personal_account) {
+        if (this.personal_account && this.linked_account_doc) {
           this.linked_account_doc.done_surveys = updated_surveys;
-        } else {
+        } else if (this.account_doc) {
           this.account_doc.done_surveys = updated_surveys;
         }
         await this.update_remote();
@@ -1308,7 +1339,7 @@ export const useMainStore = defineStore({
      * @see {@link theme}
      */
     async toggle_theme() {
-      this.theme = this.get_theme == "light" ? "dark" : "light";
+      this.theme = this.get_theme == Theme.Light ? Theme.Dark : Theme.Light;
       window.localStorage.setItem("theme", this.theme);
       if (this.account_doc) {
         this.account_doc.prefs = { ...this.account_doc.prefs, theme: this.theme };
@@ -1349,9 +1380,9 @@ export const useMainStore = defineStore({
      */
     async remove_class_id_helper(class_id) {
       let filtered_classes = this.active_doc.classes.filter((c) => c != class_id);
-      if (this.personal_account) {
+      if (this.personal_account && this.linked_account_doc) {
         this.linked_account_doc.classes = filtered_classes;
-      } else {
+      } else if (this.account_doc) {
         this.account_doc.classes = filtered_classes;
       }
       // remove from local
@@ -1436,7 +1467,7 @@ export const useMainStore = defineStore({
           // if teacher, setup this.teacher refs
           if (this.is_teacher) {
             _status.log("🏫 In teacher mode");
-            this.teacher.doc_ref = doc(db, "classes", this.user.email);
+            this.teacher.doc_ref = doc(db, "classes", this.user?.email as string);
             this.teacher.collection_ref = collection(this.teacher.doc_ref, "classes");
           }
           // if router has a redirect, go to it
@@ -1444,7 +1475,7 @@ export const useMainStore = defineStore({
             router.currentRoute?.value?.query?.redirect &&
             !router.currentRoute?.value?.meta?.blockStandardRedirect
           ) {
-            router.replace(router.currentRoute?.value?.query?.redirect);
+            router.replace(router.currentRoute?.value?.query?.redirect as string);
           }
         })
         .catch((err) => {
@@ -1588,7 +1619,9 @@ export const useMainStore = defineStore({
         // linked account doesn't exist
         _status.log("🔗 Linked account doesn't exist, removing it and going home");
         new WarningToast("Linked account doesn't exist, removing it and going home", 2000);
-        this.account_doc.linked_to = null;
+        if (this.account_doc) {
+          this.account_doc.linked_to = null;
+        }
         await this.update_wrapper_acc_doc();
         this.linked_account_doc = null;
         router.push("/");
@@ -1689,10 +1722,10 @@ export const useMainStore = defineStore({
      */
     async create_teacher_doc() {
       // create teacher doc under (classes/teacher_email+this.ORG_DOMAIN) with sub-collection (classes)
-      let teacher_ref = doc(db, "classes", this.active_doc.email || this.user.email);
+      let teacher_ref = doc(db, "classes", this.active_doc.email || this.user?.email);
       await setDoc(teacher_ref, {
-        name: this.active_doc.name || this.user.displayName,
-        email: this.active_doc.email || this.user.email,
+        name: this.active_doc.name || this.user?.displayName,
+        email: this.active_doc.email || this.user?.email,
       });
       this.teacher = {
         doc_ref: teacher_ref,
@@ -1739,9 +1772,9 @@ export const useMainStore = defineStore({
 
       let unique = [...new Set(this.active_doc.classes)];
       if (unique.length != this.active_doc.classes.length) {
-        if (this.personal_account) {
+        if (this.personal_account && this.linked_account_doc) {
           this.linked_account_doc.classes = unique;
-        } else {
+        } else if (this.account_doc) {
           this.account_doc.classes = unique;
         }
         await this.update_remote();
@@ -1750,7 +1783,7 @@ export const useMainStore = defineStore({
       }
 
       // get all classes' data and combine into an array
-      let classes = [];
+      let classes: ClassInfo[] = [];
       for (let class_path of this.active_doc.classes) {
         // split class path into teacher/uid
         let [teacher, class_id] = class_path.split("/");
@@ -1772,7 +1805,7 @@ export const useMainStore = defineStore({
           continue;
         }
         // push class to array
-        let doc_data = subclass_doc.data();
+        let doc_data: ClassInfo = subclass_doc.data() as ClassInfo;
         doc_data.id = class_path;
         doc_data.ref = [teacher, class_id].join("/");
 
@@ -1781,7 +1814,7 @@ export const useMainStore = defineStore({
       _status.log(`📚 Got class docs  | <${run_hash}>`);
       // get tasks for all classes in parallel
 
-      classes = classes.map((class_data) => {
+      classes = classes.map((class_data: ClassInfo) => {
         let [_email, _id] = class_data.ref.split("/");
         class_data.tasks = class_data.tasks || [];
         class_data.tasks = class_data.tasks.map((task) => {
@@ -1825,12 +1858,12 @@ export const useMainStore = defineStore({
         return;
       }
       _status.log("📄 Getting classes from email");
-      let classes = [];
+      let classes: ClassInfo[] = [];
       let classes_subcollection = collection(doc(db, "classes", email), "classes");
       let classes_subcollection_snapshot = await getDocs(classes_subcollection);
       _status.log("📄 Got classes subcollection from email");
       classes_subcollection_snapshot.forEach((class_doc) => {
-        let class_data = class_doc.data();
+        let class_data: ClassInfo = class_doc.data() as ClassInfo;
         class_data.id = class_doc.id;
         // if user already in class, change name to "[JOINED] name"
         class_data.is_joined = this.active_doc?.classes.includes([email, class_doc.id].join("/"));
@@ -1864,9 +1897,9 @@ export const useMainStore = defineStore({
 
       let class_key = [teacher_email, class_id].join("/");
       if (this.active_doc.classes.includes(class_key)) return;
-      if (this.personal_account) {
+      if (this.personal_account && this.linked_account_doc) {
         this.linked_account_doc.classes.push(class_key);
-      } else {
+      } else if (this.account_doc) {
         this.account_doc.classes.push(class_key);
       }
       await this.update_remote();
@@ -1912,7 +1945,7 @@ export const useMainStore = defineStore({
         new SuccessToast(`Created class "${this.class_text(class_obj)}"`, 2000);
         _status.log("🏫 class_doc_ref", class_doc_ref);
         await this.add_class(
-          this.active_doc.email || this.user.email,
+          this.active_doc.email || this.user?.email,
           class_doc_ref.id,
           class_obj.name,
           class_obj.period
@@ -1939,20 +1972,20 @@ export const useMainStore = defineStore({
           return Promise.reject("No classes selected");
         }
         // use firebase array add to add task to each class
-        let batch = writeBatch(db);
-        let updated_classes = Array.from(this.classes);
+        let batch: WriteBatch = writeBatch(db);
+        let updated_classes: ClassInfo[] = Array.from(this.classes);
         task_classes.forEach((class_id) => {
           // fix any class_id that has the teacher email in it
-          let displayed_class_id = class_id;
+          let displayed_class_id: string = class_id;
           let [_email, _id] = class_id.split("/");
           // use this.teacher.collection_ref to get class collection ref, then update the class documents within
           let class_tasks_collection = collection(db, "classes", _email, "classes", _id, "tasks");
           task_obj.class_id = displayed_class_id;
 
           // batch add a new task doc with the data to the class_tasks_collection collection, using auto-generated id
-          let task_ref = doc(class_tasks_collection);
+          let task_ref: DocumentReference = doc(class_tasks_collection);
           batch.set(task_ref, task_obj);
-          updated_classes.forEach((class_obj) => {
+          updated_classes.forEach((class_obj: ClassInfo) => {
             if (class_obj.id == displayed_class_id) {
               class_obj.tasks.push({
                 ...task_obj,
@@ -2192,7 +2225,7 @@ export const useMainStore = defineStore({
         });
         // limit to 6
         class_tasks = class_tasks.slice(0, 6);
-        let upcoming_tasks = [];
+        let upcoming_tasks: TaskInfo[] = [];
         class_tasks.forEach((task) => {
           let task_id = task.id;
           delete task.id;
