@@ -14,8 +14,17 @@ const envPlugin = () => {
 module.exports = defineConfig({
   configureWebpack: {
     plugins: [envPlugin()],
+    resolve: {
+      extensions: [".ts", ".tsx", ".js", ".vue", ".json"],
+    },
     module: {
       rules: [
+        // add typescript support
+        {
+          test: /\.ts$/,
+          loader: "ts-loader",
+          options: { appendTsSuffixTo: [/\.vue$/] },
+        },
         // Handle .md files in assets
         {
           test: /\.md$/,
