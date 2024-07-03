@@ -174,7 +174,7 @@ export const useMagic = defineStore({
      * @param {Object} data query params
      * @returns {Promise<Object>} json
      */
-    async api_get(endpoint, data) {
+    async api_get(endpoint: string, data) {
       data = data || {};
       if (!endpoint) return;
       // get url with query
@@ -206,7 +206,7 @@ export const useMagic = defineStore({
      * @function rated_api_get
      * @description do api_get but abide by rate limit (only eval once every 15 seconds)
      */
-    async rated_api_get(type) {
+    async rated_api_get(type: string, data) {
       _status.log("🛜 API fetch requested");
       const run_hash = Math.random().toString(36).substring(7);
       const prev_time = this.last[type]?.time;
@@ -222,7 +222,7 @@ export const useMagic = defineStore({
           _status.log("🛜 API fetch rate limit lifted");
         }
       }
-      return await this.api_get(...arguments, run_hash);
+      return await this.api_get(type, data);
     },
   },
 });
