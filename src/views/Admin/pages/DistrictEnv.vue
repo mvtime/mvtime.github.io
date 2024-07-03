@@ -14,19 +14,18 @@
             end_section: end,
           }"
         >
-          <template v-if="key === ''">
-            <br />
-          </template>
+          <br v-if="key === ''" />
           <template v-else>
             <td class="key">{{ key }}</td>
-            <div></div>
+            <div class="separator"></div>
             <td class="value">
               <span
                 class="value_color"
                 v-if="value && key.includes('COLOR')"
                 :style="{ backgroundColor: `#${value}` }"
               ></span>
-              <pre v-if="value">{{ value }}</pre>
+
+              <BoxedValue v-if="value" :value="value" />
 
               <span v-else class="unset">No value currently set</span>
             </td>
@@ -38,8 +37,12 @@
 </template>
 
 <script>
+import BoxedValue from "@/components/Portal/Admin/BoxedValue.vue";
 export default {
   name: "DistrictEnv",
+  components: {
+    BoxedValue,
+  },
   data() {
     return {};
   },
@@ -120,7 +123,7 @@ tr.blank {
   width: 270px;
   padding: 10px;
 }
-.env_pairs .env_pair div {
+.env_pairs .env_pair div.separator {
   margin: 0;
   padding: 0;
   border: 0;
@@ -178,7 +181,7 @@ td.value .value_color {
     display: flex;
     flex-flow: column nowrap;
   }
-  .env_pairs .env_pair div {
+  .env_pairs .env_pair div.separator {
     height: 2px;
     width: 100%;
     opacity: 1;

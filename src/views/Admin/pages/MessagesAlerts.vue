@@ -12,16 +12,25 @@
       </div>
     </div>
     <div class="msg_page_wrapper" v-else>
-      <div class="msg_page_info" v-if="page != 'choose'">
+      <div
+        class="msg_page_info admin_in"
+        v-if="page != 'choose'"
+        :style="{ animationDelay: `${2 * 0.05}s` }"
+      >
         <button class="msg_page__back" @click="page = 'choose'">
           <div class="msg_page__back__icon themed_icon"></div>
         </button>
         <div class="msg_page_info__text">{{ choices[page].active }}</div>
       </div>
-      <hr class="msg_page_wrapper__separator" />
-      <div class="msg_page msg__view" v-if="page == 'view'"></div>
-      <div class="msg_page msg__send" v-else-if="page == 'send'"></div>
-      <div class="msg_page msg__templates" v-else-if="page == 'templates'"></div>
+      <hr
+        class="msg_page_wrapper__separator admin_in"
+        :style="{ animationDelay: `${3 * 0.05}s` }"
+      />
+      <div class="msg_page_container admin_in" :style="{ animationDelay: `${4 * 0.05}s` }">
+        <div class="msg_page msg__view" v-if="page == 'view'"></div>
+        <div class="msg_page msg__send" v-else-if="page == 'send'"></div>
+        <div class="msg_page msg__templates" v-else-if="page == 'templates'"></div>
+      </div>
     </div>
   </div>
 </template>
