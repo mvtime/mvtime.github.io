@@ -2,7 +2,7 @@
 
 // import firebase
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, type User } from "firebase/auth";
 import { getFirestore, onSnapshot, doc } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 import { getFunctions, httpsCallable } from "firebase/functions";
@@ -28,17 +28,19 @@ const functions = getFunctions(app, process.env.FIREBASE_region);
 // export firebase
 export { app, auth, db, analytics, functions, httpsCallable, authChangeAction, refreshTimeout };
 
+//TODO:TS update common and store to ts to fix below
 // handle auth updates (user login/logout) and set user data in store
-import { useMainStore } from "../store";
+import { useMainStore } from "@/store";
 import { _status } from "@/common";
 import router from "@/router";
-auth.onAuthStateChanged((user) => {
+auth.onAuthStateChanged((user: User | null) => {
   authChangeAction(user);
 });
-let unsub;
-let subscribed = false;
-let timeout;
-function authChangeAction(user) {
+let unsub: () => void,
+  subscribed: boolean = false,
+  timeout: number;
+
+function authChangeAction(user: User | null): void {
   const store = useMainStore();
   if (user) {
     store.set_user(user);
@@ -55,7 +57,7 @@ function authChangeAction(user) {
   }
 }
 
-function setupSnapshot(uid) {
+function setupSnapshot(uid: string | undefined): void {
   _status.log("⬥ Setting up snapshot");
   if (!uid) {
     _status.warn("⚠ No uid provided to setupSnapshot");
@@ -100,7 +102,7 @@ function setupSnapshot(uid) {
 }
 
 // allow for unsubscribing from onSnapshot
-function unsubscribe(show_prompt) {
+function unsubscribe(show_prompt: boolean = false): void {
   // clear timeout
   clearTimeout(timeout);
   let store = useMainStore();
@@ -114,7 +116,7 @@ function unsubscribe(show_prompt) {
   subscribed = false;
 }
 
-function msToText(ms) {
+function msToText(ms: number): string {
   // use modolo to get minutes and seconds
   const minutes = Math.floor(ms / 1000 / 60);
   const seconds = Math.floor((ms / 1000) % 60);
@@ -124,14 +126,14 @@ function msToText(ms) {
   );
 }
 
-function startTimeout(delay = 1000 * 60 * 5) {
-  return setTimeout(() => {
+function startTimeout(delay: number = 1000 * 60 * 5): number {
+  return window.setTimeout(() => {
     _status.log(`⬥ Page unused for ${msToText(delay)}, removing onSnapshot listener`);
     unsubscribe(true);
   }, delay);
 }
 
-function refreshTimeout(delay) {
+function refreshTimeout(delay: number): void {
   const store = useMainStore();
   store.hide_timeout();
   if (!subscribed) {
