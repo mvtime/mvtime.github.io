@@ -15,9 +15,19 @@ import { useShortcuts } from "@/store/shortcuts";
 import { useMagic } from "@/store/magic";
 import { useNotifications } from "@/store/notifications";
 
+// Typescript Things
+declare global {
+  interface Window {
+    toast: typeof Toast;
+    $: typeof $;
+  }
+}
+window.toast = placeholderToast;
+window.$ = $;
+
 // create instances of app requisites
 const pinia = createPinia();
-const app = createApp(App);
+const app = createApp(() => App);
 
 // setup app requisites
 app.use(router);
@@ -109,7 +119,7 @@ import $ from "jquery";
 
 // auth
 
-$(document.body).on("click", ".auth-action", function () {
+$(document.body).on("click", ".auth-action", function (this: HTMLElement) {
   const store = useMainStore();
   if (!store.user && $(this).hasClass("can-login")) {
     store.login();
@@ -127,11 +137,11 @@ $(document.body).on("click", ".gohome", function () {
 
 // page change
 import { removePopup } from "@svonk/util";
-router.afterEach((to) => {
+router.afterEach((to: any) => {
   if (to.meta && to.meta.page_title) {
     document.title = `${process.env.VUE_APP_BRAND_NAME_LONG} | ` + to.meta.page_title;
   } else {
-    document.title = process.env.VUE_APP_BRAND_NAME_LONG;
+    document.title = process.env.VUE_APP_BRAND_NAME_LONG as string;
   }
   let theme_light = to.meta?.theme_color?.light || `#${process.env.VUE_APP_THEME_COLOR}`;
   let theme_dark = to.meta?.theme_color?.dark || `#${process.env.VUE_APP_THEME_COLOR}`;
@@ -154,9 +164,6 @@ router.afterEach((to) => {
   style.setProperty("--theme-color-hover", text_light + "33");
   style.setProperty("--theme-color-hover-dark", text_dark + "33");
 });
-
-window.toast = placeholderToast;
-window.$ = $;
 
 // router guard
 router.beforeEach((to) => {
