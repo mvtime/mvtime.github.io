@@ -4,7 +4,7 @@
     "target": "es2016",
     "module": "esnext",
     "baseUrl": "./",
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "paths": {
       "@/*": ["src/*"]
     },
@@ -12,6 +12,10 @@
     "noEmit": false,
 
     // stricter
-    "strict": true
+    "strict": true,
+
+    // temp fix for mixed in js
+    "noImplicitAny": false,
+    "allowJs": true
   }
 }
