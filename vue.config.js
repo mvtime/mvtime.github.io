@@ -11,10 +11,22 @@ const envPlugin = () => {
   );
 };
 
+// add version to be printed to console
+const versionPlugin = {
+  apply(compiler) {
+    compiler.hooks.environment.tap("versionPlugin", () => {
+      const { execSync } = require("child_process");
+      const version = execSync("git rev-parse --short HEAD").toString().trim();
+      const status = execSync("git status --porcelain").toString().trim();
+      process.env.VUE_APP_VERSION = version + (status ? "-alpha" : "");
+    });
+  },
+};
+
 module.exports = defineConfig({
   configureWebpack: {
     entry: "@/main.ts",
-    plugins: [envPlugin()],
+    plugins: [envPlugin(), versionPlugin],
     resolve: {
       extensions: [".ts", ".tsx", ".js", ".vue", ".json"],
     },
