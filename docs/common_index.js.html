@@ -5,6 +5,7 @@
  * @file common/index.ts
  * @namespace common
  */
+var _a;
 var LogTone;
 (function (LogTone) {
     LogTone["Log"] = "log";
@@ -140,8 +141,10 @@ function downloadLogData(data, date, id = "manual") {
  * */
 const _statuslog = _log.bind(LogTone.Info);
 try {
+    const version = ((_a = document.getElementById("version")) === null || _a === void 0 ? void 0 : _a.textContent) || "&lt; not found >";
+    _status.log(`🚀 Loaded into ${process.env.NODE_ENV} build @ version [${version}]`);
+    _status.info("📜 Initialized logger");
     window._status = _status;
-    _status.log("📜 Initialized logger");
 }
 catch (err) {
     _status.log("⚠ Couldn't set window._status", err);
