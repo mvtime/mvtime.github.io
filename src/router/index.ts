@@ -1,6 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Home from "../views/Home/Home.vue";
-import NotFound from "../views/Home/NotFound.vue";
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
@@ -8,7 +6,7 @@ const router = createRouter({
     {
       path: "/",
       name: "home",
-      component: () => Home,
+      component: () => import("../views/Home/Home.vue"),
       meta: {
         page_title: "Home",
         theme_color: {
@@ -192,7 +190,7 @@ const router = createRouter({
         {
           path: "/:pathMatch(.*)*",
           name: "404",
-          component: () => NotFound,
+          component: () => import("../views/Home/NotFound.vue"),
           meta: {
             page_title: "404",
             theme_color: {
