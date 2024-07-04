@@ -62,7 +62,7 @@ function getFirstNonStandardCharacter(str: string): string | null {
  * @example _log("Hello world!");
  * */
 function _log(this: LogTone, ...args: any[]): void {
-  log.push({ time: Date.now(), message: arguments[0], type: tone || LogTone.Log });
+  log.push({ time: Date.now(), message: arguments[0], type: this || LogTone.Log });
   if (arguments.length == 0) return;
   // check for very large messages and warn them in the console with the first 100 characters (make sure this catches the message, even if it's not the first argument, or in a object format)
   let extras = [
@@ -164,8 +164,8 @@ function downloadLogData(data: LogEntry[], date: Date, id: string = "manual"): v
 const _statuslog: Function = _log.bind(LogTone.Info);
 try {
   const version: string = document.getElementById("version")?.textContent || "< not found >";
-  _status.log(`🚀 Loaded into ${process.env.NODE_ENV} build @ version [${version}]`);
-  _status.info("📜 Initialized logger");
+  _status.debug(`🚀 Loaded into ${process.env.NODE_ENV} build @ version [${version}]`);
+  _status.log("📜 Initialized logger");
   window._status = _status;
 } catch (err) {
   _status.log("⚠ Couldn't set window._status", err);

@@ -128,10 +128,8 @@
     <!-- version info -->
     <script class="versioning">
       console.log(
-        `%cWelcome to <%= VUE_APP_BRAND_NAME_SHORT %>\t[ <%= VUE_APP_VERSION %> ]`,
-        `background:#${"<%= VUE_APP_THEME_CONSOLE_COLOR_BG %>" || "272727"};color:${
-          "<%= VUE_APP_THEME_CONSOLE_COLOR_TEXT %>" || "C9B092"
-        };padding:7px 12px;font-family:Lato,sans-serif;font-weight:bold;font-size:1.3em`
+        `%cWelcome to <%= VUE_APP_BRAND_NAME_SHORT %> [<%= VUE_APP_VERSION %>]`,
+        `background:#<%= VUE_APP_THEME_CONSOLE_COLOR_BG %>;color:#<%= VUE_APP_THEME_CONSOLE_COLOR_TEXT %>;padding:7px 12px;font-family:Lato,sans-serif;font-weight:bold;font-size:1.3em`
       );
       document.querySelector(".versioning").remove();
     </script>
