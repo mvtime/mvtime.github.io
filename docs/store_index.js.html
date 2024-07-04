@@ -31,7 +31,7 @@ import { defineStore } from "pinia";
 import { _status, compatDateObj } from "@/common";
 import { Toast, ErrorToast, cleanError, WarningToast, SuccessToast } from "@svonk/util";
 // get firebase requirements
-import { collection, doc, setDoc, getDoc, getDocs, addDoc, writeBatch, updateDoc, deleteDoc, } from "firebase/firestore";
+import { collection, doc, setDoc, getDoc, getDocs, addDoc, writeBatch, updateDoc, deleteDoc, DocumentSnapshot, QuerySnapshot, } from "firebase/firestore";
 import CryptoJS from "crypto-js";
 import { auth, db, authChangeAction, refreshTimeout } from "../firebase";
 import { signInWithPopup, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
@@ -251,6 +251,12 @@ export const useMainStore = defineStore({
                 return (task.type != "note" &amp;&amp; (((_a = task === null || task === void 0 ? void 0 : task.date) === null || _a === void 0 ? void 0 : _a.getTime) ? task.date.getTime() : 0) >= now - morning);
             });
             upcoming.sort((a, b) => {
+                if (!a.date &amp;&amp; !b.date)
+                    return 0;
+                if (!a.date)
+                    return -1;
+                if (!b.date)
+                    return 1;
                 if (a.date &lt; b.date)
                     return -1;
                 if (a.date > b.date)
@@ -317,7 +323,7 @@ export const useMainStore = defineStore({
          * @returns {Boolean} if the user is an admin
          * @default false
          */
-        //TODO: update this to use actual permissions
+        // TODO: update this to use actual permissions
         is_admin() {
             return this.is_teacher;
         },
@@ -353,7 +359,7 @@ export const useMainStore = defineStore({
             }
             let email = this.user.email;
             let [first, last] = email.split("@");
-            //TODO: add .env option for teacher/student pattern
+            // TODO: add .env option for teacher/student pattern
             if ("@" + last == this.ORG_DOMAIN &amp;&amp; !/\d/.test(first) &amp;&amp; this.ORG_DOMAIN == "@mvla.net") {
                 _status.log("🏫 Teacher mode enabled for non-student district account");
                 return true;
@@ -430,9 +436,8 @@ export const useMainStore = defineStore({
          * @default null
          */
         linked_account_ref() {
-            if (!this.user || !this.account_doc)
-                return null;
-            if (!this.account_doc.linked_to)
+            var _a;
+            if (!this.user || !((_a = this.account_doc) === null || _a === void 0 ? void 0 : _a.linked_to))
                 return null;
             return doc(db, "users", this.account_doc.linked_to);
         },
@@ -461,7 +466,7 @@ export const useMainStore = defineStore({
          * @memberOf .main.getters
          * @function get_theme
          * @description Get theme from local storage or user doc
-         * @returns {String} Theme.Light or Theme.Dark
+         * @returns {Theme} Theme.Light or Theme.Dark
          * @default Theme.Light
          */
         get_theme() {
@@ -486,6 +491,8 @@ export const useMainStore = defineStore({
                 }
                 if (this.account_doc) {
                     this.account_doc.prefs = Object.assign(Object.assign({}, this.account_doc.prefs), { theme: new_theme });
+                    // TODO: TS fix this unintended side effect
+                    // @ts-ignore: TS2339
                     this.update_wrapper_acc_doc();
                 }
                 return local_theme || Theme.Light;
@@ -522,7 +529,7 @@ export const useMainStore = defineStore({
          * @memberOf .main.getters
          * @function finished_tasks
          * @description return all the finished tasks
-         * @returns {Boolean} If the task is finished or not
+         * @returns {Array} Finished Tasks
          * @default false
          * @see {@link set_finished}
          */
@@ -534,6 +541,7 @@ export const useMainStore = defineStore({
             }
             catch (err) {
                 _status.warn("🔗 Couldn't get finished tasks", err);
+                return [];
             }
         },
         /**
@@ -616,13 +624,14 @@ export const useMainStore = defineStore({
          */
         set_account_pref(pref, value) {
             return __awaiter(this, void 0, void 0, function* () {
+                var _a;
                 try {
                     if (!this.account_ref)
                         throw "No account doc";
                     if (!pref)
                         throw "No pref provided";
                     yield this.update_wrapper_with_merge({
-                        prefs: Object.assign(Object.assign({}, this.active_doc.prefs), { [pref]: value }),
+                        prefs: Object.assign(Object.assign({}, (_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.prefs), { [pref]: value }),
                     });
                     return Promise.resolve();
                 }
@@ -641,28 +650,29 @@ export const useMainStore = defineStore({
          * @see {@link done_daily_survey}
          */
         get_surveys(dates) {
-            if (!this.user)
-                return Promise.reject("Missing user");
-            // get all the firebase surveys in "/survey/{date}/{uid}" format, in parallel
-            try {
-                let survey_refs = dates.map((date) => {
-                    var _a, _b;
-                    return doc(db, "survey", "daily", date, this.personal_account ? (_a = this.account_doc) === null || _a === void 0 ? void 0 : _a.linked_to : (_b = this.user) === null || _b === void 0 ? void 0 : _b.uid);
-                });
-                let survey_promises = survey_refs.map((ref) => getDoc(ref));
-                return Promise.all(survey_promises).then((survey_docs) => {
-                    // convert each survey doc to an object with date and data
-                    let surveys = survey_docs.map((doc, i) => {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (!this.user)
+                    return Promise.reject("Missing user");
+                // get all the firebase surveys in "/survey/{date}/{uid}" format, in parallel
+                try {
+                    let survey_refs = dates.map((date) => {
+                        var _a, _b;
+                        return doc(db, "survey", "daily", date, this.personal_account ? (_a = this.account_doc) === null || _a === void 0 ? void 0 : _a.linked_to : (_b = this.user) === null || _b === void 0 ? void 0 : _b.uid);
+                    });
+                    let survey_promises = survey_refs.map((ref) => getDoc(ref));
+                    const surveys = (yield Promise.all(survey_promises))
+                        // convert each survey doc to an object with date and data
+                        .map((doc, i) => {
                         if (!doc.exists())
                             return { date: dates[i], error: "No survey data for this date" };
                         return { date: dates[i], data: doc.data() };
                     });
                     return Promise.resolve(surveys);
-                });
-            }
-            catch (err) {
-                return Promise.reject(err);
-            }
+                }
+                catch (err) {
+                    return Promise.reject(err);
+                }
+            });
         },
         /**
          * @memberOf .main.actions
@@ -972,7 +982,7 @@ export const useMainStore = defineStore({
          */
         get_tasks() {
             return __awaiter(this, void 0, void 0, function* () {
-                var _a;
+                var _a, _b, _c, _d, _e;
                 try {
                     if (!((_a = this.classes) === null || _a === void 0 ? void 0 : _a.length))
                         return Promise.resolve([]);
@@ -986,17 +996,21 @@ export const useMainStore = defineStore({
                         for (let j = 0; j &lt; ((class_tasks === null || class_tasks === void 0 ? void 0 : class_tasks.length) || 0); j++) {
                             classes[i].name = classes[i].name ? classes[i].name : "Unnamed Class";
                             // check task date type and convert to date object if necessary
+                            let date;
                             if (typeof class_tasks[j].date == "string") {
                                 // convert to mm-dd-yyyy from yyyy-mm-dd
-                                class_tasks[j].date = class_tasks[j].date.split("T")[0];
-                                let [year, month, day] = class_tasks[j].date.split("-");
+                                class_tasks[j].date = (_c = (_b = class_tasks[j]) === null || _b === void 0 ? void 0 : _b.date) === null || _c === void 0 ? void 0 : _c.split("T")[0];
+                                let [year, month, day] = (_e = (_d = class_tasks[j]) === null || _d === void 0 ? void 0 : _d.date) === null || _e === void 0 ? void 0 : _e.split("-");
                                 class_tasks[j].date = `${month}-${day}-${year}`;
-                                class_tasks[j].date = compatDateObj(class_tasks[j].date);
-                                class_tasks[j].date = isNaN(class_tasks[j].date) ? null : class_tasks[j].date;
+                                date = compatDateObj(class_tasks[j].date);
+                                date = isNaN(class_tasks[j].date) ? null : date;
+                            }
+                            else {
+                                date = class_tasks[j].date;
                             }
                             // set color from parent class color
                             class_tasks[j].color = classes[i].color;
-                            tasks.push(Object.assign(Object.assign({}, class_tasks[j]), { class_name: this.class_text(classes[i]) }));
+                            tasks.push(Object.assign(Object.assign({}, class_tasks[j]), { date, class_name: this.class_text(classes[i]) }));
                         }
                     }
                     // sort tasks by day, if day the same, sort by period, then by name
@@ -1225,11 +1239,12 @@ export const useMainStore = defineStore({
          */
         uninvite_linked(email) {
             return __awaiter(this, void 0, void 0, function* () {
+                var _a;
                 try {
                     if (!this.user)
                         return;
                     // if exists in userdoc.linked, remove and save
-                    if (this.active_doc.linked.includes(email)) {
+                    if ((_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.linked.includes(email)) {
                         let filtered_linked = this.active_doc.linked.filter((e) => e != email);
                         if (this.personal_account &amp;&amp; this.linked_account_doc) {
                             this.linked_account_doc.linked = filtered_linked;
@@ -1428,7 +1443,8 @@ export const useMainStore = defineStore({
          */
         remove_class_id_helper(class_id) {
             return __awaiter(this, void 0, void 0, function* () {
-                let filtered_classes = this.active_doc.classes.filter((c) => c != class_id);
+                var _a;
+                let filtered_classes = (_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.classes.filter((c) => c != class_id);
                 if (this.personal_account &amp;&amp; this.linked_account_doc) {
                     this.linked_account_doc.classes = filtered_classes;
                 }
@@ -1645,9 +1661,10 @@ export const useMainStore = defineStore({
          */
         get_remote() {
             return __awaiter(this, void 0, void 0, function* () {
-                // set document data
+                if (!this.user || !this.active_ref)
+                    return;
                 // get doc from firebase
-                let active_doc = yield getDoc(this.active_ref);
+                const active_doc = yield getDoc(this.active_ref);
                 _status.log("📄 Got user doc remote");
                 if (active_doc.exists()) {
                     this.set_active(active_doc.data());
@@ -1680,6 +1697,8 @@ export const useMainStore = defineStore({
          */
         update_remote() {
             return __awaiter(this, void 0, void 0, function* () {
+                if (!this.active_ref)
+                    return;
                 // update remote doc
                 yield setDoc(this.active_ref, this.active_doc, { merge: true });
                 _status.log("⏶ Pushed changes to remote");
@@ -1694,6 +1713,8 @@ export const useMainStore = defineStore({
          */
         update_wrapper_acc_doc() {
             return __awaiter(this, void 0, void 0, function* () {
+                if (!this.account_ref)
+                    return;
                 yield setDoc(this.account_ref, this.account_doc, { merge: true });
             });
         },
@@ -1707,6 +1728,8 @@ export const useMainStore = defineStore({
          */
         update_wrapper_with_merge(data) {
             return __awaiter(this, void 0, void 0, function* () {
+                if (!this.account_ref)
+                    return Promise.reject("No account ref");
                 try {
                     yield setDoc(this.account_ref, data, { merge: true });
                     return Promise.resolve();
@@ -1768,12 +1791,15 @@ export const useMainStore = defineStore({
          */
         create_teacher_doc() {
             return __awaiter(this, void 0, void 0, function* () {
-                var _a, _b, _c;
+                var _a, _b, _c, _d, _e, _f;
+                const email = ((_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.email) || ((_b = this.user) === null || _b === void 0 ? void 0 : _b.email);
+                if (!email)
+                    return;
                 // create teacher doc under (classes/teacher_email+this.ORG_DOMAIN) with sub-collection (classes)
-                let teacher_ref = doc(db, "classes", this.active_doc.email || ((_a = this.user) === null || _a === void 0 ? void 0 : _a.email));
+                let teacher_ref = doc(db, "classes", email);
                 yield setDoc(teacher_ref, {
-                    name: this.active_doc.name || ((_b = this.user) === null || _b === void 0 ? void 0 : _b.displayName),
-                    email: this.active_doc.email || ((_c = this.user) === null || _c === void 0 ? void 0 : _c.email),
+                    name: ((_c = this.active_doc) === null || _c === void 0 ? void 0 : _c.name) || ((_d = this.user) === null || _d === void 0 ? void 0 : _d.displayName),
+                    email: ((_e = this.active_doc) === null || _e === void 0 ? void 0 : _e.email) || ((_f = this.user) === null || _f === void 0 ? void 0 : _f.email),
                 });
                 this.teacher = {
                     doc_ref: teacher_ref,
@@ -1836,13 +1862,13 @@ export const useMainStore = defineStore({
                         continue;
                     }
                     // get classes sub-collection from teacher's doc
-                    let teacher_classes = collection(db, "classes", teacher, "classes");
+                    const teacher_classes = collection(db, "classes", teacher, "classes");
                     if (!teacher_classes) {
                         yield this.remove_invalid(class_path);
                         continue;
                     }
                     // get class doc from classes sub-collection
-                    let subclass_ref = doc(teacher_classes, class_id);
+                    const subclass_ref = doc(teacher_classes, class_id);
                     let subclass_doc = yield getDoc(subclass_ref);
                     if (!subclass_doc.exists()) {
                         yield this.remove_invalid(class_path);
@@ -1904,7 +1930,7 @@ export const useMainStore = defineStore({
                 }
                 _status.log("📄 Getting classes from email");
                 let classes = [];
-                let classes_subcollection = collection(doc(db, "classes", email), "classes");
+                const classes_subcollection = collection(doc(db, "classes", email), "classes");
                 let classes_subcollection_snapshot = yield getDocs(classes_subcollection);
                 _status.log("📄 Got classes subcollection from email");
                 classes_subcollection_snapshot.forEach((class_doc) => {
@@ -1943,7 +1969,7 @@ export const useMainStore = defineStore({
                     return;
                 if (!class_id)
                     return;
-                let class_key = [teacher_email, class_id].join("/");
+                const class_key = [teacher_email, class_id].join("/");
                 if (this.active_doc.classes.includes(class_key))
                     return;
                 if (this.personal_account &amp;&amp; this.linked_account_doc) {
@@ -1973,7 +1999,7 @@ export const useMainStore = defineStore({
          */
         create_class(class_obj) {
             return __awaiter(this, void 0, void 0, function* () {
-                var _a;
+                var _a, _b;
                 _status.log("🔨 Creating class", class_obj);
                 if (!this.is_teacher) {
                     new WarningToast("You need to be a teacher to create a class", 2000);
@@ -1991,11 +2017,11 @@ export const useMainStore = defineStore({
                         return;
                     }
                     // create class doc under teacher.collection_ref
-                    let class_doc_ref = yield addDoc(this.teacher.collection_ref, class_obj);
+                    const class_doc_ref = yield addDoc(this.teacher.collection_ref, class_obj);
                     // add class to user doc;
                     new SuccessToast(`Created class "${this.class_text(class_obj)}"`, 2000);
-                    _status.log("🏫 class_doc_ref", class_doc_ref);
-                    yield this.add_class(this.active_doc.email || ((_a = this.user) === null || _a === void 0 ? void 0 : _a.email), class_doc_ref.id, class_obj.name, class_obj.period);
+                    _status.log("🏫 Created class w/ ref", class_doc_ref);
+                    yield this.add_class(((_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.email) || ((_b = this.user) === null || _b === void 0 ? void 0 : _b.email), class_doc_ref.id, class_obj.name, class_obj.period);
                     return Promise.resolve();
                 }
                 catch (e) {
@@ -2026,13 +2052,13 @@ export const useMainStore = defineStore({
                     let updated_classes = Array.from(this.classes);
                     task_classes.forEach((class_id) => {
                         // fix any class_id that has the teacher email in it
-                        let displayed_class_id = class_id;
-                        let [_email, _id] = class_id.split("/");
+                        const displayed_class_id = class_id;
+                        const [_email, _id] = class_id.split("/");
                         // use this.teacher.collection_ref to get class collection ref, then update the class documents within
-                        let class_tasks_collection = collection(db, "classes", _email, "classes", _id, "tasks");
+                        const class_tasks_collection = collection(db, "classes", _email, "classes", _id, "tasks");
                         task_obj.class_id = displayed_class_id;
                         // batch add a new task doc with the data to the class_tasks_collection collection, using auto-generated id
-                        let task_ref = doc(class_tasks_collection);
+                        const task_ref = doc(class_tasks_collection);
                         batch.set(task_ref, task_obj);
                         updated_classes.forEach((class_obj) => {
                             if (class_obj.id == displayed_class_id) {
@@ -2044,8 +2070,9 @@ export const useMainStore = defineStore({
                     // update this.classes.tasks for each, then rerun get_tasks to update this.tasks from updated classes
                     this.classes = updated_classes;
                     this.get_tasks();
-                    let name = task_obj.type == "note" ? "" : `"${task_obj.name}"`;
+                    const name = task_obj.type == "note" ? "" : `"${task_obj.name}"`;
                     new SuccessToast(`Added ${task_obj.type || "task"} ${name} to ${task_classes.length} class${task_classes.length == 1 ? "" : "es"}`, 2000);
+                    _status.log(`📝 Created task ${name} for ${task_classes.length} classes`);
                     return Promise.resolve();
                 }
                 catch (e) {
