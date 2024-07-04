@@ -13,7 +13,7 @@ const envPlugin = () => {
 
 module.exports = defineConfig({
   configureWebpack: {
-    entry: "./src/main.ts",
+    entry: "@/main.ts",
     plugins: [envPlugin()],
     resolve: {
       extensions: [".ts", ".tsx", ".js", ".vue", ".json"],

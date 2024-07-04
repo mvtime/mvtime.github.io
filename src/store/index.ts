@@ -45,9 +45,9 @@ import {
   writeBatch,
   updateDoc,
   deleteDoc,
-  DocumentReference,
-  CollectionReference,
-  WriteBatch,
+  type DocumentReference,
+  type CollectionReference,
+  type WriteBatch,
   type DocumentData,
 } from "firebase/firestore";
 import CryptoJS from "crypto-js";
@@ -68,7 +68,7 @@ provider.setCustomParameters({
 
 // import router
 import router from "@/router";
-import { useMagic } from "./magic";
+import { useMagic } from "@/store/magic";
 function validOrgAcc(userEmail) {
   return userEmail?.split("@")[1] == ORG_DOMAIN.substring(1);
 }
