@@ -9,7 +9,7 @@ declare global {
     _status: object; // Replace 'any' with a more specific type according to your needs
   }
 }
-enum LogTone {
+export enum LogTone {
   Log = "log",
   Info = "info",
   Debug = "debug",
@@ -19,7 +19,7 @@ enum LogTone {
 
 let tone: LogTone = LogTone.Info;
 /** Save log messages for future debug */
-interface LogEntry {
+export interface LogEntry {
   time: Number;
   message: any;
   type: LogTone;
@@ -178,7 +178,7 @@ try {
  * @param {String} date
  * @returns {Date}
  */
-function compatDateObj(date: string | any): Date | any {
+function compatDateObj(date: string | Date): Date {
   if (typeof date != "string") return date;
   return new Date(date.replace(/-/g, "/"));
 }
@@ -190,12 +190,13 @@ function compatDateObj(date: string | any): Date | any {
  * @returns {String}
  */
 function msToTime(ms: number): string {
-  let seconds = Math.floor((ms / 1000) % 60);
-  let minutes = Math.floor((ms / (1000 * 60)) % 60);
-  let hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
-  let time = hours > 0 ? hours + ":" + (minutes < 10 ? "0" : "") : "";
-  time += `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
-  return time;
+  const seconds: number = Math.floor((ms / 1000) % 60),
+    minutes: number = Math.floor((ms / (1000 * 60)) % 60),
+    hours: number = Math.floor((ms / (1000 * 60 * 60)) % 24);
+  return (
+    (hours > 0 ? hours + ":" + (minutes < 10 ? "0" : "") : "") +
+    `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`
+  );
 }
 
 export { _statuslog, _status, compatDateObj, msToTime, downloadLogData };

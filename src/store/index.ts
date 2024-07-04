@@ -16,7 +16,7 @@ export enum Theme {
   Dark = "dark",
 }
 // TODO: TS implement these types
-export interface ClassInfo {
+export interface ClassInfo extends DocumentData {
   id?: string;
   ref: string;
   name: string;
@@ -25,13 +25,35 @@ export interface ClassInfo {
   tasks: TaskInfo[];
 }
 
-export interface TaskInfo {
-  [key: string]: any | never;
+export interface TaskInfo extends DocumentData {
+  id?: string;
+  name: string;
+  type: string;
+  date: string | Date | null;
+  description?: string;
+  class_obj?: ClassInfo;
+
+  link?: string;
+  path?: string;
+  [key: string]: any;
 }
+export interface ProcessedTaskInfo extends TaskInfo {
+  ref: string;
+  class_obj: ClassInfo;
+  date: Date | null;
+}
+
+interface Survey extends DocumentData {
+  data: any;
+  date: string;
+  fetched: number;
+}
+
+type ClassID = string;
 
 // setup Pinia store
 import { defineStore, type StoreDefinition } from "pinia";
-import { _status, compatDateObj } from "@/common";
+import { _status, compatDateObj, type LogEntry } from "@/common";
 import { Toast, ErrorToast, cleanError, WarningToast, SuccessToast } from "@svonk/util";
 
 // get firebase requirements
@@ -49,6 +71,8 @@ import {
   type CollectionReference,
   type WriteBatch,
   type DocumentData,
+  DocumentSnapshot,
+  QuerySnapshot,
 } from "firebase/firestore";
 import CryptoJS from "crypto-js";
 import { auth, db, authChangeAction, refreshTimeout } from "../firebase";
@@ -80,7 +104,7 @@ function isIFrame() {
   }
 }
 // get date in local time but with ISO format
-const today = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000)
+const today: string = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000)
   .toISOString()
   .split("T")[0];
 // define store
@@ -194,7 +218,9 @@ export const useMainStore: StoreDefinition = defineStore({
       logout_prompt: false as boolean,
     };
     // setting up store
-    let local = window.localStorage.getItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_app_state`);
+    let local: string | null = window.localStorage.getItem(
+      `${process.env.VUE_APP_BRAND_NAME_SHORT}_app_state`
+    );
     if (local && local != "undefined" && local != "null") {
       try {
         _status.log("↻ State from local storage");
@@ -221,7 +247,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @description Get the domain of the organization (@domain.tld)
      * @returns {String} The domain of the organization
      */
-    ORG_DOMAIN() {
+    ORG_DOMAIN(): string {
       return ORG_DOMAIN;
     },
     /**
@@ -230,7 +256,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @description Get if the user is using a simplified view (true) or not (false)
      * @returns {Boolean} If the user is using a simplified view
      */
-    simplified() {
+    simplified(): boolean {
       return this.account_doc?.prefs?.simplified || false;
     },
     /**
@@ -240,7 +266,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @returns {Array} Array of linked account emails
      * @default []
      */
-    linked_accounts() {
+    linked_accounts(): string[] {
       if (!this.user || !this.active_doc) return [];
       // get all linked accounts from doc.linked
       return this.active_doc.linked || [];
@@ -255,17 +281,20 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link upcoming_todo}
      * @note Doesn't include notes
      */
-    upcoming() {
+    upcoming(): ProcessedTaskInfo[] {
       if (!this.tasks) return [];
       const now = Date.now(); // new Date().setHours(0, 0, 0, 0);
       // 8 hours in ms (show today's tasks as upcoming until 8AM)
       const morning = 8 * 60 * 60 * 1000;
-      let upcoming = this.tasks.filter((task) => {
+      let upcoming = (this.tasks as ProcessedTaskInfo[]).filter((task: ProcessedTaskInfo) => {
         return (
           task.type != "note" && (task?.date?.getTime ? task.date.getTime() : 0) >= now - morning
         );
       });
-      upcoming.sort((a, b) => {
+      upcoming.sort((a: TaskInfo, b: TaskInfo) => {
+        if (!a.date && !b.date) return 0;
+        if (!a.date) return -1;
+        if (!b.date) return 1;
         if (a.date < b.date) return -1;
         if (a.date > b.date) return 1;
         return 0;
@@ -282,9 +311,11 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link upcoming}
      * @note Doesn't include notes
      */
-    upcoming_todo() {
+    upcoming_todo(): ProcessedTaskInfo[] {
       if (!this.upcoming) return [];
-      return this.upcoming.filter((task) => !this.finished_tasks?.includes(task.ref));
+      return this.upcoming.filter(
+        (task: ProcessedTaskInfo) => !this.finished_tasks?.includes(task.ref)
+      );
     },
     /**
      * @memberOf .main.getters
@@ -293,12 +324,12 @@ export const useMainStore: StoreDefinition = defineStore({
      * @returns {Boolean} if the user's session started within the last 24 hours
      * @default false
      */
-    non_recent_signin() {
+    non_recent_signin(): boolean {
       // return true if user signed in within the last 24 hours
       if (!this.user) return false;
-      let last_signin = this.user.metadata?.lastSignInTime as string | null;
+      let last_signin: string | undefined = this.user.metadata?.lastSignInTime;
       if (!last_signin) return false;
-      let diff = new Date().getTime() - new Date(last_signin).getTime();
+      let diff: number = new Date().getTime() - new Date(last_signin).getTime();
       return diff > 24 * 60 * 60 * 1000;
     },
     /**
@@ -308,12 +339,12 @@ export const useMainStore: StoreDefinition = defineStore({
      * @returns {Boolean} if the user's account was created within the last 12 hours
      * @default false
      */
-    recently_joined() {
+    recently_joined(): boolean {
       // return true if user joined within the last 12 hours
       if (!this.user) return false;
-      let creation_time = this.user.metadata?.creationTime as string | null;
+      let creation_time: string | undefined = this.user.metadata?.creationTime;
       if (!creation_time) return false;
-      let diff = new Date().getTime() - new Date(creation_time).getTime();
+      let diff: number = new Date().getTime() - new Date(creation_time).getTime();
       return diff < 12 * 60 * 60 * 1000;
     },
     /**
@@ -323,8 +354,8 @@ export const useMainStore: StoreDefinition = defineStore({
      * @returns {Boolean} if the user is an admin
      * @default false
      */
-    //TODO: update this to use actual permissions
-    is_admin() {
+    // TODO: update this to use actual permissions
+    is_admin(): boolean {
       return this.is_teacher;
     },
     /**
@@ -334,7 +365,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @returns {Boolean} if the user is a teacher
      * @default false
      */
-    is_teacher() {
+    is_teacher(): boolean {
       // check if email is a teacher email (ends in this.ORG_DOMAIN) && has letters in the first part
       if (!this.user) return false;
       if (
@@ -362,9 +393,9 @@ export const useMainStore: StoreDefinition = defineStore({
         }
       }
 
-      let email = this.user.email as string;
+      let email: string = this.user.email as string;
       let [first, last] = email.split("@");
-      //TODO: add .env option for teacher/student pattern
+      // TODO: add .env option for teacher/student pattern
       if ("@" + last == this.ORG_DOMAIN && !/\d/.test(first) && this.ORG_DOMAIN == "@mvla.net") {
         _status.log("🏫 Teacher mode enabled for non-student district account");
         return true;
@@ -381,7 +412,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link save_daily_survey}
      * @note Returns true if user is a teacher, since we're not tracking data for them
      */
-    done_daily_survey() {
+    done_daily_survey(): boolean | string {
       if (!this.done_tutorial) return true;
       if (!this.active_doc) return false;
       if (this.active_doc?.prefs?.skip_survey || process.env.VUE_APP_NOSURVEY) {
@@ -402,7 +433,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @returns {Boolean} if the user / proxy for the user has completed the tutorial
      * @default false
      */
-    done_tutorial() {
+    done_tutorial(): boolean {
       if (!this.account_doc) return false;
       return this.account_doc?.done_tutorial;
     },
@@ -413,7 +444,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @returns {Boolean} if the user / proxy for the user has completed the join form
      * @default false
      */
-    done_join_form() {
+    done_join_form(): boolean {
       if (!this.user) return false;
       return !!this.active_doc?.join_form;
     },
@@ -424,7 +455,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @returns {Object} The firebase document reference for the user's account
      * @default null
      */
-    account_ref() {
+    account_ref(): DocumentReference | null {
       if (!this.user) return null;
       return doc(db, "users", this.user.uid);
     },
@@ -435,9 +466,8 @@ export const useMainStore: StoreDefinition = defineStore({
      * @returns {Object} The firebase document reference for the user's linked account
      * @default null
      */
-    linked_account_ref() {
-      if (!this.user || !this.account_doc) return null;
-      if (!this.account_doc.linked_to) return null;
+    linked_account_ref(): DocumentReference | null {
+      if (!this.user || !this.account_doc?.linked_to) return null;
       return doc(db, "users", this.account_doc.linked_to);
     },
     /**
@@ -447,7 +477,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @returns {Object} The firebase document reference for the user's active account
      * @default null
      */
-    active_ref() {
+    active_ref(): DocumentReference | null {
       return this.personal_account ? this.linked_account_ref : this.account_ref;
     },
     /**
@@ -458,23 +488,24 @@ export const useMainStore: StoreDefinition = defineStore({
      * @default null
      * @see {@link active_ref}
      */
-    active_doc() {
+    active_doc(): DocumentData | null {
       return this.personal_account ? this.linked_account_doc : this.account_doc;
     },
     /**
      * @memberOf .main.getters
      * @function get_theme
      * @description Get theme from local storage or user doc
-     * @returns {String} Theme.Light or Theme.Dark
+     * @returns {Theme} Theme.Light or Theme.Dark
      * @default Theme.Light
      */
-    get_theme() {
+    get_theme(): Theme {
       // get local
-      let local_theme = this.theme || (window.localStorage.getItem("theme") as Theme | null);
+      let local_theme: Theme | null =
+        this.theme || (window.localStorage.getItem("theme") as Theme | null);
       // get userdoc theme
-      let account_doc_theme = this.account_doc?.prefs?.theme as Theme | null;
+      let account_doc_theme: Theme | null = this.account_doc?.prefs?.theme as Theme | null;
       // set new to system by default
-      let new_theme = window.matchMedia("(prefers-color-scheme: dark)").matches
+      let new_theme: Theme = window.matchMedia("(prefers-color-scheme: dark)").matches
         ? Theme.Dark
         : Theme.Light;
       // if not userdoc theme, use local theme, and set userdoc theme to local theme
@@ -488,6 +519,8 @@ export const useMainStore: StoreDefinition = defineStore({
         }
         if (this.account_doc) {
           this.account_doc.prefs = { ...this.account_doc.prefs, theme: new_theme };
+          // TODO: TS fix this unintended side effect
+          // @ts-ignore: TS2339
           this.update_wrapper_acc_doc();
         }
         return local_theme || Theme.Light;
@@ -510,9 +543,9 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link loaded_email}
      * @see {@link fetch_classes_by_email}
      */
-    get_loaded_classes() {
+    get_loaded_classes(): ClassInfo[] {
       if (!this.loaded_classes || !this.loaded_classes.length) return [];
-      let classes = this.loaded_classes;
+      let classes: ClassInfo[] = this.loaded_classes;
       return classes.map((class_obj) => {
         class_obj.is_joined = this.active_doc?.classes?.includes(
           [this.loaded_email, class_obj?.id].join("/")
@@ -524,16 +557,17 @@ export const useMainStore: StoreDefinition = defineStore({
      * @memberOf .main.getters
      * @function finished_tasks
      * @description return all the finished tasks
-     * @returns {Boolean} If the task is finished or not
+     * @returns {Array} Finished Tasks
      * @default false
      * @see {@link set_finished}
      */
-    finished_tasks() {
+    finished_tasks(): string[] {
       try {
         if (!this.active_doc) throw "No active doc";
         return this.active_doc.finished || [];
       } catch (err) {
         _status.warn("🔗 Couldn't get finished tasks", err);
+        return [];
       }
     },
     /**
@@ -543,7 +577,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @returns {Object} Dictionary of notes with refs as keys
      * @default {}
      */
-    notes() {
+    notes(): { [key: string]: string } {
       try {
         if (!this.active_doc) throw "No active doc";
         return this.active_doc.notes || {};
@@ -563,14 +597,14 @@ export const useMainStore: StoreDefinition = defineStore({
      * @description save logs to server for debugging later, with some session data attached
      * @returns {Promise}
      */
-    report_logs() {
+    report_logs(): Promise<string> {
       try {
         // get stream types
-        const streamObj = _status.getStream();
-        const streamText = _status.textStream();
+        const streamObj: LogEntry[] = _status.getStream();
+        const streamText: string = _status.textStream();
 
         // write to new firebase doc in db/logs/ and save the ID
-        const docRef = doc(collection(db, "logs"));
+        const docRef: DocumentReference = doc(collection(db, "logs"));
 
         setDoc(docRef, {
           date: new Date(),
@@ -581,7 +615,7 @@ export const useMainStore: StoreDefinition = defineStore({
             json: streamObj,
             text: streamText,
           },
-        });
+        } as DocumentData);
 
         new SuccessToast("Logs reported and saved locally, check console for details", 3500);
         _status.log(`📊 Reported logs to server as '${docRef.id}'`);
@@ -601,7 +635,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @param {String} class_obj
      * @returns {String} text - the formatted name text associated with the class data
      */
-    class_text(class_obj) {
+    class_text(class_obj: ClassInfo | null) {
       if (!class_obj) return;
       if (class_obj.period) return `P${class_obj.period} - ${class_obj.name}`;
       return class_obj.name;
@@ -614,12 +648,12 @@ export const useMainStore: StoreDefinition = defineStore({
      * @param {String} value The value to set the preference to
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      */
-    async set_account_pref(pref, value) {
+    async set_account_pref(pref: string, value: string | boolean): Promise<void | string> {
       try {
         if (!this.account_ref) throw "No account doc";
         if (!pref) throw "No pref provided";
         await this.update_wrapper_with_merge({
-          prefs: { ...this.active_doc.prefs, [pref]: value },
+          prefs: { ...this.active_doc?.prefs, [pref]: value },
         });
         return Promise.resolve();
       } catch (err) {
@@ -635,7 +669,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link save_daily_survey}
      * @see {@link done_daily_survey}
      */
-    get_surveys(dates): Promise<any[] | PromiseRejectedResult> {
+    async get_surveys(dates): Promise<Survey[] | any> {
       if (!this.user) return Promise.reject("Missing user");
       // get all the firebase surveys in "/survey/{date}/{uid}" format, in parallel
       try {
@@ -649,14 +683,13 @@ export const useMainStore: StoreDefinition = defineStore({
           )
         );
         let survey_promises = survey_refs.map((ref) => getDoc(ref));
-        return Promise.all(survey_promises).then((survey_docs) => {
+        const surveys = (await Promise.all(survey_promises))
           // convert each survey doc to an object with date and data
-          let surveys = survey_docs.map((doc, i) => {
+          .map((doc, i) => {
             if (!doc.exists()) return { date: dates[i], error: "No survey data for this date" };
             return { date: dates[i], data: doc.data() };
           });
-          return Promise.resolve(surveys);
-        });
+        return Promise.resolve(surveys);
       } catch (err) {
         return Promise.reject(err);
       }
@@ -961,33 +994,37 @@ export const useMainStore: StoreDefinition = defineStore({
       try {
         if (!this.classes?.length) return Promise.resolve([]);
         // get all the classes with this.classes(), then get all their tasks and combine them into an array
-        let tasks: TaskInfo[] = [];
+        let tasks: ProcessedTaskInfo[] = [];
         let classes: ClassInfo[] = this.classes;
         for (let i = 0; i < classes.length; i++) {
-          let class_tasks = classes[i].tasks;
+          let class_tasks: TaskInfo[] = classes[i].tasks;
           class_tasks = class_tasks ? class_tasks : [];
           // add class name and color to each task
           for (let j = 0; j < (class_tasks?.length || 0); j++) {
             classes[i].name = classes[i].name ? classes[i].name : "Unnamed Class";
             // check task date type and convert to date object if necessary
+            let date: Date | null;
             if (typeof class_tasks[j].date == "string") {
               // convert to mm-dd-yyyy from yyyy-mm-dd
-              class_tasks[j].date = class_tasks[j].date.split("T")[0];
-              let [year, month, day] = class_tasks[j].date.split("-");
+              class_tasks[j].date = (class_tasks[j]?.date as string)?.split("T")[0];
+              let [year, month, day] = (class_tasks[j]?.date as string)?.split("-");
               class_tasks[j].date = `${month}-${day}-${year}`;
-              class_tasks[j].date = compatDateObj(class_tasks[j].date);
-              class_tasks[j].date = isNaN(class_tasks[j].date) ? null : class_tasks[j].date;
+              date = compatDateObj(class_tasks[j].date as string);
+              date = isNaN(class_tasks[j].date as unknown as number) ? null : date;
+            } else {
+              date = class_tasks[j].date as Date | null;
             }
             // set color from parent class color
             class_tasks[j].color = classes[i].color;
             tasks.push({
-              ...class_tasks[j],
+              ...(class_tasks[j] as ProcessedTaskInfo),
+              date,
               class_name: this.class_text(classes[i]),
             });
           }
         }
         // sort tasks by day, if day the same, sort by period, then by name
-        tasks.sort((a, b) => {
+        tasks.sort((a: ProcessedTaskInfo, b: ProcessedTaskInfo) => {
           a.name = a.name ? a.name : "";
           b.name = b.name ? b.name : "";
           if (a.date && b.date) {
@@ -1198,7 +1235,7 @@ export const useMainStore: StoreDefinition = defineStore({
       try {
         if (!this.user) return;
         // if exists in userdoc.linked, remove and save
-        if (this.active_doc.linked.includes(email)) {
+        if (this.active_doc?.linked.includes(email)) {
           let filtered_linked = this.active_doc.linked.filter((e) => e != email);
           if (this.personal_account && this.linked_account_doc) {
             this.linked_account_doc.linked = filtered_linked;
@@ -1379,7 +1416,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link fetch_classes}
      */
     async remove_class_id_helper(class_id) {
-      let filtered_classes = this.active_doc.classes.filter((c) => c != class_id);
+      let filtered_classes = this.active_doc?.classes.filter((c) => c != class_id);
       if (this.personal_account && this.linked_account_doc) {
         this.linked_account_doc.classes = filtered_classes;
       } else if (this.account_doc) {
@@ -1609,9 +1646,9 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link active_doc}
      */
     async get_remote() {
-      // set document data
+      if (!this.user || !this.active_ref) return;
       // get doc from firebase
-      let active_doc = await getDoc(this.active_ref);
+      const active_doc: DocumentSnapshot = await getDoc(this.active_ref);
       _status.log("📄 Got user doc remote");
       if (active_doc.exists()) {
         this.set_active(active_doc.data());
@@ -1639,7 +1676,8 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link active_doc}
      * @see {@link active_ref}
      */
-    async update_remote() {
+    async update_remote(): Promise<void> {
+      if (!this.active_ref) return;
       // update remote doc
       await setDoc(this.active_ref, this.active_doc, { merge: true });
       _status.log("⏶ Pushed changes to remote");
@@ -1651,7 +1689,8 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link update_remote}
      * @see {@link personal_account}
      */
-    async update_wrapper_acc_doc() {
+    async update_wrapper_acc_doc(): Promise<void> {
+      if (!this.account_ref) return;
       await setDoc(this.account_ref, this.account_doc, { merge: true });
     },
     /**
@@ -1662,9 +1701,10 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link personal_account}
      * @see {@link update_wrapper_acc_doc}
      */
-    async update_wrapper_with_merge(data) {
+    async update_wrapper_with_merge(data): Promise<void | string> {
+      if (!this.account_ref) return Promise.reject("No account ref");
       try {
-        await setDoc(this.account_ref, data, { merge: true });
+        await setDoc(this.account_ref, data as DocumentData, { merge: true });
         return Promise.resolve();
       } catch (err) {
         return Promise.reject(err);
@@ -1678,7 +1718,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link update_remote}
      * @see {@link get_remote}
      */
-    async create_doc() {
+    async create_doc(): Promise<void> {
       if (!window?.navigator?.onLine) {
         _status.warn("🔥 No internet connection, won't create doc to prevent overwrite");
         new ErrorToast("Prevented destructuive offline userdoc create", 2000);
@@ -1720,12 +1760,14 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link create_doc}
      * @see {@link is_teacher}
      */
-    async create_teacher_doc() {
+    async create_teacher_doc(): Promise<void> {
+      const email = this.active_doc?.email || this.user?.email;
+      if (!email) return;
       // create teacher doc under (classes/teacher_email+this.ORG_DOMAIN) with sub-collection (classes)
-      let teacher_ref = doc(db, "classes", this.active_doc.email || this.user?.email);
+      let teacher_ref = doc(db, "classes", email);
       await setDoc(teacher_ref, {
-        name: this.active_doc.name || this.user?.displayName,
-        email: this.active_doc.email || this.user?.email,
+        name: this.active_doc?.name || this.user?.displayName,
+        email: this.active_doc?.email || this.user?.email,
       });
       this.teacher = {
         doc_ref: teacher_ref,
@@ -1744,15 +1786,15 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link remove_class}
      * @see {@link remove_class_id_helper}
      */
-    async fetch_classes() {
-      let run_hash = Math.random().toString(36).substring(7);
+    async fetch_classes(): Promise<void> {
+      let run_hash: string = Math.random().toString(36).substring(7);
       _status.log(`📚 Started fetch   | <${run_hash}>`);
       // check for duplicates
       if (!this.active_doc?.classes) {
-        let i = 0;
-        const max = 10000,
-          warn = 1500,
-          len = 100;
+        let i: number = 0;
+        const max: number = 10000,
+          warn: number = 1500,
+          len: number = 100;
         while (!this.active_doc?.classes && i < max / len) {
           await new Promise((resolve) => setTimeout(resolve, len));
           i++;
@@ -1770,7 +1812,7 @@ export const useMainStore: StoreDefinition = defineStore({
         }
       }
 
-      let unique = [...new Set(this.active_doc.classes)];
+      let unique: string[] = [...(new Set(this.active_doc.classes) as Set<string>)];
       if (unique.length != this.active_doc.classes.length) {
         if (this.personal_account && this.linked_account_doc) {
           this.linked_account_doc.classes = unique;
@@ -1784,7 +1826,7 @@ export const useMainStore: StoreDefinition = defineStore({
 
       // get all classes' data and combine into an array
       let classes: ClassInfo[] = [];
-      for (let class_path of this.active_doc.classes) {
+      for (let class_path of this.active_doc.classes as string[]) {
         // split class path into teacher/uid
         let [teacher, class_id] = class_path.split("/");
         if (!teacher || !class_id) {
@@ -1792,14 +1834,14 @@ export const useMainStore: StoreDefinition = defineStore({
           continue;
         }
         // get classes sub-collection from teacher's doc
-        let teacher_classes = collection(db, "classes", teacher, "classes");
+        const teacher_classes: CollectionReference = collection(db, "classes", teacher, "classes");
         if (!teacher_classes) {
           await this.remove_invalid(class_path);
           continue;
         }
         // get class doc from classes sub-collection
-        let subclass_ref = doc(teacher_classes, class_id);
-        let subclass_doc = await getDoc(subclass_ref);
+        const subclass_ref: DocumentReference = doc(teacher_classes, class_id);
+        let subclass_doc: DocumentSnapshot = await getDoc(subclass_ref);
         if (!subclass_doc.exists()) {
           await this.remove_invalid(class_path);
           continue;
@@ -1815,9 +1857,9 @@ export const useMainStore: StoreDefinition = defineStore({
       // get tasks for all classes in parallel
 
       classes = classes.map((class_data: ClassInfo) => {
-        let [_email, _id] = class_data.ref.split("/");
+        let [_email, _id] = class_data.ref.split("/") as [string, ClassID];
         class_data.tasks = class_data.tasks || [];
-        class_data.tasks = class_data.tasks.map((task) => {
+        class_data.tasks = class_data.tasks.map((task: TaskInfo) => {
           task.ref = [_email, _id, task.id].join("/");
           delete task.id;
           return task;
@@ -1827,7 +1869,7 @@ export const useMainStore: StoreDefinition = defineStore({
       _status.log(`📚 Processed tasks | <${run_hash}>`);
 
       // sort classes by period number, then by name
-      classes.sort((a, b) => {
+      classes.sort((a: ClassInfo, b: ClassInfo) => {
         if (a.period == b.period) {
           return a.name.localeCompare(b.name);
         }
@@ -1850,7 +1892,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link fetch_classes}
      * @note Messy implementation, should be refactored to use a separate store state for loaded classes, or at least not use so many store state keys. Prehaps promises would work?
      */
-    async fetch_classes_by_email(email) {
+    async fetch_classes_by_email(email: string) {
       this.loaded_email = null;
       if (!email || !validOrgAcc(email)) {
         this.loaded_classes = null;
@@ -1859,10 +1901,13 @@ export const useMainStore: StoreDefinition = defineStore({
       }
       _status.log("📄 Getting classes from email");
       let classes: ClassInfo[] = [];
-      let classes_subcollection = collection(doc(db, "classes", email), "classes");
-      let classes_subcollection_snapshot = await getDocs(classes_subcollection);
+      const classes_subcollection: CollectionReference = collection(
+        doc(db, "classes", email),
+        "classes"
+      );
+      let classes_subcollection_snapshot: QuerySnapshot = await getDocs(classes_subcollection);
       _status.log("📄 Got classes subcollection from email");
-      classes_subcollection_snapshot.forEach((class_doc) => {
+      classes_subcollection_snapshot.forEach((class_doc: DocumentSnapshot) => {
         let class_data: ClassInfo = class_doc.data() as ClassInfo;
         class_data.id = class_doc.id;
         // if user already in class, change name to "[JOINED] name"
@@ -1870,7 +1915,7 @@ export const useMainStore: StoreDefinition = defineStore({
 
         classes.push(class_data);
       });
-      classes.sort((a, b) => {
+      classes.sort((a: ClassInfo, b: ClassInfo) => {
         if (a.period == b.period) {
           return a.name.localeCompare(b.name);
         }
@@ -1891,11 +1936,16 @@ export const useMainStore: StoreDefinition = defineStore({
      * @param {Number} class_period The period of the class being added
      * @see {@link classes}
      */
-    async add_class(teacher_email, class_id, class_name, class_period) {
+    async add_class(
+      teacher_email: string,
+      class_id: ClassID,
+      class_name: string,
+      class_period: number
+    ) {
       if (!this.active_doc?.classes) return;
       if (!class_id) return;
 
-      let class_key = [teacher_email, class_id].join("/");
+      const class_key: string = [teacher_email, class_id].join("/");
       if (this.active_doc.classes.includes(class_key)) return;
       if (this.personal_account && this.linked_account_doc) {
         this.linked_account_doc.classes.push(class_key);
@@ -1923,7 +1973,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link is_teacher}
      * @see {@link teacher}
      */
-    async create_class(class_obj) {
+    async create_class(class_obj: ClassInfo): Promise<void | any> {
       _status.log("🔨 Creating class", class_obj);
       if (!this.is_teacher) {
         new WarningToast("You need to be a teacher to create a class", 2000);
@@ -1940,12 +1990,15 @@ export const useMainStore: StoreDefinition = defineStore({
           return;
         }
         // create class doc under teacher.collection_ref
-        let class_doc_ref = await addDoc(this.teacher.collection_ref, class_obj);
+        const class_doc_ref: DocumentReference = await addDoc(
+          this.teacher.collection_ref,
+          class_obj
+        );
         // add class to user doc;
         new SuccessToast(`Created class "${this.class_text(class_obj)}"`, 2000);
-        _status.log("🏫 class_doc_ref", class_doc_ref);
+        _status.log("🏫 Created class w/ ref", class_doc_ref);
         await this.add_class(
-          this.active_doc.email || this.user?.email,
+          this.active_doc?.email || this.user?.email,
           class_doc_ref.id,
           class_obj.name,
           class_obj.period
@@ -1964,7 +2017,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @param {Array} task_classes The classes to add the task to
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      */
-    async create_task(task_obj, task_classes) {
+    async create_task(task_obj: TaskInfo, task_classes: ClassID[]): Promise<void | any> {
       try {
         if (!task_obj.name && task_obj?.type != "note") {
           return Promise.reject("No task name specified");
@@ -1974,16 +2027,23 @@ export const useMainStore: StoreDefinition = defineStore({
         // use firebase array add to add task to each class
         let batch: WriteBatch = writeBatch(db);
         let updated_classes: ClassInfo[] = Array.from(this.classes);
-        task_classes.forEach((class_id) => {
+        task_classes.forEach((class_id: ClassID) => {
           // fix any class_id that has the teacher email in it
-          let displayed_class_id: string = class_id;
-          let [_email, _id] = class_id.split("/");
+          const displayed_class_id: string = class_id;
+          const [_email, _id] = class_id.split("/");
           // use this.teacher.collection_ref to get class collection ref, then update the class documents within
-          let class_tasks_collection = collection(db, "classes", _email, "classes", _id, "tasks");
+          const class_tasks_collection: CollectionReference = collection(
+            db,
+            "classes",
+            _email,
+            "classes",
+            _id,
+            "tasks"
+          );
           task_obj.class_id = displayed_class_id;
 
           // batch add a new task doc with the data to the class_tasks_collection collection, using auto-generated id
-          let task_ref: DocumentReference = doc(class_tasks_collection);
+          const task_ref: DocumentReference = doc(class_tasks_collection);
           batch.set(task_ref, task_obj);
           updated_classes.forEach((class_obj: ClassInfo) => {
             if (class_obj.id == displayed_class_id) {
@@ -2001,13 +2061,14 @@ export const useMainStore: StoreDefinition = defineStore({
         this.classes = updated_classes;
         this.get_tasks();
 
-        let name = task_obj.type == "note" ? "" : `"${task_obj.name}"`;
+        const name: string = task_obj.type == "note" ? "" : `"${task_obj.name}"`;
         new SuccessToast(
           `Added ${task_obj.type || "task"} ${name} to ${task_classes.length} class${
             task_classes.length == 1 ? "" : "es"
           }`,
           2000
         );
+        _status.log(`📝 Created task ${name} for ${task_classes.length} classes`);
         return Promise.resolve();
       } catch (e) {
         return Promise.reject(e);
@@ -2021,14 +2082,14 @@ export const useMainStore: StoreDefinition = defineStore({
      * @param {Object} class_obj The updated class object
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      */
-    async update_class(class_ref, class_obj) {
+    async update_class(class_ref: ClassID, class_obj: ClassInfo): Promise<void | any> {
       try {
         let [_email, _id] = class_ref.split("/");
         _email += this.ORG_DOMAIN;
         // update the document with the same id as the class from the classes collection
         await updateDoc(doc(db, "classes", _email, "classes", _id), class_obj);
         _status.log("📝 Updated remote class");
-        let classes = this.classes;
+        let classes: ClassInfo[] = this.classes;
         // update local version of class in classes
         const classIndex = classes.findIndex(
           (class_obj) => class_obj.id === [_email, _id].join("/")
