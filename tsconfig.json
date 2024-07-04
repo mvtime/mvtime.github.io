@@ -1,5 +1,6 @@
 {
   "extends": "@vue/tsconfig/tsconfig.json",
+  "include": ["src"],
   "compilerOptions": {
     "target": "es2016",
     "module": "esnext",
@@ -11,6 +12,7 @@
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
     "noEmit": false,
     "outDir": "./dist",
+    "rootDir": "./src",
 
     // stricter
     "strict": true,
