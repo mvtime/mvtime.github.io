@@ -23,7 +23,7 @@ npm run deploy
 #### Builds the [documentation](https://mvtt.app/docs)
 
 ```
-jsdoc -c jsdoc.config
+rm -r -f public/docs && tsc --outDir tmp --rootDir src && jsdoc -c jsdoc.config && rm -r -f tmp
 ```
 
 #### [To-dos and Feature roadmap](https://mvtt.app/roadmap)
