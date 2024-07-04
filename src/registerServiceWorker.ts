@@ -23,6 +23,9 @@ if (process.env.NODE_ENV === "production") {
     updated() {
       _status.log("🛠 New content is available; please refresh.");
       window.localStorage.clear();
+      // reload with force cache refresh
+      // TODO: TS do in non-deprecated way (not Location.reload(forceReload: boolean): void)
+      // @ts-ignore: Expected 0 arguments, but got 1
       window.location.reload(true);
     },
     offline() {

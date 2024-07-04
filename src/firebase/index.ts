@@ -1,4 +1,4 @@
-// Path: firebase/index.js
+// Path: firebase/index.ts
 
 // import firebase
 import { initializeApp } from "firebase/app";

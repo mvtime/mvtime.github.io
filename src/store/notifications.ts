@@ -1,6 +1,6 @@
 /**
  * This store manages web api notifications, and provides a simple interface for creating and managing them
- * @file store/notifications.js
+ * @file store/notifications.ts
  * @namespace .notify
  * @memberOf store
  */

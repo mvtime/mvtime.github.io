@@ -58,15 +58,7 @@ function deploy() {
   if (hasUpstream) {
     runCommand("git pull upstream main", "pull", "Pulling upstream");
     runCommand("git push origin main", "push", "Pushing to origin");
-  } else {
-    // create the documentation
-    runCommand(
-      "rm -r -f public/docs && jsdoc -c jsdoc.config",
-      "build docs",
-      "Deleting previous & building new JSDocs"
-    );
   }
-
   runCommand(
     `vue-cli-service build${mode ? ` --mode ${mode}` : ""}`,
     "build",
@@ -74,6 +66,24 @@ function deploy() {
   );
 
   runCommand("npm run postbuild", "postbuild", "Running postbuild script");
+
+  if (!hasUpstream) {
+    // create the documentation
+    runCommand(
+      [
+        // remove existing docs
+        "rm -r -f public/docs",
+        // compile ts to js for docs generation, into tmp folder
+        "tsc --outDir tmp",
+        // generate the docs
+        "jsdoc -c jsdoc.config",
+        // delete the tmp folder
+        "rm -r -f tmp",
+      ].join(" && "),
+      "build docs",
+      "Deleting previous & building new JSDocs"
+    );
+  }
 
   const domain = env.parsed.VUE_APP_BRAND_DOMAIN;
   runCommand(`echo ${domain} > ./dist/CNAME`, "domain", `Writing domain ${domain} to CNAME`);
