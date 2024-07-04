@@ -163,8 +163,10 @@ function downloadLogData(data: LogEntry[], date: Date, id: string = "manual"): v
  * */
 const _statuslog: Function = _log.bind(LogTone.Info);
 try {
+  const version: string = document.getElementById("version")?.textContent || "< not found >";
+  _status.log(`🚀 Loaded into ${process.env.NODE_ENV} build @ version [${version}]`);
+  _status.info("📜 Initialized logger");
   window._status = _status;
-  _status.log("📜 Initialized logger");
 } catch (err) {
   _status.log("⚠ Couldn't set window._status", err);
 }

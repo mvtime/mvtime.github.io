@@ -16,9 +16,10 @@ const versionPlugin = {
   apply(compiler) {
     compiler.hooks.environment.tap("versionPlugin", () => {
       const { execSync } = require("child_process");
-      const version = execSync("git rev-parse --short HEAD").toString().trim();
-      const status = execSync("git status --porcelain").toString().trim();
-      process.env.VUE_APP_VERSION = version + (status ? "-alpha" : "");
+      const version = execSync("git rev-parse --short HEAD").toString().trim(),
+        status = execSync("git status --porcelain").toString().trim() ? "-alpha" : "",
+        hash = Math.random().toString(36).substring(10);
+      process.env.VUE_APP_VERSION = `${version} | ${hash}${status}`;
     });
   },
 };
