@@ -1,6 +1,6 @@
 /**
  * This store manages the registration, removal, and formatting of keyboard shortcuts, for use in help UIs
- * @file store/shortcuts.js
+ * @file store/shortcuts.ts
  * @namespace .shortcuts
  * @memberOf store
  */

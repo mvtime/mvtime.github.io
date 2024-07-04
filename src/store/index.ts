@@ -5,7 +5,7 @@
 
 /**
  * The main store for the app, with most primary data and methods needed to function
- * @file store/index.js
+ * @file store/index.ts
  * @namespace .main
  * @memberOf store
  */
@@ -1219,8 +1219,8 @@ export const useMainStore: StoreDefinition = defineStore({
     /**
      * @memberOf .main.actions
      * @function refresh_timeout
-     * @description A proxy for the refreshTimeout function in firebase.js (to reduce unnecessary onSnapshot calls)
-     * @param {Number} delay The delay in milliseconds to refresh the timeout for (default 1000 set in firebase.js)
+     * @description A proxy for the refreshTimeout function in firebase.ts (to reduce unnecessary onSnapshot calls)
+     * @param {Number} delay The delay in milliseconds to refresh the timeout for (default 1000 set in firebase.ts)
      * @see {@link refreshTimeout}
      */
     refresh_timeout(delay) {

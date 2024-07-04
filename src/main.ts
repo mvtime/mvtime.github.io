@@ -27,7 +27,9 @@ window.$ = $;
 
 // create instances of app requisites
 const pinia = createPinia();
-const app = createApp(() => App);
+// TODO: TS | figure out what the heck is going on with this - why is App already initialized and existent with no new changes?
+// if app exists, use it, otherwise create a new one
+const app = createApp(App) || createApp(() => App);
 
 // setup app requisites
 app.use(router);

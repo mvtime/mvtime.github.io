@@ -14,6 +14,7 @@
 
 ## Priorities
 
+- ~~**Migrate to TypeScript**~~
 - **Adding pre-set classes**
   - teachers dont have to join
   - students able to add tasks to their classes / teachers can invite students to edit their classes

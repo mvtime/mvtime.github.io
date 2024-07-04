@@ -1,6 +1,6 @@
 /**
  * This store mnages AI/ML tasks and requests, as well as other "smart" or api-drieven features
- * @file store/magic.js
+ * @file store/magic.ts
  * @namespace .magic
  * @memberOf store
  */
