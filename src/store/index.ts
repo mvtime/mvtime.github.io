@@ -961,7 +961,7 @@ export const useMainStore: StoreDefinition = defineStore({
               let [year, month, day] = (class_tasks[j]?.date as string)?.split("-");
               class_tasks[j].date = `${month}-${day}-${year}`;
               date = compatDateObj(class_tasks[j].date as string);
-              date = isNaN(class_tasks[j].date as unknown as number) ? null : date;
+              date = isNaN(+date) ? null : date;
             } else {
               date = class_tasks[j].date as Date | null;
             }
@@ -969,7 +969,7 @@ export const useMainStore: StoreDefinition = defineStore({
             class_tasks[j].color = classes[i].color;
             tasks.push({
               ...(class_tasks[j] as ProcessedTaskInfo),
-              date,
+              date: date,
               class_name: this.class_text(classes[i]),
             });
           }
@@ -989,7 +989,6 @@ export const useMainStore: StoreDefinition = defineStore({
           }
           return a.name.localeCompare(b.name);
         });
-
         this.tasks = tasks;
         return Promise.resolve(tasks);
       } catch (err) {
@@ -2165,7 +2164,6 @@ export const useMainStore: StoreDefinition = defineStore({
         class_tasks.forEach((task) => {
           const task_id = task.id;
           delete task.id;
-
           upcoming_tasks.push({
             ...task,
             ref: [...class_ref.split("/"), task_id].join("~"),

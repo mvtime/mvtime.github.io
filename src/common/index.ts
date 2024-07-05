@@ -35,19 +35,13 @@ function save(content: string, download = "log.txt"): void {
   a.click();
 }
 function format_stream(stream: LogEntry[]): string {
-  return stream.length
-    ? stream
-        .map((line) => `${line.time} [${line.type}]: ${JSON.stringify(line.message)}`)
-        .join("\n\n")
-    : `No log entries found; last cleared ${log_time.toISOString()}`;
+  return stream.length ? stream.map((line) => `${line.time} [${line.type}]: ${JSON.stringify(line.message)}`).join("\n\n") : `No log entries found; last cleared ${log_time.toISOString()}`;
 }
 
 /** Imperfect helper for _status.log() */
 function getFirstNonStandardCharacter(str: string): string | null {
   try {
-    const match = str.match(
-      /^([\P{L}\p{Extended_Pictographic}]|(?:[\uD800-\uDBFF][\uDC00-\uDFFF]))/u
-    );
+    const match = str.match(/^([\P{L}\p{Extended_Pictographic}]|(?:[\uD800-\uDBFF][\uDC00-\uDFFF]))/u);
     return match ? match[0] : null;
   } catch (err) {
     return null;
@@ -75,9 +69,7 @@ function _log(this: LogTone, ...args: any[]): void {
   if (getFirstNonStandardCharacter(args[0]) != null) {
     // remove the first two characters from the first argument
     extras[0] += " %c" + getFirstNonStandardCharacter(args[0]);
-    extras[2] = `background:#${
-      process.env.VUE_APP_THEME_CONSOLE_COLOR_TEXT || "C9B092"
-    }aa;background:#ffffffaa;color:#${
+    extras[2] = `background:#${process.env.VUE_APP_THEME_CONSOLE_COLOR_TEXT || "C9B092"}aa;background:#ffffffaa;color:#${
       process.env.VUE_APP_THEME_CONSOLE_COLOR_BG || "272727"
     };padding:3px 5px;margin-left:5px;border-radius:5px;font-family:monospace !important;font-weight:bold;font-size:1.25em`;
     args[0] = args[0].substring(2).trimStart();
@@ -143,14 +135,7 @@ const _status = {
  * */
 function downloadLogData(data: LogEntry[], date: Date, id: string = "manual"): void {
   try {
-    save(
-      format_stream(data),
-      `${process.env.VUE_APP_BRAND_NAME_SHORT}-log ${id} ${date
-        .toISOString()
-        .split(":00.0")[0]
-        .replace("T", " ")
-        .replace(":", "h")}m.log`
-    );
+    save(format_stream(data), `${process.env.VUE_APP_BRAND_NAME_SHORT}-log ${id} ${date.toISOString().split(":00.0")[0].replace("T", " ").replace(":", "h")}m.log`);
     _status.log("📜 Saved log stream to disk; run `_status.clearStream()` to purge if local");
   } catch (err) {
     _status.error("📜 Couldn't save log stream", err);
@@ -193,10 +178,7 @@ function msToTime(ms: number): string {
   const seconds: number = Math.floor((ms / 1000) % 60),
     minutes: number = Math.floor((ms / (1000 * 60)) % 60),
     hours: number = Math.floor((ms / (1000 * 60 * 60)) % 24);
-  return (
-    (hours > 0 ? hours + ":" + (minutes < 10 ? "0" : "") : "") +
-    `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`
-  );
+  return (hours > 0 ? hours + ":" + (minutes < 10 ? "0" : "") : "") + `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
 }
 
 export { _statuslog, _status, compatDateObj, msToTime, downloadLogData };

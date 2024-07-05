@@ -1,39 +1,20 @@
 <template>
-  <main
-    class="calendar portal_main_block"
-    @drag="check_leave"
-    @mousewheel="page_flip"
-    :class="{ calendar_fullpage: fullpage }"
-  >
+  <main class="calendar portal_main_block" @drag="check_leave" @mousewheel="page_flip" :class="{ calendar_fullpage: fullpage }">
     <!-- use LoadingCover component when waiting for ready -->
     <LoadingCover v-if="!is_ready" class="calendar_loading" covering="Calendar Tasks" />
     <!-- calendar content -->
     <div class="calendar_header portal_main_block_header">
       <div class="portal_main_block_header__left">
-        <button
-          class="portal_main_block_action portal_main_block_action_alt fullpage_toggle_button"
-          @click="toggle_fullscreen"
-          title="Toggle fullscreen (f)"
-        >
+        <button class="portal_main_block_action portal_main_block_action_alt fullpage_toggle_button" @click="toggle_fullscreen" title="Toggle fullscreen (f)">
           <div class="action_icon expand-icon" :class="{ alt: fullpage }"></div>
         </button>
-        <div
-          class="calendar_date portal_main_block_title"
-          :title="
-            'Currently viewing ' +
-            loaded_month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
-          "
-        >
+        <div class="calendar_date portal_main_block_title" :title="'Currently viewing ' + loaded_month.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })">
           {{ loaded_month.toLocaleDateString("en-US", { month: "long", year: "numeric" }) }}
         </div>
       </div>
       <div class="portal_main_block_actions_wrapper">
         <nav class="portal_main_block_actions">
-          <button
-            class="portal_main_block_action"
-            @click="prev_month"
-            title="Previous month (Left)"
-          >
+          <button class="portal_main_block_action" @click="prev_month" title="Previous month (Left)">
             <div class="action_icon arrow-icon left"></div>
           </button>
           <button class="portal_main_block_action" @click="this_month" title="Current month (Home)">
@@ -43,16 +24,8 @@
             <div class="action_icon arrow-icon right"></div>
           </button>
         </nav>
-        <button
-          class="portal_main_block_action portal_main_block_action_alt"
-          v-if="!$store.is_teacher || true"
-          @click="swap_to_study"
-          title="View study portal (s)"
-        >
-          <div
-            class="action_icon todo-icon"
-            :class="{ alt: $store.upcoming_todo && $store.upcoming_todo.length }"
-          ></div>
+        <button class="portal_main_block_action portal_main_block_action_alt" v-if="!$store.is_teacher || true" @click="swap_to_study" title="View study portal (s)">
+          <div class="action_icon todo-icon" :class="{ alt: $store.upcoming_todo && $store.upcoming_todo.length }"></div>
         </button>
       </div>
     </div>
@@ -60,10 +33,7 @@
       class="calendar_days_container hidescroll"
       :style="{
         '--color-dragging': (drag.task && drag.task.color) || (drag.class && drag.class.color),
-        '--color-dragging-alt':
-          (drag.task && drag.task.color) || (drag.class && drag.class.color)
-            ? ((drag.task && drag.task.color) || (drag.class && drag.class.color)) + '80'
-            : null,
+        '--color-dragging-alt': (drag.task && drag.task.color) || (drag.class && drag.class.color) ? ((drag.task && drag.task.color) || (drag.class && drag.class.color)) + '80' : null,
       }"
     >
       <div
@@ -75,19 +45,7 @@
         }"
       >
         <!-- v-for tasks -->
-        <div
-          class="calendar_day calendar_day__weekday_label"
-          v-for="day of [
-            'Sunday',
-            'Monday',
-            'Tuesday',
-            'Wednesday',
-            'Thursday',
-            'Friday',
-            'Saturday',
-          ]"
-          :key="day"
-        >
+        <div class="calendar_day calendar_day__weekday_label" v-for="day of ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']" :key="day">
           <span class="calendar_day__weekday_label__text">{{ day }}</span>
         </div>
         <div
@@ -144,13 +102,7 @@
               :is_note="task.type === 'note'"
               :key="task.name"
               :title="task.name"
-              :draggable="
-                task &&
-                $store.is_teacher &&
-                $store.user &&
-                task.ref.split('/')[0] == $store.active_doc.email &&
-                $route.name != 'study'
-              "
+              :draggable="task && $store.is_teacher && $store.user && task.ref.split('/')[0] == $store.active_doc.email && $route.name != 'study'"
               @dragstart="
                 drag = {
                   task: task,
@@ -166,22 +118,13 @@
               @click="
                 $event.preventDefault();
                 if ($event.ctrlKey || $event.metaKey) {
-                  if (task.type != 'note')
-                    $store.set_finished(!$store.finished_tasks.includes(task.ref), task.ref);
+                  if (task.type != 'note') $store.set_finished(!$store.finished_tasks.includes(task.ref), task.ref);
                 } else {
                   $emit('taskclick', task);
                 }
               "
             >
-              <div
-                class="calendar_day_task_editable"
-                v-if="
-                  task &&
-                  $store.is_teacher &&
-                  $store.user &&
-                  task.ref.split('/')[0] == $store.active_doc.email
-                "
-              >
+              <div class="calendar_day_task_editable" v-if="task && $store.is_teacher && $store.user && task.ref.split('/')[0] == $store.active_doc.email">
                 <span class="task_icon task_edit__icon" :class="{ loading_bg: drag.load }"></span>
               </div>
               <span v-if="task.type === 'note'">
@@ -194,9 +137,7 @@
             </a>
           </div>
         </div>
-        <div v-if="!tasks_loaded_month" class="calendar__no_tasks" style="display: none">
-          Relax! No Tasks.
-        </div>
+        <div v-if="!tasks_loaded_month" class="calendar__no_tasks" style="display: none">Relax! No Tasks.</div>
       </div>
     </div>
   </main>
@@ -344,14 +285,7 @@ export default {
       // check if the mouse has left the calendar using drag event
       try {
         const rect = this.$refs.calendar_days.getBoundingClientRect();
-        if (
-          this.drag.to &&
-          (e.clientX || e.clientX) &&
-          (e.clientX < rect.left ||
-            e.clientX > rect.right ||
-            e.clientY < rect.top ||
-            e.clientY > rect.bottom)
-        ) {
+        if (this.drag.to && (e.clientX || e.clientX) && (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom)) {
           this.drag.to = null;
         }
       } catch (err) {
@@ -367,9 +301,7 @@ export default {
           name: "newtask",
           query: {
             class: this.drag.class.id,
-            date: new Date(this.drag.to.getTime() - this.drag.to.getTimezoneOffset() * 60 * 1000)
-              .toISOString()
-              .split("T")[0],
+            date: new Date(this.drag.to.getTime() - this.drag.to.getTimezoneOffset() * 60 * 1000).toISOString().split("T")[0],
             ...this.$route.query,
           },
         });
@@ -398,12 +330,7 @@ export default {
             date: new Date(to - to.getTimezoneOffset() * 60 * 1000).toISOString().split("T")[0],
           })
           .then(() => {
-            new SuccessToast(
-              `Moved ${this.drag.task.type} ${
-                this.drag.task.name ? '"' + this.drag.task.name + '" ' : ""
-              }to ${to.toLocaleDateString()}`,
-              2000
-            );
+            new SuccessToast(`Moved ${this.drag.task.type} ${this.drag.task.name ? '"' + this.drag.task.name + '" ' : ""}to ${to.toLocaleDateString()}`, 2000);
             this.$status.log("📅 Moved task date");
             this.drag = {};
           })
@@ -426,11 +353,7 @@ export default {
     },
 
     day_matches(day1, day2) {
-      return (
-        day1.getDate() === day2.getDate() &&
-        day1.getMonth() === day2.getMonth() &&
-        day1.getFullYear() === day2.getFullYear()
-      );
+      return day1.getDate() === day2.getDate() && day1.getMonth() === day2.getMonth() && day1.getFullYear() === day2.getFullYear();
     },
     is_completed(task) {
       return this.$store.finished_tasks?.includes(task.ref);
@@ -438,13 +361,9 @@ export default {
     get_day_tasks(day) {
       return this.tasks
         .filter((task) => {
-          if (this.$store?.account_doc?.prefs?.hide_finished && this.is_completed(task))
-            return false;
+          if (this.$store?.account_doc?.prefs?.hide_finished && this.is_completed(task)) return false;
           const task_date = compatDateObj(task.date);
-          return (
-            this.day_matches(task_date, day) &&
-            (!this.filtered_classes.length || this.filtered_classes.includes(task.class_id))
-          );
+          return this.day_matches(task_date, day) && (!this.filtered_classes.length || this.filtered_classes.includes(task.class_id));
         })
         .sort((a, b) => {
           // check completion status by this.is_completed()
@@ -687,11 +606,7 @@ main.calendar {
   height: calc(var(--spacing-calendar-day) + 1px);
   user-select: none;
   pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0) 0px,
-    var(--color-calendar-day) var(--spacing-calendar-day)
-  );
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0px, var(--color-calendar-day) var(--spacing-calendar-day));
   z-index: 5;
 }
 
@@ -946,10 +861,7 @@ main .calendar_day_task__finished:hover:not(:active) {
   background-image: url(@/assets/img/general/portal/edit.png);
   background-image: url(@/assets/img/general/portal/edit.svg);
 }
-.calendar_day_task[is_note="false"]:not(
-    .calendar_day__weekday_label,
-    .calendar_day_task__finished
-  )::after {
+.calendar_day_task[is_note="false"]:not(.calendar_day__weekday_label, .calendar_day_task__finished)::after {
   content: "";
   display: block;
   width: calc(var(--padding-calendar-task) + 2px);
