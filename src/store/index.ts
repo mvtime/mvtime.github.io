@@ -22,7 +22,7 @@ export interface ClassInfo extends DocumentData {
   name: string;
   period: number;
   [key: string]: any | never;
-  tasks: TaskInfo[];
+  tasks?: TaskInfo[];
 }
 
 export interface TaskInfo extends DocumentData {
@@ -44,9 +44,10 @@ export interface ProcessedTaskInfo extends TaskInfo {
 }
 
 interface Survey extends DocumentData {
-  data: any;
+  data?: any;
   date: string;
-  fetched: number;
+  error?: string;
+  fetched?: number;
 }
 
 type ClassID = string;
@@ -71,8 +72,8 @@ import {
   type CollectionReference,
   type WriteBatch,
   type DocumentData,
-  DocumentSnapshot,
-  QuerySnapshot,
+  type DocumentSnapshot,
+  type QuerySnapshot,
 } from "firebase/firestore";
 import CryptoJS from "crypto-js";
 import { auth, db, authChangeAction, refreshTimeout } from "../firebase";
@@ -669,7 +670,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link save_daily_survey}
      * @see {@link done_daily_survey}
      */
-    async get_surveys(dates): Promise<Survey[] | any> {
+    async get_surveys(dates): Promise<Survey[]> {
       if (!this.user) return Promise.reject("Missing user");
       // get all the firebase surveys in "/survey/{date}/{uid}" format, in parallel
       try {
@@ -703,23 +704,23 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link save_daily_survey}
      * @see {@link done_daily_survey}
      */
-    async get_cached_surveys(dates, force_refresh = false) {
+    async get_cached_surveys(dates: string[], force_refresh: boolean = false): Promise<Survey[]> {
       if (!this.user) return Promise.reject("Missing user");
       try {
-        const processed_ref = doc(
+        const processed_ref: DocumentReference = doc(
           db,
           "processed_surveys",
           this.personal_account ? this.account_doc?.linked_to : this?.user.uid
         );
         // check if active doc has survey data for the given dates, and if so, return it
-        const current_get = await getDoc(processed_ref);
+        const current_get: DocumentSnapshot = await getDoc(processed_ref);
 
-        const current = current_get.exists() ? current_get.data()?.list || [] : [];
+        const current: Survey[] = current_get.exists() ? current_get.data()?.list || [] : [];
         // get array of all the dates by mapping
-        const current_dates = current?.map((e) => e.date);
-        const errored_dates = current?.filter((e) => e.error)?.map((e) => e.date) || [];
+        const current_dates: string[] = current?.map((e) => e.date);
+        const errored_dates: string[] = current?.filter((e) => e.error)?.map((e) => e.date) || [];
         // check if current_dates includes all the dates
-        const all_dates = dates.every((e) => current_dates.includes(e));
+        const all_dates: boolean = dates.every((e) => current_dates.includes(e));
 
         // if has all, return the cashed data
         if (all_dates && !force_refresh) {
@@ -731,14 +732,14 @@ export const useMainStore: StoreDefinition = defineStore({
         else {
           if (force_refresh) _status.log("📊 Forcing refresh of surveys");
           // identify which dates are missing if !force_refresh
-          const added_dates = force_refresh
+          const added_dates: string[] = force_refresh
             ? dates
             : dates.filter((e) => !current_dates.includes(e) || errored_dates.includes(e));
           // use get_surveys to get the ungotten data
-          const added_surveys = await this.get_surveys(added_dates);
+          const added_surveys: Survey[] = (await this.get_surveys(added_dates)) as Survey[];
           // add the new surveys to the current surveys without doubling up, keep them in order
-          let new_surveys: any[] = [];
-          for (let date of dates) {
+          let new_surveys: Survey[] = [];
+          for (const date of dates) {
             if (added_dates.includes(date)) {
               // add the new survey
               new_surveys.push(added_surveys[added_dates.indexOf(date)]);
@@ -761,14 +762,14 @@ export const useMainStore: StoreDefinition = defineStore({
      * @memberOf .main.actions
      * @function note_for
      * @description Get the note for the given ref
-     * @param {String} note The note to set
      * @param {String} ref The ref of the task to get the note for
      * @returns {String} The note for the given ref
      * @see {@link set_note}
      * @see {@link notes}
      */
-    note_for(ref) {
-      return (this.notes && this.notes[this.ref_to_path(ref)]) || null;
+    note_for(ref: string): string | null {
+      const path = this.ref_to_path(ref);
+      return (this.notes && path && this.notes[path]) || null;
     },
     /**
      * @memberOf .main.actions
@@ -780,12 +781,15 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link note_for}
      * @see {@link notes}
      */
-    async set_note(note, ref) {
+    async set_note(note: string, ref: string): Promise<void> {
       try {
         if (!this.active_doc) throw "No active doc";
         if (!ref) throw "No ref provided";
-        let path = this.ref_to_path(ref);
-        let doc = this.active_doc;
+        const path: string | null = this.ref_to_path(ref);
+
+        if (!path) throw "Invalid ref";
+
+        let doc: DocumentData = this.active_doc;
         if (!doc.notes) {
           doc.notes = {};
         }
@@ -808,11 +812,12 @@ export const useMainStore: StoreDefinition = defineStore({
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      * @see {@link is_finished}
      */
-    async set_finished(finished, ref) {
+    async set_finished(finished: boolean, ref: string): Promise<void> {
       try {
         if (!this.active_doc) throw "No active doc";
         if (!ref) throw "No reference(s) provided";
-        let paths = Array.isArray(ref) ? ref : [ref];
+        const paths: string[] = Array.isArray(ref) ? ref : [ref];
+
         let doc = this.active_doc;
         if (!doc.finished) {
           doc.finished = [];
@@ -857,9 +862,9 @@ export const useMainStore: StoreDefinition = defineStore({
      * @returns {String} The ref (email~class_id?~task_id)
      * @default null
      */
-    path_to_ref() {
+    path_to_ref(...args: string[]): string | null {
       //join all args with "/" and let path equal that
-      let path = [...arguments].join("/");
+      const path: string = [...args].join("/");
       if (!path.length) return null;
       let [_email, _id, task_id] = path.split("/");
       if (!_email || !_id) return null;
@@ -874,9 +879,9 @@ export const useMainStore: StoreDefinition = defineStore({
      * @returns {String} The ref (email/class_id?/task_id)
      * @default null
      */
-    ref_to_path() {
+    ref_to_path(...args: string[]): string | null {
       //join all args with "/" and let path equal that
-      let ref = [...arguments].join("~");
+      const ref: string = [...args].join("~");
       if (!ref.length) return null;
       let [_email, _id, task_id] = ref.split("~");
       if (!_email || !_id) return null;
@@ -885,13 +890,13 @@ export const useMainStore: StoreDefinition = defineStore({
     },
     /**
      * @memberOf .main.actions
-     * @function code_from_ref_helper
+     * @function hash
      * @param {String} ref ref in email/uid format
      * @returns {String} 6-character code from ref
      * @see {@link code_from_ref}
      */
-    hash(ref) {
-      let hash = CryptoJS.SHA256(ref).toString();
+    hash(ref: string): string {
+      const hash: string = CryptoJS.SHA256(ref).toString();
       return hash.substring(0, 5);
     },
     /**
@@ -901,7 +906,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @param {String} ref ref in email/uid format
      * @see {@link hash}
      */
-    async code_from_ref(ref) {
+    async code_from_ref(ref: string): Promise<string> {
       try {
         if (!ref) return Promise.reject("No ref provided");
         // fix ref to be in email@ORG_DOMAIN/uid
@@ -914,18 +919,20 @@ export const useMainStore: StoreDefinition = defineStore({
         ref = _email + "/" + _id;
 
         // get code
-        const code = this.hash(ref);
+        const code: string = this.hash(ref);
 
         // check if class object already has code in this.classes
-        let class_obj = this.classes.find((e) => e.id == ref);
+        const class_obj: ClassInfo | undefined = this.classes.find((e) => e.id == ref);
+        if (!class_obj) return Promise.reject("No matching class found");
+
         if (class_obj?.code !== code) {
           // add ref to code doc
-          const code_ref = doc(db, "codes", code);
+          const code_ref: DocumentReference = doc(db, "codes", code);
           await setDoc(code_ref, { ref: ref });
 
           // add code to class doc
-          const class_ref = doc(db, "classes", _email, "classes", _id);
-          await updateDoc(class_ref, { code: code as string });
+          const class_ref: DocumentReference = doc(db, "classes", _email, "classes", _id);
+          await updateDoc(class_ref, { code: code as string } as DocumentData);
         }
         return Promise.resolve(code);
       } catch (err) {
@@ -937,17 +944,17 @@ export const useMainStore: StoreDefinition = defineStore({
      * @function ref_from_code
      * @description Get the ref (email/uid) from a code
      * @param {String} code The code to get the ref for
-     * @returns {Promise} A promise that resolves to the ref (email/uid) or rejects with an {String} error
+     * @returns {Promise} A promise that resolves to the ref (email/uid) or rejects with an error
      */
-    async ref_from_code(code) {
+    async ref_from_code(code: string): Promise<string> {
       try {
-        if (!code) throw "No code provided";
+        if (!(code as string)) throw "No code provided";
         // get ref from code doc
-        const code_ref = doc(db, "codes", code);
-        const code_doc = await getDoc(code_ref);
+        const code_ref: DocumentReference = doc(db, "codes", code);
+        const code_doc: DocumentSnapshot = await getDoc(code_ref);
         _status.log("🔗 Got code doc", code_doc.data());
         if (!code_doc.exists()) throw "Code doesn't exist";
-        let ref = this.path_to_ref(code_doc.data()?.ref);
+        let ref: string | null = this.path_to_ref(code_doc.data()?.ref);
         if (!ref) throw "Code doesn't have ref";
         return Promise.resolve(ref);
       } catch (err) {
@@ -990,14 +997,14 @@ export const useMainStore: StoreDefinition = defineStore({
      * @default []
      * @see {@link fetch_classes}
      */
-    async get_tasks() {
+    async get_tasks(): Promise<ProcessedTaskInfo[]> {
       try {
         if (!this.classes?.length) return Promise.resolve([]);
         // get all the classes with this.classes(), then get all their tasks and combine them into an array
         let tasks: ProcessedTaskInfo[] = [];
         let classes: ClassInfo[] = this.classes;
         for (let i = 0; i < classes.length; i++) {
-          let class_tasks: TaskInfo[] = classes[i].tasks;
+          let class_tasks: TaskInfo[] = classes[i].tasks as TaskInfo[];
           class_tasks = class_tasks ? class_tasks : [];
           // add class name and color to each task
           for (let j = 0; j < (class_tasks?.length || 0); j++) {
@@ -1076,7 +1083,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @description Set the active document (the signed-in account's doc, or the linked account's if it exists) to the provided document
      * @param {Object} data The document data to replace the active document (account_doc or linked_doc) with
      */
-    set_active(data: DocumentData) {
+    set_active(data: DocumentData): Promise<void> {
       try {
         if (!data) throw "No data provided";
         if (this.personal_account) {
@@ -1098,15 +1105,14 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link getDoc}
      * @see {@link link_account_uid}
      */
-    async doc_from_uid(uid) {
+    async doc_from_uid(uid: string): Promise<DocumentData> {
       try {
         if (!uid) throw "No account uid provided";
         // get user document from uid
-        let linked_doc = await getDoc(doc(db, "users", uid));
+        const linked_doc: DocumentSnapshot = await getDoc(doc(db, "users", uid));
         _status.log("🔗 Got linking account's document");
         if (!linked_doc.exists()) throw "Account doesn't exist or you haven't been added yet";
-        let linked_doc_data = linked_doc.data();
-        return Promise.resolve(linked_doc_data);
+        return Promise.resolve(linked_doc.data() as DocumentData);
       } catch (err) {
         _status.warn("🔗 Couldn't get linking account's document", err);
         return Promise.reject(err);
@@ -1120,7 +1126,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      * @see {@link invite_linked}
      */
-    async link_account_uid(uid) {
+    async link_account_uid(uid: string): Promise<void> {
       if (!uid || !this.account_doc) return;
       if (!this.personal_account) {
         new WarningToast("This account is a primary account and cannot be linked", 3000);
@@ -1131,7 +1137,7 @@ export const useMainStore: StoreDefinition = defineStore({
         _status.log("📄 Dreated doc", this.account_doc);
       }
       try {
-        let linked_doc = await this.doc_from_uid(uid);
+        const linked_doc: DocumentData = await this.doc_from_uid(uid);
         if (!linked_doc) throw "Account doesn't exist or you haven't been invited";
         // update remote
         this.account_doc.linked_to = uid;
@@ -1141,6 +1147,7 @@ export const useMainStore: StoreDefinition = defineStore({
         new ErrorToast("Couldn't link account", err, 2000);
         return Promise.reject(err);
       }
+      return Promise.resolve();
     },
     /**
      * @memberOf .main.actions
@@ -1149,7 +1156,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @param {String} email The email of the user to invite (and send an invite email to)
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      */
-    async invite_linked(email) {
+    async invite_linked(email: string): Promise<void> {
       if (!this.user || !this.active_doc || !this.account_doc) return;
       if (this.personal_account) {
         new WarningToast("This account is already linked!", 2000);
@@ -1174,9 +1181,9 @@ export const useMainStore: StoreDefinition = defineStore({
       }
 
       // add email to queue
-      let email_queue = collection(db, "mail");
+      const email_queue: CollectionReference = collection(db, "mail");
       try {
-        let sent_email = await addDoc(email_queue, {
+        const sent_email: DocumentReference = await addDoc(email_queue, {
           to: email,
           cc: this.user.email,
           from: `${this.active_doc.name} via ${process.env.VUE_APP_BRAND_NAME_LONG} <${process.env.VUE_APP_BRAND_MAIL_ADDRESS}>`,
@@ -1190,9 +1197,9 @@ export const useMainStore: StoreDefinition = defineStore({
           },
         });
         // wait for the email document to have keys .delivery.attempts > 0 and .delivery.error == null
-        let email_doc_ref = doc(email_queue, sent_email.id);
-        let email_doc = await getDoc(email_doc_ref);
-        let checks = 1;
+        const email_doc_ref: DocumentReference = doc(email_queue, sent_email.id);
+        let email_doc: DocumentSnapshot = await getDoc(email_doc_ref);
+        let checks: number = 1;
         while (
           !email_doc.exists() ||
           ((!!email_doc.data()?.delivery?.attempts as number | boolean) == 0 && checks <= 3)
@@ -1231,12 +1238,12 @@ export const useMainStore: StoreDefinition = defineStore({
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      * @see {@link invite_linked}
      */
-    async uninvite_linked(email) {
+    async uninvite_linked(email: string): Promise<void> {
       try {
         if (!this.user) return;
         // if exists in userdoc.linked, remove and save
         if (this.active_doc?.linked.includes(email)) {
-          let filtered_linked = this.active_doc.linked.filter((e) => e != email);
+          let filtered_linked: string[] = this.active_doc.linked?.filter((e) => e != email) || [];
           if (this.personal_account && this.linked_account_doc) {
             this.linked_account_doc.linked = filtered_linked;
           } else if (this.account_doc) {
@@ -1260,7 +1267,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @param {Number} delay The delay in milliseconds to refresh the timeout for (default 1000 set in firebase.ts)
      * @see {@link refreshTimeout}
      */
-    refresh_timeout(delay) {
+    refresh_timeout(delay: number): void {
       this.paused = false;
       // refresh listener timeout if user is logged in
       if (!this.user) return;
@@ -1275,10 +1282,10 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link login}
      * @note Currently not very widely used, but should be implemented more in order to prevent excessive store watcher calls
      */
-    async login_promise() {
+    async login_promise(): Promise<User> {
       // wait for this.user to be set
       return new Promise((resolve) => {
-        let interval = setInterval(() => {
+        const interval = setInterval(() => {
           if (this.user) {
             clearInterval(interval);
             resolve(this.user);
@@ -1293,7 +1300,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @param {Object} responses The responses from the join form to save
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      */
-    async save_join_form(responses) {
+    async save_join_form(responses: object): Promise<void> {
       try {
         if (!this.user || !this.active_doc) throw "No doc to save join form to";
         // wait for user doc to be created / exist then save responses to doc.join_form
@@ -1317,7 +1324,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      * @see {@link done_tutorial}
      */
-    async finish_tutorial(new_val) {
+    async finish_tutorial(new_val: boolean = true): Promise<void> {
       try {
         if (!this.user || !this.account_doc) throw "No doc to save tutorial status to";
         this.account_doc.done_tutorial = new_val;
@@ -1335,31 +1342,35 @@ export const useMainStore: StoreDefinition = defineStore({
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      * @see {@link done_daily_survey}
      */
-    async save_daily_survey(responses) {
+    async save_daily_survey(responses: object[]): Promise<void> {
       // save responses in /survey/daily/{date}/{uid}
       try {
         // wait for user login
         if (!this.user) await this.login_promise();
-        let survey_ref = doc(
+        const survey_ref: DocumentReference = doc(
           db,
           "survey",
           "daily",
           today,
           this.personal_account ? this.account_doc?.linked_to : this.user?.uid
         );
-        let response_obj = {
+        await setDoc(survey_ref, {
           time: new Date().getTime(),
           responses: responses,
-        };
-        await setDoc(survey_ref, response_obj);
+        } as DocumentData);
+
         // update user doc to have date in "done_surveys"
-        let updated_surveys = this.active_doc?.done_surveys ? this.active_doc.done_surveys : [];
+        let updated_surveys: string[] = this.active_doc?.done_surveys
+          ? this.active_doc.done_surveys
+          : [];
         updated_surveys.push(today);
+
         if (this.personal_account && this.linked_account_doc) {
           this.linked_account_doc.done_surveys = updated_surveys;
         } else if (this.account_doc) {
           this.account_doc.done_surveys = updated_surveys;
         }
+
         await this.update_remote();
         new SuccessToast("Saved daily survey", 2000);
         return Promise.resolve();
@@ -1375,7 +1386,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link get_theme}
      * @see {@link theme}
      */
-    async toggle_theme() {
+    async toggle_theme(): Promise<void> {
       this.theme = this.get_theme == Theme.Light ? Theme.Dark : Theme.Light;
       window.localStorage.setItem("theme", this.theme);
       if (this.account_doc) {
@@ -1388,6 +1399,7 @@ export const useMainStore: StoreDefinition = defineStore({
       new SuccessToast(`Switched to ${this.theme} theme`, 2000);
       // trigger theme update
       this.theme = this.get_theme;
+      return Promise.resolve();
     },
     /**
      * @memberOf .main.actions
@@ -1395,9 +1407,9 @@ export const useMainStore: StoreDefinition = defineStore({
      * @description Toggle the simplified display view
      * @see {@link account_doc}
      */
-    async toggle_simplified() {
+    async toggle_simplified(): Promise<void> {
       if (!this.account_doc) return;
-      let simplified = !this.account_doc.prefs?.simplified;
+      const simplified: boolean = !this.account_doc.prefs?.simplified;
       this.account_doc.prefs = { ...this.account_doc.prefs, simplified: simplified };
 
       await this.update_wrapper_acc_doc();
@@ -1406,6 +1418,7 @@ export const useMainStore: StoreDefinition = defineStore({
         `Switched to ${simplified ? "simplified" : "detailed (classic)"} view`,
         2000
       );
+      return Promise.resolve();
     },
     /**
      * @memberOf .main.actions
@@ -1415,8 +1428,8 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link remove_invalid}
      * @see {@link fetch_classes}
      */
-    async remove_class_id_helper(class_id) {
-      let filtered_classes = this.active_doc?.classes.filter((c) => c != class_id);
+    async remove_class_id_helper(class_id: ClassID): Promise<void> {
+      const filtered_classes: ClassID[] = this.active_doc?.classes.filter((c) => c != class_id);
       if (this.personal_account && this.linked_account_doc) {
         this.linked_account_doc.classes = filtered_classes;
       } else if (this.account_doc) {
@@ -1427,6 +1440,7 @@ export const useMainStore: StoreDefinition = defineStore({
       this.get_tasks();
       // update remote
       await this.update_remote();
+      return Promise.resolve();
     },
     /**
      * @memberOf .main.actions
@@ -1434,7 +1448,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @description Remove a class from the active user's document, and show a toast saying that the class was removed because it was invalid
      * @see {@link remove_class_id_helper}
      */
-    async remove_invalid(class_id) {
+    async remove_invalid(class_id: ClassID): Promise<void> {
       await this.remove_class_id_helper(class_id);
       new WarningToast(`Removed non-existent class "${class_id}"`, 2000);
       return Promise.resolve();
@@ -1445,7 +1459,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @description Remove a class from the active user's document, and show a toast saying that the class was removed manually
      * @see {@link remove_class_id_helper}
      */
-    async remove_class(class_id) {
+    async remove_class(class_id: ClassID): Promise<void> {
       try {
         await this.remove_class_id_helper(class_id);
         _status.log("🗑️ Removed class from user's doc: " + class_id);
@@ -1467,7 +1481,8 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link linked_account_doc}
      * @see {@link personal_account}
      */
-    set_user(user) {
+    set_user(user: User): void {
+      // TODO: TS rewrite this to use async/await and return a promise
       _status.log("🔑 Setting user");
       // load user doc to check .personal_account
       getDoc(doc(db, "users", user.uid))
@@ -1534,7 +1549,8 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link user}
      * @see {@link logout}
      */
-    async login() {
+    async login(): Promise<void> {
+      // TODO: TS rewrite this to use async/await and return a promise
       new Toast(
         "Opening login popup...",
         "default",
@@ -1566,7 +1582,7 @@ export const useMainStore: StoreDefinition = defineStore({
           return Promise.resolve();
         })
         .catch((error) => {
-          let err = cleanError(error);
+          const err: string = cleanError(error);
           if (
             error.code == "auth/cancelled-popup-request" ||
             error.code == "auth/popup-closed-by-user" ||
@@ -1588,7 +1604,8 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link user}
      * @see {@link login}
      */
-    async login_personal() {
+    async login_personal(): Promise<void> {
+      // TODO: TS rewrite this to use async/await and return a promise
       new Toast(
         "Opening login popup...",
         "default",
@@ -1628,7 +1645,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @description Log the user out and clear the store state
      * @see {@link clear}
      */
-    async logout() {
+    async logout(): Promise<void> {
       if (router.currentRoute?.value?.meta?.requiresAuth) {
         await router.push({ path: "/" });
       }
@@ -1636,6 +1653,7 @@ export const useMainStore: StoreDefinition = defineStore({
       this.clear();
       // redirect if current route requires auth
       new Toast("Logged Out", "default", 1500, require("@svonk/util/assets/info-locked-icon.svg"));
+      return Promise.resolve();
     },
     /**
      * @memberOf .main.actions
@@ -1645,7 +1663,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link update_remote}
      * @see {@link active_doc}
      */
-    async get_remote() {
+    async get_remote(): Promise<void> {
       if (!this.user || !this.active_ref) return;
       // get doc from firebase
       const active_doc: DocumentSnapshot = await getDoc(this.active_ref);
@@ -1667,6 +1685,7 @@ export const useMainStore: StoreDefinition = defineStore({
         await this.create_doc();
         await this.get_remote();
       }
+      return Promise.resolve();
     },
     /**
      * @memberOf .main.actions
@@ -1701,7 +1720,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link personal_account}
      * @see {@link update_wrapper_acc_doc}
      */
-    async update_wrapper_with_merge(data): Promise<void | string> {
+    async update_wrapper_with_merge(data: DocumentData): Promise<void | string> {
       if (!this.account_ref) return Promise.reject("No account ref");
       try {
         await setDoc(this.account_ref, data as DocumentData, { merge: true });
@@ -1857,7 +1876,7 @@ export const useMainStore: StoreDefinition = defineStore({
       // get tasks for all classes in parallel
 
       classes = classes.map((class_data: ClassInfo) => {
-        let [_email, _id] = class_data.ref.split("/") as [string, ClassID];
+        let [_email, _id] = class_data.ref.split("/");
         class_data.tasks = class_data.tasks || [];
         class_data.tasks = class_data.tasks.map((task: TaskInfo) => {
           task.ref = [_email, _id, task.id].join("/");
@@ -1958,6 +1977,8 @@ export const useMainStore: StoreDefinition = defineStore({
         `Added "${this.class_text({
           name: class_name,
           period: class_period,
+          ref: class_key,
+          tasks: [],
         })}" to your classes`,
         2000
       );
@@ -1973,7 +1994,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link is_teacher}
      * @see {@link teacher}
      */
-    async create_class(class_obj: ClassInfo): Promise<void | any> {
+    async create_class(class_obj: ClassInfo): Promise<void> {
       _status.log("🔨 Creating class", class_obj);
       if (!this.is_teacher) {
         new WarningToast("You need to be a teacher to create a class", 2000);
@@ -2017,7 +2038,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @param {Array} task_classes The classes to add the task to
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      */
-    async create_task(task_obj: TaskInfo, task_classes: ClassID[]): Promise<void | any> {
+    async create_task(task_obj: TaskInfo, task_classes: ClassID[]): Promise<void> {
       try {
         if (!task_obj.name && task_obj?.type != "note") {
           return Promise.reject("No task name specified");
@@ -2047,7 +2068,7 @@ export const useMainStore: StoreDefinition = defineStore({
           batch.set(task_ref, task_obj);
           updated_classes.forEach((class_obj: ClassInfo) => {
             if (class_obj.id == displayed_class_id) {
-              class_obj.tasks.push({
+              class_obj.tasks?.push({
                 ...task_obj,
                 ref: [_email, _id, task_ref.id].join("/"),
                 class_id: displayed_class_id,
@@ -2080,9 +2101,9 @@ export const useMainStore: StoreDefinition = defineStore({
      * @description Update an instance of a class (for teachers). Intended to be preformed from the EditClass Modal
      * @param {String} class_ref the "email/class_id" String representation of the class ref in firebase
      * @param {Object} class_obj The updated class object
-     * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
+     * @returns {Promise} A promise that resolves to nothing or rejects with an error
      */
-    async update_class(class_ref: ClassID, class_obj: ClassInfo): Promise<void | any> {
+    async update_class(class_ref: ClassID, class_obj: ClassInfo): Promise<void> {
       try {
         let [_email, _id] = class_ref.split("/");
         _email += this.ORG_DOMAIN;
@@ -2130,16 +2151,18 @@ export const useMainStore: StoreDefinition = defineStore({
         // update the document with the same id as the task from the tasks collection
         await updateDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id), task_obj);
         _status.log("📝 Updated remote task");
-        let classes = this.classes;
+        let classes: ClassInfo[] = this.classes;
         // update local version of task in classes
         let class_id = [_email, _id].join("/");
-        const classIndex = classes.findIndex((class_obj) => class_obj.id === class_id);
-        const ref = [_email, _id, task_id].join("/");
+        const classIndex: number = classes.findIndex((class_obj) => class_obj.id === class_id);
+        const ref: string = [_email, _id, task_id].join("/");
         if (classIndex !== -1) {
-          const taskIndex = classes[classIndex].tasks.findIndex((task) => task.ref === ref);
+          const taskIndex = classes[classIndex].tasks?.findIndex((task) => task.ref === ref);
 
           if (taskIndex !== -1) {
             // Update the task object within the tasks array of the class_obj
+            // TODO: TS doesn't like this, but should work always
+            // @ts-ignore
             classes[classIndex].tasks[taskIndex] = {
               ...task_obj,
               ref: ref,
@@ -2169,7 +2192,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link create_task}
      * @note This currently only removes the instance of the task being viewed. Could add a secondary modal to allow deletion of multiple instances instead?
      */
-    async archive_task(task_ref) {
+    async archive_task(task_ref: string): Promise<void> {
       let [_email, _id, task_id] = task_ref.split("/");
       _email += this.ORG_DOMAIN;
       try {
@@ -2178,10 +2201,10 @@ export const useMainStore: StoreDefinition = defineStore({
         _status.log("📄 Archived task");
 
         try {
-          let classes = this.classes;
+          let classes: ClassInfo[] = this.classes;
           classes.forEach((class_obj) => {
             if (class_obj.id == [_email, _id].join("/")) {
-              class_obj.tasks = class_obj.tasks.filter((task) => {
+              class_obj.tasks = class_obj.tasks?.filter((task) => {
                 return task.ref != [_email, _id, task_id].join("/");
               });
             }
@@ -2205,29 +2228,34 @@ export const useMainStore: StoreDefinition = defineStore({
      * @param {String} ref The task reference to get the task object from
      * @returns {Promise} A promise that resolves to the task object or rejects with an {String} error
      */
-    async task_from_ref(ref) {
+    async task_from_ref(ref: string): Promise<TaskInfo | null> {
       try {
         let [_email, _id, task_id] = ref.split("/");
         _email += this.ORG_DOMAIN;
         _status.log("📄 Getting task from ref:", [_email, _id, task_id].join(" - "));
-        let class_doc = await getDoc(doc(db, "classes", _email, "classes", _id));
+
+        const class_doc: DocumentSnapshot = await getDoc(
+          doc(db, "classes", _email, "classes", _id)
+        );
         if (!class_doc.exists()) return Promise.resolve(null);
-        let class_data = class_doc.data();
+
+        let class_data: ClassInfo = class_doc.data() as ClassInfo;
         delete class_data.tasks;
         _status.log("📚 Got class from ref");
 
-        let task_doc = await getDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id));
+        const task_doc: DocumentSnapshot = await getDoc(
+          doc(db, "classes", _email, "classes", _id, "tasks", task_id)
+        );
         if (!task_doc.exists()) return Promise.resolve(null);
         _status.log("📄 Got task from ref");
-        let task_data = task_doc.data();
-        task_data = {
-          ...task_data,
+
+        return Promise.resolve({
+          ...(task_doc.data() as TaskInfo),
           ref: ref,
           class_id: [_email, _id].join("/"),
           class_name: this.class_text(class_data),
           _class: { ...class_data, ref: [_email.split(this.ORG_DOMAIN)[0], _id].join("~") },
-        };
-        return Promise.resolve(task_data);
+        } as TaskInfo);
       } catch (err) {
         return Promise.reject(err);
       }
@@ -2237,17 +2265,20 @@ export const useMainStore: StoreDefinition = defineStore({
      * @function class_from_ref
      * @description Get the class object from a class reference
      * @param {String} ref The class reference to get the class object from
-     * @returns {Promise} A promise that resolves to the class object or rejects with an {String} error
+     * @returns {Promise} A promise that resolves to the class object or rejects with an error
      */
-    async class_from_ref(ref, include_tasks = false) {
+    async class_from_ref(ref: string, include_tasks: boolean = false): Promise<ClassInfo> {
       try {
         let [_email, _id] = ref.split("/");
         _email += this.ORG_DOMAIN;
-        let class_doc = await getDoc(doc(db, "classes", _email, "classes", _id));
+
+        const class_doc: DocumentSnapshot = await getDoc(
+          doc(db, "classes", _email, "classes", _id)
+        );
         _status.log("📄 Got class doc");
         if (!class_doc.exists()) return Promise.reject("Class doesn't exist");
 
-        let class_data = class_doc.data();
+        let class_data: ClassInfo = class_doc.data() as ClassInfo;
         if (!include_tasks) delete class_data.tasks;
 
         _status.log("📚 Got class data");
@@ -2263,13 +2294,13 @@ export const useMainStore: StoreDefinition = defineStore({
      * @param {String} ref
      * @param {Object} class_obj
      */
-    async upcoming_from_ref(class_ref, class_doc) {
+    async upcoming_from_ref(class_ref: string, class_doc?: ClassInfo): Promise<TaskInfo[]> {
       try {
         if (!class_ref) {
           throw "No class ref provided";
         }
         if (!class_doc) {
-          class_doc = await this.class_from_ref(class_ref);
+          class_doc = (await this.class_from_ref(class_ref)) as ClassInfo;
         }
         let [_email, _id] = class_ref.split("/");
         _email += this.ORG_DOMAIN;
@@ -2277,27 +2308,35 @@ export const useMainStore: StoreDefinition = defineStore({
         if (!class_snapshot.exists()) {
           throw "Class doesn't exist";
         }
-        let class_tasks = class_snapshot.data()?.tasks || [];
+        let class_tasks: TaskInfo[] = class_snapshot.data()?.tasks || [];
         class_tasks = class_tasks.filter((task) => {
-          return task.type != "note" && compatDateObj(task.date).getTime() >= new Date().getTime();
+          return (
+            task.type != "note" &&
+            compatDateObj(task.date as string).getTime() >= new Date().getTime()
+          );
         });
-        class_tasks.sort((a, b) => {
-          return compatDateObj(a.date).getTime() - compatDateObj(b.date).getTime();
+        class_tasks.sort((a: TaskInfo, b: TaskInfo) => {
+          return (
+            compatDateObj(a.date as string)?.getTime() - compatDateObj(b.date as string)?.getTime()
+          );
         });
         // limit to 6
         class_tasks = class_tasks.slice(0, 6);
+
         let upcoming_tasks: TaskInfo[] = [];
+
         class_tasks.forEach((task) => {
-          let task_id = task.id;
+          const task_id = task.id;
           delete task.id;
+
           upcoming_tasks.push({
             ...task,
             ref: [...class_ref.split("/"), task_id].join("~"),
-            date: compatDateObj(task.date),
-            color: class_doc.color,
+            date: compatDateObj(task.date as string),
+            color: class_doc?.color,
             class_id: [_email, _id].join("/"),
-            class_name: this.class_text(class_doc),
-          });
+            class_name: this.class_text(class_doc as ClassInfo),
+          } as TaskInfo);
         });
         _status.log("📚 Got upcoming tasks");
         return Promise.resolve(upcoming_tasks);
@@ -2313,7 +2352,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link hide_timeout}
      * @see {@link refresh_timeout}
      */
-    show_timeout() {
+    show_timeout(): void {
       _status.log(
         "🕒 Showing timeout" +
           (this.account_doc?.prefs?.hide_timeout ? " | Hidden locally due to prefs" : "")
@@ -2328,7 +2367,7 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link show_timeout}
      * @see {@link refresh_timeout}
      */
-    hide_timeout() {
+    hide_timeout(): void {
       if (this.paused) {
         if (!this.account_doc?.prefs?.hide_timeout) {
           _status.log("🕒 Hiding timeout");
