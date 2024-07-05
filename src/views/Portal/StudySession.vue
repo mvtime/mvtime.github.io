@@ -12,33 +12,16 @@
             <div class="overlay_contents_text">
               Select tasks for completion during this session by
               <span class="desktop_only">click</span>
-              <span class="mobile_only">tapp</span>ing them where they're listed below, or
-              <span class="desktop_only">click</span> <span class="mobile_only">tap</span> to
-              <span
-                class="click-action button_pointer_text"
-                @click="selected = upcoming.map((task) => task.ref)"
-                >select all</span
-              >
+              <span class="mobile_only">tapp</span>ing them where they're listed below, or <span class="desktop_only">click</span> <span class="mobile_only">tap</span> to
+              <span class="click-action button_pointer_text" @click="selected = upcoming.map((task) => task.ref)">select all</span>
             </div>
             <nav class="filter_bar">
-              <button
-                class="filter_bar_option"
-                v-for="filter in filters"
-                :key="filter.name"
-                :class="{ active: filter_days === filter.days }"
-                @click="filter_days = filter.days"
-              >
+              <button class="filter_bar_option" v-for="filter in filters" :key="filter.name" :class="{ active: filter_days === filter.days }" @click="filter_days = filter.days">
                 {{ filter.name }}
               </button>
             </nav>
             <div class="tasks_list_wrapper unselected_tasks_wrapper">
-              <transition-group
-                class="tasks_list alt_bg"
-                ref="unselected_list"
-                tag="div"
-                name="tasks-list"
-                :class="{ selected: selected.length, loading_bg: loading }"
-              >
+              <transition-group class="tasks_list alt_bg" ref="unselected_list" tag="div" name="tasks-list" :class="{ selected: selected.length, loading_bg: loading }">
                 <div
                   class="tasks_list_task"
                   v-for="task in upcoming_unselected"
@@ -51,9 +34,7 @@
                   }"
                 >
                   <div class="tasks_list_task__title">
-                    <span class="tasks_list_task__title_text"
-                      >{{ $magic.prefix(task) }} {{ task.name }}</span
-                    >
+                    <span class="tasks_list_task__title_text">{{ $magic.prefix(task) }} {{ task.name }}</span>
                   </div>
                   <div class="tasks_list_task__date">
                     {{
@@ -70,8 +51,7 @@
               <div class="tasks_list__cover"></div>
             </div>
             <div class="overlay_contents_text" v-if="upcoming_selected.length">
-              Selected tasks for this session. <span class="desktop_only">Click</span>
-              <span class="mobile_only">Tap</span> to remove or
+              Selected tasks for this session. <span class="desktop_only">Click</span> <span class="mobile_only">Tap</span> to remove or
               <span class="click-action button_pointer_text" @click="selected = []">reset</span>
             </div>
             <div class="tasks_list_wrapper selected_tasks_wrapper" v-if="upcoming_selected.length">
@@ -88,9 +68,7 @@
                   }"
                 >
                   <div class="tasks_list_task__title">
-                    <span class="tasks_list_task__title_text"
-                      >{{ $magic.prefix(task) }} {{ task.name }}</span
-                    >
+                    <span class="tasks_list_task__title_text">{{ $magic.prefix(task) }} {{ task.name }}</span>
                   </div>
                   <div class="tasks_list_task__date">
                     {{
@@ -106,16 +84,10 @@
               </transition-group>
               <div class="tasks_list__cover"></div>
             </div>
-            <div class="overlay_contents_text" v-if="!selected">
-              If a task is not listed, it may be due to the task being completed or having already
-              passed its due date.
-            </div>
+            <div class="overlay_contents_text" v-if="!selected">If a task is not listed, it may be due to the task being completed or having already passed its due date.</div>
           </div>
           <div class="contents_page order_page" v-if="page == 'order'">
-            <div class="overlay_contents_text">
-              Order the tasks for completion during this session by dragging them into the desired
-              order
-            </div>
+            <div class="overlay_contents_text">Order the tasks for completion during this session by dragging them into the desired order</div>
             <div class="tasks_list_wrapper order_wrapper selected_tasks_wrapper" ref="order_list">
               <draggable
                 group="tasks"
@@ -144,9 +116,7 @@
                   >
                     <div class="tasks_list_task__drag"><div class="drag_icon"></div></div>
                     <div class="tasks_list_task__title">
-                      <span class="tasks_list_task__title_text">
-                        {{ $magic.prefix(task_from(element)) }} {{ task_from(element).name }}
-                      </span>
+                      <span class="tasks_list_task__title_text"> {{ $magic.prefix(task_from(element)) }} {{ task_from(element).name }} </span>
                     </div>
                     <div class="tasks_list_task__date">
                       {{
@@ -163,28 +133,15 @@
               </draggable>
               <div class="tasks_list__cover"></div>
             </div>
-            <draggable
-              class="tasks_list drag_to_delete"
-              v-if="drag"
-              v-model="discard"
-              group="tasks"
-              item-key="ref"
-              ghost-class="ghost"
-            >
+            <draggable class="tasks_list drag_to_delete" v-if="drag" v-model="discard" group="tasks" item-key="ref" ghost-class="ghost">
               <template #item="{ element }">
                 <span>{{ element && null }}</span>
               </template>
             </draggable>
           </div>
           <div class="contents_page timer_page" v-if="page == 'timer'">
-            <div class="overlay_contents_text">
-              Set a timer for the session to keep track of time spent on tasks
-            </div>
-            <form
-              class="timer_set_row inputs_row"
-              style="margin: 20px 0; text-align: center"
-              @submit="$event.preventDefault()"
-            >
+            <div class="overlay_contents_text">Set a timer for the session to keep track of time spent on tasks</div>
+            <form id="timer_set_form" class="timer_set_row inputs_row" style="margin: 20px 0; text-align: center" @submit="$event.preventDefault()">
               <!-- time inputs -->
               <input
                 ref="hours"
@@ -204,45 +161,26 @@
                 :min="($refs && $refs.hours && $refs.hours.value > 0 ? -1 : 5) || 5"
                 max="61"
                 step="1"
-                :value="
-                  Math.floor((time.total / 60 / 1000) % 60) < 10
-                    ? '0' + Math.floor((time.total / 60 / 1000) % 60)
-                    : Math.floor((time.total / 60 / 1000) % 60)
-                "
+                :value="Math.floor((time.total / 60 / 1000) % 60) < 10 ? '0' + Math.floor((time.total / 60 / 1000) % 60) : Math.floor((time.total / 60 / 1000) % 60)"
                 @input="time.total = ($refs.hours.value * 60 + $event.target.value) * 60 * 1000"
               />
             </form>
 
-            <div class="overlay_contents_text">
-              Once you're ready to go, hit the <span class="button_pointer_text">Start</span> button
-              to begin!
-            </div>
+            <div class="overlay_contents_text">Once you're ready to go, hit the <span class="button_pointer_text">Start</span> button to begin!</div>
           </div>
           <div class="contents_page time_page" v-if="page == 'time'">
-            <div class="overlay_contents_text">
-              You're currently in a session. Click on a task to view it and add your own personal
-              notes.
-            </div>
+            <div class="overlay_contents_text">You're currently in a session. Click on a task to view it and add your own personal notes.</div>
             <div class="tasks_list tasks_list__session" style="margin-bottom: 0">
               <div
                 class="tasks_list_task"
                 :class="{
-                  unselected:
-                    $route.params.ref && $store.path_to_ref(task.ref) != $route.params.ref,
+                  unselected: $route.params.ref && $store.path_to_ref(task.ref) != $route.params.ref,
                 }"
                 v-for="task in selected_map"
                 :key="task.ref"
-                :title="`${
-                  $route.name != 'studysession' && $store.path_to_ref(task.ref) == $route.params.ref
-                    ? 'Close'
-                    : 'View'
-                } ${task.name}`"
+                :title="`${$route.name != 'studysession' && $store.path_to_ref(task.ref) == $route.params.ref ? 'Close' : 'View'} ${task.name}`"
                 @click="
-                  if (
-                    $route.name == 'sessionview' &&
-                    $route.params.ref == $store.path_to_ref(task.ref)
-                  )
-                    close_view();
+                  if ($route.name == 'sessionview' && $route.params.ref == $store.path_to_ref(task.ref)) close_view();
                   else open_side('sessionview', task);
                 "
                 :style="{
@@ -251,9 +189,7 @@
                 }"
               >
                 <div class="tasks_list_task__title">
-                  <span class="tasks_list_task__title_text"
-                    >{{ $magic.prefix(task) }} {{ task.name }}</span
-                  >
+                  <span class="tasks_list_task__title_text">{{ $magic.prefix(task) }} {{ task.name }}</span>
                 </div>
                 <div class="tasks_list_task__date">
                   {{
@@ -269,23 +205,17 @@
             </div>
           </div>
           <div class="contents_page review_page" v-if="page == 'review'">
-            <div class="overlay_contents_text">
-              Here's what you've accomplished during this session. You can review the tasks and time
-              spent on them below.
-            </div>
+            <div class="overlay_contents_text">Here's what you've accomplished during this session. You can review the tasks and time spent on them below.</div>
             <br />
             <div class="overlay_contents_text">
               In <b>{{ msToTime(time.elapsed) }}</b
-              >, you've completed <b>{{ selected.length }}</b> task{{
-                selected.length == 1 ? "s" : ""
-              }}:
+              >, you've completed <b>{{ selected.length }}</b> task{{ selected.length == 1 ? "s" : "" }}:
             </div>
             <div class="tasks_list tasks_list__review">
               <a
                 class="tasks_list_task"
                 :class="{
-                  unselected:
-                    $route.params.ref && $store.path_to_ref(task.ref) != $route.params.ref,
+                  unselected: $route.params.ref && $store.path_to_ref(task.ref) != $route.params.ref,
                 }"
                 v-for="task in selected_map"
                 :key="task.ref"
@@ -298,9 +228,7 @@
                 }"
               >
                 <div class="tasks_list_task__title">
-                  <span class="tasks_list_task__title_text"
-                    >{{ $magic.prefix(task) }} {{ task.name }}</span
-                  >
+                  <span class="tasks_list_task__title_text">{{ $magic.prefix(task) }} {{ task.name }}</span>
                 </div>
                 <div class="tasks_list_task__date">
                   {{
@@ -314,9 +242,7 @@
                 </div>
               </a>
             </div>
-            <div class="overlay_contents_text">
-              Ending this session will mark {{ selected.length == 1 ? "it" : "them" }} as completed
-            </div>
+            <div class="overlay_contents_text">Ending this session will mark {{ selected.length == 1 ? "it" : "them" }} as completed</div>
           </div>
           <div class="flex_spacer"></div>
         </div>
@@ -337,9 +263,7 @@
         </button>
         <div class="timer_info first_styled" v-if="running">
           <span class="time_info_part time_info__elapsed">{{ msToTime(time.elapsed) }}</span
-          >&ThinSpace;/&ThinSpace;<span class="time_info_part time_info__total">{{
-            msToTime(time.total)
-          }}</span>
+          >&ThinSpace;/&ThinSpace;<span class="time_info_part time_info__total">{{ msToTime(time.total) }}</span>
         </div>
         <div class="flex_spacer"></div>
         <button
@@ -351,13 +275,7 @@
         >
           {{ pages[page].magic }}
         </button>
-        <button
-          v-if="!done && running && paused && page == 'time'"
-          class="leave_button"
-          @click="review"
-        >
-          End
-        </button>
+        <button v-if="!done && running && paused && page == 'time'" class="leave_button" @click="review">End</button>
         <button
           class="continue_action click_ctrlenter"
           @click="action"
@@ -366,32 +284,13 @@
             click_escape: page == 'time' && !paused,
           }"
         >
-          {{
-            (running
-              ? paused
-                ? done
-                  ? "Finish"
-                  : pages[page].button.paused
-                : pages[page].button.running
-              : pages[page].button.stopped) || "Next"
-          }}
+          {{ (running ? (paused ? (done ? "Finish" : pages[page].button.paused) : pages[page].button.running) : pages[page].button.stopped) || "Next" }}
         </button>
       </div>
     </main>
-    <hr
-      class="view_separator desktop_only"
-      v-if="page == 'time' && $route.name != 'studysession' && show_view"
-    />
-    <main
-      class="session_side overlay_contents_inlaid noheader notext mobile_popup"
-      v-if="page == 'time' && $route.name != 'studysession' && show_view"
-      style="max-width: 350px"
-    >
-      <router-view
-        @close="close_view"
-        @notes="open_side('sessionnotes', $event)"
-        @view="open_side('sessionview', $event)"
-      ></router-view>
+    <hr class="view_separator desktop_only" v-if="page == 'time' && $route.name != 'studysession' && show_view" />
+    <main class="session_side overlay_contents_inlaid noheader notext mobile_popup" v-if="page == 'time' && $route.name != 'studysession' && show_view" style="max-width: 350px">
+      <router-view @close="close_view" @notes="open_side('sessionnotes', $event)" @view="open_side('sessionview', $event)"></router-view>
     </main>
   </main>
 </template>
@@ -667,15 +566,11 @@ export default {
         name: this.page != "review" ? this.$route.name : "studysession",
         params: {
           page: this.page,
-          ref:
-            this.$route.name != "studysession" && this.page != "review"
-              ? this.$route.params.ref
-              : undefined,
+          ref: this.$route.name != "studysession" && this.page != "review" ? this.$route.params.ref : undefined,
         },
         query: {
           ...this.$route.query,
-          selected:
-            this.selected.map((path) => this.$store.path_to_ref(path)).join(",") || undefined,
+          selected: this.selected.map((path) => this.$store.path_to_ref(path)).join(",") || undefined,
           time: this.time.total ? this.time.total / 60 / 1000 : undefined,
           passed: this.time.elapsed ? Math.floor(this.time.elapsed / 1000) : undefined,
         },
@@ -708,10 +603,7 @@ export default {
       return this.time.elapsed >= this.time.total;
     },
     upcoming() {
-      return this.$store.upcoming_todo.filter(
-        (task) =>
-          task.date && task.date.getTime() <= Date.now() + this.filter_days * 24 * 60 * 60 * 1000
-      );
+      return this.$store.upcoming_todo.filter((task) => task.date && task.date.getTime() <= Date.now() + this.filter_days * 24 * 60 * 60 * 1000);
     },
     upcoming_selected() {
       return this.$store.upcoming_todo.filter((task) => this.selected.includes(task?.ref));
@@ -761,9 +653,7 @@ export default {
       this.update_path();
     },
     "time.total"() {
-      this.time.total = Math.floor(
-        Math.min(Math.max(5, this.time.total / 60 / 1000), 300) * 60 * 1000
-      );
+      this.time.total = Math.floor(Math.min(Math.max(5, this.time.total / 60 / 1000), 300) * 60 * 1000);
       this.update_path();
     },
     "time.elapsed"() {
@@ -1044,19 +934,11 @@ nav.filter_bar + .tasks_list_wrapper > .tasks_list {
 }
 .tasks_list__cover::before {
   top: 0;
-  background: linear-gradient(
-    to bottom,
-    var(--color-overlay-input) 0%,
-    #00000000 var(--padding-overlay-input)
-  );
+  background: linear-gradient(to bottom, var(--color-overlay-input) 0%, #00000000 var(--padding-overlay-input));
 }
 .tasks_list__cover::after {
   bottom: 0;
-  background: linear-gradient(
-    to top,
-    var(--color-overlay-input) 0%,
-    #00000000 var(--padding-overlay-input)
-  );
+  background: linear-gradient(to top, var(--color-overlay-input) 0%, #00000000 var(--padding-overlay-input));
 }
 .tasks_list::-webkit-scrollbar {
   background: var(--color-overlay-input);

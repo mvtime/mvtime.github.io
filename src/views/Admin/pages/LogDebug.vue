@@ -2,27 +2,9 @@
   <div class="logdebug">
     <div class="docs_wrapper">
       <nav class="docs_nav admin_in" v-if="pages.length">
-        <button
-          class="docs_nav_button prev"
-          @click="prev"
-          :disabled="!(total.length || pages.length) || !page_index"
-          title="Previous Page"
-        ></button>
-        <input
-          type="text"
-          v-model="search"
-          class="docs_nav_search"
-          placeholder="Search Log Reference, User ID, or Email"
-          enterkeyhint="search"
-          @keydown.enter="submit"
-        />
-        <button
-          v-if="manual && loaded && loaded == search"
-          class="docs_nav_button clear"
-          @click="clear"
-          :title="`Clear query '${this.loaded}'`"
-          :class="{ click_escape: active == null }"
-        ></button>
+        <button class="docs_nav_button prev" @click="prev" :disabled="!(total.length || pages.length) || !page_index" title="Previous Page"></button>
+        <input type="text" v-model="search" class="docs_nav_search" placeholder="Search Log Reference, User ID, or Email" enterkeyhint="search" @keydown.enter="submit" />
+        <button v-if="manual && loaded && loaded == search" class="docs_nav_button clear" @click="clear" :title="`Clear query '${this.loaded}'`" :class="{ click_escape: active == null }"></button>
         <button
           v-else-if="search"
           class="docs_nav_button search"
@@ -30,54 +12,22 @@
           @click="submit"
           title="Submit query (10+ characters or user email)"
           :class="{
-            click_ctrlenter:
-              active == null &&
-              !((search.length < 10 && !search.includes('@')) || search.length > 100),
+            click_ctrlenter: active == null && !((search.length < 10 && !search.includes('@')) || search.length > 100),
           }"
         ></button>
         <div class="docs_nav__loaded">
-          <span v-if="manual"
-            >{{ manual_page.length }} Result{{ manual_page.length == 1 ? "" : "s" }}</span
-          >
+          <span v-if="manual">{{ manual_page.length }} Result{{ manual_page.length == 1 ? "" : "s" }}</span>
           <span v-else>
-            {{
-              total.length +
-              (more &&
-              pages.length &&
-              pages[pages.length - 1].length &&
-              pages[pages.length - 1].length == page_size
-                ? "+"
-                : "")
-            }}
+            {{ total.length + (more && pages.length && pages[pages.length - 1].length && pages[pages.length - 1].length == page_size ? "+" : "") }}
             Result{{ total.length == 1 ? "" : "s" }}</span
           >
         </div>
-        <button
-          v-if="!(manual && search)"
-          class="docs_nav_button next"
-          @click="next"
-          :disabled="!(total.length || pages.length) || !more"
-          title="Next Page"
-        ></button>
+        <button v-if="!(manual && search)" class="docs_nav_button next" @click="next" :disabled="!(total.length || pages.length) || !more" title="Next Page"></button>
       </nav>
       <div class="docs" v-if="pages.length && total.length">
-        <div
-          class="doc admin_in"
-          v-for="(doc, index) in page"
-          :key="doc.id"
-          :class="{ active: active == doc.id }"
-          :style="{ animationDelay: `${(index + 2) * 0.03}s` }"
-        >
-          <button
-            class="doc_details__toggle"
-            :class="{ click_escape: active == doc.id }"
-            @click="active = active == doc.id ? null : doc.id"
-            title="Close details pane"
-          >
-            <div
-              class="doc_details__toggle__icon themed_icon"
-              :title="`${active == doc.id ? 'Collapse' : 'Expand'} log ${doc.id}`"
-            ></div>
+        <div class="doc admin_in" v-for="(doc, index) in page" :key="doc.id" :class="{ active: active == doc.id }" :style="{ animationDelay: `${(index + 2) * 0.03}s` }">
+          <button class="doc_details__toggle" :class="{ click_escape: active == doc.id }" @click="active = active == doc.id ? null : doc.id" title="Close details pane">
+            <div class="doc_details__toggle__icon themed_icon" :title="`${active == doc.id ? 'Collapse' : 'Expand'} log ${doc.id}`"></div>
           </button>
           <div class="doc_title" v-if="active != doc.id">
             <a
@@ -101,7 +51,21 @@
             <table class="doc_details_table">
               <tr>
                 <th>Email:</th>
-                <td>{{ doc.data().email }}</td>
+                <td>
+                  <a
+                    class="doc_title__email"
+                    :href="`./logs?search=${doc.data().email}`"
+                    @click="
+                      if (!search || loaded != search) {
+                        search = doc.data().email;
+                        submit();
+                      }
+                      $event.preventDefault();
+                    "
+                  >
+                    {{ doc.data().email }}
+                  </a>
+                </td>
               </tr>
               <tr>
                 <th>User:</th>
@@ -116,27 +80,11 @@
                 <td>{{ doc.id }}</td>
               </tr>
             </table>
-            <button
-              class="doc_save click_ctrlenter"
-              @click="
-                downloadLogData(
-                  doc.data().stream.json,
-                  doc.data().date.toDate(),
-                  `cloud-${doc.data().email}-${doc.data().user}`
-                )
-              "
-            >
-              Download
-            </button>
+            <button class="doc_save click_ctrlenter" @click="downloadLogData(doc.data().stream.json, doc.data().date.toDate(), `cloud-${doc.data().email}-${doc.data().user}`)">Download</button>
           </div>
         </div>
       </div>
-      <div
-        class="docs_placeholder docs_placeholder__empty"
-        v-else-if="!total.length && pages.length"
-      >
-        No logs to display
-      </div>
+      <div class="docs_placeholder docs_placeholder__empty" v-else-if="!total.length && pages.length">No logs to display</div>
       <div class="docs_placeholder docs_placeholder__loading" v-else>
         <i>Loading logs</i>
       </div>
@@ -145,17 +93,7 @@
 </template>
 
 <script>
-import {
-  collection,
-  query,
-  orderBy,
-  startAfter,
-  limit,
-  getDocs,
-  getDoc,
-  doc,
-  where,
-} from "firebase/firestore";
+import { collection, query, orderBy, startAfter, limit, getDocs, getDoc, doc, where } from "firebase/firestore";
 import { db } from "@/firebase";
 import { downloadLogData } from "@/common";
 import { WarningToast, SuccessToast } from "@svonk/util";
@@ -179,11 +117,7 @@ export default {
       return this.pages.flat(1);
     },
     more() {
-      return (
-        !this.page ||
-        (this.page.length === this.page_size &&
-          (this.page_index == this.pages.length - 1 || this.pages[this.page_index + 1]?.length))
-      );
+      return !this.page || (this.page.length === this.page_size && (this.page_index == this.pages.length - 1 || this.pages[this.page_index + 1]?.length));
     },
     shortcuts() {
       return [
@@ -236,12 +170,7 @@ export default {
         this.page_index++;
         return;
       } else if (this.page.length && this.page.length === this.page_size) {
-        const q = query(
-          collection(db, "logs"),
-          orderBy("date_inversed"),
-          startAfter(this.page[this.page.length - 1]),
-          limit(this.page_size)
-        );
+        const q = query(collection(db, "logs"), orderBy("date_inversed"), startAfter(this.page[this.page.length - 1]), limit(this.page_size));
         const docs = await getDocs(q);
         this.pages[this.page_index + 1] = [...docs.docs];
         this.$status.log(`📜 Loaded next ${docs.docs.length} of ${this.page_size} documents`);
@@ -258,20 +187,14 @@ export default {
       this.$router.push({ query: { ...this.$route.query, search: undefined } });
     },
     async submit() {
+      this.active = null;
       // EMAIL
       if (this.search.includes("@")) {
         // get logs where email == this.search
-        const emailDocs = await getDocs(
-          query(collection(db, "logs"), where("email", "==", this.search), orderBy("date_inversed"))
-        );
+        const emailDocs = await getDocs(query(collection(db, "logs"), where("email", "==", this.search), orderBy("date_inversed")));
         if (emailDocs.docs.length) {
           this.manual_page = [...emailDocs.docs];
-          new SuccessToast(
-            `Found ${emailDocs.docs.length} log${
-              emailDocs.docs.length == 1 ? "" : "s"
-            } with email ${this.search}`,
-            3500
-          );
+          new SuccessToast(`Found ${emailDocs.docs.length} log${emailDocs.docs.length == 1 ? "" : "s"} with email ${this.search}`, 3500);
         } else {
           this.$status.warn(`🔍 No logs found with email <${this.search}>`);
           new WarningToast(`No logs found with that email address`, 3500);
@@ -288,25 +211,12 @@ export default {
         }
         // USER
         else {
-          this.$status.warn(
-            `🔍 No logs found with reference <${this.search}>, searching for matching user`
-          );
+          this.$status.warn(`🔍 No logs found with reference <${this.search}>, searching for matching user`);
           new WarningToast(`No logs found with that reference, checking for matching users`, 3500);
-          const userDocs = await getDocs(
-            query(
-              collection(db, "logs"),
-              where("user", "==", this.search),
-              orderBy("date_inversed")
-            )
-          );
+          const userDocs = await getDocs(query(collection(db, "logs"), where("user", "==", this.search), orderBy("date_inversed")));
           if (userDocs.docs.length) {
             this.manual_page = [...userDocs.docs];
-            new SuccessToast(
-              `Found ${userDocs.docs.length} log${userDocs.docs.length == 1 ? "" : "s"} with user ${
-                this.search
-              }`,
-              3500
-            );
+            new SuccessToast(`Found ${userDocs.docs.length} log${userDocs.docs.length == 1 ? "" : "s"} with user ${this.search}`, 3500);
           } else {
             this.$status.warn(`🔍 No logs found with user <${this.search}>`);
             new WarningToast(`No logs found with that user id or reference`, 3500);

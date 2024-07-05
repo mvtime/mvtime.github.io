@@ -19,6 +19,11 @@
 
     // temp fix for mixed in js
     "noImplicitAny": false,
-    "allowJs": true
+    "allowJs": true,
+
+    // for VUE
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "noImplicitThis": true
   }
 }

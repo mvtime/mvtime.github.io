@@ -9,22 +9,16 @@
         <span class="button_pointer_text">Submit</span> to join the class.
       </div>
       <form
+        id="code_form"
         class="inputs_row"
         @submit="
           $event.preventDefault();
           try_submit();
         "
       >
-        <input
-          class="styled_input code_input"
-          v-model="code"
-          placeholder="code"
-          @blur="code = code.toLowerCase()"
-        />
+        <input class="styled_input code_input" v-model="code" placeholder="code" @blur="code = code.toLowerCase()" />
       </form>
-      <div class="overlay_contents_text">
-        Make sure you've entered it correctly, codes are case sensitive!
-      </div>
+      <div class="overlay_contents_text">Make sure you've entered it correctly, codes are case sensitive!</div>
     </div>
     <div class="bottom_actions">
       <button class="close_action click_escape" @click="$emit('close')">Cancel</button>

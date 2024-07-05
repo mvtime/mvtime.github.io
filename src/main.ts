@@ -1,5 +1,5 @@
 import { createApp, watch } from "vue";
-import { createPinia } from "pinia";
+import { createPinia, type Store } from "pinia";
 import App from "@/App.vue";
 import router from "@/router";
 import VueApexCharts from "vue3-apexcharts";
@@ -34,6 +34,21 @@ const app = createApp(App) || createApp(() => App);
 // setup app requisites
 app.use(router);
 app.use(pinia);
+
+const store = useMainStore(),
+  shortcuts = useShortcuts(),
+  magic = useMagic(),
+  notify = useNotifications();
+declare module "vue" {
+  interface ComponentCustomProperties {
+    $env: typeof process.env;
+    $status: typeof _status;
+    $store: typeof store;
+    $shortcuts: typeof shortcuts;
+    $magic: typeof magic;
+    $notify: typeof notify;
+  }
+}
 app.mixin({
   computed: {
     $env() {
@@ -42,18 +57,17 @@ app.mixin({
     $status() {
       return _status;
     },
-    // store access
     $store() {
-      return useMainStore();
+      return store;
     },
     $shortcuts() {
-      return useShortcuts();
+      return shortcuts;
     },
     $magic() {
-      return useMagic();
+      return magic;
     },
     $notify() {
-      return useNotifications();
+      return notify;
     },
   },
 });
@@ -70,10 +84,7 @@ app.mount("#root");
 watch(
   pinia.state,
   (state) => {
-    window.localStorage.setItem(
-      `${process.env.VUE_APP_BRAND_NAME_SHORT}_app_state`,
-      JSON.stringify(state.main)
-    );
+    window.localStorage.setItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_app_state`, JSON.stringify(state.main));
   },
   { deep: true }
 );
@@ -87,29 +98,14 @@ window.addEventListener("storage", (e) => {
 // setup connectin listeners
 _status.log("🛜 Started " + (window?.navigator?.onLine ? "online" : "offline"));
 if (!window?.navigator?.onLine) {
-  new Toast(
-    "Features may not work as intended offline",
-    "default",
-    1e4,
-    require("@/assets/img/general/toast/connection-warn.svg")
-  );
+  new Toast("Features may not work as intended offline", "default", 1e4, require("@/assets/img/general/toast/connection-warn.svg"));
 }
 window.addEventListener("offline", () => {
-  new Toast(
-    "Connection lost",
-    "default",
-    3500,
-    require("@/assets/img/general/toast/connection-error.svg")
-  );
+  new Toast("Connection lost", "default", 3500, require("@/assets/img/general/toast/connection-error.svg"));
   _status.warn("🛜 Connection lost");
 });
 window.addEventListener("online", () => {
-  new Toast(
-    "You're back online!",
-    "default",
-    3500,
-    require("@/assets/img/general/toast/connection-success.svg")
-  );
+  new Toast("You're back online!", "default", 3500, require("@/assets/img/general/toast/connection-success.svg"));
   _status.log("🛜 Connection restored");
 });
 
@@ -172,32 +168,17 @@ router.beforeEach((to) => {
   const store = useMainStore();
   if (to.meta && to.meta.requiresAuth && store && !store.user) {
     // launch auth popup through store action
-    new Toast(
-      "Please log in or join to access this page",
-      "default",
-      1500,
-      require("@svonk/util/assets/info-locked-icon.svg")
-    );
+    new Toast("Please log in or join to access this page", "default", 1500, require("@svonk/util/assets/info-locked-icon.svg"));
     // set redirect
     return {
       path: "/",
       query: { redirect: to.fullPath },
     };
   } else if (to.meta && to.meta.requiresTeacher && store.user && !store.is_teacher) {
-    new Toast(
-      "You must be a teacher to access this page",
-      "default",
-      1500,
-      require("@svonk/util/assets/info-locked-icon.svg")
-    );
+    new Toast("You must be a teacher to access this page", "default", 1500, require("@svonk/util/assets/info-locked-icon.svg"));
     return { name: "portal" };
   } else if (to.meta && to.meta.requiresAdmin && store.user && !store.is_admin) {
-    new Toast(
-      "Only administrators can access this page",
-      "default",
-      1500,
-      require("@svonk/util/assets/info-locked-icon.svg")
-    );
+    new Toast("Only administrators can access this page", "default", 1500, require("@svonk/util/assets/info-locked-icon.svg"));
     return { name: "portal" };
   }
 });
