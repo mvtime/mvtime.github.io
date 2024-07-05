@@ -31,7 +31,7 @@ import { defineStore } from "pinia";
 import { _status, compatDateObj } from "@/common";
 import { Toast, ErrorToast, cleanError, WarningToast, SuccessToast } from "@svonk/util";
 // get firebase requirements
-import { collection, doc, setDoc, getDoc, getDocs, addDoc, writeBatch, updateDoc, deleteDoc, DocumentSnapshot, QuerySnapshot, } from "firebase/firestore";
+import { collection, doc, setDoc, getDoc, getDocs, addDoc, writeBatch, updateDoc, deleteDoc, } from "firebase/firestore";
 import CryptoJS from "crypto-js";
 import { auth, db, authChangeAction, refreshTimeout } from "../firebase";
 import { signInWithPopup, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
@@ -62,9 +62,7 @@ function isIFrame() {
     }
 }
 // get date in local time but with ISO format
-const today = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000)
-    .toISOString()
-    .split("T")[0];
+const today = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000).toISOString().split("T")[0];
 // define store
 export const useMainStore = defineStore({
     id: "main",
@@ -248,7 +246,7 @@ export const useMainStore = defineStore({
             const morning = 8 * 60 * 60 * 1000;
             let upcoming = this.tasks.filter((task) => {
                 var _a;
-                return (task.type != "note" &amp;&amp; (((_a = task === null || task === void 0 ? void 0 : task.date) === null || _a === void 0 ? void 0 : _a.getTime) ? task.date.getTime() : 0) >= now - morning);
+                return task.type != "note" &amp;&amp; (((_a = task === null || task === void 0 ? void 0 : task.date) === null || _a === void 0 ? void 0 : _a.getTime) ? task.date.getTime() : 0) >= now - morning;
             });
             upcoming.sort((a, b) => {
                 if (!a.date &amp;&amp; !b.date)
@@ -339,8 +337,7 @@ export const useMainStore = defineStore({
             // check if email is a teacher email (ends in this.ORG_DOMAIN) &amp;&amp; has letters in the first part
             if (!this.user)
                 return false;
-            if (((_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.teacher_mode) == true ||
-                ((_b = window === null || window === void 0 ? void 0 : window.localStorage) === null || _b === void 0 ? void 0 : _b[`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`]) == "true") {
+            if (((_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.teacher_mode) == true || ((_b = window === null || window === void 0 ? void 0 : window.localStorage) === null || _b === void 0 ? void 0 : _b[`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`]) == "true") {
                 if (((_c = this.active_doc) === null || _c === void 0 ? void 0 : _c.teacher_mode) == true || ((_d = this.active_doc) === null || _d === void 0 ? void 0 : _d.teacher_mode) == null) {
                     window.localStorage.setItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`, "true");
                     if (this.personal_account) {
@@ -476,9 +473,7 @@ export const useMainStore = defineStore({
             // get userdoc theme
             let account_doc_theme = (_b = (_a = this.account_doc) === null || _a === void 0 ? void 0 : _a.prefs) === null || _b === void 0 ? void 0 : _b.theme;
             // set new to system by default
-            let new_theme = window.matchMedia("(prefers-color-scheme: dark)").matches
-                ? Theme.Dark
-                : Theme.Light;
+            let new_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? Theme.Dark : Theme.Light;
             // if not userdoc theme, use local theme, and set userdoc theme to local theme
             if (!account_doc_theme) {
                 if (local_theme) {
@@ -655,10 +650,7 @@ export const useMainStore = defineStore({
                     return Promise.reject("Missing user");
                 // get all the firebase surveys in "/survey/{date}/{uid}" format, in parallel
                 try {
-                    let survey_refs = dates.map((date) => {
-                        var _a, _b;
-                        return doc(db, "survey", "daily", date, this.personal_account ? (_a = this.account_doc) === null || _a === void 0 ? void 0 : _a.linked_to : (_b = this.user) === null || _b === void 0 ? void 0 : _b.uid);
-                    });
+                    let survey_refs = dates.map((date) => { var _a, _b; return doc(db, "survey", "daily", date, this.personal_account ? (_a = this.account_doc) === null || _a === void 0 ? void 0 : _a.linked_to : (_b = this.user) === null || _b === void 0 ? void 0 : _b.uid); });
                     let survey_promises = survey_refs.map((ref) => getDoc(ref));
                     const surveys = (yield Promise.all(survey_promises))
                         // convert each survey doc to an object with date and data
@@ -708,14 +700,12 @@ export const useMainStore = defineStore({
                         if (force_refresh)
                             _status.log("📊 Forcing refresh of surveys");
                         // identify which dates are missing if !force_refresh
-                        const added_dates = force_refresh
-                            ? dates
-                            : dates.filter((e) => !current_dates.includes(e) || errored_dates.includes(e));
+                        const added_dates = force_refresh ? dates : dates.filter((e) => !current_dates.includes(e) || errored_dates.includes(e));
                         // use get_surveys to get the ungotten data
-                        const added_surveys = yield this.get_surveys(added_dates);
+                        const added_surveys = (yield this.get_surveys(added_dates));
                         // add the new surveys to the current surveys without doubling up, keep them in order
                         let new_surveys = [];
-                        for (let date of dates) {
+                        for (const date of dates) {
                             if (added_dates.includes(date)) {
                                 // add the new survey
                                 new_surveys.push(added_surveys[added_dates.indexOf(date)]);
@@ -740,14 +730,14 @@ export const useMainStore = defineStore({
          * @memberOf .main.actions
          * @function note_for
          * @description Get the note for the given ref
-         * @param {String} note The note to set
          * @param {String} ref The ref of the task to get the note for
          * @returns {String} The note for the given ref
          * @see {@link set_note}
          * @see {@link notes}
          */
         note_for(ref) {
-            return (this.notes &amp;&amp; this.notes[this.ref_to_path(ref)]) || null;
+            const path = this.ref_to_path(ref);
+            return (this.notes &amp;&amp; path &amp;&amp; this.notes[path]) || null;
         },
         /**
          * @memberOf .main.actions
@@ -766,7 +756,9 @@ export const useMainStore = defineStore({
                         throw "No active doc";
                     if (!ref)
                         throw "No ref provided";
-                    let path = this.ref_to_path(ref);
+                    const path = this.ref_to_path(ref);
+                    if (!path)
+                        throw "Invalid ref";
                     let doc = this.active_doc;
                     if (!doc.notes) {
                         doc.notes = {};
@@ -797,7 +789,7 @@ export const useMainStore = defineStore({
                         throw "No active doc";
                     if (!ref)
                         throw "No reference(s) provided";
-                    let paths = Array.isArray(ref) ? ref : [ref];
+                    const paths = Array.isArray(ref) ? ref : [ref];
                     let doc = this.active_doc;
                     if (!doc.finished) {
                         doc.finished = [];
@@ -815,10 +807,7 @@ export const useMainStore = defineStore({
                     }
                     this.set_active(doc);
                     yield this.update_remote();
-                    new SuccessToast((paths.length > 1
-                        ? "Tasks"
-                        : useMagic().done_prefix(this.tasks.find((e) => e.ref == paths[0]))) +
-                        (finished ? " marked as finished" : " marked as unfinished"), 2000);
+                    new SuccessToast((paths.length > 1 ? "Tasks" : useMagic().done_prefix(this.tasks.find((e) => e.ref == paths[0]))) + (finished ? " marked as finished" : " marked as unfinished"), 2000);
                     return Promise.resolve();
                 }
                 catch (err) {
@@ -835,9 +824,9 @@ export const useMainStore = defineStore({
          * @returns {String} The ref (email~class_id?~task_id)
          * @default null
          */
-        path_to_ref() {
+        path_to_ref(...args) {
             //join all args with "/" and let path equal that
-            let path = [...arguments].join("/");
+            const path = [...args].join("/");
             if (!path.length)
                 return null;
             let [_email, _id, task_id] = path.split("/");
@@ -854,9 +843,9 @@ export const useMainStore = defineStore({
          * @returns {String} The ref (email/class_id?/task_id)
          * @default null
          */
-        ref_to_path() {
+        ref_to_path(...args) {
             //join all args with "/" and let path equal that
-            let ref = [...arguments].join("~");
+            const ref = [...args].join("~");
             if (!ref.length)
                 return null;
             let [_email, _id, task_id] = ref.split("~");
@@ -867,13 +856,13 @@ export const useMainStore = defineStore({
         },
         /**
          * @memberOf .main.actions
-         * @function code_from_ref_helper
+         * @function hash
          * @param {String} ref ref in email/uid format
          * @returns {String} 6-character code from ref
          * @see {@link code_from_ref}
          */
         hash(ref) {
-            let hash = CryptoJS.SHA256(ref).toString();
+            const hash = CryptoJS.SHA256(ref).toString();
             return hash.substring(0, 5);
         },
         /**
@@ -900,7 +889,9 @@ export const useMainStore = defineStore({
                     // get code
                     const code = this.hash(ref);
                     // check if class object already has code in this.classes
-                    let class_obj = this.classes.find((e) => e.id == ref);
+                    const class_obj = this.classes.find((e) => e.id == ref);
+                    if (!class_obj)
+                        return Promise.reject("No matching class found");
                     if ((class_obj === null || class_obj === void 0 ? void 0 : class_obj.code) !== code) {
                         // add ref to code doc
                         const code_ref = doc(db, "codes", code);
@@ -921,7 +912,7 @@ export const useMainStore = defineStore({
          * @function ref_from_code
          * @description Get the ref (email/uid) from a code
          * @param {String} code The code to get the ref for
-         * @returns {Promise} A promise that resolves to the ref (email/uid) or rejects with an {String} error
+         * @returns {Promise} A promise that resolves to the ref (email/uid) or rejects with an error
          */
         ref_from_code(code) {
             return __awaiter(this, void 0, void 0, function* () {
@@ -958,9 +949,7 @@ export const useMainStore = defineStore({
                 // use localStorage. _teacher_mode as basis for toggle, then set the localStorage and remote doc
                 if (!this.user)
                     return;
-                let prev = ((_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.teacher_mode) ||
-                    window.localStorage.getItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`) ==
-                        "true";
+                let prev = ((_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.teacher_mode) || window.localStorage.getItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`) == "true";
                 window.localStorage.setItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`, !prev);
                 let new_text = !prev ? "on" : "off";
                 if (this.active_doc) {
@@ -1099,12 +1088,11 @@ export const useMainStore = defineStore({
                     if (!uid)
                         throw "No account uid provided";
                     // get user document from uid
-                    let linked_doc = yield getDoc(doc(db, "users", uid));
+                    const linked_doc = yield getDoc(doc(db, "users", uid));
                     _status.log("🔗 Got linking account's document");
                     if (!linked_doc.exists())
                         throw "Account doesn't exist or you haven't been added yet";
-                    let linked_doc_data = linked_doc.data();
-                    return Promise.resolve(linked_doc_data);
+                    return Promise.resolve(linked_doc.data());
                 }
                 catch (err) {
                     _status.warn("🔗 Couldn't get linking account's document", err);
@@ -1133,7 +1121,7 @@ export const useMainStore = defineStore({
                     _status.log("📄 Dreated doc", this.account_doc);
                 }
                 try {
-                    let linked_doc = yield this.doc_from_uid(uid);
+                    const linked_doc = yield this.doc_from_uid(uid);
                     if (!linked_doc)
                         throw "Account doesn't exist or you haven't been invited";
                     // update remote
@@ -1145,6 +1133,7 @@ export const useMainStore = defineStore({
                     new ErrorToast("Couldn't link account", err, 2000);
                     return Promise.reject(err);
                 }
+                return Promise.resolve();
             });
         },
         /**
@@ -1182,9 +1171,9 @@ export const useMainStore = defineStore({
                     }
                 }
                 // add email to queue
-                let email_queue = collection(db, "mail");
+                const email_queue = collection(db, "mail");
                 try {
-                    let sent_email = yield addDoc(email_queue, {
+                    const sent_email = yield addDoc(email_queue, {
                         to: email,
                         cc: this.user.email,
                         from: `${this.active_doc.name} via ${process.env.VUE_APP_BRAND_NAME_LONG} &lt;${process.env.VUE_APP_BRAND_MAIL_ADDRESS}>`,
@@ -1198,18 +1187,16 @@ export const useMainStore = defineStore({
                         },
                     });
                     // wait for the email document to have keys .delivery.attempts > 0 and .delivery.error == null
-                    let email_doc_ref = doc(email_queue, sent_email.id);
+                    const email_doc_ref = doc(email_queue, sent_email.id);
                     let email_doc = yield getDoc(email_doc_ref);
                     let checks = 1;
-                    while (!email_doc.exists() ||
-                        (!!((_b = (_a = email_doc.data()) === null || _a === void 0 ? void 0 : _a.delivery) === null || _b === void 0 ? void 0 : _b.attempts) == 0 &amp;&amp; checks &lt;= 3)) {
+                    while (!email_doc.exists() || (!!((_b = (_a = email_doc.data()) === null || _a === void 0 ? void 0 : _a.delivery) === null || _b === void 0 ? void 0 : _b.attempts) == 0 &amp;&amp; checks &lt;= 3)) {
                         yield new Promise((resolve) => setTimeout(resolve, (2 ^ checks) * 2000));
                         email_doc = yield getDoc(email_doc_ref);
                         _status.log("📧 Checked email doc");
                         checks++;
                     }
-                    if (!((_f = (_e = (_d = (_c = email_doc.data()) === null || _c === void 0 ? void 0 : _c.delivery) === null || _d === void 0 ? void 0 : _d.info) === null || _e === void 0 ? void 0 : _e.accepted) === null || _f === void 0 ? void 0 : _f.includes(email)) ||
-                        ((_h = (_g = email_doc.data()) === null || _g === void 0 ? void 0 : _g.delivery) === null || _h === void 0 ? void 0 : _h.attempts) == 0) {
+                    if (!((_f = (_e = (_d = (_c = email_doc.data()) === null || _c === void 0 ? void 0 : _c.delivery) === null || _d === void 0 ? void 0 : _d.info) === null || _e === void 0 ? void 0 : _e.accepted) === null || _f === void 0 ? void 0 : _f.includes(email)) || ((_h = (_g = email_doc.data()) === null || _g === void 0 ? void 0 : _g.delivery) === null || _h === void 0 ? void 0 : _h.attempts) == 0) {
                         _status.log("📧 Email failed to send", email_doc.data());
                         throw "Email failed to send";
                     }
@@ -1239,13 +1226,13 @@ export const useMainStore = defineStore({
          */
         uninvite_linked(email) {
             return __awaiter(this, void 0, void 0, function* () {
-                var _a;
+                var _a, _b;
                 try {
                     if (!this.user)
                         return;
                     // if exists in userdoc.linked, remove and save
                     if ((_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.linked.includes(email)) {
-                        let filtered_linked = this.active_doc.linked.filter((e) => e != email);
+                        let filtered_linked = ((_b = this.active_doc.linked) === null || _b === void 0 ? void 0 : _b.filter((e) => e != email)) || [];
                         if (this.personal_account &amp;&amp; this.linked_account_doc) {
                             this.linked_account_doc.linked = filtered_linked;
                         }
@@ -1293,7 +1280,7 @@ export const useMainStore = defineStore({
             return __awaiter(this, void 0, void 0, function* () {
                 // wait for this.user to be set
                 return new Promise((resolve) => {
-                    let interval = setInterval(() => {
+                    const interval = setInterval(() => {
                         if (this.user) {
                             clearInterval(interval);
                             resolve(this.user);
@@ -1338,8 +1325,8 @@ export const useMainStore = defineStore({
          * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
          * @see {@link done_tutorial}
          */
-        finish_tutorial(new_val) {
-            return __awaiter(this, void 0, void 0, function* () {
+        finish_tutorial() {
+            return __awaiter(this, arguments, void 0, function* (new_val = true) {
                 try {
                     if (!this.user || !this.account_doc)
                         throw "No doc to save tutorial status to";
@@ -1368,12 +1355,11 @@ export const useMainStore = defineStore({
                     // wait for user login
                     if (!this.user)
                         yield this.login_promise();
-                    let survey_ref = doc(db, "survey", "daily", today, this.personal_account ? (_a = this.account_doc) === null || _a === void 0 ? void 0 : _a.linked_to : (_b = this.user) === null || _b === void 0 ? void 0 : _b.uid);
-                    let response_obj = {
+                    const survey_ref = doc(db, "survey", "daily", today, this.personal_account ? (_a = this.account_doc) === null || _a === void 0 ? void 0 : _a.linked_to : (_b = this.user) === null || _b === void 0 ? void 0 : _b.uid);
+                    yield setDoc(survey_ref, {
                         time: new Date().getTime(),
                         responses: responses,
-                    };
-                    yield setDoc(survey_ref, response_obj);
+                    });
                     // update user doc to have date in "done_surveys"
                     let updated_surveys = ((_c = this.active_doc) === null || _c === void 0 ? void 0 : _c.done_surveys) ? this.active_doc.done_surveys : [];
                     updated_surveys.push(today);
@@ -1414,6 +1400,7 @@ export const useMainStore = defineStore({
                 new SuccessToast(`Switched to ${this.theme} theme`, 2000);
                 // trigger theme update
                 this.theme = this.get_theme;
+                return Promise.resolve();
             });
         },
         /**
@@ -1427,10 +1414,11 @@ export const useMainStore = defineStore({
                 var _a;
                 if (!this.account_doc)
                     return;
-                let simplified = !((_a = this.account_doc.prefs) === null || _a === void 0 ? void 0 : _a.simplified);
+                const simplified = !((_a = this.account_doc.prefs) === null || _a === void 0 ? void 0 : _a.simplified);
                 this.account_doc.prefs = Object.assign(Object.assign({}, this.account_doc.prefs), { simplified: simplified });
                 yield this.update_wrapper_acc_doc();
                 new SuccessToast(`Switched to ${simplified ? "simplified" : "detailed (classic)"} view`, 2000);
+                return Promise.resolve();
             });
         },
         /**
@@ -1444,7 +1432,7 @@ export const useMainStore = defineStore({
         remove_class_id_helper(class_id) {
             return __awaiter(this, void 0, void 0, function* () {
                 var _a;
-                let filtered_classes = (_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.classes.filter((c) => c != class_id);
+                const filtered_classes = (_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.classes.filter((c) => c != class_id);
                 if (this.personal_account &amp;&amp; this.linked_account_doc) {
                     this.linked_account_doc.classes = filtered_classes;
                 }
@@ -1456,6 +1444,7 @@ export const useMainStore = defineStore({
                 this.get_tasks();
                 // update remote
                 yield this.update_remote();
+                return Promise.resolve();
             });
         },
         /**
@@ -1503,6 +1492,7 @@ export const useMainStore = defineStore({
          * @see {@link personal_account}
          */
         set_user(user) {
+            // TODO: TS rewrite this to use async/await and return a promise
             _status.log("🔑 Setting user");
             // load user doc to check .personal_account
             getDoc(doc(db, "users", user.uid))
@@ -1517,10 +1507,7 @@ export const useMainStore = defineStore({
                     this.linked_account_doc = null;
                 }
                 if (!user.email ||
-                    (!validOrgAcc(user.email) &amp;&amp;
-                        !(this.personal_account &amp;&amp;
-                            (((_c = (_b = router === null || router === void 0 ? void 0 : router.currentRoute) === null || _b === void 0 ? void 0 : _b.value) === null || _c === void 0 ? void 0 : _c.name) == "link" ||
-                                (((_d = this.account_doc) === null || _d === void 0 ? void 0 : _d.personal_account) &amp;&amp; ((_e = this.account_doc) === null || _e === void 0 ? void 0 : _e.linked_to)))))) {
+                    (!validOrgAcc(user.email) &amp;&amp; !(this.personal_account &amp;&amp; (((_c = (_b = router === null || router === void 0 ? void 0 : router.currentRoute) === null || _b === void 0 ? void 0 : _b.value) === null || _c === void 0 ? void 0 : _c.name) == "link" || (((_d = this.account_doc) === null || _d === void 0 ? void 0 : _d.personal_account) &amp;&amp; ((_e = this.account_doc) === null || _e === void 0 ? void 0 : _e.linked_to)))))) {
                     auth.signOut();
                     new WarningToast(`Please use your ${process.env.VUE_APP_ORG_NAME} (@${process.env.VUE_APP_ORG_DOMAIN}) email to log in, or use an account that has been linked`, 4000);
                     this.clear();
@@ -1538,8 +1525,7 @@ export const useMainStore = defineStore({
                     this.teacher.collection_ref = collection(this.teacher.doc_ref, "classes");
                 }
                 // if router has a redirect, go to it
-                if (((_j = (_h = (_g = router.currentRoute) === null || _g === void 0 ? void 0 : _g.value) === null || _h === void 0 ? void 0 : _h.query) === null || _j === void 0 ? void 0 : _j.redirect) &amp;&amp;
-                    !((_m = (_l = (_k = router.currentRoute) === null || _k === void 0 ? void 0 : _k.value) === null || _l === void 0 ? void 0 : _l.meta) === null || _m === void 0 ? void 0 : _m.blockStandardRedirect)) {
+                if (((_j = (_h = (_g = router.currentRoute) === null || _g === void 0 ? void 0 : _g.value) === null || _h === void 0 ? void 0 : _h.query) === null || _j === void 0 ? void 0 : _j.redirect) &amp;&amp; !((_m = (_l = (_k = router.currentRoute) === null || _k === void 0 ? void 0 : _k.value) === null || _l === void 0 ? void 0 : _l.meta) === null || _m === void 0 ? void 0 : _m.blockStandardRedirect)) {
                     router.replace((_q = (_p = (_o = router.currentRoute) === null || _o === void 0 ? void 0 : _o.value) === null || _p === void 0 ? void 0 : _p.query) === null || _q === void 0 ? void 0 : _q.redirect);
                 }
             })
@@ -1565,12 +1551,11 @@ export const useMainStore = defineStore({
          */
         login() {
             return __awaiter(this, void 0, void 0, function* () {
+                // TODO: TS rewrite this to use async/await and return a promise
                 new Toast("Opening login popup...", "default", 1000, require("@svonk/util/assets/info-locked-icon.svg"));
                 // sign in with google, then set user data
                 // if electron, use redirect, otherwise, use popup
-                yield (isElectron || isIFrame()
-                    ? signInWithRedirect(auth, provider)
-                    : signInWithPopup(auth, provider))
+                yield (isElectron || isIFrame() ? signInWithRedirect(auth, provider) : signInWithPopup(auth, provider))
                     .then(() => {
                     var _a, _b, _c, _d, _e, _f;
                     if (!this.user || !this.user.email || !validOrgAcc(this.user.email))
@@ -1578,17 +1563,14 @@ export const useMainStore = defineStore({
                     new Toast("Logged in as " + this.user.displayName + "!", "default", 2000, require("@svonk/util/assets/info-unlocked-icon.svg"));
                     _status.log("🔑 Logged in as " + this.user.displayName);
                     authChangeAction(this.user);
-                    if (!((_c = (_b = (_a = router.currentRoute) === null || _a === void 0 ? void 0 : _a.value) === null || _b === void 0 ? void 0 : _b.query) === null || _c === void 0 ? void 0 : _c.redirect) &amp;&amp;
-                        !((_f = (_e = (_d = router.currentRoute) === null || _d === void 0 ? void 0 : _d.value) === null || _e === void 0 ? void 0 : _e.meta) === null || _f === void 0 ? void 0 : _f.blockStandardRedirect)) {
+                    if (!((_c = (_b = (_a = router.currentRoute) === null || _a === void 0 ? void 0 : _a.value) === null || _b === void 0 ? void 0 : _b.query) === null || _c === void 0 ? void 0 : _c.redirect) &amp;&amp; !((_f = (_e = (_d = router.currentRoute) === null || _d === void 0 ? void 0 : _d.value) === null || _e === void 0 ? void 0 : _e.meta) === null || _f === void 0 ? void 0 : _f.blockStandardRedirect)) {
                         router.push("/portal");
                     }
                     return Promise.resolve();
                 })
                     .catch((error) => {
-                    let err = cleanError(error);
-                    if (error.code == "auth/cancelled-popup-request" ||
-                        error.code == "auth/popup-closed-by-user" ||
-                        error.code == "auth/user-cancelled") {
+                    const err = cleanError(error);
+                    if (error.code == "auth/cancelled-popup-request" || error.code == "auth/popup-closed-by-user" || error.code == "auth/user-cancelled") {
                         new WarningToast(err, 2000);
                     }
                     else {
@@ -1609,6 +1591,7 @@ export const useMainStore = defineStore({
          */
         login_personal() {
             return __awaiter(this, void 0, void 0, function* () {
+                // TODO: TS rewrite this to use async/await and return a promise
                 new Toast("Opening login popup...", "default", 1000, require("@svonk/util/assets/info-locked-icon.svg"));
                 // create new provider with no hd
                 const personal_provider = new GoogleAuthProvider();
@@ -1616,9 +1599,7 @@ export const useMainStore = defineStore({
                 personal_provider.addScope("profile");
                 // sign in with google, then set user data
                 // if electron, use redirect, otherwise, use popup
-                yield (isElectron || isIFrame()
-                    ? signInWithRedirect(auth, personal_provider)
-                    : signInWithPopup(auth, personal_provider))
+                yield (isElectron || isIFrame() ? signInWithRedirect(auth, personal_provider) : signInWithPopup(auth, personal_provider))
                     .then((r) => {
                     if (!r.user || !r.user.email || validOrgAcc(r.user.email))
                         this.logout();
@@ -1649,6 +1630,7 @@ export const useMainStore = defineStore({
                 this.clear();
                 // redirect if current route requires auth
                 new Toast("Logged Out", "default", 1500, require("@svonk/util/assets/info-locked-icon.svg"));
+                return Promise.resolve();
             });
         },
         /**
@@ -1685,6 +1667,7 @@ export const useMainStore = defineStore({
                     yield this.create_doc();
                     yield this.get_remote();
                 }
+                return Promise.resolve();
             });
         },
         /**
@@ -1983,6 +1966,8 @@ export const useMainStore = defineStore({
                 new SuccessToast(`Added "${this.class_text({
                     name: class_name,
                     period: class_period,
+                    ref: class_key,
+                    tasks: [],
                 })}" to your classes`, 2000);
                 // return new success promise
                 return Promise.resolve();
@@ -2061,8 +2046,9 @@ export const useMainStore = defineStore({
                         const task_ref = doc(class_tasks_collection);
                         batch.set(task_ref, task_obj);
                         updated_classes.forEach((class_obj) => {
+                            var _a;
                             if (class_obj.id == displayed_class_id) {
-                                class_obj.tasks.push(Object.assign(Object.assign({}, task_obj), { ref: [_email, _id, task_ref.id].join("/"), class_id: displayed_class_id, _proxy: true }));
+                                (_a = class_obj.tasks) === null || _a === void 0 ? void 0 : _a.push(Object.assign(Object.assign({}, task_obj), { ref: [_email, _id, task_ref.id].join("/"), class_id: displayed_class_id, _proxy: true }));
                             }
                         });
                     });
@@ -2086,7 +2072,7 @@ export const useMainStore = defineStore({
          * @description Update an instance of a class (for teachers). Intended to be preformed from the EditClass Modal
          * @param {String} class_ref the "email/class_id" String representation of the class ref in firebase
          * @param {Object} class_obj The updated class object
-         * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
+         * @returns {Promise} A promise that resolves to nothing or rejects with an error
          */
         update_class(class_ref, class_obj) {
             return __awaiter(this, void 0, void 0, function* () {
@@ -2125,6 +2111,7 @@ export const useMainStore = defineStore({
          */
         update_task(task_ref, task_obj) {
             return __awaiter(this, void 0, void 0, function* () {
+                var _a;
                 try {
                     delete task_obj.class_id;
                     delete task_obj.ref;
@@ -2142,9 +2129,11 @@ export const useMainStore = defineStore({
                     const classIndex = classes.findIndex((class_obj) => class_obj.id === class_id);
                     const ref = [_email, _id, task_id].join("/");
                     if (classIndex !== -1) {
-                        const taskIndex = classes[classIndex].tasks.findIndex((task) => task.ref === ref);
+                        const taskIndex = (_a = classes[classIndex].tasks) === null || _a === void 0 ? void 0 : _a.findIndex((task) => task.ref === ref);
                         if (taskIndex !== -1) {
                             // Update the task object within the tasks array of the class_obj
+                            // TODO: TS doesn't like this, but should work always
+                            // @ts-ignore
                             classes[classIndex].tasks[taskIndex] = Object.assign(Object.assign({}, task_obj), { ref: ref, class_id: class_id, _proxy: true });
                             _status.log("📝 Updated local task");
                         }
@@ -2180,8 +2169,9 @@ export const useMainStore = defineStore({
                     try {
                         let classes = this.classes;
                         classes.forEach((class_obj) => {
+                            var _a;
                             if (class_obj.id == [_email, _id].join("/")) {
-                                class_obj.tasks = class_obj.tasks.filter((task) => {
+                                class_obj.tasks = (_a = class_obj.tasks) === null || _a === void 0 ? void 0 : _a.filter((task) => {
                                     return task.ref != [_email, _id, task_id].join("/");
                                 });
                             }
@@ -2213,19 +2203,17 @@ export const useMainStore = defineStore({
                     let [_email, _id, task_id] = ref.split("/");
                     _email += this.ORG_DOMAIN;
                     _status.log("📄 Getting task from ref:", [_email, _id, task_id].join(" - "));
-                    let class_doc = yield getDoc(doc(db, "classes", _email, "classes", _id));
+                    const class_doc = yield getDoc(doc(db, "classes", _email, "classes", _id));
                     if (!class_doc.exists())
                         return Promise.resolve(null);
                     let class_data = class_doc.data();
                     delete class_data.tasks;
                     _status.log("📚 Got class from ref");
-                    let task_doc = yield getDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id));
+                    const task_doc = yield getDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id));
                     if (!task_doc.exists())
                         return Promise.resolve(null);
                     _status.log("📄 Got task from ref");
-                    let task_data = task_doc.data();
-                    task_data = Object.assign(Object.assign({}, task_data), { ref: ref, class_id: [_email, _id].join("/"), class_name: this.class_text(class_data), _class: Object.assign(Object.assign({}, class_data), { ref: [_email.split(this.ORG_DOMAIN)[0], _id].join("~") }) });
-                    return Promise.resolve(task_data);
+                    return Promise.resolve(Object.assign(Object.assign({}, task_doc.data()), { ref: ref, class_id: [_email, _id].join("/"), class_name: this.class_text(class_data), _class: Object.assign(Object.assign({}, class_data), { ref: [_email.split(this.ORG_DOMAIN)[0], _id].join("~") }) }));
                 }
                 catch (err) {
                     return Promise.reject(err);
@@ -2237,14 +2225,14 @@ export const useMainStore = defineStore({
          * @function class_from_ref
          * @description Get the class object from a class reference
          * @param {String} ref The class reference to get the class object from
-         * @returns {Promise} A promise that resolves to the class object or rejects with an {String} error
+         * @returns {Promise} A promise that resolves to the class object or rejects with an error
          */
         class_from_ref(ref_1) {
             return __awaiter(this, arguments, void 0, function* (ref, include_tasks = false) {
                 try {
                     let [_email, _id] = ref.split("/");
                     _email += this.ORG_DOMAIN;
-                    let class_doc = yield getDoc(doc(db, "classes", _email, "classes", _id));
+                    const class_doc = yield getDoc(doc(db, "classes", _email, "classes", _id));
                     _status.log("📄 Got class doc");
                     if (!class_doc.exists())
                         return Promise.reject("Class doesn't exist");
@@ -2274,7 +2262,7 @@ export const useMainStore = defineStore({
                         throw "No class ref provided";
                     }
                     if (!class_doc) {
-                        class_doc = yield this.class_from_ref(class_ref);
+                        class_doc = (yield this.class_from_ref(class_ref));
                     }
                     let [_email, _id] = class_ref.split("/");
                     _email += this.ORG_DOMAIN;
@@ -2287,15 +2275,16 @@ export const useMainStore = defineStore({
                         return task.type != "note" &amp;&amp; compatDateObj(task.date).getTime() >= new Date().getTime();
                     });
                     class_tasks.sort((a, b) => {
-                        return compatDateObj(a.date).getTime() - compatDateObj(b.date).getTime();
+                        var _a, _b;
+                        return ((_a = compatDateObj(a.date)) === null || _a === void 0 ? void 0 : _a.getTime()) - ((_b = compatDateObj(b.date)) === null || _b === void 0 ? void 0 : _b.getTime());
                     });
                     // limit to 6
                     class_tasks = class_tasks.slice(0, 6);
                     let upcoming_tasks = [];
                     class_tasks.forEach((task) => {
-                        let task_id = task.id;
+                        const task_id = task.id;
                         delete task.id;
-                        upcoming_tasks.push(Object.assign(Object.assign({}, task), { ref: [...class_ref.split("/"), task_id].join("~"), date: compatDateObj(task.date), color: class_doc.color, class_id: [_email, _id].join("/"), class_name: this.class_text(class_doc) }));
+                        upcoming_tasks.push(Object.assign(Object.assign({}, task), { ref: [...class_ref.split("/"), task_id].join("~"), date: compatDateObj(task.date), color: class_doc === null || class_doc === void 0 ? void 0 : class_doc.color, class_id: [_email, _id].join("/"), class_name: this.class_text(class_doc) }));
                     });
                     _status.log("📚 Got upcoming tasks");
                     return Promise.resolve(upcoming_tasks);
@@ -2314,8 +2303,7 @@ export const useMainStore = defineStore({
          */
         show_timeout() {
             var _a, _b;
-            _status.log("🕒 Showing timeout" +
-                (((_b = (_a = this.account_doc) === null || _a === void 0 ? void 0 : _a.prefs) === null || _b === void 0 ? void 0 : _b.hide_timeout) ? " | Hidden locally due to prefs" : ""));
+            _status.log("🕒 Showing timeout" + (((_b = (_a = this.account_doc) === null || _a === void 0 ? void 0 : _a.prefs) === null || _b === void 0 ? void 0 : _b.hide_timeout) ? " | Hidden locally due to prefs" : ""));
             this.paused = true;
         },
         /**
