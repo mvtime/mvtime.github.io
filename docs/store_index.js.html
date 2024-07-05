@@ -992,14 +992,14 @@ export const useMainStore = defineStore({
                                 let [year, month, day] = (_e = (_d = class_tasks[j]) === null || _d === void 0 ? void 0 : _d.date) === null || _e === void 0 ? void 0 : _e.split("-");
                                 class_tasks[j].date = `${month}-${day}-${year}`;
                                 date = compatDateObj(class_tasks[j].date);
-                                date = isNaN(class_tasks[j].date) ? null : date;
+                                date = isNaN(+date) ? null : date;
                             }
                             else {
                                 date = class_tasks[j].date;
                             }
                             // set color from parent class color
                             class_tasks[j].color = classes[i].color;
-                            tasks.push(Object.assign(Object.assign({}, class_tasks[j]), { date, class_name: this.class_text(classes[i]) }));
+                            tasks.push(Object.assign(Object.assign({}, class_tasks[j]), { date: date, class_name: this.class_text(classes[i]) }));
                         }
                     }
                     // sort tasks by day, if day the same, sort by period, then by name
