@@ -23,11 +23,16 @@ const versionPlugin = {
     });
   },
 };
+// fix for warning since vue-cli-service is no longer maintained
+// https://github.com/vuejs/vue-cli/pull/7443
+const clifix = new webpack.DefinePlugin({
+  __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: "false",
+});
 
 module.exports = defineConfig({
   configureWebpack: {
     entry: "@/main.ts",
-    plugins: [envPlugin(), versionPlugin],
+    plugins: [envPlugin(), versionPlugin, clifix],
     resolve: {
       extensions: [".ts", ".tsx", ".js", ".vue", ".json"],
     },
