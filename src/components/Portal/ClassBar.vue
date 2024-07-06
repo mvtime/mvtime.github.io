@@ -1,12 +1,6 @@
 <template>
   <div class="class_bar" :class="{ filtering: !!filtered_classes.length }">
-    <button
-      v-if="!dragging"
-      class="class_filter_clear class_bar_item class_bar_item__button"
-      @click="$emit('clear_filters')"
-      :disabled="!filtered_classes.length"
-      title="Clear class section filters"
-    >
+    <button v-if="!dragging" class="class_filter_clear class_bar_item class_bar_item__button" @click="$emit('clear_filters')" :disabled="!filtered_classes.length" title="Clear class section filters">
       <span> Clear</span>
     </button>
     <a
@@ -15,9 +9,7 @@
       :ref="class_obj.ref"
       :href="'/view/' + clean_ref(class_obj.ref)"
       v-for="class_obj of classes"
-      :draggable="
-        $store.is_teacher && class_obj.email == $store.user.email && $route.name != 'study'
-      "
+      :draggable="$store.is_teacher && class_obj.email == $store.user.email && $route.name != 'study'"
       @dragstart="
         $emit('dragclass', class_obj);
         // $emit('clear_filters');
@@ -53,9 +45,7 @@
       <div
         class="class_swatch"
         :_email="class_obj.email"
-        :title="
-          $store.is_teacher && class_obj.email == $store.user.email ? 'Edit Class' : 'Leave Class'
-        "
+        :title="$store.is_teacher && class_obj.email == $store.user.email ? 'Edit Class' : 'Leave Class'"
         @click="
           if ($store.is_teacher && class_obj.email == $store.user.email) {
             edit_class(class_obj);
@@ -66,17 +56,12 @@
           $event.stopPropagation();
         "
       >
-        <div
-          v-if="!$store.is_teacher || class_obj.email != $store.user.email"
-          class="class_swatch__icon class_swatch_remove__icon"
-        ></div>
+        <div v-if="!$store.is_teacher || class_obj.email != $store.user.email" class="class_swatch__icon class_swatch_remove__icon"></div>
         <div v-else class="class_swatch__icon class_swatch_edit__icon"></div>
       </div>
     </a>
-    <div
-      class="classes_container_class classes_container_class__add_class class_bar_item class_bar_item__button"
-      @click="$router.push({ name: 'addclass', query: $route.query })"
-    >
+    <div class="class_container__empty" v-if="!classes | !classes.length" title="No classes yet"></div>
+    <div class="classes_container_class classes_container_class__add_class class_bar_item class_bar_item__button" @click="$router.push({ name: 'addclass', query: $route.query })">
       <span> {{ $store.is_teacher ? "Join" : "Join a Class" }}</span>
     </div>
 
@@ -188,7 +173,16 @@ export default {
   background: var(--color-class-alt);
   border: solid 2px var(--color-class);
 }
-.parent.simplified .class_bar_class {
+
+.class_container__empty {
+  opacity: 0.75;
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--color-on-bg);
+}
+
+.class_container__empty .parent.simplified .class_bar_class {
   color: var(--color-on-calendar-task);
   background: var(--color-class);
   border: none;

@@ -14,7 +14,10 @@
 
 ## Priorities
 
-- ~~**Migrate to TypeScript**~~
+- **Migrate to TypeScript**
+  - migrate .vue components
+  - ~~migrate .js main files and logging~~
+  - ~~migrate router, stores~~
 - **Adding pre-set classes**
   - teachers dont have to join
   - students able to add tasks to their classes / teachers can invite students to edit their classes
@@ -56,15 +59,20 @@
   - ~~sort as classes/dates in study view~~
 - Admin / Contact
   - **Add/implement analytics**
+    - ~~implement log saving and viewing~~
   - Send messages from w/i the app using mail system
     - user will receive a copy
   - District portal
   - Admin portal
-    - create portal based on /portal but with panel in place of calendar
+    - **view mail and send messages**
+    - add more protections to teacher mode
     - ability to fix errors that might impede usability for students
     - ability to view student surveys in bulk - form-type
     - force reload student sessions to update / quickfix
-    - add more protections to teacher mode
+    - ~~create panel based on /portal but with info in place of calendar~~
+    - ~~view and download student logs~~
+    - ~~view user and teacher info~~
+    - ~~view .env details and optioning~~
 - Student involvement
   - way for students to access teacher features for their peers / as a proxy for the teacher
   - student self "classes" for things specific to them to keep track of, all in one place

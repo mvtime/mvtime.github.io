@@ -3,13 +3,7 @@
     <div class="class_list__not_empty" :class="{ filtering: !!filtered_classes.length }">
       <div class="class_list_header">
         <h5>Classes</h5>
-        <button
-          @click="$emit('clear_filters')"
-          v-if="!!filtered_classes.length"
-          title="Clear class section filters"
-        >
-          Clear
-        </button>
+        <button @click="$emit('clear_filters')" v-if="!!filtered_classes.length" title="Clear class section filters">Clear</button>
       </div>
       <hr class="class_list_hr" />
       <div class="classes_container" :class="{ filtering: !!filtered_classes.length }">
@@ -18,9 +12,7 @@
           :ref="class_obj.ref"
           :href="'/view/' + clean_ref(class_obj.ref)"
           v-for="class_obj of classes"
-          :draggable="
-            $store.is_teacher && class_obj.email == $store.user.email && $route.name != 'study'
-          "
+          :draggable="$store.is_teacher && class_obj.email == $store.user.email && $route.name != 'study'"
           @dragstart="
             $emit('dragclass', class_obj);
             // $emit('clear_filters');
@@ -47,11 +39,7 @@
           <div
             class="class_swatch"
             :_email="class_obj.email"
-            :title="
-              $store.is_teacher && class_obj.email == $store.user.email
-                ? 'Edit Class'
-                : 'Leave Class'
-            "
+            :title="$store.is_teacher && class_obj.email == $store.user.email ? 'Edit Class' : 'Leave Class'"
             @click="
               if ($store.is_teacher && class_obj.email == $store.user.email) {
                 edit_class(class_obj);
@@ -62,19 +50,13 @@
               $event.stopPropagation();
             "
           >
-            <div
-              v-if="!$store.is_teacher || class_obj.email != $store.user.email"
-              class="class_swatch__icon class_swatch_remove__icon"
-            ></div>
+            <div v-if="!$store.is_teacher || class_obj.email != $store.user.email" class="class_swatch__icon class_swatch_remove__icon"></div>
             <div v-else class="class_swatch__icon class_swatch_edit__icon"></div>
           </div>
           <span class="class_name">{{ $store.class_text(class_obj) }}</span>
         </a>
-        <div
-          v-if="!$store.is_teacher || true"
-          class="classes_container_class classes_container_class__add_class"
-          @click="$router.push({ name: 'addclass', query: $route.query })"
-        >
+        <div class="class_container__empty" v-if="!classes | !classes.length" title="No classes yet">No classes yet</div>
+        <div v-if="!$store.is_teacher || true" class="classes_container_class classes_container_class__add_class" @click="$router.push({ name: 'addclass', query: $route.query })">
           <div class="class_swatch">
             <div class="class_swatch__add_icon"></div>
           </div>
@@ -237,6 +219,17 @@ h5 {
 .classes_container_class > * {
   user-select: none;
 }
+
+.class_container__empty {
+  /* opacity: 0.5;
+  background: var(--color-on-bg); */
+
+  font-size: 0.8em;
+  padding: 15px 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
 .class_swatch__add_icon {
   width: 100%;
   height: 100%;

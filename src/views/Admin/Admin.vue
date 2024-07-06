@@ -1,94 +1,88 @@
 <template>
   <main class="admin">
-    <div class="admin_sidebar">
-      <span class="admin_sidebar__tophaze"></span>
-      <div class="admin_sidebar_scrollable admin_section">
-        <div class="admin_sidebar_header">
-          <div class="branding-title gohome">
-            {{ $env.VUE_APP_BRAND_NAME_SHORT }}
-            <span
-              class="branding-admin"
+    <div class="admin_menus">
+      <div class="admin_sidebar">
+        <span class="admin_sidebar__tophaze"></span>
+        <div class="admin_sidebar_scrollable admin_section">
+          <div class="admin_sidebar_header">
+            <div class="branding-title gohome">
+              {{ $env.VUE_APP_BRAND_NAME_SHORT }}
+              <span
+                class="branding-admin"
+                @click="
+                  $router.push({
+                    name: 'portal',
+                    query: {
+                      ...$route.query,
+                      search: undefined,
+                      action: undefined,
+                    },
+                  });
+                  $event.stopPropagation();
+                "
+                >Admin Panel</span
+              >
+            </div>
+          </div>
+          <div class="admin_sidebar_items">
+            <a
+              :style="{ animationDelay: `${(index + 1) * 0.05}s` }"
+              class="admin_sidebar_item admin_in"
+              :title="`View ${p.title} info and options`"
               @click="
-                $router.push({
-                  name: 'portal',
-                  query: {
-                    ...$route.query,
-                    search: undefined,
-                    action: undefined,
-                  },
-                });
-                $event.stopPropagation();
+                if (active === p.short) {
+                  key++;
+                }
+                open_page(p.short);
+
+                $event.preventDefault();
               "
-              >Admin Panel</span
+              :class="{ active: active === p.short }"
+              :href="`/portal/admin/${p.short}`"
+              v-for="(p, index) in pages"
+              :key="p.short"
+              :disabled="p.disabled"
             >
+              <div class="admin_sidebar_item__icon themed_icon" :style="{ backgroundImage: `url(${p.img.png})` }"></div>
+              <span class="admin_sidebar_item__text">{{ p.name }}</span>
+              <span class="flex_spacer"></span>
+              <button
+                class="admin_sidebar_item__outlink click-action"
+                :title="`Open ${p.title} in a new tab`"
+                @click="
+                  open_outlink(p.short);
+                  $event.preventDefault();
+                  $event.stopPropagation();
+                "
+              >
+                <span class="admin_sidebar_item__outlink__icon themed_icon"></span>
+              </button>
+            </a>
           </div>
         </div>
-        <div class="admin_sidebar_items">
-          <a
-            :style="{ animationDelay: `${(index + 1) * 0.05}s` }"
-            class="admin_sidebar_item admin_in"
-            :title="`View ${p.title} info and options`"
-            @click="
-              if (active === p.short) {
-                key++;
-              }
-              open_page(p.short);
+        <span class="admin_sidebar__bottomhaze"></span>
 
-              $event.preventDefault();
-            "
-            :class="{ active: active === p.short }"
-            :href="`/portal/admin/${p.short}`"
-            v-for="(p, index) in pages"
-            :key="p.short"
-            :disabled="p.disabled"
-          >
-            <div
-              class="admin_sidebar_item__icon themed_icon"
-              :style="{ backgroundImage: `url(${p.img.png})` }"
-            ></div>
-            <span class="admin_sidebar_item__text">{{ p.name }}</span>
-            <span class="flex_spacer"></span>
-            <button
-              class="admin_sidebar_item__outlink click-action"
-              :title="`Open ${p.title} in a new tab`"
-              @click="
-                open_outlink(p.short);
-                $event.preventDefault();
-                $event.stopPropagation();
-              "
-            >
-              <span class="admin_sidebar_item__outlink__icon themed_icon"></span>
-            </button>
-          </a>
+        <div class="sidebar_last_block auth-action can-logout doprompt">
+          <div class="linked_acc_icon" v-if="$store && $store.personal_account">
+            <img class="linked_acc_icon__img" width="24" height="24" src="@/assets/img/general/user-linked.png" alt="Linked Account" />
+          </div>
+          <div class="active_acc_icon" v-else-if="$store && $store.user && user_pfp" :title="`Logged in as ${$store.user.displayName} (${this.$store.user.email})`">
+            <img class="active_acc_icon__img" width="26" height="26" :src="user_pfp" referrerpolicy="no-referrer" alt="Account Profile Image" />
+          </div>
+          <div class="auth_logout can_logout">Log Out</div>
         </div>
       </div>
-      <span class="admin_sidebar__bottomhaze"></span>
-
-      <div class="sidebar_last_block auth-action can-logout doprompt">
-        <div class="linked_acc_icon" v-if="$store && $store.personal_account">
-          <img
-            class="linked_acc_icon__img"
-            width="24"
-            height="24"
-            src="@/assets/img/general/user-linked.png"
-            alt="Linked Account"
-          />
+      <div class="admin_info">
+        <span class="admin_info__tophaze"></span>
+        <div class="admin_info_scrollable admin_section">
+          <span>
+            The admin panel is still in beta, so some features may not be available yet. <br /><br />
+            We're working hard to bring you the best experience possible, so please <router-link :to="{ name: 'contact' }">contact us</router-link> if you have any feedback or suggestions.
+            <br /><br />
+            You can see what we're working on by checking out the <router-link :to="{ name: 'roadmap' }">roadmap</router-link>!
+          </span>
         </div>
-        <div
-          class="active_acc_icon"
-          v-else-if="$store && $store.user && user_pfp"
-          :title="`Logged in as ${$store.user.displayName} (${this.$store.user.email})`"
-        >
-          <img
-            class="active_acc_icon__img"
-            width="26"
-            height="26"
-            :src="user_pfp"
-            referrerpolicy="no-referrer"
-            alt="Account Profile Image"
-          />
-        </div>
-        <div class="auth_logout can_logout">Log Out</div>
+        <span class="admin_info__bottomhaze"></span>
       </div>
     </div>
     <div class="admin_main_wrapper">
@@ -162,9 +156,7 @@ export default {
       return this.pages.find((p) => p.short === this.active);
     },
     user_pfp() {
-      return this.$store && this.$store.user && this.$store.user.photoURL
-        ? this.$store.user.photoURL.replace("s96-c", "s26-c")
-        : null;
+      return this.$store && this.$store.user && this.$store.user.photoURL ? this.$store.user.photoURL.replace("s96-c", "s26-c") : null;
     },
     shortcuts() {
       return [];
@@ -239,52 +231,84 @@ main.admin,
 .parent.simplified .admin_section {
   box-shadow: none;
 }
-
-/* sidebar */
-.admin_sidebar {
+.admin_menus {
   display: flex;
-  flex-flow: column nowrap;
   flex: 0 0 270px;
   width: 270px;
+  align-items: stretch;
+  justify-content: stretch;
+  flex-flow: column nowrap;
+  gap: var(--padding-sidebar);
+  /* allow scroll without border padding */
   position: relative;
-  height: fit-content;
-  max-height: 100%;
+  top: calc(0px - var(--padding-sidebar));
+  height: calc(100% + var(--padding-sidebar) * 2);
+  padding: var(--padding-sidebar) 0;
+  overflow-y: auto;
 }
-.admin_sidebar .admin_sidebar_scrollable {
+/* sidebar */
+.admin_sidebar,
+.admin_info {
+  display: flex;
+  flex-flow: column nowrap;
+  width: 100%;
+  position: relative;
+  height: auto;
+  overflow-x: visible;
+}
+.admin_sidebar {
+  flex: 0 1 auto;
+  min-height: 235px;
+}
+.admin_info {
+  flex: 0 6 auto;
+  min-height: 100px;
+}
+.admin_sidebar .admin_sidebar_scrollable,
+.admin_info .admin_info_scrollable {
   display: flex;
   flex-flow: column nowrap;
   flex-shrink: 1;
   gap: var(--padding-sidebar);
   overflow-y: auto;
-  padding-bottom: calc(var(--padding-sidebar) + 20px + 50px);
   max-height: 100%;
 }
+.admin_sidebar .admin_sidebar_scrollable {
+  padding-bottom: calc(var(--padding-sidebar) + 20px + 50px);
+}
 .admin_sidebar .admin_sidebar__tophaze,
-.admin_sidebar .admin_sidebar__bottomhaze {
+.admin_sidebar .admin_sidebar__bottomhaze,
+.admin_info .admin_info__tophaze,
+.admin_info .admin_info__bottomhaze {
   position: absolute;
   width: 100%;
   left: 0;
   z-index: 1;
   pointer-events: none;
+  height: var(--padding-sidebar);
 }
-.admin_sidebar .admin_sidebar__tophaze {
+.admin_sidebar .admin_sidebar__tophaze,
+.admin_info .admin_info__tophaze {
   top: 0;
-  height: calc(var(--padding-sidebar) + 10px);
   background: linear-gradient(to bottom, var(--color-bg) 0%, #00000000 100%);
   border-radius: var(--radius-sidebar) var(--radius-sidebar) 0 0;
 }
-.admin_sidebar .admin_sidebar__bottomhaze {
+.admin_sidebar .admin_sidebar__tophaze {
+  height: calc(var(--padding-sidebar) + 10px);
+}
+.admin_sidebar .admin_sidebar__bottomhaze,
+.admin_info .admin_info__bottomhaze {
   bottom: 0;
-  height: calc(var(--padding-sidebar) + 70px);
-  background: linear-gradient(
-    to top,
-    var(--color-bg) calc(var(--padding-sidebar) / 2 + 50px),
-    #00000000 100%
-  );
   border-radius: 0 0 var(--radius-sidebar) var(--radius-sidebar);
+  background: linear-gradient(to top, var(--color-bg) 0%, #00000000 100%);
+}
+.admin_sidebar .admin_sidebar__bottomhaze {
+  height: calc(var(--padding-sidebar) + 70px);
+  background: linear-gradient(to top, var(--color-bg) calc(var(--padding-sidebar) / 2 + 50px), #00000000 100%);
 }
 
-.admin_sidebar_scrollable::-webkit-scrollbar {
+.admin_sidebar_scrollable::-webkit-scrollbar,
+.admin_info_scrollable::-webkit-scrollbar {
   display: none;
 }
 .admin_sidebar_items {
@@ -419,7 +443,8 @@ main.admin,
   overflow-y: auto;
   overflow-x: visible;
 }
-.admin_main_wrapper::-webkit-scrollbar {
+.admin_main_wrapper::-webkit-scrollbar,
+.admin_menus::-webkit-scrollbar {
   display: none;
 }
 
@@ -438,7 +463,9 @@ main.admin,
     gap: var(--padding-sidebar);
     flex: 0 0 auto;
   }
-  .admin_sidebar,
+
+  .admin_menus,
+  .admin_info_scrollable,
   .admin_sidebar_scrollable,
   .admin_main_wrapper {
     height: unset;
@@ -448,28 +475,17 @@ main.admin,
     flex: 0 0 auto;
   }
 
-  .admin_sidebar {
-    border-radius: var(--radius-sidebar);
-    box-shadow: var(--shadow-highlight);
-    padding: var(--padding-sidebar);
-    background-color: var(--color-bg);
-    flex-shrink: 0;
-    padding-bottom: 10px;
-  }
-
-  main.admin .admin_sidebar_scrollable {
-    border-radius: unset;
-    box-shadow: none;
+  .admin_menus {
+    position: unset;
     padding: 0;
-    background-color: none;
+  }
+  .admin_menus .admin_info {
+    height: 120px;
+    display: none;
   }
 
-  .sidebar_last_block {
-    margin-top: 35px;
-    position: relative;
-    left: -10px;
-    top: 0;
-    width: calc(100% + 20px);
+  .admin_sidebar {
+    padding-bottom: 10px;
   }
 
   .admin_main_wrapper {
