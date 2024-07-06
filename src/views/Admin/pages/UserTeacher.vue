@@ -2,19 +2,9 @@
   <div class="userteacher">
     <div class="user_wrapper part_wrapper" v-if="users.length">
       <table class="users" v-if="users.length">
-        <tr
-          class="user admin_in"
-          v-for="(user, index) in users"
-          :key="user.id"
-          :style="{ animationDelay: `${(index + 2) * 0.03}s` }"
-        >
+        <tr class="user admin_in" v-for="(user, index) in users" :key="user.id" :style="{ animationDelay: `${(index + 2) * 0.03}s` }">
           <td class="user_pfp">
-            <img
-              :src="user.pfp"
-              :alt="`${user.displayName}'s Profile Picture`"
-              :title="`${user.displayName}'s Profile Picture`"
-              class="user_pfp__img"
-            />
+            <img :src="user.pfp" :alt="`${user.displayName}'s Profile Picture`" :title="`${user.displayName}'s Profile Picture`" class="user_pfp__img" />
           </td>
           <td>{{ user.displayName }}</td>
           <td>{{ user.email }}</td>
@@ -38,39 +28,16 @@
     </div>
     <div class="users_empty part__empty" v-else-if="users_loaded">No Users Found</div>
     <div v-else class="users_loading part__loading">
-      <div
-        class="admin_in"
-        v-for="(j, i) in user_placeholders"
-        :key="j"
-        :style="{ animationDelay: `${(i + 2) * 0.03}s` }"
-      >
-        <div
-          class="part__loading_placeholder user__loading_placeholder part_loading_animation"
-          title="Loading Users"
-        >
+      <div class="admin_in" v-for="(j, i) in user_placeholders" :key="j" :style="{ animationDelay: `${(i + 2) * 0.03}s` }">
+        <div class="part__loading_placeholder user__loading_placeholder part_loading_animation" title="Loading Users">
           <div class="user__loading_placeholder_img part_loading_animation"></div>
         </div>
       </div>
     </div>
-    <div
-      class="teachers_wrapper part_wrapper"
-      v-if="teachers_loaded"
-      :class="{ teachers_empty: !teachers.length, part__empty: !teachers.length }"
-    >
-      <div
-        v-if="!teachers.length"
-        class="teachers_empty part__empty"
-        :style="{ animationDelay: `${2 * 0.15}s` }"
-      >
-        No Teachers Found
-      </div>
+    <div class="teachers_wrapper part_wrapper" v-if="teachers_loaded" :class="{ teachers_empty: !teachers.length, part__empty: !teachers.length }">
+      <div v-if="!teachers.length" class="teachers_empty part__empty" :style="{ animationDelay: `${2 * 0.15}s` }">No Teachers Found</div>
       <table v-else class="teachers">
-        <tr
-          class="teacher admin_in"
-          v-for="(teacher, index) in teachers"
-          :key="teacher.id"
-          :style="{ animationDelay: `${(index + 2) * 0.15}s` }"
-        >
+        <tr class="teacher admin_in" v-for="(teacher, index) in teachers" :key="teacher.id" :style="{ animationDelay: `${(index + 2) * 0.15}s` }">
           <td>{{ teacher.name }}</td>
           <td>{{ teacher.email }}</td>
           <td>{{ teacher.id }}</td>
@@ -86,9 +53,7 @@
               :style="{
                 '--color-class': class_obj.color,
                 '--color-class-alt': class_obj.color + '80',
-                animationDelay: `${
-                  (index + 2.5) * 0.15 + ((index2 + 1) / teacher.classes.length) * 0.1
-                }s`,
+                animationDelay: `${(index + 2.5) * 0.15 + ((index2 + 1) / teacher.classes.length) * 0.1}s`,
               }"
             >
               <a
@@ -106,23 +71,12 @@
                 >{{ $store.class_text(class_obj) }}</a
               >
             </span>
-            <span
-              class="teacher_classes__empty class_name button_pointer_text"
-              v-if="!teacher.classes || !teacher.classes.length"
-              >No Classes</span
-            >
+            <span class="teacher_classes__empty class_name button_pointer_text" v-if="!teacher.classes || !teacher.classes.length">No Classes</span>
           </td>
         </tr>
       </table>
-      <hr
-        v-if="teachers.length"
-        class="teacher_add__separator admin_in"
-        :style="{ animationDelay: `${(teachers.length + 3) * 0.1}s` }"
-      />
-      <div
-        class="teacher_add admin_in"
-        :style="{ animationDelay: `${(teachers.length + 4) * 0.1}s` }"
-      >
+      <hr v-if="teachers.length" class="teacher_add__separator admin_in" :style="{ animationDelay: `${(teachers.length + 3) * 0.1}s` }" />
+      <div class="teacher_add admin_in" :style="{ animationDelay: `${(teachers.length + 4) * 0.1}s` }">
         <textarea
           @keydown.enter="
             add_teachers();
@@ -134,42 +88,19 @@
           v-model="teacher_add_list"
           enterkeyhint="send"
         ></textarea>
-        <button
-          @click="add_teachers"
-          title="Make listed emails teachers"
-          class="teacher_add_button"
-          :disabled="!teacher_add_list.trim().length"
-        >
+        <button @click="add_teachers" title="Make listed emails teachers" class="teacher_add_button" :disabled="!teacher_add_list.trim().length">
           <div class="themed_icon teacher_add_button__icon" />
         </button>
       </div>
     </div>
     <div v-else class="teachers_loading part__loading">
-      <div
-        class="admin_in"
-        v-for="(j, i) in teacher_placeholders"
-        :key="j"
-        :style="{ animationDelay: `${(i + 2) * 0.15}s` }"
-      >
-        <div
-          class="part__loading_placeholder teacher__loading_placeholder part_loading_animation"
-          title="Loading Teachers"
-        ></div>
+      <div class="admin_in" v-for="(j, i) in teacher_placeholders" :key="j" :style="{ animationDelay: `${(i + 2) * 0.15}s` }">
+        <div class="part__loading_placeholder teacher__loading_placeholder part_loading_animation" title="Loading Teachers"></div>
       </div>
-      <hr
-        class="teacher_add__separator admin_in"
-        :style="{ animationDelay: `${(teacher_placeholders.length + 3) * 0.1}s` }"
-      />
-      <div
-        class="admin_in teacher_add__loading_placeholder_wrapper"
-        :style="{ animationDelay: `${(teacher_placeholders.length + 4) * 0.1}s` }"
-      >
-        <div
-          class="part__loading_placeholder part_loading_animation teacher_add__loading_placeholder"
-        ></div>
-        <div
-          class="part__loading_placeholder part_loading_animation teacher_add__loading_placeholder"
-        ></div>
+      <hr class="teacher_add__separator admin_in" :style="{ animationDelay: `${(teacher_placeholders.length + 3) * 0.1}s` }" />
+      <div class="admin_in teacher_add__loading_placeholder_wrapper" :style="{ animationDelay: `${(teacher_placeholders.length + 4) * 0.1}s` }">
+        <div class="part__loading_placeholder part_loading_animation teacher_add__loading_placeholder"></div>
+        <div class="part__loading_placeholder part_loading_animation teacher_add__loading_placeholder"></div>
       </div>
     </div>
   </div>
@@ -206,23 +137,11 @@ export default {
         const { data } = await unmakeTeacher({ uid: teacher_id });
         if (data.error || !data.success) throw data.error;
         this.$status.log(`👤 Removed teacher ${teacher_id} in ${Date.now() - start}ms`);
-        new SuccessToast(
-          `Removed teacher status from ${
-            this.teachers.find((teacher) => teacher.id == teacher_id).name
-          }`,
-          3500
-        );
+        new SuccessToast(`Removed teacher status from ${this.teachers.find((teacher) => teacher.id == teacher_id).name}`, 3500);
         this.teachers = this.teachers.filter((teacher) => teacher.id != teacher_id);
       } catch (e) {
-        this.$status.error(
-          "👤 Error removing teacher",
-          e?.errorInfo?.code || e?.errorInfo?.message || e?.message || e
-        );
-        new ErrorToast(
-          "Something went wrong removing that teacher",
-          e?.errorInfo?.message || e?.message || e,
-          3500
-        );
+        this.$status.error("👤 Error removing teacher", e?.errorInfo?.code || e?.errorInfo?.message || e?.message || e);
+        new ErrorToast("Something went wrong removing that teacher", e?.errorInfo?.message || e?.message || e, 3500);
       }
 
       this.teachers_loaded = true;
@@ -234,51 +153,28 @@ export default {
         // map to userids
         let emails = this.teacher_add_list.trim().split(/[\s,]+/);
         // check that all emails have no domain, or end with the org domain; if no domain, add it
-        emails = emails.map((email) =>
-          email.includes("@") ? email : email + "@" + this.$env.VUE_APP_ORG_DOMAIN
-        );
+        emails = emails.map((email) => (email.includes("@") ? email : email + "@" + this.$env.VUE_APP_ORG_DOMAIN));
         // fail out if non-org domain email is present
         if (emails.some((email) => !email.endsWith(this.$env.VUE_APP_ORG_DOMAIN))) {
-          this.$status.error(
-            "👤 Error setting new teachers from emails/userids",
-            "Non-org domain email found"
-          );
-          new WarningToast(
-            `Cannot make linked (non-@${this.$env.VUE_APP_ORG_DOMAIN}) users teachers`,
-            2500
-          );
+          this.$status.error("👤 Error setting new teachers from emails/userids", "Non-org domain email found");
+          new WarningToast(`Cannot make linked (non-@${this.$env.VUE_APP_ORG_DOMAIN}) users teachers`, 2500);
           return;
         } else if (!emails.length) {
-          this.$status.error(
-            "👤 Error setting new teachers from emails/userids",
-            "No emails found"
-          );
+          this.$status.error("👤 Error setting new teachers from emails/userids", "No emails found");
           new WarningToast("No emails found to make teachers", 2500);
           return;
         } else {
           // use loaded user objects to get userids
           const users = this.users.filter((user) => emails.includes(user.email));
           if (!users.length) {
-            this.$status.error(
-              "👤 Error setting new teachers from emails/userids",
-              "No users found"
-            );
+            this.$status.error("👤 Error setting new teachers from emails/userids", "No users found");
             new WarningToast("No matching loaded users found", 2500);
             return;
           }
-          this.$status.log(
-            `👤 Setting ${users.length} found teacher${users.length != 1 ? "s" : ""}: ${users
-              .map((user) => `${user.email}->${user.uid}`)
-              .join(", ")}`
-          );
+          this.$status.log(`👤 Setting ${users.length} found teacher${users.length != 1 ? "s" : ""}: ${users.map((user) => `${user.email}->${user.uid}`).join(", ")}`);
 
-          let unchanged = users.filter((user) =>
-            this.teachers.some((teacher) => teacher.id == user.uid)
-          ).length;
-          this.teacher_placeholders = Array.from(
-            { length: this.teachers.length + (users.length - unchanged) },
-            (_, i) => i
-          );
+          let unchanged = users.filter((user) => this.teachers.some((teacher) => teacher.id == user.uid)).length;
+          this.teacher_placeholders = Array.from({ length: this.teachers.length + (users.length - unchanged) }, (_, i) => i);
           this.teachers_loaded = false;
           const { data } = await makeTeachers({
             emails: users.map((user) => user.email),
@@ -287,28 +183,17 @@ export default {
           if (data.error) throw data.error;
 
           this.$status.log(
-            `👤 ${data?.users?.length} teacher${data?.users?.length != 1 ? "s" : ""} set in ${
-              Date.now() - start
-            }ms; ${unchanged} ${unchanged != 1 ? "were already teachers" : "was already a teacher"}`
+            `👤 ${data?.users?.length} teacher${data?.users?.length != 1 ? "s" : ""} set in ${Date.now() - start}ms; ${unchanged} ${unchanged != 1 ? "were already teachers" : "was already a teacher"}`
           );
           new SuccessToast(
-            `Added ${data?.users?.length - unchanged} teacher${
-              data?.users?.length - unchanged != 1 ? "s" : ""
-            }, ${unchanged} ${unchanged != 1 ? "were already teachers" : "was already a teacher"}`,
+            `Added ${data?.users?.length - unchanged} teacher${data?.users?.length - unchanged != 1 ? "s" : ""}, ${unchanged} ${unchanged != 1 ? "were already teachers" : "was already a teacher"}`,
             3500
           );
           this.teacher_add_list = "";
         }
       } catch (e) {
-        this.$status.error(
-          "👤 Error setting new teachers from emails/userids",
-          e?.errorInfo?.message || e?.message || e
-        );
-        new ErrorToast(
-          "Something went wrong making those users teachers",
-          e?.errorInfo?.message || e?.message || e,
-          3500
-        );
+        this.$status.error("👤 Error setting new teachers from emails/userids", e?.errorInfo?.message || e?.message || e);
+        new ErrorToast("Something went wrong making those users teachers", e?.errorInfo?.message || e?.message || e, 3500);
         this.teachers_loaded = true;
         return;
       }
@@ -475,25 +360,6 @@ tr > td > span.class_name_wrapper {
   margin-bottom: 7px;
 }
 
-@keyframes loading_swipe {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-@keyframes loading_throb {
-  0% {
-    background: var(--color-theme-alt);
-  }
-  50% {
-    background: var(--color-theme);
-  }
-  100% {
-    background: var(--color-theme-alt);
-  }
-}
 .userteacher > .part__loading {
   gap: 7px;
   display: flex;
@@ -501,20 +367,7 @@ tr > td > span.class_name_wrapper {
   align-items: stretch;
   justify-content: flex-start;
 }
-/* background shimmer */
-.part_loading_animation {
-  outline: 1px solid var(--color-theme-alt);
-  outline-offset: -1px;
-  opacity: 0.75;
-  background: linear-gradient(90deg, #00000000 0%, var(--color-theme-alt) 50%, #00000000 100%);
-  background-size: 200% 100%;
-  animation: loading_swipe 2.5s infinite;
-}
-.part_loading_animation .part_loading_animation {
-  background: var(--color-theme);
-  animation: loading_throb 2.5s infinite;
-  opacity: 0.5;
-}
+
 .part__loading_placeholder {
   width: 100%;
   border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar));

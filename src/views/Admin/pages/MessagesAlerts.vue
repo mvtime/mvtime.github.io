@@ -1,41 +1,125 @@
 <template>
   <div class="messagesalerts" :page="page">
     <div class="msg_choose" v-if="page == 'choose'">
-      <div
-        :class="`msg_choose_page msg_choose__${p} admin_in`"
-        v-for="(choice, p, i) in choices"
-        :key="p"
-        @click="page = p"
-        :style="{ animationDelay: `${(i + 2) * 0.05}s` }"
-      >
+      <div :class="`msg_choose_page msg_choose__${p} admin_in`" v-for="(choice, p, i) in choices" :key="p" @click="page = p" :style="{ animationDelay: `${(i + 2) * 0.05}s` }">
         {{ choice.name }}
       </div>
     </div>
     <div class="msg_page_wrapper" v-else>
-      <div
-        class="msg_page_info admin_in"
-        v-if="page != 'choose'"
-        :style="{ animationDelay: `${2 * 0.05}s` }"
-      >
+      <div class="msg_page_info admin_in" v-if="page != 'choose'" :style="{ animationDelay: `${2 * 0.05}s` }">
         <button class="msg_page__back" @click="page = 'choose'">
           <div class="msg_page__back__icon themed_icon"></div>
         </button>
         <div class="msg_page_info__text">{{ choices[page].active }}</div>
       </div>
-      <hr
-        class="msg_page_wrapper__separator admin_in"
-        :style="{ animationDelay: `${3 * 0.05}s` }"
-      />
+      <hr class="msg_page_wrapper__separator admin_in" :style="{ animationDelay: `${3 * 0.05}s` }" />
       <div class="msg_page_container admin_in" :style="{ animationDelay: `${4 * 0.05}s` }">
-        <div class="msg_page msg__view" v-if="page == 'view'"></div>
+        <div class="msg_page msg__view" v-if="page == 'view'">
+          <table class="msg_page_list msg__view_list">
+            <tr class="msg_page_list_header msg__view_list_header">
+              <th style="flex: 1 4 7em">Recepient</th>
+              <template v-if="!data.view.active">
+                <th style="flex: 1 1 10em">Template</th>
+                <th style="flex: 4 3 15em">Subject</th>
+                <th style="flex: 1 1 5em">Date</th>
+              </template>
+            </tr>
+            <template v-if="!data.view.loading">
+              <tr
+                class="msg_page_list_item msg__view_list_item admin_in"
+                :class="{ active: data.view.active == id }"
+                v-for="(message, id, i) in data.view.list"
+                :key="id"
+                :style="{ animationDelay: `${(i + 2) * 0.03 + 0.2}s` }"
+              >
+                <td style="flex: 1 4 7em">
+                  <span class="msg__view_to">{{ message.to }}</span
+                  ><span class="msg__view_cc" v-if="message.cc" :title="`CC: ${Array.isArray(message.cc) ? message.cc.join(', ') : message.cc}`">&MediumSpace;+cc</span
+                  ><span class="msg__view_bcc" v-if="message.bcc" :title="`BCC: ${Array.isArray(message.cc) ? message.bcc.join(', ') : message.bcc}`">&MediumSpace;+bcc</span>
+                </td>
+                <td style="flex: 1 1 10em">{{ message.template }}</td>
+                <td style="flex: 4 3 15em">{{ message.subject }}</td>
+                <td style="flex: 1 1 5em">{{ message.date }}</td>
+                <div class="msg_page_list_item_content msg_view_preview" v-if="data.view.active == id">
+                  <div class="msg_view_preview__json"></div>
+                </div>
+                <button
+                  class="msg__view_list_item__toggle msg_list_item__toggle"
+                  :class="{ click_escape: data.view.active == id }"
+                  @click="data.view.active = data.view.active == id ? null : id"
+                  title="Close email data"
+                >
+                  <div class="msg_list_item__toggle__icon themed_icon" :title="`${data.view.active == id ? 'Collapse' : 'Expand'} preview of ${id}`"></div>
+                </button>
+              </tr>
+              <tr v-if="!Object.keys(data.view.list).length" class="msg_page_list_item__empty admin_in" :style="{ animationDelay: `${2 * 0.03 + 0.2}s` }">
+                <span>No sent messages exist yet</span>
+              </tr>
+            </template>
+            <template v-else>
+              <tr class="msg_page_list_item msg_page_list_item_loading msg__view_list_item part_loading_animation" v-for="j in placeholder(3)" :key="j">
+                <div class="part_loading_animation msg_page_list_item_loading_button"></div>
+              </tr>
+            </template>
+          </table>
+        </div>
         <div class="msg_page msg__send" v-else-if="page == 'send'"></div>
-        <div class="msg_page msg__templates" v-else-if="page == 'templates'"></div>
+        <div class="msg_page msg__templates" v-else-if="page == 'templates'">
+          <table class="msg_page_list msg__templates_list">
+            <tr class="msg_page_list_header msg__templates_list_header">
+              <th style="flex: 0 1 10em">Template</th>
+              <template v-if="!data.view.active">
+                <th style="flex: 1 4 20em">Subject</th>
+                <th style="flex: 4 10 20em">Text</th></template
+              >
+            </tr>
+            <template v-if="!data.templates.loading">
+              <tr
+                class="msg_page_list_item msg__templates_list_item admin_in"
+                :class="{ active: data.templates.active == id }"
+                v-for="(template, id, i) in data.templates.list"
+                :key="id"
+                :style="{ animationDelay: `${(i + 2) * 0.03 + 0.2}s` }"
+              >
+                <td style="flex: 1 1 10em">{{ id }}</td>
+                <td style="flex: 2 4 20em">{{ template.subject }}</td>
+                <td style="flex: 8 10 20em">{{ template.text }}</td>
+                <div class="msg_page_list_item_content msg_templates_preview" v-if="data.templates.active == id">
+                  <div class="msg_templates_preview__html" v-html="template.html"></div>
+                </div>
+                <div class="msg_page_list_item_content msg_templates_preview" v-if="data.templates.active == id">
+                  <div class="msg_templates_preview__text" v-html="template.text.replace(/\\n/g, '<br/>')"></div>
+                </div>
+                <button
+                  class="msg__templates_list_item__toggle msg_list_item__toggle"
+                  :class="{ click_escape: data.templates.active == id }"
+                  @click="data.templates.active = data.templates.active == id ? null : id"
+                  title="Close email contents preview"
+                >
+                  <div class="msg_list_item__toggle__icon themed_icon" :title="`${data.templates.active == id ? 'Collapse' : 'Expand'} preview of ${id}`"></div>
+                </button>
+              </tr>
+              <tr v-if="!Object.keys(data.templates.list).length" class="msg_page_list_item__empty admin_in" :style="{ animationDelay: `${2 * 0.03 + 0.2}s` }">
+                <span>No templates exist yet</span>
+              </tr>
+            </template>
+            <template v-else>
+              <tr class="msg_page_list_item msg_page_list_item_loading msg__templates_list_item part_loading_animation" v-for="j in placeholder(8)" :key="j">
+                <div class="part_loading_animation msg_page_list_item_loading_button"></div>
+              </tr>
+            </template>
+          </table>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { functions } from "@/firebase";
+import { httpsCallable } from "firebase/functions";
+import { ErrorToast } from "@svonk/util";
+
 export default {
   name: "MessagesAlerts",
   data() {
@@ -46,7 +130,46 @@ export default {
         send: { name: "Send New", active: "Create Message" },
         templates: { name: "Templates", active: "Message Templates" },
       },
+      data: {
+        view: {
+          list: [],
+          loading: true,
+          active: null,
+          placeholder: this.placeholder(3),
+        },
+        templates: {
+          list: {},
+          loading: true,
+          active: null,
+          placeholder: this.placeholder(8),
+        },
+      },
     };
+  },
+  methods: {
+    async fetch_templates() {
+      this.data.templates.list = {};
+      this.data.templates.loading = true;
+      const templates = httpsCallable(functions, "getTemplates");
+
+      const start = Date.now();
+      const { data, error } = await templates();
+      const elapsed = Date.now() - start;
+
+      if (error) {
+        this.$status.error(`📃 Failed to fetch templates after ${elapsed}ms`, error);
+        new ErrorToast("Something went wrong loading the templates", error, 2500);
+        return;
+      } else {
+        const len = Object.keys(data || {}).length;
+        this.$status.log(`📃 Fetched ${len} template${len == 1 ? "" : "s"} in ${elapsed}ms`);
+        this.data.templates.list = data || {};
+        this.data.templates.loading = false;
+      }
+    },
+    placeholder(n) {
+      return Array.from({ length: n }, (_, i) => i);
+    },
   },
   mounted() {
     if (this.$route?.query?.action) {
@@ -58,6 +181,11 @@ export default {
       this.$router.push({
         query: { ...this.$route.query, action: this.page == "choose" ? undefined : this.page },
       });
+      if (this.page == "templates" && this.data.templates.loading) {
+        this.fetch_templates();
+      }
+      this.data.templates.active = null;
+      this.data.view.active = null;
     },
   },
 };
@@ -90,6 +218,12 @@ export default {
   flex: 1 1 150px;
   text-align: center;
 }
+@media (max-width: 670px) {
+  .msg_choose > .msg_choose_page {
+    flex-basis: 100%;
+  }
+}
+
 /* pages */
 .msg_page_wrapper {
   display: flex;
@@ -150,10 +284,156 @@ export default {
 }
 
 /* pages - page */
+table.msg_page_list {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: stretch;
+  align-items: stretch;
+  gap: 10px;
+}
+table.msg_page_list tr.msg_page_list_item {
+  height: calc(1.5em + 14px);
+}
+table.msg_page_list tr.msg_page_list_item,
+table.msg_page_list tr.msg_page_list_header {
+  display: flex;
+  flex-flow: row nowrap;
+  background: var(--color-on-bg);
+  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar));
+  padding: 7px 12px;
+  line-height: 1.5em;
+  gap: 5px;
+}
+table.msg_page_list tr.msg_page_list_item td,
+table.msg_page_list tr.msg_page_list_header th {
+  display: block;
+  flex: 1 1 100px;
+  width: 100px;
+  text-align: left;
+  line-height: 1.5em;
+  border: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+table.msg_page_list tr.msg_page_list_header {
+  opacity: 0.5;
+  font-size: 16px;
+  height: calc(12px * 1.5 + 14px);
+  padding: 0 12px;
+  gap: 5px;
+}
+table.msg_page_list tr.msg_page_list_header > :last-child {
+  margin-right: calc(1.5em + 3px);
+}
+table.msg_page_list > tr.msg_page_list_header > th {
+  width: 100px;
+  transform-origin: left;
+  scale: 0.8;
+  line-height: calc(12px * 1.5 + 14px);
+  font-weight: 700 !important;
+  border-color: #00000000 !important;
+}
 
-@media (max-width: 670px) {
-  .msg_choose > .msg_choose_page {
-    flex-basis: 100%;
-  }
+table.msg_page_list tr.msg_page_list_item.msg_page_list_item_loading {
+  height: calc(1.5em + 14px);
+  opacity: 0.75;
+  background: linear-gradient(90deg, #00000000 0%, var(--color-theme-alt) 50%, #00000000 100%);
+  background-size: 200% 100%;
+  animation: loading_swipe 2.5s infinite;
+  position: relative;
+}
+table.msg_page_list tr.msg_page_list_item.msg_page_list_item_loading .msg_page_list_item_loading_button {
+  width: 1.5em;
+  height: 1.5em;
+  position: absolute;
+  right: 7px;
+  top: 7px;
+  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) - 7px);
+}
+table.msg_page_list tr.msg_page_list_item__empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 20px 40px;
+  margin-bottom: 5px;
+}
+table.msg_page_list tr.msg_page_list_item__empty span {
+  opacity: 0.5;
+}
+/* toggle icon */
+.msg_list_item__toggle {
+  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) - 7px);
+  font-size: 16px;
+  width: 1.5em;
+  height: 1.5em;
+  padding: 0;
+  border: none;
+  background: var(--color-bg);
+}
+table.msg_page_list tr.msg_page_list_item:not(.active):has(button.msg_list_item__toggle) > :nth-last-child(2) {
+  margin-right: calc(1.5em + 3px);
+}
+table.msg_page_list button.msg_list_item__toggle {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+}
+
+table.msg_page_list .msg_list_item__toggle__icon {
+  width: 100%;
+  height: 100%;
+  background-image: url("@/assets/img/general/portal/admin/add.png");
+  background-image: url("@/assets/img/general/portal/admin/add.svg");
+  transition: rotate 0.2s cubic-bezier(0.49, -0.02, 0.16, 1.94);
+}
+table.msg_page_list .msg_page_list_item.active {
+  padding: 3px;
+  padding-top: calc(1.5em + 14px);
+  height: auto;
+}
+table.msg_page_list .msg_page_list_item.active td:not(:first-child) {
+  display: none;
+}
+table.msg_page_list .msg_page_list_item td:first-child,
+table.msg_page_list .msg_page_list_header th:first-child {
+  font-weight: 500;
+  user-select: none;
+  border-right: solid 2px var(--color-bg);
+  margin-right: 1em;
+  padding-right: 0.5em;
+  padding: 7px 0;
+  position: relative;
+  top: -7px;
+  margin-bottom: -14px;
+}
+table.msg_page_list .msg_page_list_item.active td:first-child {
+  position: absolute;
+  top: 0px;
+  left: 12px;
+  width: max-content;
+  max-width: calc(100% - 1.5em - 14px);
+  border-right: none;
+}
+table.msg_page_list .msg_page_list_item.active .msg_list_item__toggle__icon {
+  rotate: 45deg;
+}
+table.msg_page_list .msg_page_list_item.active {
+  flex-flow: column nowrap;
+}
+table.msg_page_list .msg_page_list_item .msg_page_list_item_content {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  overflow: auto;
+  padding: 10px;
+  background: var(--color-bg);
+  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) - 3px);
 }
 </style>
