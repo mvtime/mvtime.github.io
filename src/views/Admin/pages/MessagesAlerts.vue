@@ -1,7 +1,14 @@
 <template>
   <div class="messagesalerts" :page="page">
     <div class="msg_choose" v-if="page == 'choose'">
-      <div :class="`msg_choose_page msg_choose__${p} admin_in`" v-for="(choice, p, i) in choices" :key="p" @click="page = p" :style="{ animationDelay: `${(i + 2) * 0.05}s` }">
+      <div
+        :class="`msg_choose_page msg_choose__${p} admin_in`"
+        v-for="(choice, p, i) in choices"
+        :key="p"
+        @click="if (!choice.disabled) page = p;"
+        :style="{ animationDelay: `${(i + 2) * 0.05}s` }"
+        :disabled="choice.disabled"
+      >
         {{ choice.name }}
       </div>
     </div>
@@ -17,11 +24,11 @@
         <div class="msg_page msg__view" v-if="page == 'view'">
           <table class="msg_page_list msg__view_list">
             <tr class="msg_page_list_header msg__view_list_header">
-              <th style="flex: 1 4 7em">Recepient</th>
+              <th style="flex: 1 2 6em; min-width: 6em">Recepient</th>
               <template v-if="!data.view.active">
-                <th style="flex: 1 1 10em">Template</th>
-                <th style="flex: 4 3 15em">Subject</th>
-                <th style="flex: 1 1 5em">Date</th>
+                <th class="msg__nomobile" style="flex: 1 1 6em">Template</th>
+                <th style="flex: 2 1 6.5em">Date</th>
+                <th style="flex: 0 0 5em">Status</th>
               </template>
             </tr>
             <template v-if="!data.view.loading">
@@ -32,16 +39,19 @@
                 :key="id"
                 :style="{ animationDelay: `${(i + 2) * 0.03 + 0.2}s` }"
               >
-                <td style="flex: 1 4 7em">
-                  <span class="msg__view_to">{{ message.to }}</span
-                  ><span class="msg__view_cc" v-if="message.cc" :title="`CC: ${Array.isArray(message.cc) ? message.cc.join(', ') : message.cc}`">&MediumSpace;+cc</span
-                  ><span class="msg__view_bcc" v-if="message.bcc" :title="`BCC: ${Array.isArray(message.cc) ? message.bcc.join(', ') : message.bcc}`">&MediumSpace;+bcc</span>
+                <td style="flex: 1 2 6em; min-width: 6em">
+                  <span class="msg__view_to" v-if="message.to" :title="`TO: ${Array.isArray(message.to) ? message.to.join(', ') || 'empty' : message.to}`"
+                    >{{ Array.isArray(message.to) ? message.to.length + " emails" : message.to.split("@")[0] }}&MediumSpace;</span
+                  ><span class="msg__view_cc" v-if="message.cc" :title="`CC: ${Array.isArray(message.cc) ? message.cc.join(', ') || 'empty' : message.cc}`">[cc]&MediumSpace;</span
+                  ><span class="msg__view_bcc" v-if="message.bcc" :title="`BCC: ${Array.isArray(message.cc) ? message.bcc.join(', ') || 'empty' : message.bcc}`">[bcc]</span>
                 </td>
-                <td style="flex: 1 1 10em">{{ message.template }}</td>
-                <td style="flex: 4 3 15em">{{ message.subject }}</td>
-                <td style="flex: 1 1 5em">{{ message.date }}</td>
+                <td class="msg__nomobile" style="flex: 1 1 6em">{{ message.template && message.template.name }}</td>
+                <td style="flex: 2 1 6.5em">{{ date_of(message) }}</td>
+                <td style="flex: 0 0 5em">{{ status_of(message) }}</td>
                 <div class="msg_page_list_item_content msg_view_preview" v-if="data.view.active == id">
-                  <div class="msg_view_preview__json"></div>
+                  <div class="msg_view_preview__json">
+                    <pre>{{ JSON.stringify(message, null, 2) }}</pre>
+                  </div>
                 </div>
                 <button
                   class="msg__view_list_item__toggle msg_list_item__toggle"
@@ -70,7 +80,7 @@
               <th style="flex: 0 1 10em">Template</th>
               <template v-if="!data.view.active">
                 <th style="flex: 1 4 20em">Subject</th>
-                <th style="flex: 4 10 20em">Text</th></template
+                <th class="msg__nomobile" style="flex: 4 10 20em">Text</th></template
               >
             </tr>
             <template v-if="!data.templates.loading">
@@ -83,7 +93,7 @@
               >
                 <td style="flex: 1 1 10em">{{ id }}</td>
                 <td style="flex: 2 4 20em">{{ template.subject }}</td>
-                <td style="flex: 8 10 20em">{{ template.text }}</td>
+                <td class="msg__nomobile" style="flex: 8 10 20em">{{ template.text }}</td>
                 <div class="msg_page_list_item_content msg_templates_preview" v-if="data.templates.active == id">
                   <div class="msg_templates_preview__html" v-html="template.html"></div>
                 </div>
@@ -127,12 +137,12 @@ export default {
       page: "choose",
       choices: {
         view: { name: "View Sent", active: "Sent Messages" },
-        send: { name: "Send New", active: "Create Message" },
+        send: { name: "Send New", active: "Create Message", disabled: true },
         templates: { name: "Templates", active: "Message Templates" },
       },
       data: {
         view: {
-          list: [],
+          list: {},
           loading: true,
           active: null,
           placeholder: this.placeholder(3),
@@ -167,8 +177,36 @@ export default {
         this.data.templates.loading = false;
       }
     },
+    async fetch_messages() {
+      this.data.view.list = {};
+      this.data.view.loading = true;
+      const messages = httpsCallable(functions, "getSentMessages");
+
+      const start = Date.now();
+      const { data, error } = await messages();
+      const elapsed = Date.now() - start;
+
+      if (error) {
+        this.$status.error(`📃 Failed to fetch messages after ${elapsed}ms`, error);
+        new ErrorToast("Something went wrong loading sent messages", error, 2500);
+        return;
+      } else {
+        const len = Object.keys(data || {}).length;
+        this.$status.log(`📃 Fetched ${len} messages${len == 1 ? "" : "s"} in ${elapsed}ms`);
+        this.data.view.list = data || {};
+        this.data.view.loading = false;
+      }
+    },
     placeholder(n) {
       return Array.from({ length: n }, (_, i) => i);
+    },
+    date_of(message) {
+      const ms = (message?.delivery?.startTime?._seconds + message?.delivery?.startTime?._nanoseconds / 1e9) * 1000;
+      const date = new Date(ms);
+      return isNaN(date.getTime()) ? "Unknown" : date.toLocaleDateString();
+    },
+    status_of(message) {
+      return message?.delivery?.state || "N/A";
     },
   },
   mounted() {
@@ -183,6 +221,8 @@ export default {
       });
       if (this.page == "templates" && this.data.templates.loading) {
         this.fetch_templates();
+      } else if (this.page == "view" && this.data.view.loading) {
+        this.fetch_messages();
       }
       this.data.templates.active = null;
       this.data.view.active = null;
@@ -435,5 +475,13 @@ table.msg_page_list .msg_page_list_item .msg_page_list_item_content {
   padding: 10px;
   background: var(--color-bg);
   border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) - 3px);
+}
+@media (max-width: 900px) {
+  .msg__nomobile {
+    display: none !important;
+  }
+  table.msg_page_list tr.msg_page_list_item:not(.active):has(button.msg_list_item__toggle):has(.msg__nomobile:nth-last-child(2)) > :nth-last-child(3) {
+    margin-right: calc(1.5em + 3px);
+  }
 }
 </style>
