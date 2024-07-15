@@ -73,7 +73,85 @@
             </template>
           </table>
         </div>
-        <div class="msg_page msg__send" v-else-if="page == 'send'"></div>
+        <div class="msg_page msg__send" v-else-if="page == 'send'">
+          <form @submit.prevent="send_message">
+            <div class="msg__send_form">
+              <div class="msg__send_form_item">
+                <div class="msg__send_form_item msg__send_form_pair">
+                  <label for="msg__send_to">To:</label>
+                  <input v-model="data.send.to" type="text" id="msg__send_to" name="to" placeholder="Email address(es)" />
+                </div>
+                <div class="msg__send_form_item msg__send_form_pair">
+                  <label for="msg__send_cc">CC:</label>
+                  <input v-model="data.send.cc" type="text" id="msg__send_cc" name="cc" placeholder="Email address(es)" />
+                </div>
+                <div class="msg__send_form_item msg__send_form_pair">
+                  <label for="msg__send_bcc">BCC:</label>
+                  <input v-model="data.send.bcc" type="text" id="msg__send_bcc" name="bcc" placeholder="Email address(es)" />
+                </div>
+              </div>
+              <div class="msg__send_form_item">
+                <div class="msg__send_form_item msg__send_form_pair">
+                  <label for="msg__send_template">Template:</label>
+                  <select v-model="data.send.template" id="msg__send_template" name="template" @click="if (data.templates.loading) fetch_templates();">
+                    <option value="" disabled selected>{{ data.templates.loading ? (data.templates.load_triggered ? "Loading..." : "Click to load options") : "Select a template" }}</option>
+                    <option value="custom">[custom] - Create your own message</option>
+                    <option v-for="(template, id) in data.templates.list" :key="id" :value="id">
+                      [<strong>{{ id }}</strong
+                      >] - "{{ template.subject }}"
+                    </option>
+                  </select>
+                </div>
+                <div class="msg__send_template_options msg__send_form_item" v-if="data.send.template">
+                  <template v-if="data.send.template == 'custom'">
+                    <input v-model="data.send.subject" type="text" id="msg__send_subject" placeholder="Enter the subject of your message" title="Enter the subject of your message" />
+                    <textarea
+                      v-model="data.send.content"
+                      id="msg__send_contents"
+                      placeholder="Enter the primary (HTML) content of your message - note that most email clients will strip out <style> tags and inline styles are recommended; css3 is not supported in most clients."
+                      title="Enter the html content of your message"
+                      rows="5"
+                    ></textarea>
+                    <textarea
+                      v-model="data.send.text"
+                      id="msg__send_text"
+                      placeholder="Enter the alt (plaintext) content of your message (optional)"
+                      title="Enter the text content of your message"
+                      rows="5"
+                    ></textarea>
+                  </template>
+                  <textarea
+                    v-else
+                    @input="format_template_data"
+                    v-model="data.send.data"
+                    id="msg__send_data"
+                    placeholder="JSON data to be used when rendering the handlebars template"
+                    title="Enter data to be used in the template"
+                    rows="5"
+                  ></textarea>
+                </div>
+              </div>
+              <div class="msg__send_form_item">
+                <button type="submit" :class="{ disabled: send_issues }" title="Attempt to send this message">Send</button>
+                <button type="button" title="Clear message options" @click="clear_send()" style="flex: 0 0 auto">Clear</button>
+              </div>
+            </div>
+          </form>
+          <div class="msg_page_list_item_content msg__send_preview">
+            <div v-if="data.send.template == 'custom'" class="msg_page_list_item_content__html msg__send_preview__html msg__send_template_preview__html">
+              <span v-if="!data.send.content">Add some content to preview your messages</span>
+              <div v-else v-html="data.send.content"></div>
+            </div>
+            <div
+              v-else-if="data.send.template"
+              class="msg_page_list_item_content__html msg__send_preview__html msg__send_custom_preview__html"
+              v-html="data.templates.list[data.send.template]?.html"
+            ></div>
+            <div v-else class="msg_page_list_item_content__html msg__send_preview__html">
+              <span>Select a template to preview it here</span>
+            </div>
+          </div>
+        </div>
         <div class="msg_page msg__templates" v-else-if="page == 'templates'">
           <table class="msg_page_list msg__templates_list">
             <tr class="msg_page_list_header msg__templates_list_header">
@@ -95,7 +173,7 @@
                 <td style="flex: 2 4 20em">{{ template.subject }}</td>
                 <td class="msg__nomobile" style="flex: 8 10 20em">{{ template.text }}</td>
                 <div class="msg_page_list_item_content msg_templates_preview" v-if="data.templates.active == id">
-                  <div class="msg_templates_preview__html" v-html="template.html"></div>
+                  <div class="msg_templates_preview__html msg_page_list_item_content__html" v-html="template.html"></div>
                 </div>
                 <div class="msg_page_list_item_content msg_templates_preview" v-if="data.templates.active == id">
                   <div class="msg_templates_preview__text" v-html="template.text.replace(/\\n/g, '<br/>')"></div>
@@ -128,7 +206,7 @@
 <script>
 import { functions } from "@/firebase";
 import { httpsCallable } from "firebase/functions";
-import { ErrorToast } from "@svonk/util";
+import { ErrorToast, WarningToast, SuccessToast } from "@svonk/util";
 
 export default {
   name: "MessagesAlerts",
@@ -137,7 +215,7 @@ export default {
       page: "choose",
       choices: {
         view: { name: "View Sent", active: "Sent Messages" },
-        send: { name: "Send New", active: "Create Message", disabled: true },
+        send: { name: "Send New", active: "Create Message" /*, disabled: true */ },
         templates: { name: "Templates", active: "Message Templates" },
       },
       data: {
@@ -147,9 +225,23 @@ export default {
           active: null,
           placeholder: this.placeholder(3),
         },
+        send: {
+          sending: false,
+          to: "",
+          cc: "",
+          bcc: "",
+          // template
+          template: "",
+          data: "",
+          // custom message
+          content: "",
+          text: "",
+          subject: "",
+        },
         templates: {
           list: {},
           loading: true,
+          load_triggered: false,
           active: null,
           placeholder: this.placeholder(8),
         },
@@ -160,6 +252,8 @@ export default {
     async fetch_templates() {
       this.data.templates.list = {};
       this.data.templates.loading = true;
+      if (this.data.templates.load_triggered) return;
+      this.data.templates.load_triggered = true;
       const templates = httpsCallable(functions, "getTemplates");
 
       const start = Date.now();
@@ -175,6 +269,7 @@ export default {
         this.$status.log(`📃 Fetched ${len} template${len == 1 ? "" : "s"} in ${elapsed}ms`);
         this.data.templates.list = data || {};
         this.data.templates.loading = false;
+        this.data.templates.load_triggered = false;
       }
     },
     async fetch_messages() {
@@ -208,6 +303,106 @@ export default {
     status_of(message) {
       return message?.delivery?.state || "N/A";
     },
+    format_template_data() {
+      try {
+        this.data.send.data = JSON.stringify(JSON.parse(this.data.send.data), null, 2);
+        return true;
+      } catch (e) {
+        new WarningToast("Failed to parse JSON data, your message will not send correctly: " + e, 3500);
+        return false;
+      }
+    },
+    clear_send(show = true) {
+      this.data.send = {
+        sending: false,
+        to: "",
+        cc: "",
+        bcc: "",
+        template: "",
+        data: "",
+        content: "",
+        text: "",
+        subject: "",
+      };
+      if (show) new SuccessToast("Message options cleared", 2000);
+    },
+    async send_message() {
+      // log errors
+      if (this.send_issues) {
+        new ErrorToast("Cannot send message", this.send_issues, Math.max(2500, Math.min(this.send_issues.split(",").length * 1000, 8000)));
+      } else {
+        this.data.send.sending = true;
+        const send = httpsCallable(functions, "sendEmail");
+
+        const start = Date.now();
+        const { data } = await send({
+          to: this.data.send.to,
+          cc: this.data.send.cc,
+          bcc: this.data.send.bcc,
+          message:
+            this.data.send.template == "custom"
+              ? {
+                  subject: this.data.send.subject,
+                  html: this.data.send.content,
+                  text: this.data.send.text,
+                }
+              : {
+                  template: this.data.send.template,
+                  data: JSON.parse(this.data.send.data),
+                },
+        });
+        const elapsed = Date.now() - start;
+
+        if (data) {
+          this.$status.log(`📧 Queued message in ${elapsed}ms as ${data.id}`, data);
+          new SuccessToast(`Message queued successfully`, 2000);
+          this.clear_send(false);
+          // this.fetch_messages();
+        } else {
+          this.$status.error(`📧 Failed to send message after ${elapsed}ms`, data);
+          new ErrorToast("Failed to send message", data, 2500);
+        }
+      }
+    },
+  },
+  computed: {
+    send_issues() {
+      //return all the issues present as an array of strings
+      let issues = [];
+      if (this.data.send.sending) return "Message already being queued...";
+
+      // check email (some combination of to, cc, bcc) and that they are valid (comma separated list)
+
+      // check if no emails
+      if (!this.data.send.to && !this.data.send.cc && !this.data.send.bcc) {
+        issues.push("No recipient email address provided");
+      } else {
+        // check if each field's emails are valid
+        for (let field of ["to", "cc", "bcc"]) {
+          if (!this.data.send[field]) continue;
+          let emails = this.data.send[field].trim().split(/[\s,]+/);
+          for (let email of emails) {
+            if (!email.match(/^[^@]+@[^@]+\.[^@]+$/)) {
+              issues.push(`Invalid email address in '${field}': "${email}"`);
+            }
+          }
+        }
+      }
+
+      // check template selected (for existing: require data, for custom: content)
+      if (!this.data.send.template) {
+        issues.push("No template selected");
+      } else if (this.data.send.template == "custom") {
+        if (!this.data.send.subject) issues.push("No subject provided");
+        if (!this.data.send.content) issues.push("No content provided");
+      } else if (!this.data.send.data) {
+        issues.push("No data provided for template");
+      } else if (!this.format_template_data()) {
+        issues.push("Cannot parse JSON template data");
+      }
+
+      return issues.join(", ");
+    },
   },
   mounted() {
     if (this.$route?.query?.action) {
@@ -219,7 +414,11 @@ export default {
       this.$router.push({
         query: { ...this.$route.query, action: this.page == "choose" ? undefined : this.page },
       });
-      if (this.page == "templates" && this.data.templates.loading) {
+      if (
+        this.page == "templates" &&
+        //  || this.page == "send"
+        this.data.templates.loading
+      ) {
         this.fetch_templates();
       } else if (this.page == "view" && this.data.view.loading) {
         this.fetch_messages();
@@ -230,7 +429,6 @@ export default {
   },
 };
 </script>
-
 <style scoped>
 /* choices */
 .messagesalerts.admin_main .msg_choose {
@@ -405,6 +603,75 @@ table.msg_page_list tr.msg_page_list_item__empty {
 table.msg_page_list tr.msg_page_list_item__empty span {
   opacity: 0.5;
 }
+/* pages - send */
+
+.msg_page.msg__send {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 20px;
+}
+.msg_page.msg__send > * {
+  flex: 1 1 400px;
+}
+.msg__send_form {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 20px;
+}
+.msg__send_form_item {
+  flex: 1 1 auto;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: stretch;
+  align-items: flex-start;
+  gap: 10px;
+  align-items: center;
+  gap: 10px;
+}
+.msg__send_form_pair {
+  flex-wrap: nowrap;
+}
+.msg__send_form_item input,
+.msg__send_form_item textarea,
+.msg__send_form_item select,
+.msg__send_form button {
+  flex: 1 1 300px;
+  padding: 8px 12px;
+  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar));
+  border: 2px solid var(--color-on-bg);
+  background: var(--color-on-bg);
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.msg__send_form_item textarea {
+  resize: vertical;
+  min-height: 100px;
+  width: 100%;
+  white-space: unset;
+}
+.msg__send_form button {
+  font-weight: 500;
+}
+.msg__send_form button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.msg__send_form_item label {
+  font-weight: 600;
+  font-size: 16px;
+  user-select: none;
+}
+.msg_page_list_item_content.msg__send_preview {
+  flex-grow: 2;
+  background: var(--color-on-bg);
+  min-height: 200px;
+}
+.msg__send_template_options.msg__send_form_item > * {
+  width: 100%;
+  flex: 1 1 100%;
+}
 /* toggle icon */
 .msg_list_item__toggle {
   border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) - 7px);
@@ -465,7 +732,7 @@ table.msg_page_list .msg_page_list_item.active .msg_list_item__toggle__icon {
 table.msg_page_list .msg_page_list_item.active {
   flex-flow: column nowrap;
 }
-table.msg_page_list .msg_page_list_item .msg_page_list_item_content {
+.msg_page_list_item_content {
   display: flex;
   flex-flow: column nowrap;
   align-items: center;
@@ -475,6 +742,10 @@ table.msg_page_list .msg_page_list_item .msg_page_list_item_content {
   padding: 10px;
   background: var(--color-bg);
   border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) - 3px);
+}
+.msg_page_list_item_content .msg_page_list_item_content__html {
+  pointer-events: none;
+  user-select: none;
 }
 @media (max-width: 900px) {
   .msg__nomobile {
