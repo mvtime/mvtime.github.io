@@ -339,17 +339,17 @@ export default {
           to: this.data.send.to,
           cc: this.data.send.cc,
           bcc: this.data.send.bcc,
-          message:
-            this.data.send.template == "custom"
-              ? {
+          ...(this.data.send.template == "custom"
+            ? {
+                message: {
                   subject: this.data.send.subject,
                   html: this.data.send.content,
                   text: this.data.send.text,
-                }
-              : {
-                  template: this.data.send.template,
-                  data: JSON.parse(this.data.send.data),
                 },
+              }
+            : {
+                template: { name: this.data.send.template, data: JSON.parse(this.data.send.data) },
+              }),
         });
         const elapsed = Date.now() - start;
 

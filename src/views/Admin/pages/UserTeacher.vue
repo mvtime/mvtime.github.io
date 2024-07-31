@@ -292,6 +292,7 @@ td.user_pfp img.user_pfp__img {
   height: 30px;
   object-fit: cover;
   border-radius: 3px;
+  background-color: var(--color-bg);
 }
 
 .users .user td.logs {
