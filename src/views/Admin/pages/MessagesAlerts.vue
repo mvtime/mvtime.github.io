@@ -89,6 +89,10 @@
                   <label for="msg__send_bcc">BCC:</label>
                   <input v-model="data.send.bcc" type="text" id="msg__send_bcc" name="bcc" placeholder="Email address(es)" />
                 </div>
+                <div class="msg__send_form_item msg__send_form_pair">
+                  <label for="msg__send_from">From:</label>
+                  <input v-model="data.send.from" type="text" id="msg__send_from" name="from" :placeholder="`The ${this.$env.VUE_APP_BRAND_NAME_LONG} Team`" />
+                </div>
               </div>
               <div class="msg__send_form_item">
                 <div class="msg__send_form_item msg__send_form_pair">
@@ -338,6 +342,10 @@ export default {
         const { data } = await send({
           to: this.data.send.to,
           cc: this.data.send.cc,
+          from: {
+            name: this.data.send.from || `The ${this.$env.VUE_APP_BRAND_NAME_LONG} Team`,
+            address: this.$env.VUE_APP_BRAND_MAIL_ADDRESS,
+          },
           bcc: this.data.send.bcc,
           ...(this.data.send.template == "custom"
             ? {
