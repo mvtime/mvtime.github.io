@@ -74,7 +74,7 @@
           </table>
         </div>
         <div class="msg_page msg__send" v-else-if="page == 'send'">
-          <form @submit.prevent="send_message">
+          <form @submit.prevent="send_message" style="max-width: 100%">
             <div class="msg__send_form">
               <div class="msg__send_form_item">
                 <div class="msg__send_form_item msg__send_form_pair">
@@ -137,7 +137,7 @@
               </div>
               <div class="msg__send_form_item" v-if="data.send.template && data.send.template != 'custom'">
                 <div class="toggle_line">
-                  <ToggleBar class="click-action" :value="data.send.raw" @update="data.send.raw = !data.send.raw" :loads="false" />&nbsp;&nbsp;<span>Display as unprocessed html (no handlebars)</span>
+                  <ToggleBar class="click-action" :value="data.send.raw" @update="data.send.raw = !data.send.raw" :loads="false" />&nbsp;&nbsp;<span>Display w/o Handlebars</span>
                 </div>
                 <div class="toggle_line">
                   <ToggleBar
@@ -146,7 +146,7 @@
                     :value="data.send.raw_html && !template_html.error"
                     @update="data.send.raw_html = !data.send.raw_html"
                     :loads="false"
-                  />&nbsp;&nbsp;<span>Display as raw HTML code (not rendered)</span>
+                  />&nbsp;&nbsp;<span>Display as raw HTML markdown</span>
                 </div>
               </div>
               <div class="msg__send_form_item">
@@ -685,6 +685,7 @@ table.msg_page_list tr.msg_page_list_item__empty span {
 .msg__send_form_item select,
 .msg__send_form button {
   flex: 1 1 300px;
+  width: 170px;
   padding: 8px 12px;
   border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar));
   border: 2px solid var(--color-on-bg);
