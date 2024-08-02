@@ -135,6 +135,20 @@
                   ></textarea>
                 </div>
               </div>
+              <div class="msg__send_form_item" v-if="data.send.template && data.send.template != 'custom'">
+                <div class="toggle_line">
+                  <ToggleBar class="click-action" :value="data.send.raw" @update="data.send.raw = !data.send.raw" :loads="false" />&nbsp;&nbsp;<span>Display as unprocessed html (no handlebars)</span>
+                </div>
+                <div class="toggle_line">
+                  <ToggleBar
+                    :disabled="template_html.error"
+                    class="click-action"
+                    :value="data.send.raw_html && !template_html.error"
+                    @update="data.send.raw_html = !data.send.raw_html"
+                    :loads="false"
+                  />&nbsp;&nbsp;<span>Display as raw HTML code (not rendered)</span>
+                </div>
+              </div>
               <div class="msg__send_form_item">
                 <button type="submit" :class="{ disabled: send_issues }" title="Attempt to send this message">Send</button>
                 <button type="button" title="Clear message options" @click="clear_send()" style="flex: 0 0 auto">Clear</button>
@@ -146,11 +160,10 @@
               <span v-if="!data.send.content">Add some content to preview your messages</span>
               <div v-else v-html="data.send.content"></div>
             </div>
-            <div
-              v-else-if="data.send.template"
-              class="msg_page_list_item_content__html msg__send_preview__html msg__send_custom_preview__html"
-              v-html="data.templates.list[data.send.template]?.html"
-            ></div>
+            <div v-else-if="data.send.template && data.send.raw_html && !template_html.error" class="msg_page_list_item_content__html msg__send_preview__text msg__send_custom_preview__html_text">
+              {{ template_html.html }}
+            </div>
+            <div v-else-if="data.send.template" class="msg_page_list_item_content__html msg__send_preview__html msg__send_custom_preview__html" v-html="template_html.html"></div>
             <div v-else class="msg_page_list_item_content__html msg__send_preview__html">
               <span>Select a template to preview it here</span>
             </div>
@@ -212,8 +225,14 @@ import { functions } from "@/firebase";
 import { httpsCallable } from "firebase/functions";
 import { ErrorToast, WarningToast, SuccessToast } from "@svonk/util";
 
+import Handlebars from "handlebars";
+import ToggleBar from "@/components/ToggleBar.vue";
+
 export default {
   name: "MessagesAlerts",
+  components: {
+    ToggleBar,
+  },
   data() {
     return {
       page: "choose",
@@ -241,6 +260,9 @@ export default {
           content: "",
           text: "",
           subject: "",
+          // view settings
+          raw: false,
+          raw_html: false,
         },
         templates: {
           list: {},
@@ -310,6 +332,10 @@ export default {
     format_template_data() {
       try {
         this.data.send.data = JSON.stringify(JSON.parse(this.data.send.data), null, 2);
+
+        let existing = document.querySelector(".toast:not(.noremove)");
+        if (existing) existing.style = "animation:slideOut 0.25s forwards";
+
         return true;
       } catch (e) {
         new WarningToast("Failed to parse JSON data, your message will not send correctly: " + e, 3500);
@@ -374,6 +400,17 @@ export default {
     },
   },
   computed: {
+    template_html() {
+      if (this.data.send.raw) return { html: new Handlebars.SafeString(this.data.templates.list[this.data.send.template]?.html), error: false };
+      const template = Handlebars.compile(this.data.templates.list[this.data.send.template]?.html);
+      try {
+        const data = JSON.parse(this.data.send.data);
+
+        return { html: template(data || {}), error: false };
+      } catch (e) {
+        return { html: new Handlebars.SafeString(`<b>Failed to build html from template:</b> <pre>${e}</pre>`), error: true };
+      }
+    },
     send_issues() {
       //return all the issues present as an array of strings
       let issues = [];
@@ -635,6 +672,10 @@ table.msg_page_list tr.msg_page_list_item__empty span {
   gap: 10px;
   align-items: center;
   gap: 10px;
+}
+.toggle_line {
+  display: flex;
+  align-items: center;
 }
 .msg__send_form_pair {
   flex-wrap: nowrap;
