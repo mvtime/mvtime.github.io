@@ -947,6 +947,24 @@ main .calendar_day_task__finished:hover:not(:active) {
     flex-basis: 70px;
   }
 }
+
+/* simplified view */
+
+@media (min-width: 631px) {
+  .parent.simplified .calendar {
+    --padding-calendar: 30px;
+    padding: 15px;
+    padding-top: calc(15px * 2 + var(--size-calendar-header));
+  }
+  .parent.simplified .calendar_days_container {
+    border-radius: var(--radius-calendar-day);
+    overflow: hidden;
+  }
+  .parent.simplified .calendar_days_container .calendar_days {
+    --radius-calendar-day: 0px;
+    --gap-calendar-day: 2px;
+  }
+}
 </style>
 <style>
 @media (min-width: 630px) {

@@ -94,7 +94,7 @@
                   <input v-model="data.send.from" type="text" id="msg__send_from" name="from" :placeholder="`The ${this.$env.VUE_APP_BRAND_NAME_LONG} Team`" />
                 </div>
               </div>
-              <div class="msg__send_form_item">
+              <div class="msg__send_form_item msg__send_form_template">
                 <div class="msg__send_form_item msg__send_form_pair">
                   <label for="msg__send_template">Template:</label>
                   <select v-model="data.send.template" id="msg__send_template" name="template" @click="if (data.templates.loading) fetch_templates();">
@@ -404,7 +404,7 @@ export default {
       if (this.data.send.raw) return { html: new Handlebars.SafeString(this.data.templates.list[this.data.send.template]?.html), error: false };
       const template = Handlebars.compile(this.data.templates.list[this.data.send.template]?.html);
       try {
-        const data = JSON.parse(this.data.send.data);
+        const data = JSON.parse(this.data.send.data || "{}");
 
         return { html: template(data || {}), error: false };
       } catch (e) {
@@ -694,6 +694,9 @@ table.msg_page_list tr.msg_page_list_item__empty span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.msg__send_form_item.msg__send_form_template > div {
+  flex-basis: 100%;
 }
 .msg__send_form_item textarea {
   resize: vertical;
