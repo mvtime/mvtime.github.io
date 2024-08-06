@@ -12,12 +12,20 @@ npm install
 npm run serve
 ```
 
+use `--mode [mode]` to run with alternative `.env.[mode]` or `.env.[mode].local` files
+
 #### Builds and deploys to Github Pages
 
 (builds to the gh-pages branch with the options in `.env.local` or `.env`)
 
 ```
 npm run deploy
+```
+
+or optionally when cmu-tt is side-by-side (requires all changes to be pushed to remote for full parity):
+
+```
+npm run deploy & (cd ../cmu-tt.github.io && npm run deploy)
 ```
 
 #### Builds the [documentation](https://mvtt.app/docs)
