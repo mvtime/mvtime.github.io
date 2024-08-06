@@ -4,16 +4,10 @@
     <LoadingCover v-if="!is_ready" class="study_loading" covering="Study Tasks" />
     <div class="study_header portal_main_block_header">
       <div class="portal_main_block_header__left">
-        <button
-          class="portal_main_block_action portal_main_block_action_alt fullpage_toggle_button"
-          @click="toggle_fullscreen"
-          title="Toggle fullscreen (f)"
-        >
+        <button class="portal_main_block_action portal_main_block_action_alt fullpage_toggle_button" @click="toggle_fullscreen" title="Toggle fullscreen (f)">
           <div class="action_icon expand-icon" :class="{ alt: fullpage }"></div>
         </button>
-        <div class="study_name portal_main_block_title">
-          Upcoming<span class="desktop_only may_break_text">&nbsp;Assignments</span>
-        </div>
+        <div class="study_name portal_main_block_title">Upcoming<span class="desktop_only may_break_text">&nbsp;Assignments</span></div>
       </div>
       <div class="portal_main_block_actions_wrapper">
         <nav class="portal_main_block_actions portal_main_block_actions_freeform">
@@ -40,51 +34,25 @@
             {{ length[1] }}
           </button>
         </nav>
-        <button
-          v-if="$route.name != 'studysession'"
-          class="portal_main_block_action portal_main_block_action_alt"
-          title="Create Study Session (s)"
-          @click="start_session"
-        >
+        <button v-if="$route.name != 'studysession'" class="portal_main_block_action portal_main_block_action_alt" title="Create Study Session (s)" @click="start_session">
           <div class="action_icon session-icon"></div>
         </button>
-        <button
-          class="portal_main_block_action portal_main_block_action_alt"
-          title="View Calendar (c)"
-          @click="swap_to_calendar"
-        >
-          <div
-            class="action_icon cal-icon"
-            :class="{ alt: $store.upcoming && $store.upcoming.length }"
-          ></div>
+        <button class="portal_main_block_action portal_main_block_action_alt" title="View Calendar (c)" @click="swap_to_calendar">
+          <div class="action_icon cal-icon" :class="{ alt: $store.upcoming && $store.upcoming.length }"></div>
         </button>
       </div>
     </div>
-    <transition-group
-      v-if="sort == 'classes'"
-      class="study_list_group study_list_group__classes"
-      name="study-group"
-      tag="div"
-      :class="{ filtered: filtered_classes.length }"
-    >
+    <transition-group v-if="sort == 'classes'" class="study_list_group study_list_group__classes" name="study-group" tag="div" :class="{ filtered: filtered_classes.length }">
       <div
         class="study_list"
         v-for="list in arranged_classes"
         :key="sort == 'classes' ? list[0].class_id : list[0].date.toISOString().split('T')[0]"
         :style="{
-          '--color-class':
-            sort == 'classes' ? classes[list[0].class_id].color : 'var(--color-on-calendar)',
-          '--color-class-alt':
-            sort == 'classes' ? classes[list[0].class_id].color + '2d' : 'var(--color-on-bg)',
+          '--color-class': sort == 'classes' ? classes[list[0].class_id].color : 'var(--color-on-calendar)',
+          '--color-class-alt': sort == 'classes' ? classes[list[0].class_id].color + '2d' : 'var(--color-on-bg)',
         }"
       >
-        <a
-          class="study_list__name study_list__name__classes"
-          v-if="sort == 'classes'"
-          :href="`/view/${$store.path_to_ref(classes[list[0].class_id].ref)}`"
-        >
-          {{ list[0].class_name }}</a
-        >
+        <a class="study_list__name study_list__name__classes" v-if="sort == 'classes'" :href="`/view/${$store.path_to_ref(classes[list[0].class_id].ref)}`"> {{ list[0].class_name }}</a>
         <div class="study_list__name study_list__name__days" v-else>
           {{ list[0].date.toLocaleDateString(undefined, { month: "long", day: "numeric" }) }}
         </div>
@@ -100,12 +68,7 @@
               '--color-class-alt': classes[task.class_id].color + '2d',
             }"
           >
-            <label
-              :for="task.ref"
-              class="study_list_task_checkbox"
-              :title="'Mark task as ' + (is_finished(task.ref) ? 'unfinished' : 'finished')"
-              @click="toggle_finished(task.ref)"
-            >
+            <label :for="task.ref" class="study_list_task_checkbox" :title="'Mark task as ' + (is_finished(task.ref) ? 'unfinished' : 'finished')" @click="toggle_finished(task.ref)">
               <div class="study_list_task_checkbox__fixed">
                 <span class="study_list_task_checkbox__dot"></span>
               </div>
@@ -119,26 +82,14 @@
               "
               :href="'/view/' + $store.path_to_ref(task.ref)"
             >
-              <span class="study_list_task__name__text"
-                >{{ $magic.prefix(task) }} {{ task.name }}</span
-              >
+              <span class="study_list_task__name__text">{{ $magic.prefix(task) }} {{ task.name }}</span>
             </a>
-            <span class="study_list_task__date study_list_task__boxed">{{
-              (task.date &&
-                task.date.toLocaleDateString(undefined, { month: "numeric", day: "numeric" })) ||
-              "Invalid Date"
-            }}</span>
+            <span class="study_list_task__date study_list_task__boxed">{{ (task.date && task.date.toLocaleDateString(undefined, { month: "numeric", day: "numeric" })) || "Invalid Date" }}</span>
           </div>
         </transition-group>
       </div>
     </transition-group>
-    <transition-group
-      v-else
-      class="study_list_group study_list_group__dates"
-      name="study-group"
-      tag="div"
-      :class="{ filtered: filtered_classes.length }"
-    >
+    <transition-group v-else class="study_list_group study_list_group__dates" name="study-group" tag="div" :class="{ filtered: filtered_classes.length }">
       <div
         class="study_list"
         v-for="list in arranged_dates"
@@ -148,13 +99,7 @@
           '--color-class-alt': 'var(--color-on-bg)',
         }"
       >
-        <a
-          class="study_list__name study_list__name__classes"
-          v-if="sort == 'classes'"
-          :href="`/view/${$store.path_to_ref(classes[list[0].class_id].ref)}`"
-        >
-          {{ list[0].class_name }}</a
-        >
+        <a class="study_list__name study_list__name__classes" v-if="sort == 'classes'" :href="`/view/${$store.path_to_ref(classes[list[0].class_id].ref)}`"> {{ list[0].class_name }}</a>
         <div class="study_list__name study_list__name__days" v-else>
           {{ list[0].date.toLocaleDateString(undefined, { month: "long", day: "numeric" }) }}
         </div>
@@ -170,12 +115,7 @@
               '--color-class-alt': classes[task.class_id].color + '2d',
             }"
           >
-            <label
-              :for="task.ref"
-              class="study_list_task_checkbox"
-              :title="'Mark task as ' + (is_finished(task.ref) ? 'unfinished' : 'finished')"
-              @click="toggle_finished(task.ref)"
-            >
+            <label :for="task.ref" class="study_list_task_checkbox" :title="'Mark task as ' + (is_finished(task.ref) ? 'unfinished' : 'finished')" @click="toggle_finished(task.ref)">
               <div class="study_list_task_checkbox__fixed">
                 <span class="study_list_task_checkbox__dot"></span>
               </div>
@@ -189,15 +129,9 @@
               "
               :href="'/view/' + $store.path_to_ref(task.ref)"
             >
-              <span class="study_list_task__name__text"
-                >{{ $magic.prefix(task) }} {{ task.name }}</span
-              >
+              <span class="study_list_task__name__text">{{ $magic.prefix(task) }} {{ task.name }}</span>
             </a>
-            <span class="study_list_task__date study_list_task__boxed">{{
-              (task.date &&
-                task.date.toLocaleDateString(undefined, { month: "numeric", day: "numeric" })) ||
-              "Invalid Date"
-            }}</span>
+            <span class="study_list_task__date study_list_task__boxed">{{ (task.date && task.date.toLocaleDateString(undefined, { month: "numeric", day: "numeric" })) || "Invalid Date" }}</span>
           </div>
         </transition-group>
       </div>
@@ -283,9 +217,7 @@ export default {
     },
     filtered_tasks() {
       // select tasks that are in the filtered classes, and within the selected time period
-      let filtered = this.tasks?.filter(
-        (task) => !this.filtered_classes.length || this.filtered_classes.includes(task.class_id)
-      );
+      let filtered = this.tasks?.filter((task) => !this.filtered_classes.length || this.filtered_classes.includes(task.class_id));
       const now = Date.now();
       // 16 hours in ms (show today's tasks as upcoming until 4PM)
       const morning = 16 * 60 * 60 * 1000;
@@ -293,11 +225,7 @@ export default {
       filtered = filtered
         .filter((task) => {
           const diff = task?.date?.getTime ? task.date.getTime() : 0;
-          return (
-            task.type != "note" &&
-            diff >= now - morning &&
-            diff <= now + this.days * 24 * 60 * 60 * 1000
-          );
+          return task.type != "note" && diff >= now - morning && diff <= now + this.days * 24 * 60 * 60 * 1000;
         })
         .sort((a, b) => {
           if (a.date < b.date) return -1;
@@ -614,8 +542,7 @@ export default {
   width: 80%;
   opacity: 0.75;
   background-color: var(--color-class);
-  transition: width 0.15s ease-in-out, height 0.15s ease-in-out, opacity 0.15s ease-in-out,
-    border-radius 0.15s ease-in-out;
+  transition: width 0.15s ease-in-out, height 0.15s ease-in-out, opacity 0.15s ease-in-out, border-radius 0.15s ease-in-out;
 }
 /* active state */
 .study_list_task[finished="true"] .study_list_task_checkbox__dot {
@@ -625,9 +552,7 @@ export default {
   opacity: 0.4;
 }
 
-.study_list_task[finished="true"]
-  .study_list_task_checkbox__fixed:hover:not(.study-list-move)
-  .study_list_task_checkbox__dot {
+.study_list_task[finished="true"] .study_list_task_checkbox__fixed:hover:not(.study-list-move) .study_list_task_checkbox__dot {
   opacity: 0.6;
 }
 
@@ -651,8 +576,7 @@ export default {
   flex-flow: row nowrap;
   justify-content: center;
   align-items: center;
-  transition: margin-left 0.15s ease-in-out, padding 0.15s ease-in-out, width 0.15s ease-out,
-    opacity 0.15s ease-out;
+  transition: margin-left 0.15s ease-in-out, padding 0.15s ease-in-out, width 0.15s ease-out, opacity 0.15s ease-out;
 }
 
 .study_list_tasks .study_list_task .study_list_task__date {
@@ -767,8 +691,7 @@ export default {
   background: transparent;
   border: solid var(--color-calendar-header) 2px;
 }
-@media (max-width: 1285px) and (min-width: /* [desktop size] */ 1270px),
-  (min-width: 630px) and (max-width: 805px) {
+@media (max-width: 1285px) and (min-width: /* [desktop size] */ 1270px), (min-width: 630px) and (max-width: 805px) {
   .may_break_text {
     display: none;
   }
@@ -807,20 +730,10 @@ export default {
 }
 @media (min-width: 800px) and (min-height: 720px) {
   main.study.study_fullpage .study_list_group:not(:empty) {
-    margin-top: calc(
-      (
-          100vh - (var(--padding-calendar) * 1.5 + var(--size-calendar-header)) -
-            var(--padding-calendar) - 550px
-        ) / 2
-    );
+    margin-top: calc((100vh - (var(--padding-calendar) * 1.5 + var(--size-calendar-header)) - var(--padding-calendar) - 550px) / 2);
   }
   .portal_bottom_bar_container + main.study.study_fullpage .study_list_group:not(:empty) {
-    margin-top: calc(
-      (
-          100vh - (var(--padding-calendar) * 1.5 + var(--size-calendar-header)) -
-            var(--height-bottom-bar) - var(--padding-calendar) - 550px
-        ) / 2
-    );
+    margin-top: calc((100vh - (var(--padding-calendar) * 1.5 + var(--size-calendar-header)) - var(--height-bottom-bar) - var(--padding-calendar) - 550px) / 2);
   }
 }
 </style>

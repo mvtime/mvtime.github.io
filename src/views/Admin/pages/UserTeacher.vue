@@ -58,14 +58,18 @@
             >
               <a
                 :href="`/view/${$store.path_to_ref(teacher.email + '/' + class_obj.id)}`"
+                target="_blank"
                 :title="`View '${$store.class_text(class_obj)}'`"
                 @click="
                   $event.preventDefault();
-                  $router.push({
-                    name: 'publicviewclass',
-                    params: { ref: $store.path_to_ref(teacher.email + '/' + class_obj.id) },
-                    query: $route.query,
-                  });
+                  open(
+                    $router.resolve({
+                      name: 'publicviewclass',
+                      params: { ref: $store.path_to_ref(teacher.email + '/' + class_obj.id) },
+                      query: $route.query,
+                    }).href,
+                    '_blank'
+                  );
                 "
                 class="class_name button_pointer_text"
                 >{{ $store.class_text(class_obj) }}</a
@@ -127,6 +131,9 @@ export default {
     this.getTeachers();
   },
   methods: {
+    open(url, target) {
+      return window.open(url, target);
+    },
     async unmake_teacher(teacher_id) {
       const start = Date.now();
       const unmakeTeacher = httpsCallable(functions, "unmakeTeacher");

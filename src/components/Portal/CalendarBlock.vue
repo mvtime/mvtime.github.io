@@ -951,11 +951,6 @@ main .calendar_day_task__finished:hover:not(:active) {
 /* simplified view */
 
 @media (min-width: 631px) {
-  .parent.simplified .calendar {
-    --padding-calendar: 30px;
-    padding: 15px;
-    padding-top: calc(15px * 2 + var(--size-calendar-header));
-  }
   .parent.simplified .calendar_days_container {
     border-radius: var(--radius-calendar-day);
     overflow: hidden;
@@ -963,6 +958,9 @@ main .calendar_day_task__finished:hover:not(:active) {
   .parent.simplified .calendar_days_container .calendar_days {
     --radius-calendar-day: 0px;
     --gap-calendar-day: 2px;
+  }
+  .parent.simplified .calendar_days_container .calendar_days .calendar_day_date {
+    --radius-calendar-day: 5px;
   }
 }
 </style>

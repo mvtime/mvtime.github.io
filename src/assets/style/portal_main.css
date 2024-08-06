@@ -58,7 +58,14 @@ main.portal_main_block {
     padding: calc(var(--padding-calendar) - var(--spacing-calendar-day));
   }
 }
-
+@media (min-width: 631px) {
+  .parent.simplified .study,
+  .parent.simplified .portal_main_block {
+    --padding-calendar: 30px;
+    padding: 15px;
+    padding-top: calc(15px * 2 + var(--size-calendar-header));
+  }
+}
 /* from cal block contents */
 
 .portal_main_block_header {
