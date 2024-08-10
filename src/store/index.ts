@@ -1466,6 +1466,17 @@ export const useMainStore: StoreDefinition = defineStore({
      */
     async login(): Promise<void> {
       // TODO: TS rewrite this to use async/await and return a promise
+      // check that we dont have a useragent that will be blocked by google (Instagram)
+      const disallowedAgents: string[] = ["Instagram"];
+      if (
+        disallowedAgents.some((agent) => {
+          return navigator.userAgent.includes(agent);
+        })
+      ) {
+        new ErrorToast("This browser is not supported, please use your device's main browser", 2000);
+        return Promise.reject("This browser isn't supported; please use a different browser");
+      }
+
       new Toast("Opening login popup...", "default", 1000, require("@svonk/util/assets/info-locked-icon.svg"));
       // sign in with google, then set user data
       // if electron, use redirect, otherwise, use popup
