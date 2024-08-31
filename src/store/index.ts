@@ -956,10 +956,15 @@ export const useMainStore: StoreDefinition = defineStore({
             // check task date type and convert to date object if necessary
             let date: Date | null;
             if (typeof class_tasks[j].date == "string") {
-              // convert to mm-dd-yyyy from yyyy-mm-dd
+              // convert to mm-dd-yyyy from yyyy-mm-dd if needed
               class_tasks[j].date = (class_tasks[j]?.date as string)?.split("T")[0];
               let [year, month, day] = (class_tasks[j]?.date as string)?.split("-");
-              class_tasks[j].date = `${month}-${day}-${year}`;
+
+              // TODO: track down root of issue where dates are interpreted twice & thus may switch formats w/o hotfix;
+              if (year.length == 4) {
+                class_tasks[j].date = `${month}-${day}-${year}`;
+              }
+
               date = compatDateObj(class_tasks[j].date as string);
               date = isNaN(+date) ? null : date;
             } else {
