@@ -201,5 +201,7 @@ export default {
   width: max-content;
   padding: 0 10px;
   font-size: 14px;
+  /* fix for rounded corners on draggable (either this or 0.999 opacity) */
+  transform: translate(0, 0);
 }
 </style>
