@@ -91,6 +91,10 @@ provider.setCustomParameters({
   // hd: ORG_DOMAIN,
 });
 
+// setup class name handlebars template
+import Handlebars from "handlebars";
+const CLASS_TEXT = Handlebars.compile(process.env.VUE_APP_MUSTACHE_CLASS_TEXT || "{{#period}}P{{period}} - {{/period}}{{name}}");
+
 // import router
 import router from "@/router";
 import { useMagic } from "@/store/magic";
@@ -610,10 +614,9 @@ export const useMainStore: StoreDefinition = defineStore({
      * @param {String} class_obj
      * @returns {String} text - the formatted name text associated with the class data
      */
-    class_text(class_obj: ClassInfo | null) {
+    class_text(class_obj: ClassInfo | null): string | undefined {
       if (!class_obj) return;
-      if (class_obj.period) return `P${class_obj.period} - ${class_obj.name}`;
-      return class_obj.name;
+      return CLASS_TEXT(class_obj);
     },
     /**
      * @memberOf .main.actions

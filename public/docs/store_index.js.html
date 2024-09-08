@@ -47,6 +47,9 @@ provider.setCustomParameters({
     login_hint: "username" + ORG_DOMAIN,
     // hd: ORG_DOMAIN,
 });
+// setup class name handlebars template
+import Handlebars from "handlebars";
+const CLASS_TEXT = Handlebars.compile(process.env.VUE_APP_MUSTACHE_CLASS_TEXT || "{{#period}}P{{period}} - {{/period}}{{name}}");
 // import router
 import router from "@/router";
 import { useMagic } from "@/store/magic";
@@ -605,9 +608,7 @@ export const useMainStore = defineStore({
         class_text(class_obj) {
             if (!class_obj)
                 return;
-            if (class_obj.period)
-                return `P${class_obj.period} - ${class_obj.name}`;
-            return class_obj.name;
+            return CLASS_TEXT(class_obj);
         },
         /**
          * @memberOf .main.actions
