@@ -23,13 +23,10 @@
               </a>
             </span>
           </div>
-          <div class="styled_obj">
+          <div class="styled_obj" v-if="class_obj.period || class_obj.period == 0">
             <span class="styled_line__label">Period:</span>
             <span class="styled_line__separator"></span>
-            <span class="styled_line__value">
-              {{ class_obj.period }} (Schedules
-              {{ schedules[class_obj.period % 2].join(", ") }})</span
-            >
+            <span class="styled_line__value"> {{ class_obj.period }} (Schedules {{ schedules[class_obj.period % 2].join(", ") }})</span>
           </div>
           <div class="styled_obj">
             <span class="styled_line__label">Name:</span>
@@ -75,26 +72,15 @@
             </span>
           </div>
         </div>
-        <div class="overlay_contents_text">
-          Information is provided by teachers and volunteer students, and may not always be correct
-        </div>
+        <div class="overlay_contents_text">Information is provided by teachers and volunteer students, and may not always be correct</div>
       </div>
       <img ref="loading_contents" alt="Loading Icon" class="loading_icon" v-else />
     </div>
     <div class="bottom_actions">
       <button class="close_action click_escape" @click="$emit('close')">Close</button>
       <div class="flex_spacer"></div>
-      <button class="share_action primary_styled" @click="share_class" :disabled="!ready">
-        Share
-      </button>
-      <button
-        class="edit_action primary_styled"
-        v-if="editable"
-        :disabled="!ready"
-        @click="edit_class"
-      >
-        Edit
-      </button>
+      <button class="share_action primary_styled" @click="share_class" :disabled="!ready">Share</button>
+      <button class="edit_action primary_styled" v-if="editable" :disabled="!ready" @click="edit_class">Edit</button>
       <button
         class="join_leave_action primary_styled"
         v-else-if="$store.user && class_obj"
@@ -164,8 +150,7 @@ export default {
         this.$store.user &&
         this.class_obj &&
         this.$route.params.ref &&
-        this.$route.params.ref.split("~")[0] ==
-          this.$store.active_doc.email.replace(this.$store.ORG_DOMAIN, "")
+        this.$route.params.ref.split("~")[0] == this.$store.active_doc.email.replace(this.$store.ORG_DOMAIN, "")
       );
     },
   },
@@ -184,16 +169,12 @@ export default {
   methods: {
     /** Shares the class link with the native share function, or to the clipboard if sharing is not supported */
     async share_class() {
-      let url = new URL(
-        `https://${this.$env.VUE_APP_BRAND_DOMAIN__VIEWCLASS}/` + this.$route.params.ref
-      );
+      let url = new URL(`https://${this.$env.VUE_APP_BRAND_DOMAIN__VIEWCLASS}/` + this.$route.params.ref);
       if (navigator.share) {
         navigator
           .share({
             title: this.class_obj.name,
-            text: `Check out ${this.class_obj.name || "this class"} on ${
-              this.$env.VUE_APP_BRAND_NAME_SHORT
-            }!`,
+            text: `Check out ${this.class_obj.name || "this class"} on ${this.$env.VUE_APP_BRAND_NAME_SHORT}!`,
             url: url.href,
           })
           .then(() => new SuccessToast("Opened share dialog", 1000))

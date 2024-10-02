@@ -79,6 +79,10 @@
 - Tasks
 
   - AI/ML/Maybe just hardcoded features
+    - recurring assignments in a date range
+      - based on prompt
+      - with custom numbering
+      - select / exclude by date range
     - ~~**auto-suggested link names based on domain**~~
     - ~~auto-suggested task types based on title~~
     - automatic / algorithm-driven study suggestions?
