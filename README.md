@@ -12,7 +12,7 @@ npm install
 npm run serve
 ```
 
-use `--mode [mode]` to run with alternative `.env.[mode]` or `.env.[mode].local` files
+use `npm run serve -- --mode [mode]` to run with alternative `.env.[mode]` or `.env.[mode].local` files. the additional `--` is nessesary to ensure the `--mode` flag gets passed to the `vue-cli-service`
 
 #### Builds and deploys to Github Pages
 
