@@ -1,57 +1,24 @@
 <template>
-  <main
-    id="themed_body"
-    class="parent"
-    :class="{ simplified: $store.simplified }"
-    ref="app"
-    :_theme="theme"
-    @click="refreshTimeout"
-    @keydown="refreshTimeout"
-    @focus="refreshTimeout"
-  >
+  <main id="themed_body" class="parent" :class="{ simplified: $store.simplified }" ref="app" :_theme="theme" @click="refreshTimeout" @keydown="refreshTimeout" @focus="refreshTimeout">
     <!-- Overlays -->
-    <OverlayWrapper
-      v-if="do_timeout && ($store.paused || animating)"
-      ref="overlay"
-      class="pause_modal_overlay"
-      style="z-index: 104"
-    >
+    <OverlayWrapper v-if="do_timeout && ($store.paused || animating)" ref="overlay" class="pause_modal_overlay" style="z-index: 104">
       <main class="pause_modal router_center_view" ref="pause_modal">
         <header class="modal_header">
           <h2 class="header_style modal_header_title">Session paused</h2>
         </header>
         <div ref="pause_contents" class="overlay_contents">
-          <div class="overlay_contents_text">
-            Your session was inactive for an extended period of time and has been paused to conserve
-            resources.
-          </div>
+          <div class="overlay_contents_text">Your session was inactive for an extended period of time and has been paused to conserve resources.</div>
           <br />
-          <div class="overlay_contents_text">
-            You can hide this message using the toggle in your account preferences.
-          </div>
+          <div class="overlay_contents_text">You can hide this message using the toggle in your account preferences.</div>
           <br />
-          <div class="overlay_contents_text">
-            Please click anywhere to resume using {{ $env.VUE_APP_BRAND_NAME_SHORT }}.
-          </div>
+          <div class="overlay_contents_text">Please click anywhere to resume using {{ $env.VUE_APP_BRAND_NAME_SHORT }}.</div>
         </div>
       </main>
     </OverlayWrapper>
-    <OverlayWrapper
-      v-if="$store.logout_prompt"
-      ref="logout_modal"
-      @close="$store.logout_prompt = false"
-      v-slot="scope"
-      style="z-index: 103"
-    >
+    <OverlayWrapper v-if="$store.logout_prompt" ref="logout_modal" @close="$store.logout_prompt = false" v-slot="scope" style="z-index: 103">
       <LogoutModal class="router_center_view" @close="scope.close" />
     </OverlayWrapper>
-    <OverlayWrapper
-      v-if="show_shortcuts || animating_shortcuts"
-      ref="shortcuts_overlay"
-      v-slot="scope"
-      @close="show_shortcuts = false"
-      style="z-index: 102"
-    >
+    <OverlayWrapper v-if="show_shortcuts || animating_shortcuts" ref="shortcuts_overlay" v-slot="scope" @close="show_shortcuts = false" style="z-index: 102">
       <ShortcutsModal class="router_center_view" ref="shortcuts_modal" @close="scope.close" />
     </OverlayWrapper>
     <!-- Tutorial -->
@@ -60,10 +27,7 @@
       :title="tutorial.title"
       :key="'tutorial'"
       :options="tutorial.options"
-      :html="
-        tutorial.html ||
-        '<i style=text-align:center;width:100%;display:block>Not much to see here!</i>'
-      "
+      :html="tutorial.html || '<i style=text-align:center;width:100%;display:block>Not much to see here!</i>'"
       :button_text="tutorial.next_text"
       :skip_text="tutorial.prev_text"
       :trackel="tutorial.el"
@@ -129,7 +93,7 @@ export default {
           top: true,
         },
         {
-          key: "Ctrl + !, Ctrl + 1",
+          key: "Ctrl + !",
           description: "Report logs (check console)",
         },
         {
@@ -163,9 +127,7 @@ export default {
       return {
         ...page,
         prev_text: this.tutorial_page && !page.disable_prev ? "Back" : "",
-        next_text:
-          page.options?.next_text ||
-          (this.tutorial_page == tutorial_pages.length - 1 ? "Finish" : "Next"),
+        next_text: page.options?.next_text || (this.tutorial_page == tutorial_pages.length - 1 ? "Finish" : "Next"),
       };
     },
   },
@@ -195,11 +157,7 @@ export default {
         }
         // check that it's an outlink
         let url = new URL(e.target.href);
-        if (
-          url?.hostname == this.$env.VUE_APP_BRAND_DOMAIN ||
-          url?.hostname == window?.location?.hostname
-        )
-          return;
+        if (url?.hostname == this.$env.VUE_APP_BRAND_DOMAIN || url?.hostname == window?.location?.hostname) return;
 
         // if outlink, open in new tab as "/to/{encoded href}"
         e.preventDefault();
@@ -215,9 +173,7 @@ export default {
   },
   created() {
     // do dark mode from local storage, then from store (if logged in)
-    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
+    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     const storedTheme = window.localStorage.getItem("theme");
     this.isDarkMode = storedTheme === "dark" || (storedTheme === null && systemTheme === "dark");
   },
@@ -237,13 +193,10 @@ export default {
       } else if (!e.shiftKey && e.key == "'" && (e.ctrlKey || e.metaKey)) {
         this.$store.toggle_simplified();
         ignore = true;
-      } else if (
-        (e.key == "/" && (e.ctrlKey || e.metaKey)) ||
-        (e.key == "?" && (e.ctrlKey || e.metaKey))
-      ) {
+      } else if ((e.key == "/" && (e.ctrlKey || e.metaKey)) || (e.key == "?" && (e.ctrlKey || e.metaKey))) {
         this.show_shortcuts = !this.show_shortcuts;
         ignore = true;
-      } else if ((e.key == "!" || e.key == "1") && (e.ctrlKey || e.metaKey)) {
+      } else if (e.key == "!" && (e.ctrlKey || e.metaKey)) {
         this.$store.report_logs();
         ignore = true;
       }
