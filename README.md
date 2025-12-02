@@ -25,7 +25,7 @@ nvm use 18 && npm run deploy
 or optionally when cmu-tt is side-by-side (requires all changes to be pushed to remote for full parity):
 
 ```
-nvm use 18 && npm run deploy & (cd ../cmu-tt.github.io && nvm use 18 && npm run deploy)
+nvm use 18 && npm run deploy & (cd ../cmu-tt.github.io && nvm use 18 && npm run deploy) & (cd ../villanova-tt.github.io && nvm use 18 && npm run deploy)
 ```
 
 #### Builds the [documentation](https://mvtt.app/docs)
