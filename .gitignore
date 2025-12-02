@@ -2,7 +2,7 @@
 node_modules
 /dist
 /tmp
-# server files?
+/server
 
 # local env files
 .env.local
