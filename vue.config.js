@@ -30,6 +30,7 @@ const clifix = new webpack.DefinePlugin({
 });
 
 module.exports = defineConfig({
+  productionSourceMap: false,
   configureWebpack: {
     entry: "@/main.ts",
     plugins: [envPlugin(), versionPlugin, clifix],
