@@ -93,7 +93,7 @@
       </div>
       <img alt="Loading Icon" class="loading_icon" v-else />
     </div>
-    <div v-if="task.repetition_group_id" class="warning_text overlay_contents_text">Save changes to this {{ task.type || "task" }} to</div>
+    <div v-if="task.repetition_group_id" class="warning_text overlay_contents_text">Save changes to this {{ task.type || "task" }} series to</div>
     <div v-if="task.repetition_group_id" class="overlay_contents_text repetition_warning bottom_actions">
       <span class="flex_spacer" style="display: none"></span>
       <button class="scope_button secondary_styled" :class="{ selected: edit_scope == 'this' }" @click="edit_scope = 'this'">This Task</button>
