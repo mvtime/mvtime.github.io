@@ -123,7 +123,8 @@ p {
 }
 
 article ul {
-	list-style: disc;
+	list-style: none;
+
 }
 
 article ul li,
@@ -134,7 +135,7 @@ article ol li {
 
 article ol,
 article ul {
-	padding-left: 2rem;
+	padding-left: 3rem;
 
 }
 
@@ -460,7 +461,7 @@ code {
 .sidebar-title {
 	font-family: heading;
 	font-size: 1.5rem;
-	margin: 0 0 2rem;
+	margin: 0;
 	padding: 0 2rem;
 	text-decoration: none;
 
@@ -473,6 +474,7 @@ code {
 
 .sidebar-items-container {
 	flex: 1;
+	margin-top: 5rem;
 	overflow: auto;
 	position: relative;
 
