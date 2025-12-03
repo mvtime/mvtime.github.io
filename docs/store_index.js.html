@@ -13,6 +13,17 @@ var __awaiter = (this &amp;&amp; this.__awaiter) || function (thisArg, _argument
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this &amp;&amp; this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) &amp;&amp; e.indexOf(p) &lt; 0)
+        t[p] = s[p];
+    if (s != null &amp;&amp; typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i &lt; p.length; i++) {
+            if (e.indexOf(p[i]) &lt; 0 &amp;&amp; Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var _a, _b;
 /**
  * The main store for the app, with most primary data and methods needed to function
@@ -33,7 +44,7 @@ import { Toast, ErrorToast, cleanError, WarningToast, SuccessToast } from "@svon
 // get firebase requirements
 import { collection, doc, setDoc, getDoc, getDocs, addDoc, writeBatch, updateDoc, deleteDoc, } from "firebase/firestore";
 import CryptoJS from "crypto-js";
-import { auth, db, authChangeAction, refreshTimeout } from "../firebase";
+import { auth, db, authChangeAction, refreshTimeout, functions, httpsCallable } from "../firebase";
 import { signInWithPopup, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
 const provider = new GoogleAuthProvider();
 const isElectron = ((_b = (_a = navigator === null || navigator === void 0 ? void 0 : navigator.userAgent) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === null || _b === void 0 ? void 0 : _b.indexOf(" electron/")) > -1;
@@ -2071,6 +2082,133 @@ export const useMainStore = defineStore({
                     const name = task_obj.type == "note" ? "" : `"${task_obj.name}"`;
                     new SuccessToast(`Added ${task_obj.type || "task"} ${name} to ${task_classes.length} class${task_classes.length == 1 ? "" : "es"}`, 2000);
                     _status.log(`📝 Created task ${name} for ${task_classes.length} classes`);
+                    return Promise.resolve();
+                }
+                catch (e) {
+                    return Promise.reject(e);
+                }
+            });
+        },
+        /**
+         * @memberOf .main.actions
+         * @function create_repeating_task
+         * @description Create a repeating task series (for teachers)
+         * @param {Object} task_obj The task object template
+         * @param {Array} task_classes The classes to add the task to
+         * @param {Object} repetition The repetition configuration
+         * @returns {Promise} A promise that resolves to nothing or rejects with an error
+         */
+        create_repeating_task(task_obj, task_classes, repetition) {
+            return __awaiter(this, void 0, void 0, function* () {
+                try {
+                    if (!task_obj.name &amp;&amp; (task_obj === null || task_obj === void 0 ? void 0 : task_obj.type) != "note") {
+                        return Promise.reject("No task name specified");
+                    }
+                    else if (!task_classes || task_classes.length == 0) {
+                        return Promise.reject("No classes selected");
+                    }
+                    const createRepeatingTask = httpsCallable(functions, "createRepeatingTask");
+                    const result = yield createRepeatingTask({ task: task_obj, classes: task_classes, repetition });
+                    const data = result.data;
+                    if (data.error)
+                        throw data.error;
+                    _status.log(`📝 Created repeating task series (${data.count} tasks)`);
+                    new SuccessToast(`Created ${data.count} repeating ${task_obj.type}s`, 2000);
+                    // Refresh classes to see new tasks
+                    yield this.fetch_classes();
+                    return Promise.resolve();
+                }
+                catch (e) {
+                    new ErrorToast("Couldn't create repeating tasks", cleanError(e), 2000);
+                    return Promise.reject(e);
+                }
+            });
+        },
+        /**
+         * @memberOf .main.actions
+         * @function update_repeating_task
+         * @description Update a repeating task series
+         */
+        update_repeating_task(repetition_group_id, updates, scope, task_ref, task_date) {
+            return __awaiter(this, void 0, void 0, function* () {
+                try {
+                    const updateRepeatingTask = httpsCallable(functions, "updateRepeatingTask");
+                    const result = yield updateRepeatingTask({ repetition_group_id, updates, scope, task_ref, task_date });
+                    const data = result.data;
+                    if (data.error)
+                        throw data.error;
+                    _status.log(`📝 Updated repeating task series (${data.count} tasks)`);
+                    new SuccessToast(`Updated ${data.count} tasks in series`, 2000);
+                    // Update local state immediately to prevent UI desync
+                    const referenceDate = task_date ? new Date(task_date + "T00:00:00") : null;
+                    const updatedClasses = this.classes.map((classInfo) => {
+                        if (!classInfo.tasks)
+                            return classInfo;
+                        classInfo.tasks = classInfo.tasks.map((task) => {
+                            if (task.repetition_group_id !== repetition_group_id)
+                                return task;
+                            // For "future" scope, only update tasks on or after the reference date
+                            if (scope === "future" &amp;&amp; referenceDate) {
+                                const taskDateStr = typeof task.date === "string" ? task.date : "";
+                                const taskDate = taskDateStr ? new Date(taskDateStr.split("T")[0] + "T00:00:00") : null;
+                                if (taskDate &amp;&amp; taskDate &lt; referenceDate)
+                                    return task;
+                            }
+                            // Apply updates (excluding internal fields)
+                            const { ref, class_id, _class } = updates, safeUpdates = __rest(updates, ["ref", "class_id", "_class"]);
+                            return Object.assign(Object.assign({}, task), safeUpdates);
+                        });
+                        return classInfo;
+                    });
+                    this.classes = [...updatedClasses];
+                    this.get_tasks();
+                    // Also refresh from server in background for consistency
+                    this.fetch_classes();
+                    return Promise.resolve();
+                }
+                catch (e) {
+                    return Promise.reject(e);
+                }
+            });
+        },
+        /**
+         * @memberOf .main.actions
+         * @function delete_repeating_task
+         * @description Delete a repeating task series
+         */
+        delete_repeating_task(repetition_group_id, scope, task_ref, task_date) {
+            return __awaiter(this, void 0, void 0, function* () {
+                try {
+                    const deleteRepeatingTask = httpsCallable(functions, "deleteRepeatingTask");
+                    const result = yield deleteRepeatingTask({ repetition_group_id, scope, task_ref, task_date });
+                    const data = result.data;
+                    if (data.error)
+                        throw data.error;
+                    _status.log(`🗑️ Deleted repeating task series (${data.count} tasks)`);
+                    new SuccessToast(`Archived ${data.count} tasks in series`, 2000);
+                    // Update local state immediately to prevent UI desync
+                    const referenceDate = task_date ? new Date(task_date + "T00:00:00") : null;
+                    const updatedClasses = this.classes.map((classInfo) => {
+                        if (!classInfo.tasks)
+                            return classInfo;
+                        classInfo.tasks = classInfo.tasks.filter((task) => {
+                            if (task.repetition_group_id !== repetition_group_id)
+                                return true;
+                            // For "future" scope, only remove tasks on or after the reference date
+                            if (scope === "future" &amp;&amp; referenceDate) {
+                                const taskDateStr = typeof task.date === "string" ? task.date : "";
+                                const taskDate = taskDateStr ? new Date(taskDateStr.split("T")[0] + "T00:00:00") : null;
+                                if (taskDate &amp;&amp; taskDate &lt; referenceDate)
+                                    return true;
+                            }
+                            return false;
+                        });
+                        return classInfo;
+                    });
+                    this.classes = [...updatedClasses];
+                    this.get_tasks();
+                    // Also refresh from server in background for consistency
+                    this.fetch_classes();
                     return Promise.resolve();
                 }
                 catch (e) {
