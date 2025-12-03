@@ -77,7 +77,7 @@
   - way for students to access teacher features for their peers / as a proxy for the teacher
   - student self "classes" for things specific to them to keep track of, all in one place
 - Tasks
-
+  - Bulk editing of tasks
   - AI/ML/Maybe just hardcoded features
     - recurring assignments in a date range
       - based on prompt

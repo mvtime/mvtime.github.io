@@ -1,43 +1,47 @@
 <template>
   <div class="edit_task">
+    <OverlayWrapper v-if="showArchiveConfirm" @close="showArchiveConfirm = false" v-slot="scope">
+      <Modal
+        class="confirm_modal router_center_view"
+        :can_continue="true"
+        title="Archive Tasks"
+        :html="archiveConfirmHtml"
+        :continue_action="() => confirmArchiveSeries()"
+        :skippable="true"
+        @skip="scope.close"
+        skip_text="Cancel"
+        submit_text="Archive"
+      />
+    </OverlayWrapper>
     <header class="modal_header" ref="title">
       <h2 class="header_style modal_header_title">Edit {{ task.type || "task" }} details</h2>
     </header>
     <div class="overlay_contents" ref="contents">
       <div v-if="ready">
         <div class="overlay_contents_text change_text">
-          Change the details of your {{ task.type || "task"
-          }}{{ original.name ? ` "${original.name}"` : "" }} in
+          Change the details of your {{ task.type || "task" }}{{ original.name ? ` "${original.name}"` : "" }} in
           <a
             class="class_name button_pointer_text"
-            :href="`/view/${task._class.ref}`"
+            :href="`/view/${task._class?.ref}`"
             @click="
               $event.preventDefault();
               $router.push({
                 name: 'viewclass',
-                params: { ref: task._class.ref },
+                params: { ref: task._class?.ref },
                 query: $route.query,
               });
             "
             :style="{
-              '--color-class': class_obj.color,
-              '--color-class-alt': class_obj.color + '2d',
+              '--color-class': class_obj?.color,
+              '--color-class-alt': class_obj?.color + '2d',
             }"
             >{{ $store.class_text(class_obj) }}</a
           >
         </div>
         <div class="inputs_row">
+          <input v-if="!is_note" v-model="task.name" class="styled_input" type="text" :placeholder="type_full + ' Name'" :disabled="is_note" enterkeyhint="next" @keydown.enter="$refs.date.focus()" />
           <input
-            v-if="!is_note"
-            v-model="task.name"
-            class="styled_input"
-            type="text"
-            :placeholder="type_full + ' Name'"
-            :disabled="is_note"
-            enterkeyhint="next"
-            @keydown.enter="$refs.date.focus()"
-          />
-          <input
+            ref="date"
             type="date"
             class="styled_input input_task__date"
             v-model="task.date"
@@ -57,18 +61,9 @@
           <div class="flex-break"></div>
           <div class="styled_input styled_links_box">
             <div class="styled_links_display">
-              <span v-if="!task.links || !task.links.length" class="placeholder"
-                >{{ type_full }} Links (Optional)</span
-              >
+              <span v-if="!task.links || !task.links.length" class="placeholder">{{ type_full }} Links (Optional)</span>
               <div v-else class="styled_line_links">
-                <a
-                  class="styled_line_links__link styled_line_links__remove"
-                  target="_blank"
-                  v-for="link in task.links"
-                  :key="link.path"
-                  @click="remove_link(link)"
-                  >{{ link.text }}</a
-                >
+                <a class="styled_line_links__link styled_line_links__remove" target="_blank" v-for="link in task.links" :key="link.path" @click="remove_link(link)">{{ link.text }}</a>
               </div>
             </div>
             <hr class="styled_links_separator" />
@@ -80,22 +75,9 @@
               "
               enterkeyhint="done"
             >
-              <input
-                class="styled_links_add__path"
-                type="url"
-                v-model="newlink.path"
-                @blur="fix_newlink_path"
-                placeholder="Link URL (http://example.com)"
-                enterkeyhint="done"
-              />
+              <input class="styled_links_add__path" type="url" v-model="newlink.path" @blur="fix_newlink_path" placeholder="Link URL (http://example.com)" enterkeyhint="done" />
               <div class="magic_wrapper styled_links_add__sized">
-                <input
-                  class="styled_links_add__text"
-                  type="text"
-                  v-model="newlink.text"
-                  placeholder="Link Text (what students see)"
-                  enterkeyhint="done"
-                />
+                <input class="styled_links_add__text" type="text" v-model="newlink.text" placeholder="Link Text (what students see)" enterkeyhint="done" />
                 <div
                   class="magic magic_in styled_magic alt_bg click-action"
                   :class="{ magic_out: !path_ready, loading_bg: loading_text }"
@@ -104,36 +86,26 @@
                   title="Auto-generate link text"
                 ></div>
               </div>
-              <button
-                class="styled_links_add__action"
-                @click="add_newlink"
-                :disabled="newlink_not_ready"
-              >
-                Add
-              </button>
+              <button class="styled_links_add__action" @click="add_newlink" :disabled="newlink_not_ready">Add</button>
             </div>
           </div>
         </div>
       </div>
       <img alt="Loading Icon" class="loading_icon" v-else />
     </div>
+    <div class="warning_text overlay_contents_text">Save changes to this {{ task.type || "task" }} to</div>
+    <div v-if="task.repetition_group_id" class="overlay_contents_text repetition_warning bottom_actions">
+      <span class="flex_spacer" style="display: none"></span>
+      <button class="scope_button secondary_styled" :class="{ selected: edit_scope == 'this' }" @click="edit_scope = 'this'">This Task</button>
+      <button class="scope_button secondary_styled" :class="{ selected: edit_scope == 'future' }" @click="edit_scope = 'future'">This & Future</button>
+      <button class="scope_button secondary_styled" :class="{ selected: edit_scope == 'all' }" @click="edit_scope = 'all'">All Tasks</button>
+    </div>
     <div class="bottom_actions">
       <button class="close_action click_escape" @click="$emit('close')">Cancel</button>
       <div class="flex_spacer"></div>
-      <button
-        class="archive_action primary_styled"
-        @click="archive_task"
-        :disabled="!ready || loading"
-      >
-        Archive
-      </button>
-      <button
-        class="continue_action click_ctrlenter"
-        :class="{ loading_bg: loading }"
-        @click="try_submit"
-        :disabled="not_submittable"
-      >
-        Save {{ task.type || "task" }}
+      <button class="archive_action primary_styled" :class="{ loading_bg: loading }" @click="archive_task" :disabled="!ready || loading">Archive{{ scope_text }}</button>
+      <button class="continue_action click_ctrlenter" :class="{ loading_bg: loading }" @click="try_submit" :disabled="not_submittable">
+        Save{{ scope_text }} {{ task.type || "task" }}{{ scope_text ? "s" : "" }}
       </button>
     </div>
   </div>
@@ -153,11 +125,17 @@
 import { compatDateObj } from "@/common";
 import { ErrorToast, WarningToast, SuccessToast } from "@svonk/util";
 import smoothReflow from "vue-smooth-reflow";
+import OverlayWrapper from "@/components/Modal/OverlayWrapper.vue";
+import Modal from "@/components/Modal/Modal.vue";
 
 export default {
   name: "EditTaskView",
   emits: ["close"],
   mixins: [smoothReflow],
+  components: {
+    OverlayWrapper,
+    Modal,
+  },
   data() {
     return {
       task: {},
@@ -170,6 +148,8 @@ export default {
       loading: true,
       loading_text: false,
       loaded_text: false,
+      edit_scope: "this",
+      showArchiveConfirm: false,
     };
   },
   mounted() {
@@ -185,12 +165,7 @@ export default {
   },
   computed: {
     not_submittable() {
-      return (
-        !this.changed ||
-        (!this.task.name && !this.is_note) ||
-        !this.task.date ||
-        (this.is_note && !this.task.description)
-      );
+      return !this.changed || (!this.task.name && !this.is_note) || !this.task.date || (this.is_note && !this.task.description);
     },
     type_full() {
       return this.$magic?.type_full(this.task.type) || "Task";
@@ -223,12 +198,17 @@ export default {
       });
     },
     path_ready() {
-      return (
-        !this.loaded_text &&
-        this.newlink.path &&
-        this.newlink_not_ready &&
-        this.newlink.path.startsWith("https://")
-      );
+      return !this.loaded_text && this.newlink.path && this.newlink_not_ready && this.newlink.path.startsWith("https://");
+    },
+    scope_text() {
+      if (!this.task.repetition_group_id || this.edit_scope === "this") {
+        return "";
+      }
+      return this.edit_scope === "future" ? " future" : " all";
+    },
+    archiveConfirmHtml() {
+      const scopeText = this.edit_scope === "future" ? "this and all future tasks in the series" : "all tasks in this series";
+      return `<div class="overlay_contents_text">Are you sure you want to archive ${scopeText}?<br><br>This action cannot be undone.</div>`;
     },
   },
   watch: {
@@ -270,8 +250,15 @@ export default {
         return;
       }
       this.loading = true;
-      this.$store
-        .update_task(this.task.ref, this.task)
+
+      let action;
+      if (this.edit_scope === "this") {
+        action = this.$store.update_task(this.task.ref, this.task);
+      } else {
+        action = this.$store.update_repeating_task(this.task.repetition_group_id, this.task, this.edit_scope, this.task.ref, this.task.date);
+      }
+
+      action
         .then(() => {
           // this.$emit("close");
           // redirect to view
@@ -290,6 +277,10 @@ export default {
         });
     },
     archive_task() {
+      if (this.edit_scope !== "this" && this.task.repetition_group_id) {
+        this.showArchiveConfirm = true;
+        return;
+      }
       this.$router.push({
         name: "archive",
         params: {
@@ -301,6 +292,19 @@ export default {
           ...this.$route.query,
         },
       });
+    },
+    confirmArchiveSeries() {
+      this.showArchiveConfirm = false;
+      this.loading = true;
+      this.$store
+        .delete_repeating_task(this.task.repetition_group_id, this.edit_scope, this.task.ref, this.task.date)
+        .then(() => {
+          this.$router.push("/portal");
+        })
+        .catch((err) => {
+          this.loading = false;
+          new ErrorToast("Couldn't archive series", err, 2000);
+        });
     },
     async get_task() {
       // get task ref from route params
@@ -380,7 +384,6 @@ export default {
 <style scoped>
 .checkboxes {
   display: flex;
-  flex-flow: column nowrap;
   align-items: flex-start;
   margin-top: 0.5rem;
 }
@@ -421,5 +424,32 @@ select.type_dropdown {
 .loading_icon {
   max-height: 150px;
   min-width: 100%;
+}
+.repetition_warning.bottom_actions {
+  display: flex;
+  background: var(--color-overlay-input);
+  border-radius: 8px;
+  margin: 0 var(--padding-overlay);
+  padding: var(--radius-overlay-input);
+}
+.warning_text.overlay_contents_text {
+  text-align: center;
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+.scope_button {
+  border-radius: 0;
+  color: var(--color-on-overlay-action);
+  background-color: var(--color-on-overlay-action-disabled);
+  flex: 1 0 auto;
+}
+.scope_button:first-of-type {
+  border-top-left-radius: var(--radius-overlay-input);
+  border-bottom-left-radius: var(--radius-overlay-input);
+  margin-left: 0;
+}
+.scope_button:last-of-type {
+  border-top-right-radius: var(--radius-overlay-input);
+  border-bottom-right-radius: var(--radius-overlay-input);
 }
 </style>

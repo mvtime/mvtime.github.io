@@ -76,7 +76,7 @@ import {
   type QuerySnapshot,
 } from "firebase/firestore";
 import CryptoJS from "crypto-js";
-import { auth, db, authChangeAction, refreshTimeout } from "../firebase";
+import { auth, db, authChangeAction, refreshTimeout, functions, httpsCallable } from "../firebase";
 import { signInWithPopup, GoogleAuthProvider, signInWithRedirect, type User } from "firebase/auth";
 const provider = new GoogleAuthProvider();
 const isElectron = navigator?.userAgent?.toLowerCase()?.indexOf(" electron/") > -1;
@@ -1958,6 +1958,128 @@ export const useMainStore: StoreDefinition = defineStore({
         const name: string = task_obj.type == "note" ? "" : `"${task_obj.name}"`;
         new SuccessToast(`Added ${task_obj.type || "task"} ${name} to ${task_classes.length} class${task_classes.length == 1 ? "" : "es"}`, 2000);
         _status.log(`📝 Created task ${name} for ${task_classes.length} classes`);
+        return Promise.resolve();
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    },
+    /**
+     * @memberOf .main.actions
+     * @function create_repeating_task
+     * @description Create a repeating task series (for teachers)
+     * @param {Object} task_obj The task object template
+     * @param {Array} task_classes The classes to add the task to
+     * @param {Object} repetition The repetition configuration
+     * @returns {Promise} A promise that resolves to nothing or rejects with an error
+     */
+    async create_repeating_task(task_obj: TaskInfo, task_classes: ClassID[], repetition: any): Promise<void> {
+      try {
+        if (!task_obj.name && task_obj?.type != "note") {
+          return Promise.reject("No task name specified");
+        } else if (!task_classes || task_classes.length == 0) {
+          return Promise.reject("No classes selected");
+        }
+
+        const createRepeatingTask = httpsCallable(functions, "createRepeatingTask");
+        const result = await createRepeatingTask({ task: task_obj, classes: task_classes, repetition });
+        const data = result.data as any;
+
+        if (data.error) throw data.error;
+
+        _status.log(`📝 Created repeating task series (${data.count} tasks)`);
+        new SuccessToast(`Created ${data.count} repeating ${task_obj.type}s`, 2000);
+
+        // Refresh classes to see new tasks
+        await this.fetch_classes();
+        return Promise.resolve();
+      } catch (e) {
+        new ErrorToast("Couldn't create repeating tasks", cleanError(e), 2000);
+        return Promise.reject(e);
+      }
+    },
+
+    /**
+     * @memberOf .main.actions
+     * @function update_repeating_task
+     * @description Update a repeating task series
+     */
+    async update_repeating_task(repetition_group_id: string, updates: any, scope: "future" | "all", task_ref: string, task_date: string): Promise<void> {
+      try {
+        const updateRepeatingTask = httpsCallable(functions, "updateRepeatingTask");
+        const result = await updateRepeatingTask({ repetition_group_id, updates, scope, task_ref, task_date });
+        const data = result.data as any;
+
+        if (data.error) throw data.error;
+
+        _status.log(`📝 Updated repeating task series (${data.count} tasks)`);
+        new SuccessToast(`Updated ${data.count} tasks in series`, 2000);
+
+        // Update local state immediately to prevent UI desync
+        const referenceDate = task_date ? new Date(task_date + "T00:00:00") : null;
+        const updatedClasses = this.classes.map((classInfo: ClassInfo) => {
+          if (!classInfo.tasks) return classInfo;
+          classInfo.tasks = classInfo.tasks.map((task: TaskInfo) => {
+            if (task.repetition_group_id !== repetition_group_id) return task;
+            // For "future" scope, only update tasks on or after the reference date
+            if (scope === "future" && referenceDate) {
+              const taskDateStr = typeof task.date === "string" ? task.date : "";
+              const taskDate = taskDateStr ? new Date(taskDateStr.split("T")[0] + "T00:00:00") : null;
+              if (taskDate && taskDate < referenceDate) return task;
+            }
+            // Apply updates (excluding internal fields)
+            const { ref, class_id, _class, ...safeUpdates } = updates;
+            return { ...task, ...safeUpdates };
+          });
+          return classInfo;
+        });
+        this.classes = [...updatedClasses];
+        this.get_tasks();
+
+        // Also refresh from server in background for consistency
+        this.fetch_classes();
+        return Promise.resolve();
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    },
+
+    /**
+     * @memberOf .main.actions
+     * @function delete_repeating_task
+     * @description Delete a repeating task series
+     */
+    async delete_repeating_task(repetition_group_id: string, scope: "future" | "all", task_ref: string, task_date: string): Promise<void> {
+      try {
+        const deleteRepeatingTask = httpsCallable(functions, "deleteRepeatingTask");
+        const result = await deleteRepeatingTask({ repetition_group_id, scope, task_ref, task_date });
+        const data = result.data as any;
+
+        if (data.error) throw data.error;
+
+        _status.log(`🗑️ Deleted repeating task series (${data.count} tasks)`);
+        new SuccessToast(`Archived ${data.count} tasks in series`, 2000);
+
+        // Update local state immediately to prevent UI desync
+        const referenceDate = task_date ? new Date(task_date + "T00:00:00") : null;
+        const updatedClasses = this.classes.map((classInfo: ClassInfo) => {
+          if (!classInfo.tasks) return classInfo;
+          classInfo.tasks = classInfo.tasks.filter((task: TaskInfo) => {
+            if (task.repetition_group_id !== repetition_group_id) return true;
+            // For "future" scope, only remove tasks on or after the reference date
+            if (scope === "future" && referenceDate) {
+              const taskDateStr = typeof task.date === "string" ? task.date : "";
+              const taskDate = taskDateStr ? new Date(taskDateStr.split("T")[0] + "T00:00:00") : null;
+              if (taskDate && taskDate < referenceDate) return true;
+            }
+            return false;
+          });
+          return classInfo;
+        });
+        this.classes = [...updatedClasses];
+        this.get_tasks();
+
+        // Also refresh from server in background for consistency
+        this.fetch_classes();
         return Promise.resolve();
       } catch (e) {
         return Promise.reject(e);

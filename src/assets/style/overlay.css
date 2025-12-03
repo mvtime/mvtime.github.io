@@ -105,16 +105,21 @@
 }
 .bottom_actions > *:last-child,
 .bottom_actions > .primary_styled,
+.bottom_actions > .secondary_styled.selected,
 .inputs_row .styled_input.primary_styled {
   background-color: var(--color-overlay-action);
   color: var(--color-on-overlay-action);
 }
 .bottom_actions > *:last-child[disabled],
 .bottom_actions > .primary_styled[disabled],
-.inputs_row .styled_input.primary_styled[disabled] {
+.inputs_row .styled_input.primary_styled[disabled],
+.bottom_actions > .secondary_styled {
   cursor: not-allowed;
   background-color: var(--color-overlay-action-disabled);
   color: var(--color-on-overlay-action-disabled);
+}
+.bottom_actions > .secondary_styled:not([disabled]) {
+  cursor: pointer;
 }
 .overlay_contents {
   flex-grow: 1;
@@ -237,8 +242,7 @@ h2.modal_header_title > .magic_wrapper.magic_ready .magic {
   left: 50%;
   top: 0;
   transform: translateX(-50%);
-  border-top: solid var(--thickness-overlay-section-separator)
-    var(--color-overlay-section-separator);
+  border-top: solid var(--thickness-overlay-section-separator) var(--color-overlay-section-separator);
 }
 .overlay_contents_section {
   position: relative;
@@ -565,12 +569,12 @@ div.bottom_actions:has(:nth-child(4)) .flex_spacer ~ button {
   padding: 0 calc(var(--padding-overlay-action) / 1.15);
 }
 div.bottom_actions .flex_spacer + button {
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
+  border-top-left-radius: var(--radius-overlay-input);
+  border-bottom-left-radius: var(--radius-overlay-input);
 }
 div.bottom_actions .flex_spacer ~ button:last-child {
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
+  border-top-right-radius: var(--radius-overlay-input);
+  border-bottom-right-radius: var(--radius-overlay-input);
 }
 
 /* scale and fade in with slight bounce */

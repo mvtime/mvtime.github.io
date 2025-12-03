@@ -1,5 +1,24 @@
 <template>
   <div class="logdebug">
+    <OverlayWrapper v-if="showRebuildModal" @close="showRebuildModal = false" v-slot="scope">
+      <Modal
+        class="confirm_modal router_center_view"
+        :can_continue="true"
+        title="Rebuild Class Task Caches"
+        :html="`<div class='overlay_contents_text'>Are you sure you want to rebuild all class task caches?<br><br>This action will regenerate cached task data for all classes and may take a while to complete.</div>`"
+        :continue_action="() => confirmRebuildCaches()"
+        :skippable="true"
+        @skip="scope.close"
+        skip_text="Cancel"
+        submit_text="Rebuild Caches"
+      />
+    </OverlayWrapper>
+    <div class="admin_actions admin_in">
+      <h3>Admin Actions</h3>
+      <div class="action_buttons">
+        <button class="action_button" :class="{ loading_bg: rebuildingCache }" :disabled="rebuildingCache" @click="showRebuildModal = true">Rebuild Class Task Caches</button>
+      </div>
+    </div>
     <div class="docs_wrapper">
       <nav class="docs_nav admin_in" v-if="pages.length">
         <button class="docs_nav_button prev" @click="prev" :disabled="!(total.length || pages.length) || !page_index" title="Previous Page"></button>
@@ -94,10 +113,17 @@
 
 <script>
 import { collection, query, orderBy, startAfter, limit, getDocs, getDoc, doc, where } from "firebase/firestore";
-import { db } from "@/firebase";
+import { db, functions } from "@/firebase";
+import { httpsCallable } from "firebase/functions";
 import { downloadLogData } from "@/common";
-import { WarningToast, SuccessToast } from "@svonk/util";
+import { WarningToast, SuccessToast, ErrorToast } from "@svonk/util";
+import OverlayWrapper from "@/components/Modal/OverlayWrapper.vue";
+import Modal from "@/components/Modal/Modal.vue";
 export default {
+  components: {
+    OverlayWrapper,
+    Modal,
+  },
   data() {
     return {
       active: null,
@@ -107,6 +133,8 @@ export default {
       search: "",
       loaded: "",
       manual_page: [],
+      rebuildingCache: false,
+      showRebuildModal: false,
     };
   },
   computed: {
@@ -153,6 +181,32 @@ export default {
     this.$shortcuts.remove_tag("Admin - Logs & Debugging");
   },
   methods: {
+    confirmRebuildCaches() {
+      this.showRebuildModal = false;
+      this.rebuildClassTaskCaches();
+    },
+    async rebuildClassTaskCaches() {
+      if (this.rebuildingCache) return;
+
+      this.rebuildingCache = true;
+      try {
+        const rebuildFn = httpsCallable(functions, "rebuildClassTaskCaches");
+        const result = await rebuildFn({});
+        const data = result.data;
+
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        new SuccessToast(`Rebuilt ${data.classesUpdated} classes with ${data.tasksProcessed} tasks`, 5000);
+        this.$status.log(`🔄 Cache rebuild complete: ${data.classesUpdated} classes, ${data.tasksProcessed} tasks`);
+      } catch (err) {
+        new ErrorToast("Failed to rebuild caches", err, 5000);
+        this.$status.error("🔄 Cache rebuild failed:", err);
+      } finally {
+        this.rebuildingCache = false;
+      }
+    },
     async init() {
       const q = query(collection(db, "logs"), orderBy("date_inversed"), limit(this.page_size));
       const docs = await getDocs(q);
@@ -237,6 +291,47 @@ export default {
 </script>
 
 <style scoped>
+.admin_actions {
+  background: var(--color-on-bg);
+  padding: 15px;
+  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar));
+  margin-bottom: 15px;
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+.admin_actions h3 {
+  font-size: 16px;
+  font-weight: 600;
+  padding: 0 10px;
+}
+.action_buttons {
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 10px;
+}
+.action_button {
+  padding: 10px 20px;
+  background: var(--color-overlay-action);
+  color: var(--color-on-overlay-action);
+  border: none;
+  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) - 5px);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+.action_button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.action_description {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.7;
+  line-height: 1.4;
+}
 .docs_wrapper {
   display: flex;
   flex-direction: column;
