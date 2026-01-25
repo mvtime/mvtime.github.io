@@ -23,6 +23,7 @@ export interface ClassInfo extends DocumentData {
   period: number;
   [key: string]: any | never;
   tasks?: TaskInfo[];
+  archived?: boolean;
 }
 
 export interface TaskInfo extends DocumentData {
@@ -1750,7 +1751,7 @@ export const useMainStore: StoreDefinition = defineStore({
         }
         // get classes sub-collection from teacher's doc
         const teacher_classes: CollectionReference = collection(db, "classes", teacher, "classes");
-        if (!teacher_classes) {
+        if (!teacher_classes) { 
           await this.remove_invalid(class_path);
           continue;
         }
@@ -1763,6 +1764,10 @@ export const useMainStore: StoreDefinition = defineStore({
         }
         // push class to array
         let doc_data: ClassInfo = subclass_doc.data() as ClassInfo;
+        if (doc_data.archived) {
+          await this.remove_invalid(class_path);
+          continue;
+        }
         doc_data.id = class_path;
         doc_data.ref = [teacher, class_id].join("/");
 
@@ -1824,8 +1829,8 @@ export const useMainStore: StoreDefinition = defineStore({
         class_data.id = class_doc.id;
         // if user already in class, change name to "[JOINED] name"
         class_data.is_joined = this.active_doc?.classes.includes([email, class_doc.id].join("/"));
-
-        classes.push(class_data);
+        if (!class_data.archived)
+          classes.push(class_data);
       });
       classes.sort((a: ClassInfo, b: ClassInfo) => {
         if (a.period == b.period) {
@@ -2097,12 +2102,21 @@ export const useMainStore: StoreDefinition = defineStore({
       try {
         let [_email, _id] = class_ref.split("/");
         _email += this.ORG_DOMAIN;
+        const path = [_email, _id].join("/");
         // update the document with the same id as the class from the classes collection
         await updateDoc(doc(db, "classes", _email, "classes", _id), class_obj);
         _status.log("📝 Updated remote class");
+        if (class_obj.archived) {
+          await this.remove_class_id_helper(path)
+          if (this.loaded_email === _email && this.loaded_classes !== null) {
+            this.loaded_classes = this.loaded_classes.filter((c) => c.id === path);
+          }
+          _status.log("📝 Archived class");
+          return Promise.resolve()
+        }
         let classes: ClassInfo[] = this.classes;
         // update local version of class in classes
-        const classIndex = classes.findIndex((class_obj) => class_obj.id === [_email, _id].join("/"));
+        const classIndex = classes.findIndex((c) => c.id === path);
         if (classIndex !== -1) {
           // Update the class object within the classes array
           classes[classIndex] = { ...classes[classIndex], ...class_obj, _proxy: true };

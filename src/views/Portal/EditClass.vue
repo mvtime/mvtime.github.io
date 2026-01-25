@@ -76,6 +76,12 @@
       <button class="leave_action primary_styled" @click="leave_class" :disabled="!ready">
         Leave
       </button>
+      <button class="archive_action primary_styled" 
+        @click="archive_class" 
+        :disabled="!ready" 
+        :class="{ loading_bg: loading }">
+        Archive
+      </button>
       <button
         class="continue_action click_ctrlenter"
         @click="update_class"
@@ -154,6 +160,10 @@ export default {
           this.$status.error("🔥Couldn't update class", this.ref, err);
           this.loading = false;
         });
+    },
+    archive_class() {
+      this.class_obj.archived = true;
+      this.update_class()
     },
     get_class() {
       this.ready = false;
