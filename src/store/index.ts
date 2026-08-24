@@ -1977,6 +1977,20 @@ export const useMainStore: StoreDefinition = defineStore({
      * @param {Object} repetition The repetition configuration
      * @returns {Promise} A promise that resolves to nothing or rejects with an error
      */
+    normalize_repetition_end(end: { type: string; value?: number | string; date?: string }) {
+      const normalized: { type: string; value?: number | string; date?: string } = {
+        type: end.type,
+        value: end.type === "date" ? end.date ?? end.value : end.value,
+      };
+      if (end.type === "date" && (end.date ?? end.value)) {
+        normalized.date = (end.date ?? end.value) as string;
+      }
+      return normalized;
+    },
+    sanitize_repeating_task_updates(updates: any) {
+      const { ref, id, _class, class_obj, class_id, color, ...safeUpdates } = updates || {};
+      return safeUpdates;
+    },
     async create_repeating_task(task_obj: TaskInfo, task_classes: ClassID[], repetition: any): Promise<void> {
       try {
         if (!task_obj.name && task_obj?.type != "note") {
@@ -1985,8 +1999,13 @@ export const useMainStore: StoreDefinition = defineStore({
           return Promise.reject("No classes selected");
         }
 
+        const normalizedRepetition = {
+          ...repetition,
+          end: this.normalize_repetition_end(repetition.end),
+        };
+
         const createRepeatingTask = httpsCallable(functions, "createRepeatingTask");
-        const result = await createRepeatingTask({ task: task_obj, classes: task_classes, repetition });
+        const result = await createRepeatingTask({ task: task_obj, classes: task_classes, repetition: normalizedRepetition });
         const data = result.data as any;
 
         if (data.error) throw data.error;
@@ -2010,8 +2029,9 @@ export const useMainStore: StoreDefinition = defineStore({
      */
     async update_repeating_task(repetition_group_id: string, updates: any, scope: "future" | "all", task_ref: string, task_date: string): Promise<void> {
       try {
+        const safeUpdates = this.sanitize_repeating_task_updates(updates);
         const updateRepeatingTask = httpsCallable(functions, "updateRepeatingTask");
-        const result = await updateRepeatingTask({ repetition_group_id, updates, scope, task_ref, task_date });
+        const result = await updateRepeatingTask({ repetition_group_id, updates: safeUpdates, scope, task_ref, task_date });
         const data = result.data as any;
 
         if (data.error) throw data.error;
@@ -2031,8 +2051,6 @@ export const useMainStore: StoreDefinition = defineStore({
               const taskDate = taskDateStr ? new Date(taskDateStr.split("T")[0] + "T00:00:00") : null;
               if (taskDate && taskDate < referenceDate) return task;
             }
-            // Apply updates (excluding internal fields)
-            const { ref, class_id, _class, ...safeUpdates } = updates;
             return { ...task, ...safeUpdates };
           });
           return classInfo;

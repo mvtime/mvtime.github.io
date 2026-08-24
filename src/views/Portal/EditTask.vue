@@ -244,6 +244,17 @@ export default {
         path: "",
       };
     },
+    task_updates() {
+      const excluded = new Set(["ref", "id", "_class", "class_obj", "class_id", "color"]);
+      const updates = {};
+      for (const key of Object.keys(this.task)) {
+        if (excluded.has(key)) continue;
+        if (JSON.stringify(this.task[key]) !== JSON.stringify(this.original[key])) {
+          updates[key] = this.task[key];
+        }
+      }
+      return updates;
+    },
     async update_task() {
       if (!this.newlink_not_ready) {
         new WarningToast("Don't forget to to click the 'Add' button to add your link!", 2000);
@@ -255,7 +266,7 @@ export default {
       if (this.edit_scope === "this") {
         action = this.$store.update_task(this.task.ref, this.task);
       } else {
-        action = this.$store.update_repeating_task(this.task.repetition_group_id, this.task, this.edit_scope, this.task.ref, this.task.date);
+        action = this.$store.update_repeating_task(this.task.repetition_group_id, this.task_updates(), this.edit_scope, this.task.ref, this.task.date);
       }
 
       action

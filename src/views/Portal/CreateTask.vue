@@ -346,6 +346,20 @@ export default {
         path: "",
       };
     },
+    repetition_payload() {
+      const end = {
+        type: this.repetition.end.type,
+        value: this.repetition.end.type === "date" ? this.repetition.end.date : this.repetition.end.value,
+      };
+      if (this.repetition.end.type === "date" && this.repetition.end.date) {
+        end.date = this.repetition.end.date;
+      }
+      return {
+        enabled: this.repetition.enabled,
+        days: this.repetition.days,
+        end,
+      };
+    },
     create_task() {
       if (!this.newlink_not_ready) {
         new WarningToast("Don't forget to to click the 'Add' button to add your link!", 2000);
@@ -355,7 +369,7 @@ export default {
 
       const action =
         this.repetition.enabled && this.repetition.days.length
-          ? this.$store.create_repeating_task(this.task, this.task_classes, this.repetition)
+          ? this.$store.create_repeating_task(this.task, this.task_classes, this.repetition_payload())
           : this.$store.create_task(this.task, this.task_classes);
 
       action
