@@ -976,10 +976,18 @@ export const useMainStore: StoreDefinition = defineStore({
             }
             // set color from parent class color
             class_tasks[j].color = classes[i].color;
+            const classTask = class_tasks[j];
+            let ref = classTask.ref;
+            if (!ref && classTask.id) {
+              const [_email, _cid] = classes[i].ref.split("/");
+              ref = [_email, _cid, classTask.id].join("/");
+            }
             tasks.push({
-              ...(class_tasks[j] as ProcessedTaskInfo),
+              ...(classTask as ProcessedTaskInfo),
               date: date,
               class_name: this.class_text(classes[i]),
+              class_id: classes[i].id,
+              ...(ref ? { ref } : {}),
             });
           }
         }
