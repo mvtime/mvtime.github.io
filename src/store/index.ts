@@ -1112,7 +1112,7 @@ export const useMainStore: StoreDefinition = defineStore({
     /**
      * @memberOf .main.actions
      * @function invite_linked
-     * @description Invite a user account to link to another user's account (for personal accounts only,) including sending them an email with the code to join
+     * @description Invite a personal email to link to this school account via callable inviteLinkedAccount (server queues link_invite mail and updates users.linked)
      * @param {String} email The email of the user to invite (and send an invite email to)
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      */
@@ -1121,17 +1121,18 @@ export const useMainStore: StoreDefinition = defineStore({
       if (this.personal_account) {
         new WarningToast("This account is already linked!", 2000);
       }
-      // exclude empty or mvla emails
+      // exclude empty or org emails
       if (!email || validOrgAcc(email) || !email.includes("@")) {
         new WarningToast(`Please enter a valid non-${process.env.VUE_APP_ORG_NAME} email`, 2000);
         return;
       }
-      // check if email is already linked (has entry with matching .email)
+      email = email.trim().toLowerCase();
+      // check if email is already linked
       if (this.linked_accounts.includes(email)) {
         new WarningToast("That account is already linked", 2000);
         return;
       }
-      // add to doc.linked
+      // ensure local linked array exists for UI update after success
       if (!this.active_doc.linked) {
         if (this.personal_account && this.linked_account_doc) {
           this.linked_account_doc.linked = [];
@@ -1140,48 +1141,23 @@ export const useMainStore: StoreDefinition = defineStore({
         }
       }
 
-      // add email to queue
-      const email_queue: CollectionReference = collection(db, "mail");
       try {
-        const sent_email: DocumentReference = await addDoc(email_queue, {
-          to: email,
-          cc: this.user.email,
-          from: `${this.active_doc.name} via ${process.env.VUE_APP_BRAND_NAME_LONG} <${process.env.VUE_APP_BRAND_MAIL_ADDRESS}>`,
-          fromname: this.active_doc.name + ` via ${process.env.VUE_APP_BRAND_NAME_LONG}`,
-          template: {
-            name: "link_invite",
-            data: {
-              sender_name: this.active_doc.name.split(" ")[0],
-              sender_uid: this.user.uid,
-            },
-          },
-        });
-        // wait for the email document to have keys .delivery.attempts > 0 and .delivery.error == null
-        const email_doc_ref: DocumentReference = doc(email_queue, sent_email.id);
-        let email_doc: DocumentSnapshot = await getDoc(email_doc_ref);
-        let checks: number = 1;
-        while (!email_doc.exists() || ((!!email_doc.data()?.delivery?.attempts as number | boolean) == 0 && checks <= 3)) {
-          await new Promise((resolve) => setTimeout(resolve, (2 ^ checks) * 2000));
-          email_doc = await getDoc(email_doc_ref);
-          _status.log("📧 Checked email doc");
-          checks++;
-        }
-        if (!email_doc.data()?.delivery?.info?.accepted?.includes(email) || email_doc.data()?.delivery?.attempts == 0) {
-          _status.log("📧 Email failed to send", email_doc.data());
-          throw "Email failed to send";
-        }
+        const inviteLinkedAccount = httpsCallable(functions, "inviteLinkedAccount");
+        const result = await inviteLinkedAccount({ email });
+        const data = result.data as { error?: string; success?: boolean };
 
-        // update remote
+        if (data.error) throw data.error;
+
+        // Server already arrayUnions onto users.linked; mirror locally for UI
         if (this.personal_account && this.linked_account_doc) {
           this.linked_account_doc.linked.push(email);
         } else {
           this.account_doc.linked.push(email);
         }
-        await this.update_remote();
         new SuccessToast(`We notified ${email}, you'll receive a copy of the email too!`, 4000);
         return Promise.resolve();
       } catch (err) {
-        new ErrorToast(`Couldn't invite "${email}"`, err, 2000);
+        new ErrorToast(`Couldn't invite "${email}"`, cleanError(err), 2000);
         return Promise.reject(err);
       }
     },
