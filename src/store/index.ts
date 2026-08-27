@@ -56,6 +56,7 @@ type ClassID = string;
 // setup Pinia store
 import { defineStore, type StoreDefinition } from "pinia";
 import { _status, compatDateObj, type LogEntry } from "@/common";
+import { classTextName } from "@/common/grapheme";
 import { Toast, ErrorToast, cleanError, WarningToast, SuccessToast } from "@svonk/util";
 
 // get firebase requirements
@@ -617,7 +618,8 @@ export const useMainStore: StoreDefinition = defineStore({
      */
     class_text(class_obj: ClassInfo | null): string | undefined {
       if (!class_obj) return;
-      return CLASS_TEXT(class_obj);
+      // Strip leading emoji from a copy so class squares don't repeat it in lists
+      return CLASS_TEXT({ ...class_obj, name: classTextName(class_obj.name) });
     },
     /**
      * @memberOf .main.actions

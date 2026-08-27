@@ -38,8 +38,7 @@
         {{ $store.class_text(class_obj) }}
       </div>
       <div v-else class="class_character">
-        <span v-if="class_obj.period" class="class_character__period">{{ class_obj.period }}</span>
-        <span v-else class="class_character__letter">{{ class_obj.name[0] }}</span>
+        <span class="class_character__letter">{{ classSquareGlyph(class_obj) }}</span>
       </div>
       <!-- action icon -->
       <div
@@ -76,6 +75,8 @@
 </template>
 
 <script>
+import { classSquareGlyph } from "@/common/grapheme";
+
 export default {
   props: {
     filtered_classes: {
@@ -102,6 +103,7 @@ export default {
   },
   emits: ["toggle_filtered_class", "clear_filters", "dragclass", "set_filtered_classes"],
   methods: {
+    classSquareGlyph,
     clean_ref(ref) {
       let [_email, _id] = ref.split("/");
       _email = _email.split("@")[0];
