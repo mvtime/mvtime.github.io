@@ -145,6 +145,7 @@ export default {
     this.$store.logout_prompt = false;
     window.addEventListener("focus", this.refreshTimeout);
     window.addEventListener("keydown", this.global_keydown);
+    document.addEventListener("visibilitychange", this.onVisibilityChange);
     this.$shortcuts.register_all(this.shortcuts, "General");
 
     // catch href clicks to open as "/to/{encoded href}"
@@ -169,6 +170,7 @@ export default {
   beforeUnmount() {
     window.removeEventListener("focus", this.refreshTimeout);
     window.removeEventListener("keydown", this.global_keydown);
+    document.removeEventListener("visibilitychange", this.onVisibilityChange);
     this.$shortcuts.remove_tag("General");
   },
   created() {
@@ -237,6 +239,12 @@ export default {
     refreshTimeout() {
       if (this.$store) {
         this.$store.refresh_timeout();
+      }
+    },
+    onVisibilityChange() {
+      // Visibility wake: same idle-resubscribe path as focus/activity
+      if (document.visibilityState === "visible") {
+        this.refreshTimeout();
       }
     },
     set_theme() {

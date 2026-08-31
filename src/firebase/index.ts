@@ -7,7 +7,7 @@ import { getFirestore, onSnapshot, doc } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 import { getFunctions, httpsCallable } from "firebase/functions";
 
-// firebase config
+// firebase config — client SDK keys only (never embed server API_KEY / board secrets)
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_apiKey,
   authDomain: process.env.FIREBASE_authDomain,
@@ -26,7 +26,19 @@ const analytics = getAnalytics(app);
 const functions = getFunctions(app, process.env.FIREBASE_region);
 
 // export firebase
-export { app, auth, db, analytics, functions, httpsCallable, authChangeAction, refreshTimeout };
+export {
+  app,
+  auth,
+  db,
+  analytics,
+  functions,
+  httpsCallable,
+  authChangeAction,
+  refreshTimeout,
+};
+
+// Re-export hydrate helper for Portal / callers (listeners-only; no Board GET / API_KEY)
+export { hydrateAndListen } from "./classListeners";
 
 //TODO:TS update common and store to ts to fix below
 // handle auth updates (user login/logout) and set user data in store
@@ -34,6 +46,13 @@ export { app, auth, db, analytics, functions, httpsCallable, authChangeAction, r
 // cycles with store's top-level `import … from "../firebase"` and TDZ-crashes before mount.
 import { _status } from "@/common";
 import router from "@/router";
+import {
+  syncClassListeners,
+  unsubscribeAllClassListeners,
+  enrollmentSetsEqual,
+  finishedSetsEqual,
+  hydrateAndListen,
+} from "./classListeners";
 
 function getMainStore() {
   // require() after both modules have finished initializing (same pattern as pre-cycle-break main).
@@ -49,6 +68,10 @@ let unsub: () => void,
   subscribed: boolean = false,
   timeout: number;
 
+/** Last enrollment / finished seen on the user doc (for change detection). */
+let prevClasses: string[] | null = null;
+let prevFinished: string[] | null = null;
+
 function authChangeAction(user: User | null): void {
   const store = getMainStore();
   if (user) {
@@ -60,8 +83,14 @@ function authChangeAction(user: User | null): void {
     // setup onSnapshot listener for user data
     setupSnapshot(user.uid);
     timeout = startTimeout();
-    // rewrite the above with firebase 9 functions
+    // Hydrate classes then attach live class-doc listeners (login)
+    hydrateAndListen().catch((err) => {
+      _status.warn("⚠ Initial hydrateAndListen deferred / failed", err);
+    });
   } else {
+    unsubscribe();
+    prevClasses = null;
+    prevFinished = null;
     store.clear();
   }
 }
@@ -89,6 +118,11 @@ function setupSnapshot(uid: string | undefined): void {
         return;
       }
       let listening_doc_data = listening_doc.data();
+      const nextClasses: string[] = listening_doc_data?.classes || [];
+      const nextFinished: string[] = listening_doc_data?.finished || [];
+      const classesChanged = !enrollmentSetsEqual(prevClasses, nextClasses);
+      const finishedChanged = !finishedSetsEqual(prevFinished, nextFinished);
+
       // set based on id
       if (store?.user?.uid == listening_doc.id) {
         // set the account_doc
@@ -96,8 +130,37 @@ function setupSnapshot(uid: string | undefined): void {
       } else {
         store.linked_account_doc = listening_doc_data;
       }
-      // run fetch_classes() to update classes
-      // store.fetch_classes();
+
+      // Enrollment change: hydrate (dual-read fetch_classes) then resync class listeners
+      if (classesChanged) {
+        prevClasses = [...nextClasses];
+        _status.log("⬥ User enrollment changed — hydrate + resync class listeners");
+        store
+          .fetch_classes()
+          .then(() => {
+            syncClassListeners(store.active_doc?.classes || nextClasses);
+          })
+          .catch((err: unknown) => {
+            _status.error("⚠ fetch_classes after user snapshot failed", err);
+            // Still try to attach listeners from enrollment paths
+            syncClassListeners(nextClasses);
+          });
+      } else {
+        // Ensure listeners exist even when enrollment unchanged (e.g. after idle resub)
+        syncClassListeners(store.active_doc?.classes || nextClasses);
+      }
+
+      // finished[] lives on the user doc; updating account_doc is enough for calendar
+      // (finished_tasks getter + hide_finished). Re-stamp tasks only if needed for reactivity.
+      if (finishedChanged) {
+        prevFinished = [...nextFinished];
+        _status.log("⬥ User finished[] changed — store already updated via account_doc");
+        if (store.classes?.length) {
+          store.get_tasks();
+        }
+      } else if (prevFinished === null) {
+        prevFinished = [...nextFinished];
+      }
     },
     (err) => {
       if (err.code == "permission-denied") {
@@ -110,7 +173,7 @@ function setupSnapshot(uid: string | undefined): void {
   subscribed = true;
 }
 
-// allow for unsubscribing from onSnapshot
+// allow for unsubscribing from onSnapshot (user + all class listeners)
 function unsubscribe(show_prompt: boolean = false): void {
   // clear timeout
   clearTimeout(timeout);
@@ -122,6 +185,7 @@ function unsubscribe(show_prompt: boolean = false): void {
     unsub();
     _status.log("⬥ Unsubscribed from remote changes");
   }
+  unsubscribeAllClassListeners();
   subscribed = false;
 }
 
@@ -148,10 +212,14 @@ function refreshTimeout(delay: number): void {
   if (!subscribed) {
     // setup snapshot and pull data
     setupSnapshot(store.personal_account ? store.account_doc?.linked_to : store.user.uid);
-    // get class data / tasks again if "/portal" in path (check w/ router)
+    // get class data / tasks again if "/portal" in path (check w/ router), then re-attach listeners
     if (router.currentRoute.value && router.currentRoute.value.path.startsWith("/portal")) {
-      _status.log("⬥ Refreshing class data");
-      store.fetch_classes();
+      _status.log("⬥ Refreshing class data + class listeners");
+      hydrateAndListen().catch((err) => {
+        _status.error("⚠ hydrateAndListen on timeout resume failed", err);
+      });
+    } else {
+      syncClassListeners(store.active_doc?.classes || []);
     }
     _status.log("⬥ Resubscribed to remote changes");
   }
