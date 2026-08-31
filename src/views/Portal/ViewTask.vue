@@ -120,8 +120,9 @@
  * @emits {Function} close - An event emitted when the modal is closed.
  */
 
-import { WarningToast, ErrorToast, SuccessToast } from "@svonk/util";
+import { WarningToast, ErrorToast } from "@svonk/util";
 import { compatDateObj } from "@/common";
+import { shareUrl } from "@/common/share";
 import smoothReflow from "vue-smooth-reflow";
 import showdown from "showdown";
 import "@/assets/style/markdown.css";
@@ -183,21 +184,13 @@ export default {
       let url = new URL(
         `https://${this.$env.VUE_APP_BRAND_DOMAIN__VIEWTASK}/` + this.$route.params.ref
       );
-      if (navigator.share) {
-        navigator
-          .share({
-            title: this.task.name,
-            text: this.task.description,
-            url: url.href,
-          })
-          .then(() => new SuccessToast("Opened share dialog", 1000))
-          .catch((err) => this.$status.error("Error sharing", err));
-      } else if (navigator.clipboard) {
-        navigator.clipboard.writeText(url.href);
-        new WarningToast("Sharing not supported, copied link to clipboard", 2000);
-      } else {
-        new WarningToast("Sharing and copying not supported, sorry", 2000);
-      }
+      return shareUrl({
+        title: this.task.name,
+        text: this.task.description,
+        url: url.href,
+        status: this.$status,
+        shareErrorMessage: "Error sharing",
+      });
     },
     edit_task() {
       this.$router.push({

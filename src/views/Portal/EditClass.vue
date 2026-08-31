@@ -25,35 +25,12 @@
             >{{ $store.class_text(original) }}</a
           >
         </div>
-        <div class="inputs_row">
-          <div class="class_period_container styled_obj">
-            <input
-              v-model="class_obj.period"
-              class="styled_input class_period"
-              type="number"
-              min="1"
-              max="8"
-              step="1"
-              placeholder="#"
-            />
-          </div>
-          <input
-            v-model="class_obj.name"
-            class="styled_input class_name"
-            type="text"
-            placeholder="Name"
-            enterkeyhint="done"
-            @keydown.enter="update_class"
-          />
-          <div class="color_input_container styled_input" title="Class Theme Color">
-            <input
-              v-model="class_obj.color"
-              class="color_input"
-              type="color"
-              placeholder="Class Color"
-            />
-          </div>
-        </div>
+        <ClassFields
+          v-model:period="class_obj.period"
+          v-model:name="class_obj.name"
+          v-model:color="class_obj.color"
+          @submit="update_class"
+        />
       </div>
       <img alt="Loading Icon" class="loading_icon" v-else />
     </div>
@@ -76,9 +53,9 @@
       <button class="leave_action primary_styled" @click="leave_class" :disabled="!ready">
         Leave
       </button>
-      <button class="archive_action primary_styled" 
-        @click="archive_class" 
-        :disabled="!ready" 
+      <button class="archive_action primary_styled"
+        @click="archive_class"
+        :disabled="!ready"
         :class="{ loading_bg: loading }">
         Archive
       </button>
@@ -96,18 +73,22 @@
 
 <script>
 /**
- * Component for creating a class if the user is a teacher.
+ * Component for editing a class if the user is a teacher.
  *
- * @module CreateClassView
+ * @module EditClassView
  * @description Modal that allows the user to edit a class if they are a teacher.
  * @requires module:store/MainStore
- * @emits {Function} close - An event emitted when the class is created or the modal is closed.
+ * @emits {Function} close - An event emitted when the class is updated or the modal is closed.
  */
 
 import smoothReflow from "vue-smooth-reflow";
-import { WarningToast, SuccessToast, ErrorToast } from "@svonk/util";
+import { WarningToast, ErrorToast } from "@svonk/util";
+import ClassFields from "@/components/Portal/ClassFields.vue";
+import { shareUrl } from "@/common/share";
+
 export default {
   name: "EditClassView",
+  components: { ClassFields },
   emits: ["close"],
   mixins: [smoothReflow],
   data() {
@@ -187,28 +168,19 @@ export default {
         query: this.$route.query,
       });
     },
-    /** Shares the task link with the native share function, or to the clipboard if sharing is not supported */
+    /** Shares the class join code with the native share function, or to the clipboard if sharing is not supported */
     async share_class() {
       this.loading_share = true;
       this.$store
         .code_from_ref(this.ref)
         .then((code) => {
           let url = new URL(`https://${this.$env.VUE_APP_BRAND_DOMAIN__ADDCLASS}/` + code);
-          if (navigator.share) {
-            navigator
-              .share({
-                title: this.$store.class_text(this.class_obj),
-                text: `Join my class on ${this.$env.VUE_APP_BRAND_NAME_SHORT}!`,
-                url: url.href,
-              })
-              .then(() => new SuccessToast("Opened share dialog", 1000))
-              .catch((err) => this.$status.error("🔥 Error sharing", err));
-          } else if (navigator.clipboard) {
-            navigator.clipboard.writeText(url.href);
-            new WarningToast("Sharing not supported, copied link to clipboard", 2000);
-          } else {
-            new WarningToast("Sharing and copying not supported, sorry", 2000);
-          }
+          shareUrl({
+            title: this.$store.class_text(this.class_obj),
+            text: `Join my class on ${this.$env.VUE_APP_BRAND_NAME_SHORT}!`,
+            url: url.href,
+            status: this.$status,
+          });
           this.loading_share = false;
         })
         .catch((err) => {
@@ -222,54 +194,6 @@ export default {
 </script>
 
 <style scoped>
-.inputs_row {
-  flex-flow: row wrap;
-  margin-bottom: 0;
-}
-
-.inputs_row .color_input_container {
-  margin-right: 0;
-  padding: 0;
-  width: var(--height-overlay-input);
-  flex-basis: var(--height-overlay-input);
-  height: var(--height-overlay-input);
-  flex-grow: 0;
-  flex-shrink: 0;
-  overflow: hidden;
-  filter: var(--filter-calendar-task);
-}
-.inputs_row .color_input_container .color_input {
-  width: 100%;
-  height: 100%;
-  padding: 0;
-  margin: 0;
-  border: none;
-  border-radius: 0;
-  transform: scale(2);
-}
-.inputs_row .class_description {
-  margin-right: 0;
-  margin-top: calc(var(--padding-overlay) / 2);
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
-.inputs_row .class_period_container {
-  flex-grow: 0;
-  flex-basis: calc(var(--height-overlay-input) * 1.5);
-  background: var(--color-overlay-input);
-  padding-right: 0;
-}
-.inputs_row .class_period_container .class_period {
-  padding: 0;
-  padding-right: calc(var(--padding-overlay-input) / 2);
-}
-.inputs_row .class_period_container::before {
-  content: "P";
-}
-.inputs_row .class_name {
-  flex-grow: 3;
-}
 .loading_icon {
   max-height: 84.5px;
   min-width: 100%;
