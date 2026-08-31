@@ -101,7 +101,7 @@ import {
 import CryptoJS from "crypto-js";
 import { auth, db, authChangeAction, refreshTimeout, functions, httpsCallable } from "../firebase";
 import { syncClassListeners } from "../firebase/classListeners";
-import { noteClassHydrateTime, hydrateBeatsLive } from "@/common/classListenerState";
+import { beginHydrateEpoch, hydrateBeatsLive } from "@/common/classListenerState";
 import { signInWithPopup, GoogleAuthProvider, signInWithRedirect, type User } from "firebase/auth";
 const provider = new GoogleAuthProvider();
 const isElectron = navigator?.userAgent?.toLowerCase()?.indexOf(" electron/") > -1;
@@ -1877,6 +1877,9 @@ export const useMainStore: StoreDefinition = defineStore({
         _status.log("📚 Removed duplicate classes");
       }
 
+      // Snapshot wins race if it lands after this hydrate starts
+      const hydrateEpoch = beginHydrateEpoch();
+
       // get all classes' data and combine into an array (dual-read: flat first, nested fallback)
       let classes: ClassInfo[] = [];
       for (let class_path of this.active_doc.classes as string[]) {
@@ -1895,9 +1898,8 @@ export const useMainStore: StoreDefinition = defineStore({
           await this.remove_invalid(class_path);
           continue;
         }
-        const hydrateMs = classResult.snap.updateTime?.toMillis?.();
         // Snapshot wins a race if newer than this hydrate — keep live copy
-        if (!hydrateBeatsLive(class_path, hydrateMs)) {
+        if (!hydrateBeatsLive(class_path, hydrateEpoch)) {
           const live = this.classes.find((c) => c.id === class_path);
           if (live) {
             classes.push(live);
@@ -1916,7 +1918,6 @@ export const useMainStore: StoreDefinition = defineStore({
         if (classResult.teacherEmail) {
           rememberClassEmail(class_id, classResult.teacherEmail);
         }
-        noteClassHydrateTime(class_path, hydrateMs);
 
         classes.push(doc_data);
       }

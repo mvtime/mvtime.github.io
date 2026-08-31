@@ -1,12 +1,13 @@
 /**
- * Unit tests for class-listener enrollment helpers (pure set compare + race stamps).
+ * Unit tests for class-listener enrollment helpers (pure set compare + race epochs).
  * Run: node --experimental-strip-types scripts/test-class-listeners.mjs
  */
 import {
   enrollmentSetsEqual,
   finishedSetsEqual,
-  noteClassHydrateTime,
+  beginHydrateEpoch,
   hydrateBeatsLive,
+  markRemoteClassSnapshot,
   clearClassListenerState,
 } from "../src/common/classListenerState.ts";
 
@@ -34,13 +35,14 @@ assert(finishedSetsEqual(["t1", "t2"], ["t2", "t1"]), "finished order-independen
 assert(!finishedSetsEqual(["t1"], []), "finished cleared detects change");
 
 clearClassListenerState();
-assert(hydrateBeatsLive("a/b", 100), "hydrate ok when no live stamp");
-noteClassHydrateTime("a/b", 100);
-assert(hydrateBeatsLive("a/b", 100), "equal hydrate still ok (snapshot-or-hydrate tie)");
-assert(hydrateBeatsLive("a/b", 200), "newer hydrate ok");
-noteClassHydrateTime("a/b", 200);
-assert(!hydrateBeatsLive("a/b", 150), "older hydrate loses to live/newer stamp");
-assert(hydrateBeatsLive("a/b", 200), "equal to live stamp still applies");
+const epoch0 = beginHydrateEpoch();
+assert(hydrateBeatsLive("a/b", epoch0), "hydrate ok when no snapshot yet");
+markRemoteClassSnapshot("a/b");
+assert(!hydrateBeatsLive("a/b", epoch0), "snapshot after hydrate start wins race");
+const epoch1 = beginHydrateEpoch();
+assert(hydrateBeatsLive("a/b", epoch1), "new hydrate after snapshot may apply");
+markRemoteClassSnapshot("a/b");
+assert(!hydrateBeatsLive("a/b", epoch1), "later snapshot beats that hydrate");
 
 clearClassListenerState();
 

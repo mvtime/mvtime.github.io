@@ -2,11 +2,17 @@
  * Pure helpers for live class-listener enrollment diffs and hydrate/snapshot races.
  * Kept free of Firebase imports so node unit tests can load them directly.
  *
+ * Client Firestore snapshots do not expose updateTime, so races use a local epoch:
+ * if a remote class snapshot applied after hydrate started, hydrate keeps the live copy.
+ *
  * @module common/classListenerState
  */
 
-/** Last applied Firestore updateTime (ms) per enrollment key. */
-const lastAppliedMs = new Map<string, number>();
+/** Monotonic clock advanced on each remote class snapshot apply. */
+let clock = 0;
+
+/** enrollmentPath → clock value when last remote snapshot was applied. */
+const lastSnapshotAt = new Map<string, number>();
 
 function sameStringSet(a: string[] | null | undefined, b: string[] | null | undefined): boolean {
   const aa = a || [];
@@ -30,38 +36,36 @@ export function finishedSetsEqual(
   return sameStringSet(a, b);
 }
 
-/** Record hydrate updateTime so a concurrent older getDocs result cannot clobber a newer snapshot. */
-export function noteClassHydrateTime(enrollmentPath: string, updateTimeMs: number | undefined): void {
-  if (!enrollmentPath || updateTimeMs == null || !Number.isFinite(updateTimeMs)) return;
-  const prev = lastAppliedMs.get(enrollmentPath) || 0;
-  if (updateTimeMs >= prev) {
-    lastAppliedMs.set(enrollmentPath, updateTimeMs);
-  }
+/** Capture clock at hydrate start; snapshots after this win the race. */
+export function beginHydrateEpoch(): number {
+  return clock;
 }
 
-/** True when hydrate data is new enough to replace the in-memory class (snapshot already won → false). */
-export function hydrateBeatsLive(enrollmentPath: string, updateTimeMs: number | undefined): boolean {
-  if (updateTimeMs == null || !Number.isFinite(updateTimeMs)) return true;
-  const prev = lastAppliedMs.get(enrollmentPath) || 0;
-  return updateTimeMs >= prev;
+/** Mark that a remote class snapshot was applied (always wins over in-flight hydrate). */
+export function markRemoteClassSnapshot(enrollmentPath: string): void {
+  if (!enrollmentPath) return;
+  lastSnapshotAt.set(enrollmentPath, ++clock);
 }
 
-/** True when a remote snapshot should replace local state (equal-or-newer wins). */
-export function shouldApplyRemoteSnapshot(
-  enrollmentPath: string,
-  updateTimeMs: number | undefined
-): boolean {
-  if (updateTimeMs == null || !Number.isFinite(updateTimeMs)) return true;
-  const prev = lastAppliedMs.get(enrollmentPath) || 0;
-  if (updateTimeMs < prev) return false;
-  lastAppliedMs.set(enrollmentPath, updateTimeMs);
-  return true;
+/**
+ * True when hydrate may replace the in-memory class.
+ * False when a remote snapshot landed after hydrate started (snapshot wins).
+ */
+export function hydrateBeatsLive(enrollmentPath: string, hydrateStartedAt: number): boolean {
+  const snapAt = lastSnapshotAt.get(enrollmentPath) || 0;
+  return snapAt <= hydrateStartedAt;
+}
+
+/** @deprecated No-op kept for call-site clarity; epoch marks replace updateTime stamps. */
+export function noteClassHydrateTime(_enrollmentPath: string, _updateTimeMs?: number): void {
+  // Hydrate does not advance the snapshot clock; beginHydrateEpoch + hydrateBeatsLive suffice.
 }
 
 export function clearClassListenerState(): void {
-  lastAppliedMs.clear();
+  lastSnapshotAt.clear();
+  clock = 0;
 }
 
 export function dropClassListenerStamp(enrollmentPath: string): void {
-  lastAppliedMs.delete(enrollmentPath);
+  lastSnapshotAt.delete(enrollmentPath);
 }

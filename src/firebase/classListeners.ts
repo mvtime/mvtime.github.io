@@ -13,8 +13,9 @@ import {
   enrollmentSetsEqual,
   finishedSetsEqual,
   hydrateBeatsLive,
+  beginHydrateEpoch,
+  markRemoteClassSnapshot,
   noteClassHydrateTime,
-  shouldApplyRemoteSnapshot,
 } from "@/common/classListenerState";
 import { _status } from "@/common";
 
@@ -22,6 +23,7 @@ export {
   enrollmentSetsEqual,
   finishedSetsEqual,
   hydrateBeatsLive,
+  beginHydrateEpoch,
   noteClassHydrateTime,
 };
 
@@ -97,12 +99,8 @@ async function subscribeOneClass(enrollmentPath: string): Promise<void> {
         store.remove_invalid?.(enrollmentPath);
         return;
       }
-      const updateTimeMs = snap.updateTime?.toMillis?.();
-      if (!shouldApplyRemoteSnapshot(enrollmentPath, updateTimeMs)) {
-        _status.log(`⬥ Skipping stale class snapshot for ${enrollmentPath}`);
-        return;
-      }
-
+      // Remote snapshot always applies; marks epoch so in-flight hydrate cannot clobber it
+      markRemoteClassSnapshot(enrollmentPath);
       store.apply_live_class(enrollmentPath, snap.data() || {}, {
         teacherEmail: resolved.teacherEmail,
         legacyPath: resolved.legacyPath,
