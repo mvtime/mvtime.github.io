@@ -16,6 +16,7 @@
           @keydown.enter="$refs.class_id.focus()"
         />
         <select
+          ref="class_id"
           v-model="class_id"
           class="styled_input"
           :disabled="!classes || !classes.length"
@@ -25,16 +26,23 @@
             v-for="class_obj in classes"
             :value="class_obj.id"
             :key="class_obj.id"
-            :disabled="class_obj.is_joined"
+            :disabled="class_obj.is_joined && !adding"
           >
-            <span v-if="class_obj.is_joined">[JOINED]</span>
+            <span v-if="class_obj.is_joined && !adding">[JOINED]</span>
             {{ $store.class_text(class_obj) }}
           </option>
           <option v-if="teacher_email && !classes" value="" disabled hidden selected>
             {{ loading ? "Loading..." : "No classes found" }}
           </option>
           <option v-else value="" disabled hidden selected>
-            {{ teacher_email && classes ? "Select a Class" : "-----" }}
+            {{
+              teacher_email &&
+              classes &&
+              classes.length &&
+              teacher_email.endsWith($env.VUE_APP_ORG_DOMAIN)
+                ? "Select a Class"
+                : ""
+            }}
           </option>
         </select>
       </div>
@@ -89,7 +97,7 @@ export default {
       if (!this.teacher_email) {
         return null;
       } else if (this.teacher_email === this.$store.loaded_email) {
-        return this.$store.loaded_classes;
+        return this.$store.get_loaded_classes;
       }
       // commit store fetch_classes_by_email with teacher_email
       this.$store.fetch_classes_by_email(this.teacher_email);

@@ -26,56 +26,22 @@
         your class{{ classes && classes.length == 1 ? "" : "es" }}
       </div>
       <div class="inputs_row">
-        <input v-if="!is_note" v-model="task.name" class="styled_input" type="text" :placeholder="type_full + ' Name'" :disabled="is_note" enterkeyhint="next" @keydown.enter="$refs.date.focus()" />
-        <input
-          type="date"
-          ref="date"
-          class="styled_input input_task__date"
-          v-model="task.date"
-          :style="{ maxWidth: is_note ? '100%' : null }"
-          enterkeyhint="next"
-          @keydown.enter="$refs.description.focus()"
+        <TaskFields
+          ref="taskFields"
+          v-model:name="task.name"
+          v-model:date="task.date"
+          v-model:description="task.description"
+          :type-full="type_full"
+          :is-note="is_note"
         />
         <div class="flex-break"></div>
-        <textarea
-          ref="description"
-          v-model="task.description"
-          class="styled_input styled_textarea task_description"
-          type="text"
-          :placeholder="type_full + (is_note ? ' Contents' : ' Description (Optional)')"
-        >
-        </textarea>
-        <div class="flex-break"></div>
-        <div class="styled_input styled_links_box">
-          <div class="styled_links_display">
-            <span v-if="!task.links || !task.links.length" class="placeholder">{{ type_full }} Links (Optional)</span>
-            <div v-else class="styled_line_links">
-              <a class="styled_line_links__link styled_line_links__remove" target="_blank" v-for="link in task.links" :key="link.path" @click="remove_link(link)">{{ link.text }}</a>
-            </div>
-          </div>
-          <hr class="styled_links_separator" />
-          <div
-            class="styled_links_add"
-            @keydown.enter="
-              $event.preventDefault();
-              add_newlink();
-            "
-            enterkeyhint="done"
-          >
-            <input class="styled_links_add__path" type="url" v-model="newlink.path" @blur="fix_newlink_path" placeholder="Link URL (https://example.com)" enterkeyhint="done" />
-            <div class="magic_wrapper styled_links_add__sized">
-              <input class="styled_links_add__text" type="text" v-model="newlink.text" placeholder="Link Text (what students see)" enterkeyhint="done" />
-              <div
-                class="magic magic_in styled_magic alt_bg click-action"
-                :class="{ magic_out: !path_ready, loading_bg: loading_text }"
-                :disabled="!path_ready || loading_text"
-                @click="magic_text"
-                title="Auto-generate link text"
-              ></div>
-            </div>
-            <button class="styled_links_add__action" @click="add_newlink" :disabled="newlink_not_ready">Add</button>
-          </div>
-        </div>
+        <LinkEditor
+          ref="linkEditor"
+          :links="task.links || []"
+          :type-full="type_full"
+          mode="create"
+          @update:links="task.links = $event"
+        />
         <div class="flex-break"></div>
         <div class="repetition_toggle">
           <ToggleBar :value="repetition.enabled" @update="repetition.enabled = !repetition.enabled" :loads="false" />
@@ -166,11 +132,13 @@
 import { ErrorToast, WarningToast, SuccessToast } from "@svonk/util";
 import smoothReflow from "vue-smooth-reflow";
 import ToggleBar from "@/components/ToggleBar.vue";
+import TaskFields from "@/components/Portal/TaskFields.vue";
+import LinkEditor from "@/components/Portal/LinkEditor.vue";
 
 export default {
   name: "CreateTaskView",
   emits: ["close"],
-  components: { ToggleBar },
+  components: { ToggleBar, TaskFields, LinkEditor },
   mixins: [smoothReflow],
   mounted() {
     this.$smoothReflow({
@@ -185,7 +153,7 @@ export default {
     if (!this.$route?.params?.tasktype) {
       this.$refs.type.focus();
     } else {
-      this.$refs.date.focus();
+      this.$refs.taskFields?.focusDate();
     }
 
     // remove the class and date from the query
@@ -203,10 +171,6 @@ export default {
         type: this.$route.params.tasktype ? this.$route.params.tasktype : "task",
       },
       task_classes: this.$route.query?.class ? [this.$route.query.class] : [],
-      newlink: {
-        text: "",
-        path: "",
-      },
       repetition: {
         enabled: false,
         days: [],
@@ -217,9 +181,7 @@ export default {
       },
       loading: false,
       loading_type: false,
-      loading_text: false,
       loaded_type: false,
-      loaded_text: false,
       auto_selected_day: null, // tracks the day auto-selected based on task.date
     };
   },
@@ -268,18 +230,6 @@ export default {
     type_full() {
       return this.$magic.type_full(this.task.type);
     },
-    newlink_not_ready() {
-      // check if path and text, and also that path is a valid url
-      if (!this.newlink.path || !this.newlink.text) {
-        return true;
-      }
-      try {
-        void new URL(this.newlink.path);
-        return false;
-      } catch (err) {
-        return true;
-      }
-    },
     class_name() {
       if (!this.classes) return null;
       let class_obj = this.classes.find((class_obj) => class_obj.id === this.class_id);
@@ -294,9 +244,6 @@ export default {
     },
     type_ready() {
       return !this.loaded_type && this.task && (this.task.description || this.task.name).length > 5;
-    },
-    path_ready() {
-      return !this.loaded_text && this.newlink.path && this.newlink_not_ready && this.newlink.path.startsWith("https://");
     },
     estimated_count() {
       if (!this.repetition.enabled || !this.repetition.days.length) return 0;
@@ -336,16 +283,6 @@ export default {
         this.repetition.days.sort();
       }
     },
-    add_newlink() {
-      if (!this.task.links) this.task.links = [];
-      // add protocol if missing
-      this.newlink.path = new URL(this.newlink.path).href;
-      this.task.links.push(this.newlink);
-      this.newlink = {
-        text: "",
-        path: "",
-      };
-    },
     repetition_payload() {
       const end = {
         type: this.repetition.end.type,
@@ -361,7 +298,7 @@ export default {
       };
     },
     create_task() {
-      if (!this.newlink_not_ready) {
+      if (!this.$refs.linkEditor?.newlink_not_ready) {
         new WarningToast("Don't forget to to click the 'Add' button to add your link!", 2000);
         return;
       }
@@ -382,10 +319,6 @@ export default {
           this.$status.error(`📃 Couldn't create ${this.task.type || "task"}:`, err);
           new ErrorToast("Couldn't create task", err, 2000);
         });
-    },
-    remove_link(link) {
-      this.task.links = this.task.links.filter((l) => l.path !== link.path);
-      this.newlink = link;
     },
     update_auto_day(new_date) {
       // Remove the previously auto-selected day
@@ -412,17 +345,6 @@ export default {
         this.auto_selected_day = newDay;
       } else {
         this.auto_selected_day = null;
-      }
-    },
-    fix_newlink_path() {
-      if (this.newlink.path && this.newlink.path.includes(".")) {
-        try {
-          this.newlink.path = new URL(this.newlink.path).href;
-        } catch (err) {
-          // add protocol if missing
-          this.newlink.path = "https://" + this.newlink.path;
-          this.fix_newlink_path();
-        }
       }
     },
     async magic_type() {
@@ -457,30 +379,6 @@ export default {
           this.loading_type = false;
         });
     },
-    async magic_text() {
-      if (!this.path_ready || this.newlink.text) return;
-      this.loading_text = true;
-      this.$magic
-        .text(this.newlink.path)
-        .then((text) => {
-          if (text) {
-            new SuccessToast(`Generated link text '${text}'`, 1500);
-            this.$status.log("🔗 Generated link text:", text);
-            this.newlink.text = text;
-          } else {
-            new WarningToast("Couldn't reasonably infer link text", 2000);
-            this.$status.warn("📃 Couldn't generate link text");
-          }
-          this.loaded_text = true;
-          this.loading_text = false;
-        })
-        .catch((err) => {
-          new ErrorToast("Couldn't generate link text", err, 3000);
-          this.$status.error("⚠ Failed link text generation:", err);
-          this.loaded_text = false;
-          this.loading_text = false;
-        });
-    },
   },
   watch: {
     "$route.params.tasktype"(new_type) {
@@ -499,17 +397,6 @@ export default {
       } else if (old_type == "note" && this.task.description?.length <= 35) {
         this.task.name = this.task.description;
         this.task.description = "";
-      }
-    },
-    // if newlink.path changes, set loaded_text to false
-    "newlink.path"(new_path, old_path) {
-      if (new_path != old_path) {
-        this.loaded_text = false;
-      }
-    },
-    "newlink.text"(new_text, old_text) {
-      if (new_text != old_text) {
-        this.loaded_text = false;
       }
     },
     // if name, description, date, or classes change, set loaded_type to false
@@ -564,10 +451,6 @@ export default {
 }
 .inputs_row {
   flex-flow: row wrap;
-}
-.styled_input.input_task__date {
-  margin-right: 0;
-  max-width: 150px;
 }
 select.type_dropdown {
   padding: 5px;
