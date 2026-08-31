@@ -111,7 +111,7 @@ import {
   type QuerySnapshot,
 } from "firebase/firestore";
 import CryptoJS from "crypto-js";
-import { auth, db, authChangeAction, refreshTimeout, functions, httpsCallable } from "../firebase";
+import { auth, db, authChangeAction, refreshTimeout, setupSnapshot, functions, httpsCallable } from "../firebase";
 import { syncClassListeners } from "../firebase/classListeners";
 import { beginHydrateEpoch, hydrateBeatsLive } from "@/common/classListenerState";
 import { signInWithPopup, GoogleAuthProvider, signInWithRedirect, type User } from "firebase/auth";
@@ -1195,30 +1195,53 @@ export const useMainStore: StoreDefinition = defineStore({
     /**
      * @memberOf .main.actions
      * @function link_account_uid
-     * @description Link a user account to another user's account by uid (for personal accounts only)
-     * @param {String} uid The uid of the user to link to
+     * @description Accept a school-account link invite via callable acceptLink({ schoolUid }), refresh the ID token, then listen to users/{schoolUid} as principal
+     * @param {String} uid The school account uid to link to
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      * @see {@link invite_linked}
      */
     async link_account_uid(uid: string): Promise<void> {
-      if (!uid || !this.account_doc) return;
+      if (!uid) return;
       if (!this.personal_account) {
         new WarningToast("This account is a primary account and cannot be linked", 3000);
         return;
       }
       if (!this.account_doc) {
         await this.create_doc();
-        _status.log("📄 Dreated doc", this.account_doc);
+        _status.log("📄 Created doc", this.account_doc);
       }
+      if (!this.account_doc) return;
       try {
-        const linked_doc: DocumentData = await this.doc_from_uid(uid);
-        if (!linked_doc) throw "Account doesn't exist or you haven't been invited";
-        // update remote
+        let schoolName = "school";
+        try {
+          const linked_doc: DocumentData = await this.doc_from_uid(uid);
+          if (linked_doc?.name) schoolName = linked_doc.name;
+        } catch {
+          // Callable is authoritative for invite validation; name is toast-only
+        }
+
+        const acceptLink = httpsCallable(functions, "acceptLink");
+        const result = await acceptLink({ schoolUid: uid });
+        const data = result?.data as { error?: string; success?: boolean; message?: string } | undefined;
+        if (data?.error || data?.success === false) {
+          throw data?.error || data?.message || "acceptLink failed";
+        }
+
+        // Refresh custom claims / token so rules + callables see the link
+        if (this.user) {
+          await this.user.getIdToken(true);
+        }
+
+        // Mirror linked_to locally; server owns the write
         this.account_doc.linked_to = uid;
-        await this.update_wrapper_acc_doc();
-        new SuccessToast(`Successfully linked to ${linked_doc.name}'s account!`, 4000);
+
+        // Listen to school principal doc, not the personal uid
+        setupSnapshot(uid);
+        await this.get_remote();
+
+        new SuccessToast(`Successfully linked to ${schoolName}'s account!`, 4000);
       } catch (err) {
-        new ErrorToast("Couldn't link account", err, 2000);
+        new ErrorToast("Couldn't link account", cleanError(err), 2000);
         return Promise.reject(err);
       }
       return Promise.resolve();
@@ -1278,29 +1301,43 @@ export const useMainStore: StoreDefinition = defineStore({
     /**
      * @memberOf .main.actions
      * @function uninvite_linked
-     * @description Unlink a user account from another user's account (for personal accounts only)
+     * @description Unlink a personal email from this school account via callable unlink({ email })
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      * @see {@link invite_linked}
      */
     async uninvite_linked(email: string): Promise<void> {
       try {
         if (!this.user) return;
-        // if exists in userdoc.linked, remove and save
-        if (this.active_doc?.linked.includes(email)) {
-          let filtered_linked: string[] = this.active_doc.linked?.filter((e) => e != email) || [];
-          if (this.personal_account && this.linked_account_doc) {
-            this.linked_account_doc.linked = filtered_linked;
-          } else if (this.account_doc) {
-            this.account_doc.linked = filtered_linked;
-          }
-          await this.update_remote();
-          new SuccessToast(`Removed ${email} from your linked accounts`, 2000);
-        } else {
-          new WarningToast(`${email} is not linked to this account`, 2000);
+        const normalized = (email || "").trim().toLowerCase();
+        if (!normalized) return;
+
+        if (!this.active_doc?.linked?.includes(normalized) && !this.active_doc?.linked?.includes(email)) {
+          new WarningToast(`${normalized} is not linked to this account`, 2000);
+          return;
         }
-        Promise.resolve();
+
+        const unlinkCallable = httpsCallable(functions, "unlink");
+        const result = await unlinkCallable({ email: normalized });
+        const data = result?.data as
+          | { error?: string; success?: boolean; message?: string; linked?: string[] }
+          | undefined;
+        if (data?.error || data?.success === false) {
+          throw data?.error || data?.message || "unlink failed";
+        }
+
+        // Server owns users.linked[]; mirror locally for UI
+        const filtered_linked: string[] = Array.isArray(data?.linked)
+          ? data.linked
+          : this.active_doc.linked?.filter((e) => e != normalized && e != email) || [];
+        if (this.personal_account && this.linked_account_doc) {
+          this.linked_account_doc.linked = filtered_linked;
+        } else if (this.account_doc) {
+          this.account_doc.linked = filtered_linked;
+        }
+        new SuccessToast(`Removed ${normalized} from your linked accounts`, 2000);
+        return Promise.resolve();
       } catch (err) {
-        new ErrorToast(`Couldn't unlink "${email}"`, err, 2000);
+        new ErrorToast(`Couldn't unlink "${email}"`, cleanError(err), 2000);
         return Promise.reject(err);
       }
     },
@@ -1456,25 +1493,41 @@ export const useMainStore: StoreDefinition = defineStore({
     /**
      * @memberOf .main.actions
      * @function remove_class_id_helper
-     * @description Helper function to remove a class from the active user's document and save changes to remote
+     * @description Leave/unenroll via callable unenrollClass({ classId }). Server owns users.classes[]; local cache only.
      * @see {@link remove_class}
      * @see {@link remove_invalid}
      * @see {@link fetch_classes}
      */
     async remove_class_id_helper(class_id: ClassID): Promise<void> {
-      const filtered_classes: ClassID[] = this.active_doc?.classes.filter((c) => c != class_id);
+      const classId =
+        bareClassIdFromEnrollment(class_id) || writeClassId(class_id, this.ORG_DOMAIN) || class_id;
+      if (!classId) throw "Invalid class id";
+
+      const unenrollClass = httpsCallable(functions, "unenrollClass");
+      const result = await unenrollClass({ classId });
+      const data = result?.data as
+        | { error?: string; success?: boolean; message?: string; classes?: string[] }
+        | undefined;
+      if (data?.error || data?.success === false) {
+        throw data?.error || data?.message || "unenrollClass failed";
+      }
+
+      // Mirror enrollment locally — do not write users.classes[] from the client
+      const filtered_classes: ClassID[] = Array.isArray(data?.classes)
+        ? data.classes
+        : (this.active_doc?.classes || []).filter(
+            (c) => c != class_id && bareClassIdFromEnrollment(c) !== classId
+          );
       if (this.personal_account && this.linked_account_doc) {
         this.linked_account_doc.classes = filtered_classes;
       } else if (this.account_doc) {
         this.account_doc.classes = filtered_classes;
       }
-      // remove from local
-      this.classes = this.classes.filter((c) => c.id != class_id);
+      this.classes = this.classes.filter(
+        (c) => c.id != class_id && !classEntryMatchesId(c, classId)
+      );
       this.get_tasks();
-      // Drop live listener for the left class
       syncClassListeners(filtered_classes || []);
-      // update remote
-      await this.update_remote();
       return Promise.resolve();
     },
     /**
@@ -1543,7 +1596,16 @@ export const useMainStore: StoreDefinition = defineStore({
           this.user = user;
           // if this is a personal account, get the associated linked account doc
           if (this.personal_account) {
-            this.get_remote();
+            this.get_remote()
+              .then(() => {
+                // Principal listener: school uid, not personal uid
+                if (this.account_doc?.linked_to) {
+                  setupSnapshot(this.account_doc.linked_to);
+                }
+              })
+              .catch((err) => {
+                _status.warn("🔗 get_remote / principal snapshot failed", err);
+              });
           }
           // if teacher, point collection_ref at top-level classes (flat writes)
           if (this.is_teacher) {
@@ -1828,14 +1890,14 @@ export const useMainStore: StoreDefinition = defineStore({
 
       let unique: string[] = [...(new Set(this.active_doc.classes) as Set<string>)];
       if (unique.length != this.active_doc.classes.length) {
+        // Local-only dedupe — do not write users.classes[] from the client
         if (this.personal_account && this.linked_account_doc) {
           this.linked_account_doc.classes = unique;
         } else if (this.account_doc) {
           this.account_doc.classes = unique;
         }
-        await this.update_remote();
         new WarningToast("Removed duplicate classes", 2000);
-        _status.log("📚 Removed duplicate classes");
+        _status.log("📚 Removed duplicate classes (local)");
       }
 
       // Snapshot wins race if it lands after this hydrate starts
@@ -1959,38 +2021,82 @@ export const useMainStore: StoreDefinition = defineStore({
     /**
      * @memberOf .main.actions
      * @function add_class
-     * @description Add a class to the active user's document, and show a toast saying that the class was added
+     * @description Enroll in a class via callable enrollClass({ classId }) (classId or join code). Server owns users.classes[].
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
-     * @param {String} teacher_email The email of the teacher whose class it is
-     * @param {String} class_id The id of the class to add
+     * @param {String} teacher_email The email of the teacher whose class it is (legacy; used to resolve classId)
+     * @param {String} class_id The id of the class to add (or join code)
      * @param {String} class_name The name of the class being added
      * @param {Number} class_period The period of the class being added
      * @see {@link classes}
      */
-    async add_class(teacher_email: string, class_id: ClassID, class_name: string, class_period: number) {
+    async add_class(
+      teacher_email: string,
+      class_id: ClassID,
+      class_name: string,
+      class_period: number,
+      options?: { quiet?: boolean }
+    ) {
       if (!this.active_doc?.classes) return;
       if (!class_id) return;
 
-      const class_key: string = [teacher_email, class_id].join("/");
-      if (this.active_doc.classes.includes(class_key)) return;
-      if (this.personal_account && this.linked_account_doc) {
-        this.linked_account_doc.classes.push(class_key);
-      } else if (this.account_doc) {
-        this.account_doc.classes.push(class_key);
-      }
-      await this.update_remote();
-      await this.fetch_classes();
-      new SuccessToast(
-        `Added "${this.class_text({
-          name: class_name,
-          period: class_period,
-          ref: class_key,
-          tasks: [],
-        })}" to your classes`,
-        2000
+      const classId =
+        writeClassId(class_id, this.ORG_DOMAIN) ||
+        (teacher_email ? writeClassId([teacher_email, class_id].join("/"), this.ORG_DOMAIN) : null) ||
+        class_id;
+
+      const alreadyEnrolled = (this.active_doc.classes || []).some(
+        (c) =>
+          c === classId ||
+          bareClassIdFromEnrollment(c) === classId ||
+          (teacher_email && c === [teacher_email, class_id].join("/"))
       );
-      // return new success promise
-      return Promise.resolve();
+      if (alreadyEnrolled) return;
+
+      try {
+        const enrollClass = httpsCallable(functions, "enrollClass");
+        const result = await enrollClass({ classId });
+        const data = result?.data as
+          | { error?: string; success?: boolean; message?: string; classes?: string[] }
+          | undefined;
+        if (data?.error || data?.success === false) {
+          throw data?.error || data?.message || "enrollClass failed";
+        }
+
+        // Mirror enrollment locally — do not write users.classes[] from the client
+        if (Array.isArray(data?.classes)) {
+          if (this.personal_account && this.linked_account_doc) {
+            this.linked_account_doc.classes = data.classes;
+          } else if (this.account_doc) {
+            this.account_doc.classes = data.classes;
+          }
+        } else {
+          const enrollmentKey = classId;
+          if (!(this.active_doc.classes || []).some((c) => bareClassIdFromEnrollment(c) === classId || c === enrollmentKey)) {
+            if (this.personal_account && this.linked_account_doc) {
+              this.linked_account_doc.classes.push(enrollmentKey);
+            } else if (this.account_doc) {
+              this.account_doc.classes.push(enrollmentKey);
+            }
+          }
+        }
+
+        await this.fetch_classes();
+        if (!options?.quiet) {
+          new SuccessToast(
+            `Added "${this.class_text({
+              name: class_name,
+              period: class_period,
+              ref: classId,
+              tasks: [],
+            })}" to your classes`,
+            2000
+          );
+        }
+        return Promise.resolve();
+      } catch (err) {
+        new ErrorToast("Couldn't add class", cleanError(err), 2000);
+        return Promise.reject(err);
+      }
     },
     /**
      * @memberOf .main.actions
@@ -2067,17 +2173,9 @@ export const useMainStore: StoreDefinition = defineStore({
         new SuccessToast(`Created class "${this.class_text(class_obj)}"`, 2000);
         _status.log("🏫 Created flat class w/ id", classId);
 
-        // Enroll self with bare classId (users.classes[] pointer rewrite)
+        // Enroll self via callable (server owns users.classes[])
         if (this.active_doc?.classes) {
-          if (!this.active_doc.classes.includes(classId)) {
-            if (this.personal_account && this.linked_account_doc) {
-              this.linked_account_doc.classes.push(classId);
-            } else if (this.account_doc) {
-              this.account_doc.classes.push(classId);
-            }
-            await this.update_remote();
-          }
-          await this.fetch_classes();
+          await this.add_class(email, classId, class_obj.name, class_obj.period, { quiet: true });
         }
         return Promise.resolve();
       } catch (e) {
