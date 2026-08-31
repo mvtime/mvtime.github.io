@@ -20,6 +20,7 @@
 
 import Modal from "@/components/Modal/Modal.vue";
 import { WarningToast } from "@svonk/util";
+import { shortViewFromSlashPath } from "@/router/viewRef";
 export default {
   name: "RedirectView",
   components: {
@@ -35,6 +36,13 @@ export default {
       new WarningToast("Missing redirect path");
       this.$emit("close");
     } else {
+      // Class-path short-circuit: email/classId[/taskId] → /view/shortRef
+      const short = shortViewFromSlashPath(this.path);
+      if (short) {
+        this.$status.log(`🔗 Rewriting class path to short view /view/${short}`);
+        this.$router.replace({ path: `/view/${short}`, query: this.$route.query });
+        return;
+      }
       // fix path to add protocol if it's missing
       this.path = this.path.startsWith("http") ? this.path : `https://${this.path}`;
     }

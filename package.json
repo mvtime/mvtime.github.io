@@ -9,6 +9,7 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:grapheme": "node --experimental-strip-types scripts/test-grapheme.mjs",
+    "test:paths": "node --experimental-strip-types scripts/test-paths.mjs",
     "deploy": "node deploy.js",
     "postbuild": "cross-env OS_TYPE=$(uname -s) npm-run-all --parallel copy-files echo-message",
     "copy-files": "npm run copy-win || npm run copy-nix",

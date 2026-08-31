@@ -1,4 +1,49 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { redirectToShortViewIfNeeded } from "@/router/viewRef";
+
+const viewClassMeta = {
+  page_title: "View Class",
+  theme_color: {
+    light: "#bfbfbf",
+    dark: "#0d0d0d",
+  },
+  requiresAuth: false,
+};
+
+const viewTaskMeta = {
+  page_title: "View Task",
+  theme_color: {
+    light: "#bfbfbf",
+    dark: "#0d0d0d",
+  },
+  requiresAuth: false,
+};
+
+const portalViewClassMeta = {
+  page_title: "View Class",
+  theme_color: {
+    light: "#b5b5b5",
+    dark: "#0d0d0d",
+  },
+  requiresAuth: true,
+};
+
+const portalViewTaskMeta = {
+  page_title: "View Task",
+  theme_color: {
+    light: "#b5b5b5",
+    dark: "#0d0d0d",
+  },
+  requiresAuth: true,
+};
+
+async function publicViewBeforeEnter(to) {
+  return redirectToShortViewIfNeeded(to, "publicviewclass", "publicviewtask");
+}
+
+async function portalViewBeforeEnter(to) {
+  return redirectToShortViewIfNeeded(to, "viewclass", "viewtask");
+}
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
@@ -30,35 +75,37 @@ const router = createRouter({
             requiresAuth: false,
           },
           children: [
-            // view task
+            // Old 3-segment task: local~classId~taskId (redirects to classId~taskId)
             {
-              // specify param "ref" in the route
               path: "/view/:ref([^~]+~[^~]+~[^~]+)",
-              name: "publicviewtask",
+              name: "publicviewtask_legacy",
               component: () => import("@/views/Portal/ViewTask.vue"),
-              meta: {
-                page_title: "View Task",
-                theme_color: {
-                  light: "#bfbfbf",
-                  dark: "#0d0d0d",
-                },
-                requiresAuth: false,
-              },
+              beforeEnter: publicViewBeforeEnter,
+              meta: viewTaskMeta,
             },
-            // view class
+            // 2-segment entry: local~classId → redirect to short class; classId~taskId → ViewTask
             {
-              // specify param "ref" in the route
               path: "/view/:ref([^~]+~[^~]+)",
+              name: "publicview_twoseg",
+              component: () => import("@/views/Portal/ViewClass.vue"),
+              beforeEnter: publicViewBeforeEnter,
+              meta: viewClassMeta,
+            },
+            // Short classId-only
+            {
+              path: "/view/:ref([^~/]+)",
               name: "publicviewclass",
               component: () => import("@/views/Portal/ViewClass.vue"),
-              meta: {
-                page_title: "View Class",
-                theme_color: {
-                  light: "#bfbfbf",
-                  dark: "#0d0d0d",
-                },
-                requiresAuth: false,
-              },
+              beforeEnter: publicViewBeforeEnter,
+              meta: viewClassMeta,
+            },
+            // Named target for short task (classId~taskId) after normalize — same path pattern,
+            // reached via named replace from beforeEnter (not by path rank).
+            {
+              path: "/view/:ref([^~]+~[^~]+)",
+              name: "publicviewtask",
+              component: () => import("@/views/Portal/ViewTask.vue"),
+              meta: viewTaskMeta,
             },
             // redirect page
             {
@@ -86,8 +133,6 @@ const router = createRouter({
                   dark: "#0d0d0d",
                 },
                 requiresAuth: false,
-                // change later to instead have custom action
-                // block_close: true,
                 close_path: "/",
                 blockStandardRedirect: true,
               },
@@ -527,32 +572,43 @@ const router = createRouter({
           },
         },
         {
-          // specify param "ref" in the route
-          path: "/portal/view/:ref?",
-          name: "viewtask",
+          // Old/any task ref; beforeEnter normalizes email-prefixed → short classId~taskId
+          path: "/portal/view/:ref([^~]+~[^~]+~[^~]+)",
+          name: "viewtask_legacy",
           component: () => import("../views/Portal/ViewTask.vue"),
-          meta: {
-            page_title: "View Task",
-            theme_color: {
-              light: "#b5b5b5",
-              dark: "#0d0d0d",
-            },
-            requiresAuth: true,
-          },
+          beforeEnter: portalViewBeforeEnter,
+          meta: portalViewTaskMeta,
         },
         {
-          // specify param "ref" in the route
+          // 2-seg: local~classId → short class; classId~taskId → task
           path: "/portal/view/:ref([^~]+~[^~]+)",
+          name: "view_twoseg",
+          component: () => import("../views/Portal/ViewClass.vue"),
+          beforeEnter: portalViewBeforeEnter,
+          meta: portalViewClassMeta,
+        },
+        {
+          // Short classId-only
+          path: "/portal/view/:ref([^~/]+)",
           name: "viewclass",
           component: () => import("../views/Portal/ViewClass.vue"),
-          meta: {
-            page_title: "View Class",
-            theme_color: {
-              light: "#b5b5b5",
-              dark: "#0d0d0d",
-            },
-            requiresAuth: true,
-          },
+          beforeEnter: portalViewBeforeEnter,
+          meta: portalViewClassMeta,
+        },
+        {
+          // Named short-task target (classId~taskId)
+          path: "/portal/view/:ref([^~]+~[^~]+)",
+          name: "viewtask",
+          component: () => import("../views/Portal/ViewTask.vue"),
+          meta: portalViewTaskMeta,
+        },
+        {
+          // Optional ref catch-all kept for empty /portal/view
+          path: "/portal/view/:ref?",
+          name: "viewtask_optional",
+          component: () => import("../views/Portal/ViewTask.vue"),
+          beforeEnter: portalViewBeforeEnter,
+          meta: portalViewTaskMeta,
         },
         {
           // specify param "ref" in the route

@@ -74,16 +74,49 @@ export default {
       new WarningToast("There was no class provided", 2000);
       this.$emit("close");
     } else {
-      let [_email, _id] = this.ref.split("~");
-      _email += this.$store.ORG_DOMAIN;
-      this.ref = [_email, _id].join("/");
-      if (this.ref.split("/").length !== 2) {
+      const parts = String(this.ref).split(/[~/]/).filter(Boolean);
+      let classId;
+      let email;
+      if (parts.length === 1) {
+        classId = parts[0];
+      } else if (parts.length >= 2) {
+        email = parts[0].includes("@") ? parts[0] : parts[0] + this.$store.ORG_DOMAIN;
+        classId = parts[1];
+        this.ref = [email, classId].join("/");
+      }
+      let classes = this.$store?.classes || [];
+      this.class_obj =
+        classes.find(
+          (c) =>
+            c.id === this.ref ||
+            c._class_id === classId ||
+            (classId && typeof c.id === "string" && c.id.endsWith("/" + classId))
+        ) || {};
+      if (!this.class_obj?.id && classId) {
+        // Resolve via dual-read then match enrollment pointer
+        this.$store
+          .class_from_ref(email ? `${email}/${classId}` : classId)
+          .then((obj) => {
+            const path =
+              obj.ref ||
+              (obj._teacher_email ? `${obj._teacher_email}/${classId}` : classId);
+            this.class_obj =
+              classes.find((c) => c.id === path || c._class_id === classId) || {
+                ...obj,
+                id: path,
+              };
+            this.ref = this.class_obj.id || path;
+            this.ready = true;
+          })
+          .catch(() => {
+            new WarningToast("Couldn't find that class", 2000);
+            this.$emit("close");
+          });
+      } else if (!this.class_obj?.id) {
         new WarningToast("Couldn't find that class", 2000);
         this.$emit("close");
       } else {
-        let classes = this.$store?.classes;
-        if (!classes || !this.ref) this.class_obj = {};
-        this.class_obj = classes.find((class_obj) => class_obj.id === this.ref) || {};
+        this.ref = this.class_obj.id;
         this.ready = true;
       }
     }
