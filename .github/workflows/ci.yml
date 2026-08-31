@@ -16,11 +16,20 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          # test:grapheme uses --experimental-strip-types (Node 22+)
+          node-version: "22"
           cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Prepare env
+        run: cp .env.test .env
 
       - name: Lint
         run: npm run lint
