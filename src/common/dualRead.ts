@@ -160,6 +160,23 @@ export async function getTaskDoc(
         legacyPath: taskPath(email, classId, taskId),
       };
     }
+
+    // Leftover nested archive doc (dual-read only; writers target flat tasks/{taskId})
+    const nestedArchive = await getDoc(
+      doc(db, "classes", email, "classes", classId, "archive", taskId)
+    );
+    if (nestedArchive.exists()) {
+      rememberClassEmail(classId, email);
+      return {
+        snap: nestedArchive,
+        data: nestedArchive.data() || {},
+        classId,
+        taskId,
+        teacherEmail: email,
+        source: "nested",
+        legacyPath: taskPath(email, classId, taskId),
+      };
+    }
   }
 
   return null;
