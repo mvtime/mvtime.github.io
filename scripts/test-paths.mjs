@@ -13,6 +13,11 @@ import {
   taskPath,
   looksLikeEmail,
   splitRefSegments,
+  writeClassId,
+  writeTaskIds,
+  bareClassIdFromEnrollment,
+  flatClassPath,
+  flatTaskPath,
 } from "../src/common/paths.ts";
 
 let failed = 0;
@@ -75,8 +80,8 @@ assertEq(parseTaskId("abc123~task9", org), {
   hasTeacherPrefix: false,
 }, "classId~taskId");
 
-assertEq(classPath("t@mvla.net", "abc123"), "t@mvla.net/abc123", "classPath nested");
-assertEq(taskPath("t@mvla.net", "abc123", "task9"), "t@mvla.net/abc123/task9", "taskPath nested");
+assertEq(classPath("t@mvla.net", "abc123"), "t@mvla.net/abc123", "classPath nested (legacy)");
+assertEq(taskPath("t@mvla.net", "abc123", "task9"), "t@mvla.net/abc123/task9", "taskPath nested (legacy)");
 
 assertEq(shortShareRef("abc123"), "abc123", "short class");
 assertEq(shortShareRef("abc123", "task9"), "abc123~task9", "short task");
@@ -102,6 +107,28 @@ assertEq(
 );
 
 assertEq(splitRefSegments("a~b/c"), ["a", "b", "c"], "split mixed separators");
+
+console.log("\n--- write helper tests ---\n");
+
+assertEq(writeClassId("abc123", org), "abc123", "writeClassId bare");
+assertEq(writeClassId("t@mvla.net/abc123", org), "abc123", "writeClassId email/classId");
+assertEq(writeClassId("t~abc123", org), "abc123", "writeClassId local~classId");
+assertEq(bareClassIdFromEnrollment("abc123"), "abc123", "enrollment bare");
+assertEq(bareClassIdFromEnrollment("t@mvla.net/abc123"), "abc123", "enrollment nested");
+assertEq(flatClassPath("abc123"), "abc123", "flatClassPath");
+assertEq(flatTaskPath("abc123", "task9"), "abc123/task9", "flatTaskPath");
+assertEq(writeTaskIds("abc123/task9", org), { classId: "abc123", taskId: "task9" }, "writeTaskIds flat slash");
+assertEq(writeTaskIds("abc123~task9", org), { classId: "abc123", taskId: "task9" }, "writeTaskIds flat tilde");
+assertEq(
+  writeTaskIds("t@mvla.net/abc123/task9", org),
+  { classId: "abc123", taskId: "task9" },
+  "writeTaskIds legacy email path"
+);
+assertEq(
+  writeTaskIds("t~abc123~task9", org),
+  { classId: "abc123", taskId: "task9" },
+  "writeTaskIds legacy local path"
+);
 
 console.log("\n--- done ---\n");
 if (failed) {

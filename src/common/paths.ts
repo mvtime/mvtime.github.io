@@ -8,7 +8,8 @@
  * - teacherEmail/classId[/taskId]
  * - local~classId[~taskId]
  *
- * Writers / nested path builders still emit email/classId until a later writer-switch.
+ * Writers emit bare classId / classId/taskId (flat classes/{classId}).
+ * classPath / taskPath remain for nested legacyPath dual-read fallback only.
  *
  * @module common/paths
  */
@@ -149,14 +150,77 @@ export function parseAmbiguousTwoSegment(
   };
 }
 
-/** Emit legacy nested path until writer-switch. Requires teacher email. */
+/** Nested legacy path for dual-read / enroll soak (not for new writes). Requires teacher email. */
 export function classPath(teacherEmail: string, classId: string): string {
   return [teacherEmail, classId].join("/");
 }
 
-/** Emit legacy nested path until writer-switch. Requires teacher email. */
+/** Nested legacy task path for dual-read soak (not for new writes). Requires teacher email. */
 export function taskPath(teacherEmail: string, classId: string, taskId: string): string {
   return [teacherEmail, classId, taskId].join("/");
+}
+
+/**
+ * Bare classId for flat writers.
+ * Accepts classId | email/classId | local~classId (slash or ~).
+ * Never returns email/classId.
+ */
+export function writeClassId(idOrRef: string | undefined | null, orgDomain: string): string | null {
+  if (!idOrRef || typeof idOrRef !== "string") return null;
+  // Slash enrollment email/classId (avoid ~ ambiguity)
+  if (idOrRef.includes("/") && !idOrRef.includes("~")) {
+    const slashParts = idOrRef.split("/").filter(Boolean);
+    if (slashParts.length >= 2 && looksLikeEmail(slashParts[0])) {
+      return slashParts[1] || null;
+    }
+    if (slashParts.length === 1 && !looksLikeEmail(slashParts[0])) {
+      return slashParts[0];
+    }
+  }
+  const parsed = parseClassId(idOrRef, orgDomain);
+  return parsed?.classId || null;
+}
+
+/**
+ * Bare classId from a users.classes[] enrollment entry (email/classId or classId).
+ */
+export function bareClassIdFromEnrollment(enrollmentPath: string | undefined | null): string {
+  const parts = (enrollmentPath || "").split("/").filter(Boolean);
+  if (parts.length >= 2) return parts[1];
+  return parts[0] || "";
+}
+
+/**
+ * Flat task identity for writers.
+ * Accepts classId/taskId | classId~taskId | email/classId/taskId | local~classId~taskId.
+ */
+export function writeTaskIds(
+  idOrRef: string | undefined | null,
+  orgDomain: string
+): { classId: string; taskId: string } | null {
+  if (!idOrRef || typeof idOrRef !== "string") return null;
+  let parsed = parseTaskId(idOrRef, orgDomain);
+  if (!parsed) {
+    const parts = splitRefSegments(idOrRef);
+    if (parts.length === 3) {
+      parsed = parseTaskId(parts.join("~"), orgDomain);
+    } else if (parts.length === 2 && !looksLikeEmail(parts[0])) {
+      // classId/taskId (slash) when parseTaskId got a different separator mix
+      parsed = { classId: parts[0], taskId: parts[1], hasTeacherPrefix: false };
+    }
+  }
+  if (!parsed?.classId || !parsed?.taskId) return null;
+  return { classId: parsed.classId, taskId: parsed.taskId };
+}
+
+/** Flat class write/share path: classes/{classId} key. */
+export function flatClassPath(classId: string): string {
+  return classId;
+}
+
+/** Flat task write path: classId/taskId (under classes/{classId}/tasks/{taskId}). */
+export function flatTaskPath(classId: string, taskId: string): string {
+  return [classId, taskId].join("/");
 }
 
 /**
