@@ -1,6 +1,7 @@
 /**
  * Firestore dual-read helpers: flat classes/{classId} first, then nested
- * classes/{email}/classes/{classId}. Writers remain on the nested path.
+ * classes/{email}/classes/{classId}. Writers target the flat path; nested
+ * leftovers remain readable during soak.
  *
  * @module common/dualRead
  */
@@ -26,7 +27,7 @@ export interface ClassDocResult {
   classId: string;
   teacherEmail: string | undefined;
   source: ClassDocSource;
-  /** Nested email/classId when resolvable (for writers / enrollment). */
+  /** Nested email/classId when resolvable (enroll / soak; not for new writes). */
   legacyPath: string | undefined;
 }
 

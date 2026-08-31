@@ -1,6 +1,6 @@
 /**
  * Live onSnapshot listeners for enrolled class docs (flat-first dual-read).
- * Cap = enrollment size. Writers remain nested; this module only reads.
+ * Cap = enrollment size. This module only reads (attach to flat when present).
  *
  * @module firebase/classListeners
  */

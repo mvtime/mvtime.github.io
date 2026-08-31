@@ -54,8 +54,17 @@ interface Survey extends DocumentData {
 type ClassID = string;
 
 function enrollmentKeyClassId(enrollmentPath: string): string {
-  const parts = (enrollmentPath || "").split("/").filter(Boolean);
-  return parts.length >= 2 ? parts[1] : parts[0] || "";
+  return bareClassIdFromEnrollment(enrollmentPath);
+}
+
+/** True when a local class cache entry matches a bare classId (enrollment may be email/classId or classId). */
+function classEntryMatchesId(entry: { id?: string; ref?: string; _class_id?: string } | null | undefined, classId: string): boolean {
+  if (!entry || !classId) return false;
+  if (entry._class_id === classId) return true;
+  if (entry.id === classId || entry.ref === classId) return true;
+  if (typeof entry.id === "string" && (entry.id.endsWith("/" + classId) || entry.id.endsWith("~" + classId))) return true;
+  if (typeof entry.ref === "string" && (entry.ref.endsWith("/" + classId) || entry.ref === classId)) return true;
+  return false;
 }
 
 // setup Pinia store
@@ -63,7 +72,9 @@ import { defineStore, type StoreDefinition } from "pinia";
 import { _status, compatDateObj, type LogEntry } from "@/common";
 import { classTextName } from "@/common/grapheme";
 import {
+  bareClassIdFromEnrollment,
   classPath,
+  flatTaskPath,
   humanTeachers,
   isCanvasImportEmail,
   parseClassId,
@@ -71,9 +82,10 @@ import {
   shortShareRef,
   splitRefSegments,
   taskPath as buildTaskPath,
+  writeClassId,
+  writeTaskIds,
 } from "@/common/paths";
 import {
-  flatClassExists,
   getClassDoc,
   getTaskDoc,
   rememberClassEmail,
@@ -89,7 +101,6 @@ import {
   getDocs,
   addDoc,
   writeBatch,
-  updateDoc,
   deleteDoc,
   type DocumentReference,
   type CollectionReference,
@@ -904,15 +915,15 @@ export const useMainStore: StoreDefinition = defineStore({
     async code_from_ref(ref: string): Promise<string> {
       try {
         if (!ref) return Promise.reject("No ref provided");
-        // Resolve to nested email/classId for codes + nested write
+        // Resolve classId (+ owner email for enroll code doc soak)
         const parsed = parseClassId(ref, this.ORG_DOMAIN);
         let _email = parsed?.teacherEmail;
-        let _id = parsed?.classId;
+        let _id = parsed?.classId || writeClassId(ref, this.ORG_DOMAIN) || undefined;
         if (!_email && _id) {
           const resolved = await getClassDoc(db, _id);
           _email = resolved?.teacherEmail;
         }
-        if (!_email || !_id) {
+        if (!_id) {
           // Legacy slash fallback
           ref = ref.split("~").join("/");
           let parts = ref.split("/");
@@ -920,25 +931,27 @@ export const useMainStore: StoreDefinition = defineStore({
           _email = parts[0].split("@")[0] + this.ORG_DOMAIN;
           _id = parts[1];
         }
-        ref = _email + "/" + _id;
+        if (!_id) return Promise.reject("Invalid ref");
 
-        // get code
-        const code: string = this.hash(ref);
+        // Hash stays on nested email/classId when email known (enroll codes unchanged);
+        // fall back to bare classId hash for flat-only classes.
+        const hashSource = _email ? _email + "/" + _id : _id;
+        const code: string = this.hash(hashSource);
 
         // check if class object already has code in this.classes
         const class_obj: ClassInfo | undefined = this.classes.find(
-          (e) => e.id == ref || e._class_id == _id || (typeof e.id === "string" && e.id.endsWith("/" + _id))
+          (e) => classEntryMatchesId(e, _id as string)
         );
         if (!class_obj) return Promise.reject("No matching class found");
 
         if (class_obj?.code !== code) {
-          // add ref to code doc
+          // Codes doc: keep nested ref when email known so enroll soak stays compatible
           const code_ref: DocumentReference = doc(db, "codes", code);
-          await setDoc(code_ref, { ref: ref });
+          await setDoc(code_ref, { ref: _email ? _email + "/" + _id : _id });
 
-          // add code to class doc (nested writer path)
-          const class_ref: DocumentReference = doc(db, "classes", _email, "classes", _id);
-          await updateDoc(class_ref, { code: code as string } as DocumentData);
+          // Write code onto flat class doc
+          const class_ref: DocumentReference = doc(db, "classes", _id);
+          await setDoc(class_ref, { code: code as string } as DocumentData, { merge: true });
         }
         return Promise.resolve(code);
       } catch (err) {
@@ -1000,15 +1013,12 @@ export const useMainStore: StoreDefinition = defineStore({
       doc_data.ref = meta.legacyPath || enrollmentPath;
       if (classId) doc_data._class_id = classId;
 
-      const refParts = (doc_data.ref || "").split("/").filter(Boolean);
-      const emailPart = refParts[0];
-      const idPart = refParts[1] || classId;
       doc_data.tasks = doc_data.tasks || [];
       doc_data.tasks = doc_data.tasks.map((task: TaskInfo) => {
         const stamped: TaskInfo = { ...task };
-        if (emailPart && idPart && (stamped.id || stamped.ref)) {
-          const tid = stamped.id || (stamped.ref as string)?.split("/").pop();
-          if (tid) stamped.ref = [emailPart, idPart, tid].join("/");
+        const tid = stamped.id || (typeof stamped.ref === "string" ? stamped.ref.split("/").pop() : undefined);
+        if (tid && classId) {
+          stamped.ref = flatTaskPath(classId, tid);
         }
         delete stamped.id;
         return stamped;
@@ -1081,8 +1091,8 @@ export const useMainStore: StoreDefinition = defineStore({
             const classTask = class_tasks[j];
             let ref = classTask.ref;
             if (!ref && classTask.id) {
-              const [_email, _cid] = classes[i].ref.split("/");
-              ref = [_email, _cid, classTask.id].join("/");
+              const cid = classes[i]._class_id || enrollmentKeyClassId(classes[i].id || "") || enrollmentKeyClassId(classes[i].ref || "");
+              ref = cid ? flatTaskPath(cid, classTask.id) : undefined;
             }
             tasks.push({
               ...(classTask as ProcessedTaskInfo),
@@ -1533,11 +1543,11 @@ export const useMainStore: StoreDefinition = defineStore({
           if (this.personal_account) {
             this.get_remote();
           }
-          // if teacher, setup this.teacher refs
+          // if teacher, point collection_ref at top-level classes (flat writes)
           if (this.is_teacher) {
             _status.log("🏫 In teacher mode");
-            this.teacher.doc_ref = doc(db, "classes", this.user?.email as string);
-            this.teacher.collection_ref = collection(this.teacher.doc_ref, "classes");
+            this.teacher.doc_ref = null;
+            this.teacher.collection_ref = collection(db, "classes");
           }
           // if router has a redirect, go to it
           if (router.currentRoute?.value?.query?.redirect && !router.currentRoute?.value?.meta?.blockStandardRedirect) {
@@ -1774,17 +1784,11 @@ export const useMainStore: StoreDefinition = defineStore({
      * @see {@link is_teacher}
      */
     async create_teacher_doc(): Promise<void> {
-      const email = this.active_doc?.email || this.user?.email;
-      if (!email) return;
-      // create teacher doc under (classes/teacher_email+this.ORG_DOMAIN) with sub-collection (classes)
-      let teacher_ref = doc(db, "classes", email);
-      await setDoc(teacher_ref, {
-        name: this.active_doc?.name || this.user?.displayName,
-        email: this.active_doc?.email || this.user?.email,
-      });
+      // Flat model: do NOT create classes/{email} teacher-root docs — they collide
+      // with classes/{classId}. Writers use collection(db, "classes") directly.
       this.teacher = {
-        doc_ref: teacher_ref,
-        collection_ref: collection(teacher_ref, "classes"),
+        doc_ref: null,
+        collection_ref: collection(db, "classes"),
       };
       router.push("/portal/create");
     },
@@ -1867,9 +1871,10 @@ export const useMainStore: StoreDefinition = defineStore({
           await this.remove_invalid(class_path);
           continue;
         }
-        // Keep enrollment pointer as id; prefer nested legacy path for writers
+        // Keep enrollment pointer as id; dual-read may still expose nested legacyPath
         doc_data.id = class_path;
         doc_data.ref = classResult.legacyPath || class_path;
+        doc_data._class_id = class_id;
         if (classResult.teacherEmail) {
           rememberClassEmail(class_id, classResult.teacherEmail);
         }
@@ -1877,13 +1882,15 @@ export const useMainStore: StoreDefinition = defineStore({
         classes.push(doc_data);
       }
       _status.log(`📚 Got class docs  | <${run_hash}>`);
-      // get tasks for all classes in parallel
+      // Stamp task refs as flat classId/taskId for writers
 
       classes = classes.map((class_data: ClassInfo) => {
-        let [_email, _id] = class_data.ref.split("/");
+        const cid = class_data._class_id || enrollmentKeyClassId(class_data.id || "");
         class_data.tasks = class_data.tasks || [];
         class_data.tasks = class_data.tasks.map((task: TaskInfo) => {
-          task.ref = [_email, _id, task.id].join("/");
+          if (task.id && cid) {
+            task.ref = flatTaskPath(cid, task.id);
+          }
           delete task.id;
           return task;
         });
@@ -1986,8 +1993,8 @@ export const useMainStore: StoreDefinition = defineStore({
     /**
      * @memberOf .main.actions
      * @function create_class
-     * @description Create a class with the given object, and add it to the active user's document. (for teachers)
-     * @param {Object} class_obj The class object to with the class data, document will be created in /classes under the teacher's email with these contents
+     * @description Create a class at classes/{classId} (flat), with owner teachers[] + teachers/{email} subdoc. (for teachers)
+     * @param {Object} class_obj The class object with class data
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      * @see {@link is_teacher}
      * @see {@link teacher}
@@ -1999,21 +2006,77 @@ export const useMainStore: StoreDefinition = defineStore({
         return;
       }
       if (!class_obj.name) return; // handled in disabled attr of button, failsafe for db
+      const email = this.active_doc?.email || this.user?.email;
+      if (!email) {
+        return Promise.reject("No teacher email");
+      }
       try {
-        // check if there is a teacher doc and collection
-        if (!this.teacher.doc_ref || !this.teacher.collection_ref) {
-          // create teacher doc
-          await this.create_teacher_doc();
-          // call this again
-          await this.create_class(class_obj);
-          return;
+        // Ensure teacher collection points at top-level classes (never classes/{email})
+        if (!this.teacher.collection_ref) {
+          this.teacher.collection_ref = collection(db, "classes");
         }
-        // create class doc under teacher.collection_ref
-        const class_doc_ref: DocumentReference = await addDoc(this.teacher.collection_ref, class_obj);
-        // add class to user doc;
+
+        const ownerName =
+          this.active_doc?.name || this.user?.displayName || email.split("@")[0];
+        const owner = { email, name: ownerName, role: "owner" as const };
+        const {
+          id: _dropId,
+          ref: _dropRef,
+          tasks: _dropTasks,
+          _class_id: _c,
+          _teacher_email: _t,
+          _source: _s,
+          _share_ref: _sh,
+          _implied_owner: _i,
+          ...rest
+        } = class_obj as ClassInfo & Record<string, unknown>;
+        void _dropId;
+        void _dropRef;
+        void _dropTasks;
+        void _c;
+        void _t;
+        void _s;
+        void _sh;
+        void _i;
+
+        const write_obj: DocumentData = {
+          ...rest,
+          owner_email: email,
+          teachers: [owner],
+          teacher_emails: [email],
+        };
+
+        // Flat create: addDoc on top-level classes collection (never classes/{email}/classes)
+        const class_doc_ref: DocumentReference = await addDoc(collection(db, "classes"), write_obj);
+        const classId = class_doc_ref.id;
+
+        // Owner person subdoc under classes/{classId}/teachers/{email}
+        await setDoc(
+          doc(db, "classes", classId, "teachers", email),
+          {
+            email,
+            name: ownerName,
+            role: "owner",
+          },
+          { merge: true }
+        );
+        rememberClassEmail(classId, email);
+
         new SuccessToast(`Created class "${this.class_text(class_obj)}"`, 2000);
-        _status.log("🏫 Created class w/ ref", class_doc_ref);
-        await this.add_class(this.active_doc?.email || this.user?.email, class_doc_ref.id, class_obj.name, class_obj.period);
+        _status.log("🏫 Created flat class w/ id", classId);
+
+        // Enroll self with bare classId (users.classes[] pointer rewrite)
+        if (this.active_doc?.classes) {
+          if (!this.active_doc.classes.includes(classId)) {
+            if (this.personal_account && this.linked_account_doc) {
+              this.linked_account_doc.classes.push(classId);
+            } else if (this.account_doc) {
+              this.account_doc.classes.push(classId);
+            }
+            await this.update_remote();
+          }
+          await this.fetch_classes();
+        }
         return Promise.resolve();
       } catch (e) {
         new ErrorToast("Couldn't create class", cleanError(e), 2000);
@@ -2035,26 +2098,24 @@ export const useMainStore: StoreDefinition = defineStore({
         } else if (!task_classes || task_classes.length == 0) {
           return Promise.reject("No classes selected");
         }
-        // use firebase array add to add task to each class
+        // Flat writes: classes/{classId}/tasks/{taskId}
         let batch: WriteBatch = writeBatch(db);
         let updated_classes: ClassInfo[] = Array.from(this.classes);
-        task_classes.forEach((class_id: ClassID) => {
-          // fix any class_id that has the teacher email in it
-          const displayed_class_id: string = class_id;
-          const [_email, _id] = class_id.split("/");
-          // use this.teacher.collection_ref to get class collection ref, then update the class documents within
-          const class_tasks_collection: CollectionReference = collection(db, "classes", _email, "classes", _id, "tasks");
-          task_obj.class_id = displayed_class_id;
+        task_classes.forEach((enrollmentOrId: ClassID) => {
+          const classId = bareClassIdFromEnrollment(enrollmentOrId) || writeClassId(enrollmentOrId, this.ORG_DOMAIN);
+          if (!classId) return;
+          const displayed_class_id: string = enrollmentOrId;
+          const class_tasks_collection: CollectionReference = collection(db, "classes", classId, "tasks");
+          task_obj.class_id = classId;
 
-          // batch add a new task doc with the data to the class_tasks_collection collection, using auto-generated id
           const task_ref: DocumentReference = doc(class_tasks_collection);
-          batch.set(task_ref, task_obj);
+          batch.set(task_ref, { ...task_obj, class_id: classId });
           updated_classes.forEach((class_obj: ClassInfo) => {
-            if (class_obj.id == displayed_class_id) {
+            if (classEntryMatchesId(class_obj, classId) || class_obj.id == displayed_class_id) {
               class_obj.tasks?.push({
                 ...task_obj,
-                ref: [_email, _id, task_ref.id].join("/"),
-                class_id: displayed_class_id,
+                ref: flatTaskPath(classId, task_ref.id),
+                class_id: class_obj.id || classId,
                 _proxy: true,
               });
             }
@@ -2109,8 +2170,21 @@ export const useMainStore: StoreDefinition = defineStore({
           end: this.normalize_repetition_end(repetition.end),
         };
 
+        // Prefer bare classId for callable payload (server accepts both during cutover)
+        const classIds = task_classes
+          .map((c) => bareClassIdFromEnrollment(c) || writeClassId(c, this.ORG_DOMAIN))
+          .filter(Boolean) as string[];
+        const taskPayload = {
+          ...task_obj,
+          class_id: classIds[0] || writeClassId(task_obj.class_id, this.ORG_DOMAIN) || task_obj.class_id,
+        };
+
         const createRepeatingTask = httpsCallable(functions, "createRepeatingTask");
-        const result = await createRepeatingTask({ task: task_obj, classes: task_classes, repetition: normalizedRepetition });
+        const result = await createRepeatingTask({
+          task: taskPayload,
+          classes: classIds.length ? classIds : task_classes,
+          repetition: normalizedRepetition,
+        });
         const data = result.data as any;
 
         if (data.error) throw data.error;
@@ -2135,8 +2209,18 @@ export const useMainStore: StoreDefinition = defineStore({
     async update_repeating_task(repetition_group_id: string, updates: any, scope: "future" | "all", task_ref: string, task_date: string): Promise<void> {
       try {
         const safeUpdates = this.sanitize_repeating_task_updates(updates);
+        const ids = writeTaskIds(task_ref, this.ORG_DOMAIN);
+        // Prefer classId~taskId (or classId/taskId) for callable; server accepts both
+        const preferredRef = ids ? shortShareRef(ids.classId, ids.taskId) : task_ref;
         const updateRepeatingTask = httpsCallable(functions, "updateRepeatingTask");
-        const result = await updateRepeatingTask({ repetition_group_id, updates: safeUpdates, scope, task_ref, task_date });
+        const result = await updateRepeatingTask({
+          repetition_group_id,
+          updates: safeUpdates,
+          scope,
+          task_ref: preferredRef,
+          task_date,
+          ...(ids ? { classId: ids.classId, taskId: ids.taskId } : {}),
+        });
         const data = result.data as any;
 
         if (data.error) throw data.error;
@@ -2178,8 +2262,16 @@ export const useMainStore: StoreDefinition = defineStore({
      */
     async delete_repeating_task(repetition_group_id: string, scope: "future" | "all", task_ref: string, task_date: string): Promise<void> {
       try {
+        const ids = writeTaskIds(task_ref, this.ORG_DOMAIN);
+        const preferredRef = ids ? shortShareRef(ids.classId, ids.taskId) : task_ref;
         const deleteRepeatingTask = httpsCallable(functions, "deleteRepeatingTask");
-        const result = await deleteRepeatingTask({ repetition_group_id, scope, task_ref, task_date });
+        const result = await deleteRepeatingTask({
+          repetition_group_id,
+          scope,
+          task_ref: preferredRef,
+          task_date,
+          ...(ids ? { classId: ids.classId, taskId: ids.taskId } : {}),
+        });
         const data = result.data as any;
 
         if (data.error) throw data.error;
@@ -2216,8 +2308,8 @@ export const useMainStore: StoreDefinition = defineStore({
     /**
      * @memberOf .main.actions
      * @function update_class
-     * @description Update an instance of a class (for teachers). Intended to be preformed from the EditClass Modal
-     * @param {String} class_ref the "email/class_id" String representation of the class ref in firebase
+     * @description Update an instance of a class (for teachers). Writes flat classes/{classId}.
+     * @param {String} class_ref classId or legacy email/class_id
      * @param {Object} class_obj The updated class object
      * @returns {Promise} A promise that resolves to nothing or rejects with an error
      */
@@ -2232,6 +2324,8 @@ export const useMainStore: StoreDefinition = defineStore({
           _implied_owner: _i,
           ref: _r,
           id: _idField,
+          teachers: _teachersWrite,
+          teacher_emails: _teacherEmailsWrite,
           ...write_obj
         } = class_obj as ClassInfo & Record<string, unknown>;
         void _c;
@@ -2241,39 +2335,40 @@ export const useMainStore: StoreDefinition = defineStore({
         void _i;
         void _r;
         void _idField;
+        // teachers[] membership is owned by update_class_teachers (never canvas.import here)
+        void _teachersWrite;
+        void _teacherEmailsWrite;
 
-        const parsed = parseClassId(class_ref, this.ORG_DOMAIN);
-        let _email = parsed?.teacherEmail;
-        let _id = parsed?.classId;
-        if (!_email && _id) {
-          const resolved = await getClassDoc(db, _id);
-          _email = resolved?.teacherEmail;
-        }
-        // Legacy slash path fallback
-        if (!_email || !_id) {
-          const parts = class_ref.split("/");
-          if (parts.length >= 2) {
-            _email = parts[0].includes("@") ? parts[0] : parts[0] + this.ORG_DOMAIN;
-            _id = parts[1];
-          }
-        }
-        if (!_email || !_id) throw "Cannot resolve nested path for class update";
+        const classId =
+          writeClassId(class_ref, this.ORG_DOMAIN) ||
+          (class_obj as ClassInfo)._class_id ||
+          bareClassIdFromEnrollment(class_ref);
+        if (!classId) throw "Cannot resolve classId for class update";
 
-        const path = classPath(_email, _id);
-        // Writers stay on nested email/classId path (source of truth)
-        await updateDoc(doc(db, "classes", _email, "classes", _id), write_obj);
-        _status.log("📝 Updated remote class");
+        // Flat writer path
+        await setDoc(doc(db, "classes", classId), write_obj as DocumentData, { merge: true });
+        _status.log("📝 Updated remote class (flat)", classId);
         if (class_obj.archived) {
-          await this.remove_class_id_helper(path);
-          if (this.loaded_email === _email && this.loaded_classes !== null) {
-            this.loaded_classes = this.loaded_classes.filter((c) => c.id === path);
+          // Remove any enrollment pointer form (bare or nested)
+          const enrollmentKeys = [
+            ...(this.active_doc?.classes || []).filter(
+              (c) => c === classId || bareClassIdFromEnrollment(c) === classId
+            ),
+          ];
+          for (const key of enrollmentKeys) {
+            await this.remove_class_id_helper(key);
+          }
+          if (this.loaded_classes !== null) {
+            this.loaded_classes = this.loaded_classes.filter(
+              (c) => c.id !== classId && bareClassIdFromEnrollment(c.id) !== classId
+            );
           }
           _status.log("📝 Archived class");
           return Promise.resolve();
         }
         let classes: ClassInfo[] = this.classes;
         // update local version of class in classes
-        const classIndex = classes.findIndex((c) => c.id === path || c._class_id === _id);
+        const classIndex = classes.findIndex((c) => classEntryMatchesId(c, classId));
         if (classIndex !== -1) {
           // Update the class object within the classes array
           classes[classIndex] = { ...classes[classIndex], ...write_obj, _proxy: true };
@@ -2293,8 +2388,8 @@ export const useMainStore: StoreDefinition = defineStore({
     /**
      * @memberOf .main.actions
      * @function update_task
-     * @description Update an instance of a task from a class (for teachers). Intended to be preformed from the EditTask Modal
-     * @param {String} task_ref the "email/class_id/task_id" String representation of the task ref in firebase
+     * @description Update an instance of a task from a class (for teachers). Writes flat classes/{classId}/tasks/{taskId}.
+     * @param {String} task_ref classId/taskId or legacy email/class_id/task_id
      * @param {Object} task_obj The updated task object
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      */
@@ -2303,29 +2398,30 @@ export const useMainStore: StoreDefinition = defineStore({
         delete task_obj.class_id;
         delete task_obj.ref;
         delete task_obj._class;
-        let [_email, _id, task_id] = task_ref.split("/");
-        if (!_email.includes(this.ORG_DOMAIN)) {
-          _email += this.ORG_DOMAIN;
-        }
-        // update the document with the same id as the task from the tasks collection
-        await updateDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id), task_obj);
-        _status.log("📝 Updated remote task");
+        const ids = writeTaskIds(task_ref, this.ORG_DOMAIN);
+        if (!ids) throw "Invalid task ref";
+        const { classId, taskId } = ids;
+        // Flat writer path
+        await setDoc(doc(db, "classes", classId, "tasks", taskId), task_obj, { merge: true });
+        _status.log("📝 Updated remote task (flat)", classId, taskId);
         let classes: ClassInfo[] = this.classes;
-        // update local version of task in classes
-        let class_id = [_email, _id].join("/");
-        const classIndex: number = classes.findIndex((class_obj) => class_obj.id === class_id);
-        const ref: string = [_email, _id, task_id].join("/");
+        const classIndex: number = classes.findIndex((class_obj) => classEntryMatchesId(class_obj, classId));
+        const ref: string = flatTaskPath(classId, taskId);
         if (classIndex !== -1) {
-          const taskIndex = classes[classIndex].tasks?.findIndex((task) => task.ref === ref);
+          const taskIndex = classes[classIndex].tasks?.findIndex((task) => {
+            if (task.ref === ref || task.ref === task_ref) return true;
+            const tid = writeTaskIds(task.ref, this.ORG_DOMAIN);
+            return tid?.taskId === taskId && tid?.classId === classId;
+          });
 
-          if (taskIndex !== -1) {
+          if (taskIndex !== undefined && taskIndex !== -1) {
             // Update the task object within the tasks array of the class_obj
             // TODO: TS doesn't like this, but should work always
             // @ts-ignore
             classes[classIndex].tasks[taskIndex] = {
               ...task_obj,
               ref: ref,
-              class_id: class_id,
+              class_id: classes[classIndex].id || classId,
               _proxy: true,
             };
             _status.log("📝 Updated local task");
@@ -2345,26 +2441,28 @@ export const useMainStore: StoreDefinition = defineStore({
     /**
      * @memberOf .main.actions
      * @function archive_task
-     * @description Archive an instance of a task from a class (for teachers). Intended to be preformed from the ViewTask Modal
-     * @param {String} task_ref the "email/class_id" String representation of the task ref in firebase
+     * @description Archive an instance of a task from a class (for teachers). Deletes flat classes/{classId}/tasks/{taskId}.
+     * @param {String} task_ref classId/taskId or legacy email/class_id/task_id
      * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
      * @see {@link create_task}
      * @note This currently only removes the instance of the task being viewed. Could add a secondary modal to allow deletion of multiple instances instead?
      */
     async archive_task(task_ref: string): Promise<void> {
-      let [_email, _id, task_id] = task_ref.split("/");
-      _email += this.ORG_DOMAIN;
+      const ids = writeTaskIds(task_ref, this.ORG_DOMAIN);
+      if (!ids) return Promise.reject("Invalid task ref");
+      const { classId, taskId } = ids;
       try {
-        // remove the document with the same id as the task from the tasks collection
-        await deleteDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id));
-        _status.log("📄 Archived task");
+        await deleteDoc(doc(db, "classes", classId, "tasks", taskId));
+        _status.log("📄 Archived task (flat)", classId, taskId);
 
         try {
           let classes: ClassInfo[] = this.classes;
           classes.forEach((class_obj) => {
-            if (class_obj.id == [_email, _id].join("/")) {
+            if (classEntryMatchesId(class_obj, classId)) {
               class_obj.tasks = class_obj.tasks?.filter((task) => {
-                return task.ref != [_email, _id, task_id].join("/");
+                if (task.ref === flatTaskPath(classId, taskId) || task.ref === task_ref) return false;
+                const tid = writeTaskIds(task.ref, this.ORG_DOMAIN);
+                return !(tid?.taskId === taskId && tid?.classId === classId);
               });
             }
           });
@@ -2415,15 +2513,14 @@ export const useMainStore: StoreDefinition = defineStore({
         _status.log("📄 Got task from ref");
 
         const email = taskResult.teacherEmail || classResult.teacherEmail;
-        const nestedClassPath = email ? classPath(email, parsed.classId) : parsed.classId;
-        const local = email ? email.split("@")[0] : undefined;
         const classShareRef = shortShareRef(parsed.classId);
         const taskShareRef = shortShareRef(parsed.classId, parsed.taskId);
+        const flatRef = flatTaskPath(parsed.classId, parsed.taskId);
 
         return Promise.resolve({
           ...(taskResult.data as TaskInfo),
-          ref: email ? buildTaskPath(email, parsed.classId, parsed.taskId) : `${parsed.classId}/${parsed.taskId}`,
-          class_id: nestedClassPath,
+          ref: flatRef,
+          class_id: parsed.classId,
           class_name: this.class_text(class_data),
           _class: {
             ...class_data,
@@ -2433,7 +2530,7 @@ export const useMainStore: StoreDefinition = defineStore({
             _class_id: parsed.classId,
           },
           _share_ref: taskShareRef,
-          _local_prefix: local,
+          _local_prefix: email ? email.split("@")[0] : undefined,
         } as TaskInfo);
       } catch (err) {
         return Promise.reject(err);
@@ -2535,7 +2632,6 @@ export const useMainStore: StoreDefinition = defineStore({
         class_tasks = class_tasks.slice(0, 6);
 
         let upcoming_tasks: TaskInfo[] = [];
-        const email = classResult.teacherEmail;
 
         class_tasks.forEach((task) => {
           const task_id = task.id;
@@ -2545,7 +2641,7 @@ export const useMainStore: StoreDefinition = defineStore({
             ref: shortShareRef(parsed.classId, task_id),
             date: compatDateObj(task.date as string),
             color: class_doc?.color,
-            class_id: email ? classPath(email, parsed.classId) : parsed.classId,
+            class_id: parsed.classId,
             class_name: this.class_text(class_doc as ClassInfo),
           } as TaskInfo);
         });
@@ -2579,51 +2675,38 @@ export const useMainStore: StoreDefinition = defineStore({
     },
 
     /**
-     * Persist teacher membership. Always writes nested class doc; also upserts flat teachers[]
-     * / teachers/{email} when a flat classes/{classId} doc exists. Never creates Canvas teacher subdocs.
+     * Persist teacher membership on flat classes/{classId} + teachers/{email} subdocs.
+     * Never creates Canvas teacher subdocs / never puts canvas.import into teachers[].
      */
     async update_class_teachers(
       class_ref: string,
       teachers: { email: string; name?: string; role?: string }[]
     ): Promise<void> {
-      const parsed = parseClassId(class_ref, this.ORG_DOMAIN);
-      if (!parsed?.classId) throw "Invalid class ref";
+      const classId =
+        writeClassId(class_ref, this.ORG_DOMAIN) ||
+        parseClassId(class_ref, this.ORG_DOMAIN)?.classId;
+      if (!classId) throw "Invalid class ref";
 
       const humans = humanTeachers(teachers).filter((t) => !isCanvasImportEmail(t.email));
       const teacher_emails = humans.map((t) => t.email);
 
-      // Resolve nested write path — always persist on nested tree (source of truth)
-      let email = parsed.teacherEmail;
-      if (!email) {
-        const result = await getClassDoc(db, parsed.classId);
-        email = result?.teacherEmail;
-      }
-      if (!email) throw "Cannot resolve nested teacher email for class write";
-
-      const nestedRef = doc(db, "classes", email, "classes", parsed.classId);
-      await updateDoc(nestedRef, { teachers: humans, teacher_emails } as DocumentData);
-
-      // Optional dual-write onto flat doc when it already exists (do not create flat from scratch)
-      if (await flatClassExists(db, parsed.classId)) {
-        const flatRef = doc(db, "classes", parsed.classId);
-        await updateDoc(flatRef, { teachers: humans, teacher_emails } as DocumentData);
-        for (const person of humans) {
-          if (isCanvasImportEmail(person.email)) continue;
-          await setDoc(
-            doc(db, "classes", parsed.classId, "teachers", person.email),
-            {
-              email: person.email,
-              name: person.name || person.email.split("@")[0],
-              role: person.role || "teacher",
-            },
-            { merge: true }
-          );
-        }
+      const flatRef = doc(db, "classes", classId);
+      await setDoc(flatRef, { teachers: humans, teacher_emails } as DocumentData, { merge: true });
+      for (const person of humans) {
+        if (isCanvasImportEmail(person.email)) continue;
+        await setDoc(
+          doc(db, "classes", classId, "teachers", person.email),
+          {
+            email: person.email,
+            name: person.name || person.email.split("@")[0],
+            role: person.role || "teacher",
+          },
+          { merge: true }
+        );
       }
 
       // Refresh local classes cache entry if present
-      const path = classPath(email, parsed.classId);
-      const idx = this.classes.findIndex((c) => c.id === path || c.ref === path || c._class_id === parsed.classId);
+      const idx = this.classes.findIndex((c) => classEntryMatchesId(c, classId));
       if (idx !== -1) {
         this.classes[idx] = { ...this.classes[idx], teachers: humans, teacher_emails };
         this.classes = [...this.classes];

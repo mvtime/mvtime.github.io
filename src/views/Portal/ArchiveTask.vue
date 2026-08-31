@@ -63,14 +63,26 @@ export default {
   computed: {
     class_obj() {
       if (!this.ref) return {};
-      let classes = this.$store?.classes,
-        [_email, _id] = this.ref.split("/");
-      let email = _email + this.$store.ORG_DOMAIN,
-        class_id = [email, _id].join("/");
-      if (!classes || !email || !_id || !class_id) return {};
-      let class_obj = classes.find((class_obj) => class_obj.id === class_id) || {};
+      let classes = this.$store?.classes;
+      if (!classes) return {};
+      const parts = this.ref.split("/").filter(Boolean);
+      // Flat classId/taskId or legacy email/classId/taskId
+      const classId =
+        parts.length === 3
+          ? parts[1]
+          : parts.length === 2
+            ? parts[0]
+            : null;
+      if (!classId) return {};
+      let class_obj =
+        classes.find(
+          (c) =>
+            c.id === classId ||
+            c._class_id === classId ||
+            (typeof c.id === "string" && c.id.endsWith("/" + classId))
+        ) || {};
       if (class_obj) {
-        class_obj.ref = [_email, _id].join("~");
+        class_obj = { ...class_obj, ref: classId };
       }
       return class_obj;
     },
@@ -92,7 +104,9 @@ export default {
       this.$emit("close");
     } else {
       this.ref = this.ref.split("~").join("/");
-      if (this.ref.split("/").length !== 3) {
+      const segs = this.ref.split("/").filter(Boolean);
+      // Accept flat classId/taskId (2) or legacy email/classId/taskId (3)
+      if (segs.length < 2 || segs.length > 3) {
         new WarningToast("Couldn't find that task", 2000);
         this.$emit("close");
       } else {
