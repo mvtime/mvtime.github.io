@@ -35,6 +35,7 @@ export {
   httpsCallable,
   authChangeAction,
   refreshTimeout,
+  setupSnapshot,
 };
 
 // Re-export hydrate helper for Portal / callers (listeners-only; no Board GET / API_KEY)
@@ -96,10 +97,14 @@ function authChangeAction(user: User | null): void {
 }
 
 function setupSnapshot(uid: string | undefined): void {
-  _status.log("⬥ Setting up snapshot");
+  _status.log("⬥ Setting up snapshot", uid);
   if (!uid) {
     _status.warn("⚠ No uid provided to setupSnapshot");
     return;
+  }
+  // Replace prior user-doc listener when switching principal (personal → schoolUid)
+  if (typeof unsub === "function") {
+    unsub();
   }
   const store = getMainStore();
   store.hide_timeout();
