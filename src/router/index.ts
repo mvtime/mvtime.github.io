@@ -656,6 +656,20 @@ const router = createRouter({
           },
         },
         {
+          path: "/portal/unarchive/:type?/:ref?",
+          name: "unarchive",
+          component: () => import("../views/Portal/UnarchiveTask.vue"),
+          meta: {
+            page_title: "Confirm Task Unarchive",
+            theme_color: {
+              light: "#b5b5b5",
+              dark: "#0d0d0d",
+            },
+            requiresAuth: true,
+            requiresTeacher: true,
+          },
+        },
+        {
           // specify param "ref" in the route
           path: "/portal/leave/:ref?",
           name: "leave",

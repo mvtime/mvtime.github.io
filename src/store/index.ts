@@ -102,6 +102,7 @@ import {
   addDoc,
   writeBatch,
   deleteDoc,
+  deleteField,
   type DocumentReference,
   type CollectionReference,
   type WriteBatch,
@@ -1068,6 +1069,7 @@ export const useMainStore: StoreDefinition = defineStore({
           class_tasks = class_tasks ? class_tasks : [];
           // add class name and color to each task
           for (let j = 0; j < (class_tasks?.length || 0); j++) {
+            if (class_tasks[j].archived) continue;
             classes[i].name = classes[i].name ? classes[i].name : "Unnamed Class";
             // check task date type and convert to date object if necessary
             let date: Date | null;
@@ -2480,6 +2482,76 @@ export const useMainStore: StoreDefinition = defineStore({
     },
     /**
      * @memberOf .main.actions
+     * @function unarchive_task
+     * @description Restore a flattened archived task in-place (classes/{classId}/tasks/{taskId}).
+     * Clears archived / archived_at set by migrateFlattenClasses. Writes flat only.
+     * @param {String} task_ref classId/taskId or legacy email/class_id/task_id
+     * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
+     */
+    async unarchive_task(task_ref: string): Promise<void> {
+      const ids = writeTaskIds(task_ref, this.ORG_DOMAIN);
+      if (!ids) return Promise.reject("Invalid task ref");
+      const { classId, taskId } = ids;
+      try {
+        const parsed = parseTaskId(task_ref, this.ORG_DOMAIN);
+        const taskResult = await getTaskDoc(db, classId, taskId, parsed?.teacherEmail);
+        if (!taskResult) return Promise.reject("Task not found");
+
+        const { id: _dropId, ...taskFields } = taskResult.data as TaskInfo & { id?: string };
+        void _dropId;
+        await setDoc(
+          doc(db, "classes", classId, "tasks", taskId),
+          {
+            ...taskFields,
+            archived: false,
+            archived_at: deleteField(),
+          },
+          { merge: true }
+        );
+        _status.log("📄 Unarchived task (flat)", classId, taskId);
+
+        try {
+          const flatRef = flatTaskPath(classId, taskId);
+          let classes: ClassInfo[] = this.classes;
+          classes.forEach((class_obj) => {
+            if (!classEntryMatchesId(class_obj, classId)) return;
+            const restored: TaskInfo = {
+              ...(taskResult.data as TaskInfo),
+              ref: flatRef,
+              class_id: class_obj.id || classId,
+              archived: false,
+              _proxy: true,
+            };
+            delete restored.archived_at;
+            delete restored.id;
+
+            const tasks = class_obj.tasks ? [...class_obj.tasks] : [];
+            const taskIndex = tasks.findIndex((task) => {
+              if (task.ref === flatRef || task.ref === task_ref) return true;
+              const tid = writeTaskIds(task.ref, this.ORG_DOMAIN);
+              return tid?.taskId === taskId && tid?.classId === classId;
+            });
+            if (taskIndex >= 0) {
+              tasks[taskIndex] = restored;
+            } else {
+              tasks.push(restored);
+            }
+            class_obj.tasks = tasks;
+          });
+          this.classes = classes;
+          this.get_tasks();
+        } catch (err) {
+          _status.error("🔥 Error restoring task in local state", err);
+          throw err;
+        }
+      } catch (err) {
+        return Promise.reject(err);
+      }
+
+      return Promise.resolve();
+    },
+    /**
+     * @memberOf .main.actions
      * @function task_from_ref
      * @description Get the task object from a task reference
      * @param {String} ref The task reference to get the task object from
@@ -2623,7 +2695,11 @@ export const useMainStore: StoreDefinition = defineStore({
         }
         let class_tasks: TaskInfo[] = (classResult.data?.tasks as TaskInfo[]) || [];
         class_tasks = class_tasks.filter((task) => {
-          return task.type != "note" && compatDateObj(task.date as string).getTime() >= new Date().getTime();
+          return (
+            !task.archived &&
+            task.type != "note" &&
+            compatDateObj(task.date as string).getTime() >= new Date().getTime()
+          );
         });
         class_tasks.sort((a: TaskInfo, b: TaskInfo) => {
           return compatDateObj(a.date as string)?.getTime() - compatDateObj(b.date as string)?.getTime();

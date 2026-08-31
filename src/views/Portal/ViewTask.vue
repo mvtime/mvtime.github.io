@@ -72,6 +72,9 @@
             <span class="styled_line__value md md_contents" v-html="note || 'None Yet'"></span>
           </div>
         </div>
+        <div class="overlay_contents_text" v-if="task.archived">
+          This {{ task.type || "task" }} is archived and hidden from the calendar.
+        </div>
         <div class="overlay_contents_text">
           Information is provided by teachers and volunteer students, and may not always be correct
         </div>
@@ -100,6 +103,7 @@
           $store.is_teacher &&
           $store.user &&
           task &&
+          !task.archived &&
           (task._class?._teacher_email || task.class_id || '').toLowerCase().startsWith(
             ($store.active_doc.email || '').toLowerCase().split('@')[0]
           )
@@ -107,6 +111,22 @@
         @click="edit_task"
       >
         Edit
+      </button>
+      <button
+        class="edit_action primary_styled"
+        v-if="
+          ($route.name == 'viewtask' || $route.name == 'publicviewtask') &&
+          $store.is_teacher &&
+          $store.user &&
+          task &&
+          task.archived &&
+          (task._class?._teacher_email || task.class_id || '').toLowerCase().startsWith(
+            ($store.active_doc.email || '').toLowerCase().split('@')[0]
+          )
+        "
+        @click="unarchive_task"
+      >
+        Unarchive
       </button>
       <button class="share_action" @click="share_task" :disabled="!ready">Share</button>
     </div>
@@ -207,6 +227,19 @@ export default {
           ref: this.share_ref,
         },
         query: this.$route.query,
+      });
+    },
+    unarchive_task() {
+      this.$router.push({
+        name: "unarchive",
+        params: {
+          type: this.task.type,
+          ref: this.share_ref,
+        },
+        query: {
+          title: this.task.type === "note" ? this.task.description : this.task.name,
+          ...this.$route.query,
+        },
       });
     },
     notes_task() {
