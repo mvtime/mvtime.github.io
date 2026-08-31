@@ -63,23 +63,6 @@
           </div>
         </div>
       </div>
-      <div v-if="!$store.personal_account" class="overlay_contents_text overlay_contents_section">
-        Click
-        <span
-          class="button_pointer_text click-action"
-          @click="
-            $store.toggle_teacher();
-            changed = true;
-          "
-        >
-          here </span
-        >&MediumSpace; to {{ $store.is_teacher ? "disable" : "enable" }} teacher mode
-        <span v-if="$store.is_teacher">and return to the student view.</span>
-        <span v-else
-          >to create, and manage your own classes and tasks. This may require setup by an admin if
-          you do not have a teacher email.</span
-        >
-      </div>
       <div class="overlay_contents_text overlay_contents_section">
         <div class="notes_priority_section">
           <ToggleBar
