@@ -88,13 +88,6 @@ watch(
   },
   { deep: true }
 );
-// when window.localStorage. _teacher_mode changes, reload
-window.addEventListener("storage", (e) => {
-  if (e.key === `${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`) {
-    _status.log("🏫 Detected teacher mode change, reloading");
-    window.location.reload();
-  }
-});
 // setup connectin listeners
 _status.log("🛜 Started " + (window?.navigator?.onLine ? "online" : "offline"));
 if (!window?.navigator?.onLine) {
@@ -163,7 +156,7 @@ router.afterEach((to: any) => {
   style.setProperty("--theme-color-hover-dark", text_dark + "33");
 });
 
-// router guard
+// router guard — requiresTeacher: role teacher|admin; requiresAdmin: role admin (via store getters)
 router.beforeEach((to) => {
   const store = useMainStore();
   if (to.meta && to.meta.requiresAuth && store && !store.user) {

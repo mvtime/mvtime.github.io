@@ -379,49 +379,24 @@ export const useMainStore: StoreDefinition = defineStore({
     /**
      * @memberOf .main.getters
      * @function is_admin
-     * @description Check if user is a admin - currently true for all users for testing purposes TODO
+     * @description True only when active_doc.role is "admin" (users.role is the sole admin signal)
      * @returns {Boolean} if the user is an admin
      * @default false
      */
-    // TODO: update this to use actual permissions
     is_admin(): boolean {
-      return this.is_teacher;
+      return this.active_doc?.role === "admin";
     },
     /**
      * @memberOf .main.getters
      * @function is_teacher
-     * @description Check if user is a teacher, or is in teacher mode locally (for testing)
-     * @returns {Boolean} if the user is a teacher
+     * @description True when active_doc.role is "teacher" or "admin" (users.role is the sole teacher signal)
+     * @returns {Boolean} if the user is a teacher or admin
      * @default false
      */
     is_teacher(): boolean {
-      // check if email is a teacher email (ends in this.ORG_DOMAIN) && has letters in the first part
       if (!this.user) return false;
-      if (this.active_doc?.teacher_mode == true || window?.localStorage?.[`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`] == "true") {
-        if (this.active_doc?.teacher_mode == true || this.active_doc?.teacher_mode == null) {
-          window.localStorage.setItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`, "true");
-          if (this.personal_account) {
-            _status.log("🏫 No teacher mode for personal account");
-            return false;
-          } else {
-            _status.log("🏫 Local teacher mode");
-            return true;
-          }
-        } else {
-          window.localStorage.setItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`, "false");
-          _status.log("🏫 Teacher mode disabled locally to reflect remote changes");
-        }
-      }
-
-      let email: string = this.user.email as string;
-      let [first, last] = email.split("@");
-      // TODO: add .env option for teacher/student pattern
-      if ("@" + last == this.ORG_DOMAIN && !/\d/.test(first) && this.ORG_DOMAIN == "@mvla.net") {
-        _status.log("🏫 Teacher mode enabled for non-student district account");
-        return true;
-      } else {
-        return false;
-      }
+      const role = this.active_doc?.role;
+      return role === "teacher" || role === "admin";
     },
     /**
      * @memberOf .main.getters
@@ -994,28 +969,6 @@ export const useMainStore: StoreDefinition = defineStore({
     },
     /**
      * @memberOf .main.actions
-     * @function toggle_teacher
-     * @description Toggle teacher mode (for testing)
-     * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
-     * @see {@link is_teacher}
-     */
-    async toggle_teacher() {
-      // use localStorage. _teacher_mode as basis for toggle, then set the localStorage and remote doc
-      if (!this.user) return;
-      let prev = this.active_doc?.teacher_mode || window.localStorage.getItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`) == "true";
-      window.localStorage.setItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`, !prev as unknown as string);
-      let new_text = !prev ? "on" : "off";
-      if (this.active_doc) {
-        this.active_doc.teacher_mode = !prev;
-        await this.update_remote();
-        _status.log(`🏫 Remote teacher mode toggled ${new_text}`);
-      }
-      _status.log(`🏫 Local teacher mode toggled ${new_text}`);
-      new SuccessToast(`Teacher mode toggled ${new_text}`, 2000);
-    },
-
-    /**
-     * @memberOf .main.actions
      * @function apply_live_class
      * @description Replace one enrolled class in Pinia from a remote class-doc snapshot (incl. tasks[]),
      * then re-run get_tasks stamping (date hotfix, color, ref, class_id). Used by live onSnapshot listeners.
@@ -1554,6 +1507,8 @@ export const useMainStore: StoreDefinition = defineStore({
     set_user(user: User): void {
       // TODO: TS rewrite this to use async/await and return a promise
       _status.log("🔑 Setting user");
+      // Legacy local teacher-mode override; role is authoritative now
+      window.localStorage.removeItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`);
       // load user doc to check .personal_account
       getDoc(doc(db, "users", user.uid))
         .then((userDoc) => {
