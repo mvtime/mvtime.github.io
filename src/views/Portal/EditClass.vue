@@ -140,6 +140,34 @@ import ClassFields from "@/components/Portal/ClassFields.vue";
 import { shareUrl } from "@/common/share";
 import { isCanvasImportEmail, shortShareRef } from "@/common/paths";
 
+/** Extract a human-readable message from a Firebase callable / HttpsError. */
+function callableMessage(err) {
+  if (!err) return "";
+  if (typeof err === "string") return err;
+  const details = err.details;
+  if (typeof details === "string" && details.trim()) return details;
+  if (details && typeof details.message === "string" && details.message.trim()) {
+    return details.message;
+  }
+  return (
+    err.message ||
+    err.errorInfo?.message ||
+    (typeof err.error === "string" ? err.error : "") ||
+    ""
+  );
+}
+
+/** True when the callable rejected because the target is a student (not a teacher). */
+function isStudentTargetError(message) {
+  const msg = String(message || "").toLowerCase();
+  return (
+    msg.includes("student") ||
+    msg.includes("not a teacher") ||
+    msg.includes("not-teacher") ||
+    msg.includes("only teachers")
+  );
+}
+
 export default {
   name: "EditClassView",
   components: { ClassFields },
@@ -290,21 +318,6 @@ export default {
           this.loading_share = false;
         });
     },
-    async persist_teachers(nextList) {
-      this.loading_teachers = true;
-      try {
-        const write_ref = this.nested_ref || this.ref;
-        await this.$store.update_class_teachers(write_ref, nextList);
-        this.teachers_list = nextList;
-        this.class_obj.teachers = nextList;
-        this.class_obj.teacher_emails = nextList.map((t) => t.email);
-      } catch (err) {
-        new WarningToast("Couldn't update teachers", 2000);
-        this.$status.error("🔥Couldn't update teachers", err);
-      } finally {
-        this.loading_teachers = false;
-      }
-    },
     async add_teacher() {
       if (!this.is_owner) return;
       let email = (this.new_teacher_email || "").trim().toLowerCase();
@@ -320,24 +333,72 @@ export default {
         new WarningToast("Already a teacher on this class", 1500);
         return;
       }
-      const next = [
-        ...this.teachers_list,
-        { email, name: email.split("@")[0], role: "teacher" },
-      ];
-      this.new_teacher_email = "";
-      await this.persist_teachers(next);
+      const classId =
+        this.class_obj?._class_id || this.original?._class_id || "";
+      if (!classId) {
+        new WarningToast("Couldn't update teachers", 2000);
+        return;
+      }
+
+      this.loading_teachers = true;
+      try {
+        const teacher = await this.$store.add_class_teacher(classId, email);
+        const added =
+          teacher || { email, name: email.split("@")[0], role: "teacher" };
+        if (!this.teachers_list.some((t) => t.email.toLowerCase() === added.email.toLowerCase())) {
+          this.teachers_list = [...this.teachers_list, added];
+        }
+        this.class_obj.teachers = this.teachers_list;
+        this.class_obj.teacher_emails = this.teachers_list.map((t) => t.email);
+        this.new_teacher_email = "";
+      } catch (err) {
+        const message = callableMessage(err);
+        if (isStudentTargetError(message)) {
+          new WarningToast(
+            "Only teachers can be added. An admin can grant teacher in the Admin panel.",
+            4500
+          );
+        } else {
+          new WarningToast(message || "Couldn't update teachers", 3500);
+        }
+        this.$status.error("🔥Couldn't add class teacher", err);
+      } finally {
+        this.loading_teachers = false;
+      }
     },
     async remove_teacher(email) {
       if (!this.is_owner) return;
-      const next = this.teachers_list.filter(
-        (t) => t.email.toLowerCase() !== email.toLowerCase() || t.role === "owner"
+      const target = this.teachers_list.find(
+        (t) => t.email.toLowerCase() === email.toLowerCase()
       );
-      // Never remove the sole owner row
-      if (!next.some((t) => t.role === "owner")) {
+      // Owner chips are not removable in the UI; keep a soft guard
+      if (target?.role === "owner") {
         new WarningToast("Cannot remove the class owner", 2000);
         return;
       }
-      await this.persist_teachers(next);
+      const classId =
+        this.class_obj?._class_id || this.original?._class_id || "";
+      if (!classId) {
+        new WarningToast("Couldn't update teachers", 2000);
+        return;
+      }
+
+      this.loading_teachers = true;
+      try {
+        await this.$store.remove_class_teacher(classId, email);
+        this.teachers_list = this.teachers_list.filter(
+          (t) => t.email.toLowerCase() !== email.toLowerCase()
+        );
+        this.class_obj.teachers = this.teachers_list;
+        this.class_obj.teacher_emails = this.teachers_list.map((t) => t.email);
+      } catch (err) {
+        // Surface callable guards (e.g. cannot remove last owner)
+        const message = callableMessage(err);
+        new WarningToast(message || "Couldn't update teachers", 3500);
+        this.$status.error("🔥Couldn't remove class teacher", err);
+      } finally {
+        this.loading_teachers = false;
+      }
     },
   },
 };

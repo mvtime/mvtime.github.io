@@ -2335,7 +2335,7 @@ export const useMainStore: StoreDefinition = defineStore({
         void _i;
         void _r;
         void _idField;
-        // teachers[] membership is owned by update_class_teachers (never canvas.import here)
+        // teachers[] membership is owned by addClassTeacher/removeClassTeacher callables (never canvas.import here)
         void _teachersWrite;
         void _teacherEmailsWrite;
 
@@ -2675,42 +2675,120 @@ export const useMainStore: StoreDefinition = defineStore({
     },
 
     /**
-     * Persist teacher membership on flat classes/{classId} + teachers/{email} subdocs.
-     * Never creates Canvas teacher subdocs / never puts canvas.import into teachers[].
+     * Add a co-teacher via callable addClassTeacher({ classId, email }).
+     * Does not enroll the teacher as a student; server owns teachers[] writes.
      */
-    async update_class_teachers(
-      class_ref: string,
-      teachers: { email: string; name?: string; role?: string }[]
-    ): Promise<void> {
-      const classId =
-        writeClassId(class_ref, this.ORG_DOMAIN) ||
-        parseClassId(class_ref, this.ORG_DOMAIN)?.classId;
-      if (!classId) throw "Invalid class ref";
+    async add_class_teacher(
+      classId: string,
+      email: string
+    ): Promise<{ email: string; name?: string; role?: string } | void> {
+      if (!classId) throw "Invalid class id";
+      const normalized = (email || "").trim().toLowerCase();
+      if (!normalized) throw "Email required";
 
-      const humans = humanTeachers(teachers).filter((t) => !isCanvasImportEmail(t.email));
-      const teacher_emails = humans.map((t) => t.email);
+      const addClassTeacher = httpsCallable(functions, "addClassTeacher");
+      const result = await addClassTeacher({ classId, email: normalized });
+      const data = result?.data as
+        | {
+            error?: string;
+            success?: boolean;
+            message?: string;
+            teacher?: { email: string; name?: string; role?: string };
+            teachers?: { email: string; name?: string; role?: string }[];
+          }
+        | undefined;
 
-      const flatRef = doc(db, "classes", classId);
-      await setDoc(flatRef, { teachers: humans, teacher_emails } as DocumentData, { merge: true });
-      for (const person of humans) {
-        if (isCanvasImportEmail(person.email)) continue;
-        await setDoc(
-          doc(db, "classes", classId, "teachers", person.email),
-          {
-            email: person.email,
-            name: person.name || person.email.split("@")[0],
-            role: person.role || "teacher",
-          },
-          { merge: true }
+      if (data?.error || data?.success === false) {
+        throw data?.error || data?.message || "addClassTeacher failed";
+      }
+
+      // Mirror teachers onto local classes cache when the callable returns them
+      if (Array.isArray(data?.teachers)) {
+        const humans = humanTeachers(data.teachers);
+        const teacher_emails = humans.map((t) => t.email);
+        const idx = this.classes.findIndex((c) => classEntryMatchesId(c, classId));
+        if (idx !== -1) {
+          this.classes[idx] = { ...this.classes[idx], teachers: humans, teacher_emails };
+          this.classes = [...this.classes];
+        }
+        return (
+          data.teacher ||
+          humans.find((t) => t.email?.toLowerCase() === normalized) || {
+            email: normalized,
+            name: normalized.split("@")[0],
+            role: "teacher",
+          }
         );
       }
 
-      // Refresh local classes cache entry if present
+      // Optimistic local cache: append co-teacher if class is already loaded
       const idx = this.classes.findIndex((c) => classEntryMatchesId(c, classId));
       if (idx !== -1) {
-        this.classes[idx] = { ...this.classes[idx], teachers: humans, teacher_emails };
-        this.classes = [...this.classes];
+        const existing = humanTeachers(this.classes[idx].teachers);
+        if (!existing.some((t) => t.email?.toLowerCase() === normalized)) {
+          const next = [
+            ...existing,
+            {
+              email: normalized,
+              name: data?.teacher?.name || normalized.split("@")[0],
+              role: data?.teacher?.role || "teacher",
+            },
+          ];
+          this.classes[idx] = {
+            ...this.classes[idx],
+            teachers: next,
+            teacher_emails: next.map((t) => t.email),
+          };
+          this.classes = [...this.classes];
+        }
       }
+      return (
+        data?.teacher || {
+          email: normalized,
+          name: normalized.split("@")[0],
+          role: "teacher",
+        }
+      );
+    },
+
+    /**
+     * Remove a co-teacher via callable removeClassTeacher({ classId, email }).
+     * Cannot remove the last owner — server rejects; caller surfaces that error.
+     */
+    async remove_class_teacher(classId: string, email: string): Promise<void> {
+      if (!classId) throw "Invalid class id";
+      const normalized = (email || "").trim().toLowerCase();
+      if (!normalized) throw "Email required";
+
+      const removeClassTeacher = httpsCallable(functions, "removeClassTeacher");
+      const result = await removeClassTeacher({ classId, email: normalized });
+      const data = result?.data as
+        | {
+            error?: string;
+            success?: boolean;
+            message?: string;
+            teachers?: { email: string; name?: string; role?: string }[];
+          }
+        | undefined;
+
+      if (data?.error || data?.success === false) {
+        throw data?.error || data?.message || "removeClassTeacher failed";
+      }
+
+      const idx = this.classes.findIndex((c) => classEntryMatchesId(c, classId));
+      if (idx === -1) return;
+
+      const next = Array.isArray(data?.teachers)
+        ? humanTeachers(data.teachers)
+        : humanTeachers(this.classes[idx].teachers).filter(
+            (t) => t.email?.toLowerCase() !== normalized
+          );
+      this.classes[idx] = {
+        ...this.classes[idx],
+        teachers: next,
+        teacher_emails: next.map((t) => t.email),
+      };
+      this.classes = [...this.classes];
     },
 
     /**
