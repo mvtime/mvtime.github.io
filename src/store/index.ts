@@ -53,6 +53,11 @@ interface Survey extends DocumentData {
 
 type ClassID = string;
 
+function enrollmentKeyClassId(enrollmentPath: string): string {
+  const parts = (enrollmentPath || "").split("/").filter(Boolean);
+  return parts.length >= 2 ? parts[1] : parts[0] || "";
+}
+
 // setup Pinia store
 import { defineStore, type StoreDefinition } from "pinia";
 import { _status, compatDateObj, type LogEntry } from "@/common";
@@ -95,6 +100,8 @@ import {
 } from "firebase/firestore";
 import CryptoJS from "crypto-js";
 import { auth, db, authChangeAction, refreshTimeout, functions, httpsCallable } from "../firebase";
+import { syncClassListeners } from "../firebase/classListeners";
+import { beginHydrateEpoch, hydrateBeatsLive } from "@/common/classListenerState";
 import { signInWithPopup, GoogleAuthProvider, signInWithRedirect, type User } from "firebase/auth";
 const provider = new GoogleAuthProvider();
 const isElectron = navigator?.userAgent?.toLowerCase()?.indexOf(" electron/") > -1;
@@ -1009,6 +1016,78 @@ export const useMainStore: StoreDefinition = defineStore({
 
     /**
      * @memberOf .main.actions
+     * @function apply_live_class
+     * @description Replace one enrolled class in Pinia from a remote class-doc snapshot (incl. tasks[]),
+     * then re-run get_tasks stamping (date hotfix, color, ref, class_id). Used by live onSnapshot listeners.
+     * @param {String} enrollmentPath User-doc classes[] entry (email/classId or classId)
+     * @param {Object} raw Class document data from Firestore
+     * @param {Object} meta Dual-read resolution metadata
+     */
+    apply_live_class(
+      enrollmentPath: string,
+      raw: DocumentData,
+      meta: {
+        teacherEmail?: string;
+        legacyPath?: string;
+        source?: string;
+        classId?: string;
+      } = {}
+    ): void {
+      if (!enrollmentPath) return;
+      if (raw?.archived) {
+        this.remove_invalid(enrollmentPath);
+        return;
+      }
+
+      const classId = meta.classId || enrollmentKeyClassId(enrollmentPath);
+      if (meta.teacherEmail) rememberClassEmail(classId, meta.teacherEmail);
+
+      let doc_data: ClassInfo = { ...raw } as ClassInfo;
+      doc_data.id = enrollmentPath;
+      doc_data.ref = meta.legacyPath || enrollmentPath;
+      if (classId) doc_data._class_id = classId;
+
+      const refParts = (doc_data.ref || "").split("/").filter(Boolean);
+      const emailPart = refParts[0];
+      const idPart = refParts[1] || classId;
+      doc_data.tasks = doc_data.tasks || [];
+      doc_data.tasks = doc_data.tasks.map((task: TaskInfo) => {
+        const stamped: TaskInfo = { ...task };
+        if (emailPart && idPart && (stamped.id || stamped.ref)) {
+          const tid = stamped.id || (stamped.ref as string)?.split("/").pop();
+          if (tid) stamped.ref = [emailPart, idPart, tid].join("/");
+        }
+        delete stamped.id;
+        return stamped;
+      });
+
+      const idx = this.classes.findIndex(
+        (c) =>
+          c.id === enrollmentPath ||
+          c.ref === enrollmentPath ||
+          (classId && (c._class_id === classId || (typeof c.id === "string" && c.id.endsWith("/" + classId))))
+      );
+
+      if (idx >= 0) {
+        const next = [...this.classes];
+        next[idx] = doc_data;
+        this.classes = next;
+      } else {
+        const next = [...this.classes, doc_data];
+        next.sort((a: ClassInfo, b: ClassInfo) => {
+          if (a.period == b.period) {
+            return a.name.localeCompare(b.name);
+          }
+          if (!a.period && a.period !== 0) return 1;
+          if (!b.period && b.period !== 0) return -1;
+          return a.period - b.period;
+        });
+        this.classes = next;
+      }
+      this.get_tasks();
+    },
+    /**
+     * @memberOf .main.actions
      * @function get_tasks
      * @description Get all tasks from all classes
      * @returns {Promise} Promise that resolves to Array of all tasks from all classes, with class name and color added
@@ -1427,6 +1506,8 @@ export const useMainStore: StoreDefinition = defineStore({
       // remove from local
       this.classes = this.classes.filter((c) => c.id != class_id);
       this.get_tasks();
+      // Drop live listener for the left class
+      syncClassListeners(filtered_classes || []);
       // update remote
       await this.update_remote();
       return Promise.resolve();
@@ -1796,6 +1877,9 @@ export const useMainStore: StoreDefinition = defineStore({
         _status.log("📚 Removed duplicate classes");
       }
 
+      // Snapshot wins race if it lands after this hydrate starts
+      const hydrateEpoch = beginHydrateEpoch();
+
       // get all classes' data and combine into an array (dual-read: flat first, nested fallback)
       let classes: ClassInfo[] = [];
       for (let class_path of this.active_doc.classes as string[]) {
@@ -1813,6 +1897,14 @@ export const useMainStore: StoreDefinition = defineStore({
         if (!classResult) {
           await this.remove_invalid(class_path);
           continue;
+        }
+        // Snapshot wins a race if newer than this hydrate — keep live copy
+        if (!hydrateBeatsLive(class_path, hydrateEpoch)) {
+          const live = this.classes.find((c) => c.id === class_path);
+          if (live) {
+            classes.push(live);
+            continue;
+          }
         }
         // push class to array
         let doc_data: ClassInfo = { ...classResult.data } as ClassInfo;
@@ -1856,6 +1948,8 @@ export const useMainStore: StoreDefinition = defineStore({
       });
       this.classes = classes;
       this.get_tasks();
+      // Attach / resync live class-doc listeners after hydrate (cap = enrollment size)
+      syncClassListeners(unique);
       Promise.resolve();
     },
     /**
