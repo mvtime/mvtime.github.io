@@ -99,15 +99,22 @@ import { signInWithPopup, GoogleAuthProvider, signInWithRedirect, type User } fr
 const provider = new GoogleAuthProvider();
 const isElectron = navigator?.userAgent?.toLowerCase()?.indexOf(" electron/") > -1;
 let ORG_DOMAIN = `@${process.env.VUE_APP_ORG_DOMAIN}`;
-// add email and name to provider
+// add email and name to provider (safe at import time — does not touch `auth`)
 provider.addScope("email");
 provider.addScope("profile");
-auth.useDeviceLanguage();
 // constrict to only ORG_DOMAIN emails
 provider.setCustomParameters({
   login_hint: "username" + ORG_DOMAIN,
   // hd: ORG_DOMAIN,
 });
+// Do NOT call auth.useDeviceLanguage() at module top level — store↔firebase ESM cycle
+// leaves `auth` in TDZ during import. Configure lazily on first login.
+let authLanguageConfigured = false;
+function ensureAuthLanguage(): void {
+  if (authLanguageConfigured) return;
+  auth.useDeviceLanguage();
+  authLanguageConfigured = true;
+}
 
 // setup class name handlebars template
 import Handlebars from "handlebars";
@@ -1522,6 +1529,7 @@ export const useMainStore: StoreDefinition = defineStore({
      */
     async login(): Promise<void> {
       // TODO: TS rewrite this to use async/await and return a promise
+      ensureAuthLanguage();
       // check that we dont have a useragent that will be blocked by google (Instagram)
       const disallowedAgents: string[] = ["Instagram"];
       if (
@@ -1568,6 +1576,7 @@ export const useMainStore: StoreDefinition = defineStore({
      */
     async login_personal(): Promise<void> {
       // TODO: TS rewrite this to use async/await and return a promise
+      ensureAuthLanguage();
       new Toast("Opening login popup...", "default", 1000, require("@svonk/util/assets/info-locked-icon.svg"));
       // create new provider with no hd
       const personal_provider = new GoogleAuthProvider();

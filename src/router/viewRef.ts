@@ -1,16 +1,18 @@
 /**
  * Router helpers: normalize old email/local-prefixed view refs to short classId form.
+ * Intentionally avoids a top-level import of @/firebase — that created an ESM cycle
+ * (store → router → viewRef → firebase → store) and TDZ-crashed main.ts before mount.
+ *
  * @module router/viewRef
  */
 import type { RouteLocationNormalized, RouteLocationRaw } from "vue-router";
-import { db } from "@/firebase";
 import {
   looksLikeEmail,
   parseTaskId,
   shortShareRef,
   splitRefSegments,
 } from "@/common/paths";
-import { getClassDoc, rememberClassEmail } from "@/common/dualRead";
+import { rememberClassEmail } from "@/common/dualRead";
 
 function orgDomain(): string {
   return process.env.VUE_APP_ORG_DOMAIN || "mvla.net";
@@ -56,8 +58,10 @@ export async function resolveShortViewRef(ref: string | undefined): Promise<{
       return { shortRef: shortShareRef(b), kind: "class", redirected: true };
     }
 
-    // Try as old class form local~classId via dual-read
+    // Try as old class form local~classId via dual-read (lazy firebase — no top-level cycle)
     const teacherEmail = `${a}@${org}`;
+    const { db } = await import("@/firebase");
+    const { getClassDoc } = await import("@/common/dualRead");
     const asClass = await getClassDoc(db, b, teacherEmail);
     if (asClass) {
       rememberClassEmail(b, asClass.teacherEmail || teacherEmail);

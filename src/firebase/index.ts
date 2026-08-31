@@ -30,9 +30,18 @@ export { app, auth, db, analytics, functions, httpsCallable, authChangeAction, r
 
 //TODO:TS update common and store to ts to fix below
 // handle auth updates (user login/logout) and set user data in store
-import { useMainStore } from "@/store";
+// Lazy-get the Pinia store inside callbacks — a static `import { useMainStore } from "@/store"`
+// cycles with store's top-level `import … from "../firebase"` and TDZ-crashes before mount.
 import { _status } from "@/common";
 import router from "@/router";
+
+function getMainStore() {
+  // require() after both modules have finished initializing (same pattern as pre-cycle-break main).
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { useMainStore } = require("@/store");
+  return useMainStore();
+}
+
 auth.onAuthStateChanged((user: User | null) => {
   authChangeAction(user);
 });
@@ -41,7 +50,7 @@ let unsub: () => void,
   timeout: number;
 
 function authChangeAction(user: User | null): void {
-  const store = useMainStore();
+  const store = getMainStore();
   if (user) {
     store.set_user(user);
     // unsubscribe from any prev
@@ -63,7 +72,7 @@ function setupSnapshot(uid: string | undefined): void {
     _status.warn("⚠ No uid provided to setupSnapshot");
     return;
   }
-  const store = useMainStore();
+  const store = getMainStore();
   store.hide_timeout();
   unsub = onSnapshot(
     doc(db, "users", uid),
@@ -105,7 +114,7 @@ function setupSnapshot(uid: string | undefined): void {
 function unsubscribe(show_prompt: boolean = false): void {
   // clear timeout
   clearTimeout(timeout);
-  let store = useMainStore();
+  let store = getMainStore();
   if (show_prompt) {
     store.show_timeout();
   }
@@ -134,7 +143,7 @@ function startTimeout(delay: number = 1000 * 60 * 5): number {
 }
 
 function refreshTimeout(delay: number): void {
-  const store = useMainStore();
+  const store = getMainStore();
   store.hide_timeout();
   if (!subscribed) {
     // setup snapshot and pull data
