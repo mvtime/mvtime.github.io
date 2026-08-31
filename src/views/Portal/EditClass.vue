@@ -32,40 +32,54 @@
           @submit="update_class"
         />
         <div class="teachers_section">
-          <div class="overlay_contents_text teachers_heading">Teachers</div>
-          <ul class="teachers_list">
-            <li v-for="person in teachers_list" :key="person.email" class="teacher_row">
-              <span class="teacher_email">{{ person.email }}</span>
-              <span class="teacher_name" v-if="person.name">{{ person.name }}</span>
-              <span class="teacher_role">{{ person.role || "teacher" }}</span>
-              <button
-                v-if="is_owner && person.role !== 'owner'"
-                type="button"
-                class="teacher_remove"
-                :disabled="loading_teachers"
-                @click="remove_teacher(person.email)"
+          <div class="overlay_contents_text">Teachers</div>
+          <div class="styled_input styled_links_box">
+            <div class="styled_links_display">
+              <div class="styled_line_links">
+                <span
+                  v-for="person in teachers_list"
+                  :key="person.email"
+                  class="styled_line_links__link"
+                  :class="{
+                    styled_line_links__remove: is_owner && person.role !== 'owner',
+                  }"
+                  @click="
+                    is_owner &&
+                      person.role !== 'owner' &&
+                      !loading_teachers &&
+                      remove_teacher(person.email)
+                  "
+                  >{{ person.email }}</span
+                >
+              </div>
+            </div>
+            <template v-if="is_owner">
+              <hr class="styled_links_separator" />
+              <div
+                class="styled_links_add"
+                @keydown.enter="
+                  $event.preventDefault();
+                  add_teacher();
+                "
               >
-                Remove
-              </button>
-            </li>
-          </ul>
-          <div v-if="is_owner" class="teacher_add_row">
-            <input
-              class="styled_input teacher_add_input"
-              type="email"
-              v-model="new_teacher_email"
-              placeholder="co-teacher@email"
-              enterkeyhint="done"
-              @keydown.enter.prevent="add_teacher"
-            />
-            <button
-              type="button"
-              class="teacher_add_btn"
-              :disabled="loading_teachers || !new_teacher_email"
-              @click="add_teacher"
-            >
-              Add
-            </button>
+                <input
+                  class="styled_links_add__path"
+                  type="email"
+                  v-model="new_teacher_email"
+                  :placeholder="'name@' + $env.VUE_APP_ORG_DOMAIN"
+                  enterkeyhint="done"
+                  :disabled="loading_teachers"
+                />
+                <button
+                  type="button"
+                  class="styled_links_add__action"
+                  :disabled="loading_teachers || !new_teacher_email"
+                  @click="add_teacher"
+                >
+                  Add
+                </button>
+              </div>
+            </template>
           </div>
         </div>
       </div>
@@ -337,52 +351,29 @@ export default {
 .teachers_section {
   margin-top: calc(var(--padding-overlay-input) * 1.25);
 }
-.teachers_heading {
+.teachers_section .overlay_contents_text {
   margin-bottom: calc(var(--padding-overlay-input) / 2);
 }
-.teachers_list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+/* plain .styled_input has no background outside .inputs_row */
+.teachers_section .styled_links_box {
+  background-color: var(--color-overlay-input);
+  color: var(--color-on-overlay-input);
+  border-radius: var(--radius-overlay-input);
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: calc(var(--padding-overlay-input) / 2);
+  height: unset;
+  overflow: hidden;
 }
-.teacher_row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.5em;
-  font-size: 0.95em;
+.teachers_section .styled_links_separator {
+  margin-left: calc(-1 * var(--padding-overlay-input));
+  margin-right: calc(-1 * var(--padding-overlay-input));
 }
-.teacher_email {
-  font-weight: 600;
+.teachers_section .styled_line_links__link {
+  cursor: default;
 }
-.teacher_name {
-  opacity: 0.8;
-}
-.teacher_role {
-  opacity: 0.65;
-  text-transform: capitalize;
-}
-.teacher_remove {
-  margin-left: auto;
-  background: transparent;
-  border: none;
-  color: inherit;
-  opacity: 0.7;
+.teachers_section .styled_line_links__link.styled_line_links__remove {
   cursor: pointer;
-  text-decoration: underline;
-}
-.teacher_add_row {
-  display: flex;
-  gap: 0.5em;
-  margin-top: calc(var(--padding-overlay-input) / 2);
-}
-.teacher_add_input {
-  flex: 1;
-}
-.teacher_add_btn {
-  flex-shrink: 0;
 }
 </style>
