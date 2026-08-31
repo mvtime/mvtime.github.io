@@ -223,8 +223,27 @@ export default {
 
       if (ref && this.is_join) {
         this.$status.log("🔍 Attempting to use class join ref", ref);
-        let [_email, _id] = ref.split("~");
-        _email += this.$store.ORG_DOMAIN;
+        const parts = String(ref).split(/[~/]/).filter(Boolean);
+        let _email;
+        let _id;
+        if (parts.length === 1) {
+          // Short classId — resolve teacher via dual-read
+          _id = parts[0];
+          try {
+            const class_obj = await this.$store.class_from_ref(_id);
+            _email = class_obj._teacher_email;
+            if (!_email) throw "No teacher email on class";
+          } catch (err) {
+            new WarningToast("Couldn't find that class", 3000);
+            this.$status.log("🔥 Unfound class for short join ref", ref, err);
+            this.to_normal_add();
+            return;
+          }
+        } else {
+          _email = parts[0];
+          _id = parts[1];
+          if (!_email.includes("@")) _email += this.$store.ORG_DOMAIN;
+        }
         this.teacher_email = _email;
         this.$store.fetch_classes_by_email(_email);
         while (this.$store.loaded_email !== this.teacher_email) {

@@ -14,12 +14,12 @@
             <span class="styled_line__value">
               <a
                 class="class_name button_pointer_text"
-                :href="`/view/${task._class.ref}`"
+                :href="`/view/${class_share_ref}`"
                 @click="
                   $event.preventDefault();
                   $router.push({
                     name: 'viewclass',
-                    params: { ref: task._class.ref },
+                    params: { ref: class_share_ref },
                     query: $route.query,
                   });
                 "
@@ -96,11 +96,13 @@
       <button
         class="edit_action primary_styled"
         v-if="
-          $route.name == 'viewtask' &&
+          ($route.name == 'viewtask' || $route.name == 'publicviewtask') &&
           $store.is_teacher &&
           $store.user &&
           task &&
-          task.ref.split('/')[0] == $store.active_doc.email.replace($store.ORG_DOMAIN, '')
+          (task._class?._teacher_email || task.class_id || '').toLowerCase().startsWith(
+            ($store.active_doc.email || '').toLowerCase().split('@')[0]
+          )
         "
         @click="edit_task"
       >
@@ -163,9 +165,15 @@ export default {
       const note = this.$store.note_for(ref);
       return note && converter.makeHtml(note);
     },
+    share_ref() {
+      return this.task?._share_ref || this.$route.params.ref;
+    },
+    class_share_ref() {
+      return this.task?._class?._share_ref || this.task?._class?.ref || this.$route.params.ref;
+    },
   },
   mounted() {
-    if (this.$route.name == "viewtask") {
+    if (this.$route.name == "viewtask" || this.$route.name == "publicviewtask") {
       this.$smoothReflow({
         el: this.$refs.contents,
         hideOverflow: true,
@@ -182,7 +190,7 @@ export default {
     /** Shares the task link with the native share function, or to the clipboard if sharing is not supported */
     async share_task() {
       let url = new URL(
-        `https://${this.$env.VUE_APP_BRAND_DOMAIN__VIEWTASK}/` + this.$route.params.ref
+        `https://${this.$env.VUE_APP_BRAND_DOMAIN__VIEWTASK}/` + this.share_ref
       );
       return shareUrl({
         title: this.task.name,
@@ -196,17 +204,17 @@ export default {
       this.$router.push({
         name: "edit",
         params: {
-          ref: this.$route?.params?.ref,
+          ref: this.share_ref,
         },
         query: this.$route.query,
       });
     },
     notes_task() {
-      if (this.$route.name == "viewtask") {
+      if (this.$route.name == "viewtask" || this.$route.name == "publicviewtask") {
         this.$router.push({
           name: "notes",
           params: {
-            ref: this.$route?.params?.ref,
+            ref: this.share_ref,
           },
           query: this.$route.query,
         });
@@ -221,17 +229,8 @@ export default {
         this.$emit("close");
         return;
       }
-      const ref = this.$route.params.ref.split("~").join("/");
-      if (!ref) {
-        new WarningToast("No task specified", 1500);
-        this.$emit("close");
-        return;
-      } else if (ref.split("/").length != 3) {
-        new WarningToast("Invalid task specified", 1500);
-        this.$emit("close");
-        return;
-      }
-      // get task from store
+      const ref = this.$route.params.ref;
+      // get task from store (dual-read accepts classId~taskId and email-prefixed forms)
       this.$store
         .task_from_ref(ref)
         .then((task) => {

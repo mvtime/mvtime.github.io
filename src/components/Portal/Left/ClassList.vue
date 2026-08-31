@@ -95,9 +95,11 @@ export default {
   emits: ["toggle_filtered_class", "clear_filters", "dragclass", "set_filtered_classes"],
   methods: {
     clean_ref(ref) {
-      let [_email, _id] = ref.split("/");
-      _email = _email.split("@")[0];
-      return [_email, _id].join("~");
+      if (!ref) return "";
+      const parts = String(ref).split(/[~/]/).filter(Boolean);
+      if (parts.length >= 3) return parts[parts.length - 2];
+      if (parts.length >= 2) return parts[1];
+      return parts[0] || ref;
     },
     leave_class(class_obj) {
       this.$router.push({

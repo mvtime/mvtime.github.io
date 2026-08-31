@@ -105,9 +105,20 @@ export default {
   methods: {
     classSquareGlyph,
     clean_ref(ref) {
-      let [_email, _id] = ref.split("/");
-      _email = _email.split("@")[0];
-      return [_email, _id].join("~");
+      if (!ref) return "";
+      // Prefer short classId when known (email/classId or local~classId → classId)
+      const parts = String(ref).split(/[~/]/).filter(Boolean);
+      if (parts.length >= 2) {
+        // last-but-one for tasks (email/classId/taskId), else classId
+        if (parts.length >= 3) return parts[parts.length - 2];
+        // email/classId or local~classId → classId; classId~taskId left to path_to_ref callers
+        if (parts[0].includes("@") || parts.length === 2) {
+          // If first looks like email/local and second is class → return classId
+          // Ambiguous classId~taskId: ClassBar only passes class refs
+          return parts[1];
+        }
+      }
+      return parts[0] || ref;
     },
     leave_class(class_obj) {
       this.$router.push({

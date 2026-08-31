@@ -12,7 +12,7 @@
             <span class="styled_line__value">
               <a
                 class="class_name button_pointer_text"
-                :href="`/view/${this.$route.params.ref}`"
+                :href="`/view/${share_ref}`"
                 @click="$event.preventDefault()"
                 :style="{
                   '--color-class': class_obj.color,
@@ -115,6 +115,7 @@ import showdown from "showdown";
 import "@/assets/style/markdown.css";
 import ExamCard from "@/components/Portal/ExamCard.vue";
 import { shareUrl } from "@/common/share";
+import { humanTeachers, isCanvasImportEmail, shortShareRef } from "@/common/paths";
 let converter = new showdown.Converter();
 export default {
   name: "ViewClassView",
@@ -137,22 +138,38 @@ export default {
     text() {
       return this.class_obj?.description && converter.makeHtml(this.class_obj?.description);
     },
+    share_ref() {
+      const id = this.class_obj?._class_id;
+      return id ? shortShareRef(id) : this.$route.params.ref;
+    },
     joinable() {
-      return (
-        this.$store.user &&
-        this.class_obj &&
-        // and not already joined
-        !this.$store?.active_doc?.classes?.includes(this.$store.ref_to_path(this.$route.params.ref))
+      if (!this.$store.user || !this.class_obj) return false;
+      const enrolled = this.$store?.active_doc?.classes || [];
+      const legacy = this.class_obj.ref;
+      const classId = this.class_obj._class_id;
+      return !enrolled.some(
+        (p) => p === legacy || (classId && (p === classId || p.endsWith("/" + classId)))
       );
     },
     editable() {
-      return (
-        this.$store.is_teacher &&
-        this.$store.user &&
-        this.class_obj &&
-        this.$route.params.ref &&
-        this.$route.params.ref.split("~")[0] == this.$store.active_doc.email.replace(this.$store.ORG_DOMAIN, "")
-      );
+      if (!this.$store.is_teacher || !this.$store.user || !this.class_obj) return false;
+      const email = (this.$store.active_doc?.email || this.$store.user.email || "").toLowerCase();
+      if (!email) return false;
+      const teachers = humanTeachers(this.class_obj.teachers);
+      if (teachers.length) {
+        return teachers.some((t) => t.email && t.email.toLowerCase() === email);
+      }
+      const owner =
+        this.class_obj._teacher_email ||
+        this.class_obj.owner_email ||
+        (this.class_obj._implied_owner && this.class_obj._implied_owner.email);
+      if (owner && !isCanvasImportEmail(owner)) {
+        return owner.toLowerCase() === email;
+      }
+      // Legacy: compare route/local prefix to user local part
+      const ref = this.$route.params.ref || "";
+      const local = email.replace(this.$store.ORG_DOMAIN, "").split("@")[0];
+      return ref.split("~")[0] === local || this.class_obj._teacher_email?.split("@")[0] === local;
     },
   },
   mounted() {
@@ -170,7 +187,7 @@ export default {
   methods: {
     /** Shares the class link with the native share function, or to the clipboard if sharing is not supported */
     async share_class() {
-      let url = new URL(`https://${this.$env.VUE_APP_BRAND_DOMAIN__VIEWCLASS}/` + this.$route.params.ref);
+      let url = new URL(`https://${this.$env.VUE_APP_BRAND_DOMAIN__VIEWCLASS}/` + this.share_ref);
       return shareUrl({
         title: this.class_obj.name,
         text: `Check out ${this.class_obj.name || "this class"} on ${this.$env.VUE_APP_BRAND_NAME_SHORT}!`,
@@ -183,7 +200,7 @@ export default {
       this.$router.push({
         name: "editclass",
         params: {
-          ref: this.$route?.params?.ref,
+          ref: this.share_ref,
         },
         query: this.$route.query,
       });
@@ -192,7 +209,7 @@ export default {
       this.$router.push({
         name: "refclass",
         params: {
-          ref: this.$route?.params?.ref,
+          ref: this.share_ref,
         },
         query: this.$route.query,
       });
@@ -201,7 +218,7 @@ export default {
       this.$router.push({
         name: "leave",
         params: {
-          ref: this.$route?.params?.ref,
+          ref: this.share_ref,
         },
         query: this.$route.query,
       });
@@ -211,8 +228,9 @@ export default {
         return;
       }
       this.loading_upcoming = true;
+      const ref = this.class_obj?.ref || this.$route.params.ref;
       this.$store
-        .upcoming_from_ref(this.$route.params.ref.split("~").join("/"), this.class_obj)
+        .upcoming_from_ref(ref, this.class_obj)
         .then((upcoming) => {
           this.upcoming = upcoming;
           this.loading_upcoming = false;
@@ -230,17 +248,8 @@ export default {
         this.$emit("close");
         return;
       }
-      const ref = this.$route.params.ref.split("~").join("/");
-      if (!ref) {
-        new WarningToast("No class specified", 1500);
-        this.$emit("close");
-        return;
-      } else if (ref.split("/").length != 2) {
-        new WarningToast("Invalid class specified", 1500);
-        this.$emit("close");
-        return;
-      }
-      // get class from store
+      const ref = this.$route.params.ref;
+      // get class from store (dual-read accepts classId, email/classId, local~classId)
       this.$store
         .class_from_ref(ref)
         .then((class_obj) => {
