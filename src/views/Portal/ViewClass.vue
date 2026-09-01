@@ -115,7 +115,7 @@ import showdown from "showdown";
 import "@/assets/style/markdown.css";
 import ExamCard from "@/components/Portal/ExamCard.vue";
 import { shareUrl } from "@/common/share";
-import { humanTeachers, isCanvasImportEmail, shortShareRef } from "@/common/paths";
+import { shortShareRef } from "@/common/paths";
 let converter = new showdown.Converter();
 export default {
   name: "ViewClassView",
@@ -152,24 +152,7 @@ export default {
       );
     },
     editable() {
-      if (!this.$store.is_teacher || !this.$store.user || !this.class_obj) return false;
-      const email = (this.$store.active_doc?.email || this.$store.user.email || "").toLowerCase();
-      if (!email) return false;
-      const teachers = humanTeachers(this.class_obj.teachers);
-      if (teachers.length) {
-        return teachers.some((t) => t.email && t.email.toLowerCase() === email);
-      }
-      const owner =
-        this.class_obj._teacher_email ||
-        this.class_obj.owner_email ||
-        (this.class_obj._implied_owner && this.class_obj._implied_owner.email);
-      if (owner && !isCanvasImportEmail(owner)) {
-        return owner.toLowerCase() === email;
-      }
-      // Legacy: compare route/local prefix to user local part
-      const ref = this.$route.params.ref || "";
-      const local = email.replace(this.$store.ORG_DOMAIN, "").split("@")[0];
-      return ref.split("~")[0] === local || this.class_obj._teacher_email?.split("@")[0] === local;
+      return !!(this.$store.user && this.$store.can_manage_class(this.class_obj));
     },
   },
   mounted() {

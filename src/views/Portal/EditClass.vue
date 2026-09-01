@@ -107,7 +107,7 @@
       <button
         class="archive_action primary_styled"
         @click="archive_class"
-        :disabled="!ready || !is_owner"
+        :disabled="!ready || !can_save"
         :class="{ loading_bg: loading }"
       >
         Archive
@@ -115,7 +115,7 @@
       <button
         class="continue_action click_ctrlenter"
         @click="update_class"
-        :disabled="!ready || !changed || !class_obj.name || !is_owner"
+        :disabled="!ready || !changed || !class_obj.name || !can_save"
         :class="{ loading_bg: loading }"
       >
         Save
@@ -219,7 +219,10 @@ export default {
       );
     },
     can_open() {
-      return this.is_owner || this.is_co_teacher;
+      return this.$store.can_manage_class(this.class_obj);
+    },
+    can_save() {
+      return this.$store.can_manage_class(this.class_obj);
     },
   },
   mounted() {
@@ -236,7 +239,7 @@ export default {
   },
   methods: {
     update_class() {
-      if (!this.is_owner) {
+      if (!this.can_save) {
         new WarningToast("Only the class owner can save changes", 2000);
         return;
       }
@@ -254,7 +257,7 @@ export default {
         });
     },
     archive_class() {
-      if (!this.is_owner) {
+      if (!this.can_save) {
         new WarningToast("Only the class owner can archive", 2000);
         return;
       }

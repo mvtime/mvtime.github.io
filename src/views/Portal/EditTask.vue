@@ -165,6 +165,19 @@ export default {
       const scopeText = this.edit_scope === "future" ? "this and all future tasks in the series" : "all tasks in this series";
       return `<div class="overlay_contents_text">Are you sure you want to archive ${scopeText}?<br><br>This action cannot be undone.</div>`;
     },
+    class_obj_for_task() {
+      if (this.task?._class) return this.task._class;
+      const classId = this.original?.class_id || this.task?.class_id;
+      if (!classId || !this.$store.classes) return null;
+      return (
+        this.$store.classes.find(
+          (c) =>
+            c.id === classId ||
+            c._class_id === classId ||
+            (typeof c.id === "string" && c.id.endsWith("/" + classId))
+        ) || null
+      );
+    },
   },
   methods: {
     try_submit() {
@@ -271,6 +284,11 @@ export default {
             this.task = task;
             // set original to be unconnected copy of task
             this.original = JSON.parse(JSON.stringify(task));
+            if (!this.$store.can_manage_class(task._class || this.class_obj_for_task)) {
+              new WarningToast("You are not a teacher of this class", 2000);
+              this.$emit("close");
+              return;
+            }
             this.ready = true;
             this.loading = false;
           }
