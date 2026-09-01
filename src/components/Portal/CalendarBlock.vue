@@ -102,7 +102,7 @@
               :is_note="task.type === 'note'"
               :key="task.name"
               :title="task.name"
-              :draggable="task && $store.is_teacher && $store.user && task.ref.split('/')[0] == $store.active_doc.email && $route.name != 'study'"
+              :draggable="can_manage_task(task) && $route.name != 'study'"
               @dragstart="
                 drag = {
                   task: task,
@@ -124,7 +124,7 @@
                 }
               "
             >
-              <div class="calendar_day_task_editable" v-if="task && $store.is_teacher && $store.user && task.ref.split('/')[0] == $store.active_doc.email">
+              <div class="calendar_day_task_editable" v-if="can_manage_task(task)">
                 <span class="task_icon task_edit__icon" :class="{ loading_bg: drag.load }"></span>
               </div>
               <span v-if="task.type === 'note'">
@@ -408,6 +408,22 @@ export default {
       let [_email, _id, task_id] = ref.split("/");
       _email = _email.split("@")[0];
       return [_email, _id, task_id].join("~");
+    },
+    task_class_obj(task) {
+      if (task?._class) return task._class;
+      const classId = task?.class_id;
+      if (!classId || !this.$store.classes) return null;
+      return (
+        this.$store.classes.find(
+          (c) =>
+            c.id === classId ||
+            c._class_id === classId ||
+            (typeof c.id === "string" && c.id.endsWith("/" + classId))
+        ) || null
+      );
+    },
+    can_manage_task(task) {
+      return !!(task && this.$store.user && this.$store.can_manage_class(this.task_class_obj(task)));
     },
   },
   computed: {
