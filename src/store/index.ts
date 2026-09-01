@@ -44,7 +44,7 @@ export interface ProcessedTaskInfo extends TaskInfo {
   date: Date | null;
 }
 
-import { apiFetch, normalizeStatRows, type StatRow } from "@/common/apiFetch";
+import { apiFetch, parseStatsResponse, type StatRow, type StatsResponse } from "@/common/apiFetch";
 
 type ClassID = string;
 
@@ -263,7 +263,7 @@ export const useMainStore: StoreDefinition = defineStore({
        * @property {Object} stats_cache In-memory stats rows from GET /api/v1/me/stats
        * @default null
        */
-      stats_cache: null as { list: StatRow[]; updated: number } | null,
+      stats_cache: null as (StatsResponse & { updated: number }) | null,
     };
     // setting up store
     let local: string | null = window.localStorage.getItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_app_state`);
@@ -684,20 +684,16 @@ export const useMainStore: StoreDefinition = defineStore({
     /**
      * @memberOf .main.actions
      * @function fetch_stats
-     * @description Fetch slim stats rows for the given dates from GET /api/v1/me/stats
-     * @param {Array} dates Array of dates (YYYY-MM-DD) to fetch
-     * @returns {Array} Stat rows for those dates
+     * @description Fetch stats from GET /api/v1/me/stats (full list envelope)
+     * @returns {StatsResponse} Server stats envelope
      * @see {@link get_stats}
      * @see {@link save_daily_survey}
      */
-    async fetch_stats(dates: string[]): Promise<StatRow[]> {
+    async fetch_stats(): Promise<StatsResponse> {
       if (!this.user) return Promise.reject("Missing user");
-      if (!dates.length) return [];
       try {
-        const query = dates.length ? `?dates=${dates.join(",")}` : "";
-        const payload = await apiFetch(`/api/v1/me/stats${query}`);
-        const rows = normalizeStatRows(payload);
-        return dates.map((date) => rows.find((row) => row.date === date) || { date, error: "No survey data for this date" });
+        const payload = await apiFetch<StatsResponse>("/api/v1/me/stats");
+        return parseStatsResponse(payload);
       } catch (err) {
         return Promise.reject(err);
       }
@@ -705,9 +701,9 @@ export const useMainStore: StoreDefinition = defineStore({
     /**
      * @memberOf .main.actions
      * @function get_stats
-     * @description Get stats for the given dates, using an in-memory cache. Refetches missing dates or all dates when force_refresh is set.
+     * @description Get stats for the given dates, using an in-memory cache of the API list envelope. Refetches when force_refresh is set or requested dates are missing from cache.
      * @param {Array} dates Array of dates to get stats for
-     * @param {Boolean} force_refresh Bypass cache and refetch requested dates
+     * @param {Boolean} force_refresh Bypass cache and refetch from API
      * @returns {Promise} Promise resolving to stat rows for the given dates
      * @see {@link save_daily_survey}
      * @see {@link done_daily_survey}
@@ -717,31 +713,20 @@ export const useMainStore: StoreDefinition = defineStore({
       try {
         const current: StatRow[] = this.stats_cache?.list || [];
         const current_dates: string[] = current.map((e) => e.date);
-        const errored_dates: string[] = current.filter((e) => e.error).map((e) => e.date);
         const all_dates: boolean = dates.every((e) => current_dates.includes(e));
 
         if (all_dates && !force_refresh) {
           _status.log("📊 Using cached stats");
-          return dates.map((date) => current.find((e) => e.date === date) || { date, error: "No survey data for this date" });
+          return dates.map((date) => current.find((e) => e.date === date) || { date, error: "No survey data for this date" } as StatRow);
         }
 
         if (force_refresh) _status.log("📊 Forcing refresh of stats");
-        const fetch_dates: string[] = force_refresh ? dates : dates.filter((e) => !current_dates.includes(e) || errored_dates.includes(e));
-        const fetched: StatRow[] = fetch_dates.length ? await this.fetch_stats(fetch_dates) : [];
-
-        const mergedByDate = new Map<string, StatRow>();
-        for (const row of current) {
-          if (!fetch_dates.includes(row.date)) mergedByDate.set(row.date, row);
-        }
-        for (const row of fetched) {
-          mergedByDate.set(row.date, row);
-        }
-
-        const mergedList = Array.from(mergedByDate.values()).sort((a, b) => a.date.localeCompare(b.date));
-        this.stats_cache = { list: mergedList, updated: Date.now() };
+        const envelope: StatsResponse = await this.fetch_stats();
+        this.stats_cache = { ...envelope, updated: Date.now() };
 
         _status.log("📊 Got stats from API");
-        return dates.map((date) => mergedByDate.get(date) || { date, error: "No survey data for this date" });
+        const byDate = new Map(envelope.list.map((row) => [row.date, row]));
+        return dates.map((date) => byDate.get(date) || ({ date, error: "No survey data for this date" } as StatRow));
       } catch (err) {
         return Promise.reject(err);
       }
@@ -1434,11 +1419,10 @@ export const useMainStore: StoreDefinition = defineStore({
         if (!this.user) await this.login_promise();
         await apiFetch("/api/v1/me/surveys/daily", {
           method: "POST",
-          body: {
-            responses,
-            time: Date.now(),
-          },
+          body: { responses },
         });
+
+        this.stats_cache = null;
 
         const updated_surveys: string[] = [...(this.active_doc?.done_surveys || [])];
         if (!updated_surveys.includes(today)) updated_surveys.push(today);

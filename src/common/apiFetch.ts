@@ -12,15 +12,23 @@ export interface ApiFetchOptions {
   body?: unknown;
 }
 
-/** Slim row returned by GET /api/v1/me/stats */
+/** Slim row in GET /api/v1/me/stats list */
 export interface StatRow {
   date: string;
-  mood?: string;
-  stress?: number;
-  upcoming_count?: number;
-  notes?: string;
-  time?: number;
+  mood: "positive" | "neutral" | "negative" | null;
+  stress: number;
+  upcoming_count: number;
+  notes: string;
+  time: number;
   error?: string;
+}
+
+/** GET /api/v1/me/stats response envelope (mvtt-server#27) */
+export interface StatsResponse {
+  timestamp: number;
+  num: number;
+  list: StatRow[];
+  rebuilt: boolean;
 }
 
 async function errorMessage(response: Response): Promise<string> {
@@ -76,14 +84,10 @@ export async function apiFetch<T = unknown>(path: string, options: ApiFetchOptio
   return (await response.json()) as T;
 }
 
-/** Normalize stats API payloads (bare array or { data | rows | stats }). */
-export function normalizeStatRows(payload: unknown): StatRow[] {
-  if (Array.isArray(payload)) return payload as StatRow[];
-  if (payload && typeof payload === "object") {
-    const obj = payload as Record<string, unknown>;
-    for (const key of ["data", "rows", "stats"]) {
-      if (Array.isArray(obj[key])) return obj[key] as StatRow[];
-    }
+/** Parse GET /api/v1/me/stats envelope; returns empty list if shape is unexpected. */
+export function parseStatsResponse(payload: unknown): StatsResponse {
+  if (payload && typeof payload === "object" && Array.isArray((payload as StatsResponse).list)) {
+    return payload as StatsResponse;
   }
-  return [];
+  return { timestamp: Date.now(), num: 0, list: [], rebuilt: false };
 }

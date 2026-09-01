@@ -102,7 +102,7 @@ export default {
           filter: "mood",
           data: {
             value(survey) {
-              return { sentiment: survey.mood || "" };
+              return { sentiment: survey.mood ?? "" };
             },
             scale(data) {
               const mapped = { positive: 3, neutral: 2, negative: 1 }[data.sentiment];
