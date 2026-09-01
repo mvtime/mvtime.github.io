@@ -101,15 +101,16 @@ export default {
           name: "Mood",
           filter: "mood",
           data: {
-            index: 1,
-            range: {
-              from: 1,
-              to: 3,
+            value(survey) {
+              return { sentiment: survey.mood ?? "" };
             },
             scale(data) {
-              return ({ positive: 3, neutral: 2, negative: 1 }[data.sentiment] - 1) * (5 / 2);
+              const mapped = { positive: 3, neutral: 2, negative: 1 }[data.sentiment];
+              if (!mapped) return -1000;
+              return (mapped - 1) * (5 / 2);
             },
             label(data) {
+              if (!data.sentiment) return "Unknown";
               return data.sentiment.charAt(0).toUpperCase() + data.sentiment.slice(1);
             },
           },
@@ -118,10 +119,8 @@ export default {
           name: "Stress",
           filter: "stress",
           data: {
-            index: 2,
-            range: {
-              from: 1,
-              to: 5,
+            value(survey) {
+              return { sentiment: survey.stress ?? 0 };
             },
             scale(data) {
               return ((data.sentiment * 5) / 100 - 1) * (5 / 4);
@@ -135,16 +134,14 @@ export default {
           name: "Work",
           filter: "upcoming",
           data: {
-            index: 4,
-            range: {
-              from: 0,
-              to: 6,
+            value(survey) {
+              return { num: survey.upcoming_count ?? 0 };
             },
             scale(data) {
-              return Math.min(data.num || data.tasks?.length || 0, 10) / 2;
+              return Math.min(data.num || 0, 10) / 2;
             },
             label(data) {
-              return (data.num || data.tasks?.length || 0) + " tasks";
+              return (data.num || 0) + " tasks";
             },
           },
         },
@@ -152,17 +149,14 @@ export default {
           name: "Notes",
           filter: "additional",
           data: {
-            index: 3,
-            range: {
-              from: 0,
-              to: 0,
+            value(survey) {
+              return { input: survey.notes || "" };
             },
             scale(data) {
               void data;
               return data.input ? -0.8 : -1000;
             },
             label(data) {
-              // first 20 chars
               return data.input
                 ? data.input.length > 20
                   ? `"${data.input.slice(0, 18)}...`
@@ -185,10 +179,10 @@ export default {
           return {
             name: f.name,
             data: this.surveys.map((survey) => {
-              return f.data.scale(survey.data.responses[f.data.index].data);
+              return f.data.scale(f.data.value(survey));
             }),
             labels: this.surveys.map((survey) => {
-              return f.data.label(survey.data.responses[f.data.index].data);
+              return f.data.label(f.data.value(survey));
             }),
           };
         });
@@ -206,7 +200,7 @@ export default {
           tooltip: {
             enabled: false,
           },
-          categories: self.surveys.map((survey) => survey.data.time),
+          categories: self.surveys.map((survey) => survey.time),
         },
         yaxis: {
           labels: {
@@ -259,7 +253,7 @@ export default {
   methods: {
     custom_tooltip(args) {
       let base = `<div class="apexcharts-tooltip-title" style="font-family: inherit; font-size: 12px;">${new Date(
-        this.surveys[args.dataPointIndex].data.time
+        this.surveys[args.dataPointIndex].time
       ).toLocaleDateString(undefined, {
         weekday: "short",
         month: "short",
@@ -293,13 +287,12 @@ export default {
     },
     process(data) {
       this.surveys = data.filter((survey) => !survey.error);
-      // map index onto surveys
       try {
         this.surveys.forEach((survey, index) => {
-          survey.data.index = index;
+          survey.index = index;
         });
       } catch {
-        throw "Failed to map indices onto survey data";
+        throw "Failed to map indices onto stats data";
       }
       this.is_ready = true;
     },
@@ -309,7 +302,7 @@ export default {
       this.last_update = Date.now();
       this.surveys = [];
       this.$store
-        .get_cached_surveys(this.completed, force)
+        .get_stats(this.completed, force)
         .then((data) => {
           this.process(data);
           // set a timeout to allow the user to update again
