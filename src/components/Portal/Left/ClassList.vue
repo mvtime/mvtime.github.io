@@ -12,7 +12,7 @@
           :ref="class_obj.ref"
           :href="'/view/' + clean_ref(class_obj.ref)"
           v-for="class_obj of classes"
-          :draggable="$store.is_teacher && class_obj.email == $store.user.email && $route.name != 'study'"
+          :draggable="$store.can_manage_class(class_obj) && $route.name != 'study'"
           @dragstart="
             $emit('dragclass', class_obj);
             // $emit('clear_filters');
@@ -39,9 +39,9 @@
           <div
             class="class_swatch"
             :_email="class_obj.email"
-            :title="$store.is_teacher && class_obj.email == $store.user.email ? 'Edit Class' : 'Leave Class'"
+            :title="$store.can_manage_class(class_obj) ? 'Edit Class' : 'Leave Class'"
             @click="
-              if ($store.is_teacher && class_obj.email == $store.user.email) {
+              if ($store.can_manage_class(class_obj)) {
                 edit_class(class_obj);
               } else {
                 leave_class(class_obj);
@@ -50,7 +50,7 @@
               $event.stopPropagation();
             "
           >
-            <div v-if="!$store.is_teacher || class_obj.email != $store.user.email" class="class_swatch__icon class_swatch_remove__icon"></div>
+            <div v-if="!$store.can_manage_class(class_obj)" class="class_swatch__icon class_swatch_remove__icon"></div>
             <div v-else class="class_swatch__icon class_swatch_edit__icon"></div>
           </div>
           <span class="class_name">{{ $store.class_text(class_obj) }}</span>

@@ -639,6 +639,28 @@ export const useMainStore: StoreDefinition = defineStore({
       return CLASS_TEXT({ ...class_obj, name: classTextName(class_obj.name) });
     },
     /**
+     * Whether the signed-in user may edit a flat class (matches Firestore canWriteFlatClass).
+     * Site admin bypasses roster; site teacher role alone does not.
+     */
+    can_manage_class(class_obj: ClassInfo | null | undefined): boolean {
+      if (!this.user || !class_obj) return false;
+      if (this.is_admin) return true;
+      const email = (this.active_doc?.email || this.user.email || "").toLowerCase();
+      if (!email) return false;
+      const teachers = humanTeachers(class_obj.teachers);
+      if (teachers.some((t) => t.email && t.email.toLowerCase() === email)) {
+        return true;
+      }
+      const owner =
+        (typeof class_obj.owner_email === "string" ? class_obj.owner_email : undefined) ||
+        class_obj._teacher_email ||
+        (class_obj._implied_owner && class_obj._implied_owner.email);
+      if (owner && !isCanvasImportEmail(owner) && owner.toLowerCase() === email) {
+        return true;
+      }
+      return false;
+    },
+    /**
      * @memberOf .main.actions
      * @function set_account_pref
      * @description Set a preference in the account doc

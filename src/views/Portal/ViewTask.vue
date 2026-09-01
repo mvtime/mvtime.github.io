@@ -100,13 +100,9 @@
         class="edit_action primary_styled"
         v-if="
           ($route.name == 'viewtask' || $route.name == 'publicviewtask') &&
-          $store.is_teacher &&
-          $store.user &&
+          can_manage_task &&
           task &&
-          !task.archived &&
-          (task._class?._teacher_email || task.class_id || '').toLowerCase().startsWith(
-            ($store.active_doc.email || '').toLowerCase().split('@')[0]
-          )
+          !task.archived
         "
         @click="edit_task"
       >
@@ -116,13 +112,9 @@
         class="edit_action primary_styled"
         v-if="
           ($route.name == 'viewtask' || $route.name == 'publicviewtask') &&
-          $store.is_teacher &&
-          $store.user &&
+          can_manage_task &&
           task &&
-          task.archived &&
-          (task._class?._teacher_email || task.class_id || '').toLowerCase().startsWith(
-            ($store.active_doc.email || '').toLowerCase().split('@')[0]
-          )
+          task.archived
         "
         @click="unarchive_task"
       >
@@ -190,6 +182,22 @@ export default {
     },
     class_share_ref() {
       return this.task?._class?._share_ref || this.task?._class?.ref || this.$route.params.ref;
+    },
+    task_class_obj() {
+      if (this.task?._class) return this.task._class;
+      const classId = this.task?.class_id;
+      if (!classId || !this.$store.classes) return null;
+      return (
+        this.$store.classes.find(
+          (c) =>
+            c.id === classId ||
+            c._class_id === classId ||
+            (typeof c.id === "string" && c.id.endsWith("/" + classId))
+        ) || null
+      );
+    },
+    can_manage_task() {
+      return !!(this.$store.user && this.$store.can_manage_class(this.task_class_obj));
     },
   },
   mounted() {

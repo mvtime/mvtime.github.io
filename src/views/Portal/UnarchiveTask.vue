@@ -107,6 +107,10 @@ export default {
       } else {
         this.ready = true;
         this.loading = false;
+        if (!this.$store.can_manage_class(this.class_obj)) {
+          new WarningToast("You are not a teacher of this class", 2000);
+          this.$emit("close");
+        }
       }
     }
   },
