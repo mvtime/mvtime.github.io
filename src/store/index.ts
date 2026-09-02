@@ -44,9 +44,19 @@ export interface ProcessedTaskInfo extends TaskInfo {
   date: Date | null;
 }
 
-import { apiFetch, parseStatsResponse, type StatRow, type StatsResponse } from "@/common/apiFetch";
+import {
+  apiFetch,
+  isMissingStatsEndpoint,
+  parseStatsResponse,
+  parseTeacherStatsResponse,
+  type StatRow,
+  type StatsResponse,
+  type TeacherStatsResponse,
+} from "@/common/apiFetch";
 
 type ClassID = string;
+
+const STATS_CACHE_TTL_MS = 5 * 60 * 1000;
 
 function enrollmentKeyClassId(enrollmentPath: string): string {
   return bareClassIdFromEnrollment(enrollmentPath);
@@ -264,6 +274,12 @@ export const useMainStore: StoreDefinition = defineStore({
        * @default null
        */
       stats_cache: null as (StatsResponse & { updated: number }) | null,
+      /**
+       * @memberOf .main.state
+       * @property {Object} teacher_stats_cache In-memory GET /api/v1/me/teacher-stats envelope
+       * @default null
+       */
+      teacher_stats_cache: null as (TeacherStatsResponse & { updated: number }) | null,
     };
     // setting up store
     let local: string | null = window.localStorage.getItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_app_state`);
@@ -701,23 +717,28 @@ export const useMainStore: StoreDefinition = defineStore({
     /**
      * @memberOf .main.actions
      * @function get_stats
-     * @description Get stats for the given dates, using an in-memory cache of the API list envelope. Refetches when force_refresh is set or requested dates are missing from cache.
-     * @param {Array} dates Array of dates to get stats for
+     * @description Get stats from GET /api/v1/me/stats via in-memory cache. Omit dates (or pass []) for the full list, including upcoming_count-only rows when the server includes task snapshots.
+     * @param {Array} dates Optional dates to filter; empty/omitted returns the full envelope list
      * @param {Boolean} force_refresh Bypass cache and refetch from API
-     * @returns {Promise} Promise resolving to stat rows for the given dates
+     * @returns {Promise} Promise resolving to stat rows
      * @see {@link save_daily_survey}
      * @see {@link done_daily_survey}
      */
-    async get_stats(dates: string[], force_refresh: boolean = false): Promise<StatRow[]> {
+    async get_stats(dates?: string[] | null, force_refresh: boolean = false): Promise<StatRow[]> {
       if (!this.user) return Promise.reject("Missing user");
       try {
+        const requested: string[] = dates || [];
+        const wantAll: boolean = requested.length === 0;
         const current: StatRow[] = this.stats_cache?.list || [];
         const current_dates: string[] = current.map((e) => e.date);
-        const all_dates: boolean = dates.every((e) => current_dates.includes(e));
+        const cacheFresh: boolean = !!this.stats_cache && Date.now() - (this.stats_cache.updated || 0) < STATS_CACHE_TTL_MS;
+        const cacheHit: boolean =
+          !!this.stats_cache && !force_refresh && (wantAll ? cacheFresh : requested.every((e) => current_dates.includes(e)));
 
-        if (all_dates && !force_refresh) {
+        if (cacheHit) {
           _status.log("📊 Using cached stats");
-          return dates.map((date) => current.find((e) => e.date === date) || { date, error: "No survey data for this date" } as StatRow);
+          if (wantAll) return current.filter((row) => !row.error);
+          return requested.map((date) => current.find((e) => e.date === date) || ({ date, error: "No survey data for this date" } as StatRow));
         }
 
         if (force_refresh) _status.log("📊 Forcing refresh of stats");
@@ -725,9 +746,37 @@ export const useMainStore: StoreDefinition = defineStore({
         this.stats_cache = { ...envelope, updated: Date.now() };
 
         _status.log("📊 Got stats from API");
-        const byDate = new Map(envelope.list.map((row) => [row.date, row]));
-        return dates.map((date) => byDate.get(date) || ({ date, error: "No survey data for this date" } as StatRow));
+        const list: StatRow[] = envelope.list || [];
+        if (wantAll) return list.filter((row) => !row.error);
+        const byDate = new Map(list.map((row) => [row.date, row]));
+        return requested.map((date) => byDate.get(date) || ({ date, error: "No survey data for this date" } as StatRow));
       } catch (err) {
+        return Promise.reject(err);
+      }
+    },
+    /**
+     * @memberOf .main.actions
+     * @function fetch_teacher_stats
+     * @description Fetch class aggregates from GET /api/v1/me/teacher-stats (ID token). 404/501 treated as empty/unavailable — no API_KEY.
+     */
+    async fetch_teacher_stats(force_refresh: boolean = false): Promise<TeacherStatsResponse> {
+      if (!this.user) return Promise.reject("Missing user");
+      if (!this.is_teacher) return Promise.reject("Teacher only");
+      try {
+        if (this.teacher_stats_cache && !force_refresh && Date.now() - (this.teacher_stats_cache.updated || 0) < STATS_CACHE_TTL_MS) {
+          _status.log("📊 Using cached teacher stats");
+          return this.teacher_stats_cache;
+        }
+        const payload = await apiFetch<TeacherStatsResponse>("/api/v1/me/teacher-stats");
+        const parsed = parseTeacherStatsResponse(payload);
+        this.teacher_stats_cache = { ...parsed, updated: Date.now() };
+        _status.log("📊 Got teacher stats from API");
+        return this.teacher_stats_cache;
+      } catch (err) {
+        if (isMissingStatsEndpoint(err)) {
+          _status.warn("📊 Teacher stats endpoint not available yet", err);
+          return { timestamp: Date.now(), classes: [], unavailable: true };
+        }
         return Promise.reject(err);
       }
     },
@@ -1132,6 +1181,7 @@ export const useMainStore: StoreDefinition = defineStore({
       this.loaded_classes = null;
       this.personal_account = false;
       this.stats_cache = null;
+      this.teacher_stats_cache = null;
       this.teacher = {
         doc_ref: null,
         collection_ref: null,

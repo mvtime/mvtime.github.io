@@ -32,6 +32,11 @@
       <div class="teacher_action__icon icon__create"></div>
       <div class="teacher_action__text">Create a Class</div>
     </div>
+
+    <div class="teacher_action" @click="$router.push({ name: 'teacher-stats', query: $route.query })">
+      <div class="teacher_action__icon icon__stats"></div>
+      <div class="teacher_action__text">Stats</div>
+    </div>
   </div>
 </template>
 
@@ -219,5 +224,8 @@ export default {
 .icon__create {
   background-image: url("@/assets/img/general/portal/actions/create.png");
   background-image: url("@/assets/img/general/portal/actions/create.svg");
+}
+.icon__stats {
+  background-image: url("@/assets/img/general/portal/stats.svg");
 }
 </style>

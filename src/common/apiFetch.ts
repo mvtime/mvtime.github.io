@@ -12,23 +12,54 @@ export interface ApiFetchOptions {
   body?: unknown;
 }
 
-/** Slim row in GET /api/v1/me/stats list */
+export class ApiFetchError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "ApiFetchError";
+    this.status = status;
+  }
+}
+
+/** Slim row in GET /api/v1/me/stats list (survey fields may be null on task-count-only days) */
 export interface StatRow {
   date: string;
-  mood: "positive" | "neutral" | "negative" | null;
-  stress: number;
-  upcoming_count: number;
-  notes: string;
-  time: number;
+  mood?: "positive" | "neutral" | "negative" | string | null;
+  stress?: number | null;
+  upcoming_count?: number | null;
+  notes?: string | null;
+  time?: number | null;
   error?: string;
 }
 
-/** GET /api/v1/me/stats response envelope (mvtt-server#27) */
+/** GET /api/v1/me/stats response envelope (mvtt-server#27, extended with snapshot-shaped upcoming_count) */
 export interface StatsResponse {
   timestamp: number;
   num: number;
   list: StatRow[];
   rebuilt: boolean;
+}
+
+/** Aggregate row in GET /api/v1/me/teacher-stats (no notes / free text) */
+export interface TeacherStatRow {
+  date: string;
+  mood?: "positive" | "neutral" | "negative" | string | number | null;
+  stress?: number | null;
+  upcoming_count?: number | null;
+  time?: number | null;
+}
+
+export interface TeacherClassStats {
+  classId: string;
+  name: string;
+  list: TeacherStatRow[];
+}
+
+/** GET /api/v1/me/teacher-stats envelope (provisional until server P0 lands) */
+export interface TeacherStatsResponse {
+  timestamp?: number;
+  classes: TeacherClassStats[];
+  unavailable?: boolean;
 }
 
 async function errorMessage(response: Response): Promise<string> {
@@ -74,7 +105,7 @@ export async function apiFetch<T = unknown>(path: string, options: ApiFetchOptio
 
   const response = await fetch(url, init);
   if (!response.ok) {
-    throw new Error(await errorMessage(response));
+    throw new ApiFetchError(await errorMessage(response), response.status);
   }
 
   if (response.status === 204) {
@@ -84,10 +115,114 @@ export async function apiFetch<T = unknown>(path: string, options: ApiFetchOptio
   return (await response.json()) as T;
 }
 
+function firstFiniteNumber(...vals: unknown[]): number | null {
+  for (const value of vals) {
+    if (typeof value === "number" && Number.isFinite(value)) return value;
+    if (typeof value === "string" && value.trim() !== "") {
+      const parsed = Number(value);
+      if (Number.isFinite(parsed)) return parsed;
+    }
+  }
+  return null;
+}
+
+function rowTime(raw: Record<string, unknown>, date: string): number | null {
+  if (typeof raw.time === "number" && Number.isFinite(raw.time)) return raw.time;
+  if (date) {
+    const parsed = Date.parse(date);
+    if (!Number.isNaN(parsed)) return parsed;
+  }
+  return null;
+}
+
 /** Parse GET /api/v1/me/stats envelope; returns empty list if shape is unexpected. */
 export function parseStatsResponse(payload: unknown): StatsResponse {
   if (payload && typeof payload === "object" && Array.isArray((payload as StatsResponse).list)) {
     return payload as StatsResponse;
   }
   return { timestamp: Date.now(), num: 0, list: [], rebuilt: false };
+}
+
+function normalizeTeacherRow(raw: unknown): TeacherStatRow | null {
+  if (!raw || typeof raw !== "object") return null;
+  const row = raw as Record<string, unknown>;
+  const date = typeof row.date === "string" ? row.date : typeof row.day === "string" ? row.day : "";
+  if (!date) return null;
+
+  const nested =
+    row.upcoming && typeof row.upcoming === "object" ? (row.upcoming as Record<string, unknown>) : null;
+
+  const upcoming_count = firstFiniteNumber(
+    row.upcoming_count,
+    row.upcomingCount,
+    row.avg,
+    row.average,
+    row.upcoming_avg,
+    row.sum,
+    row.upcoming_sum,
+    nested?.count,
+    nested?.avg,
+    nested?.sum
+  );
+
+  const stress = firstFiniteNumber(row.stress, row.stress_avg, row.avg_stress);
+
+  let mood: TeacherStatRow["mood"] = null;
+  if (typeof row.mood === "string" || typeof row.mood === "number") mood = row.mood;
+  else if (typeof row.mood_avg === "number") mood = row.mood_avg;
+
+  return {
+    date,
+    mood,
+    stress,
+    upcoming_count,
+    time: rowTime(row, date),
+  };
+}
+
+function normalizeTeacherClass(raw: unknown): TeacherClassStats | null {
+  if (!raw || typeof raw !== "object") return null;
+  const cls = raw as Record<string, unknown>;
+  const classId = cls.classId || cls.class_id || cls.id;
+  if (classId == null || classId === "") return null;
+
+  const listSource = Array.isArray(cls.list) ? cls.list : Array.isArray(cls.rows) ? cls.rows : [];
+  const list = listSource.map(normalizeTeacherRow).filter((row): row is TeacherStatRow => !!row);
+
+  const name =
+    (typeof cls.name === "string" && cls.name) ||
+    (typeof cls.class_name === "string" && cls.class_name) ||
+    (typeof cls.className === "string" && cls.className) ||
+    "";
+
+  return { classId: String(classId), name, list };
+}
+
+/** Parse GET /api/v1/me/teacher-stats; never passes through notes/free text. Empty on unexpected shape. */
+export function parseTeacherStatsResponse(payload: unknown): TeacherStatsResponse {
+  if (!payload || typeof payload !== "object") {
+    return { timestamp: Date.now(), classes: [] };
+  }
+  const body = payload as Record<string, unknown>;
+  let source: unknown[] | null = Array.isArray(body.classes) ? body.classes : null;
+  if (!source && Array.isArray(body.list) && body.list.length) {
+    const first = body.list[0];
+    if (first && typeof first === "object" && ("classId" in first || "class_id" in first)) {
+      source = body.list;
+    }
+  }
+
+  if (!source) {
+    return { timestamp: typeof body.timestamp === "number" ? body.timestamp : Date.now(), classes: [] };
+  }
+
+  const classes = source.map(normalizeTeacherClass).filter((cls): cls is TeacherClassStats => !!cls);
+  return {
+    timestamp: typeof body.timestamp === "number" ? body.timestamp : Date.now(),
+    classes,
+  };
+}
+
+export function isMissingStatsEndpoint(err: unknown): boolean {
+  return err instanceof ApiFetchError && (err.status === 404 || err.status === 405 || err.status === 501);
 }
