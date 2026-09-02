@@ -281,13 +281,18 @@ td.user_role {
 }
 .user_role_select {
   width: 100%;
-  padding: 5px 6px;
-  border: none;
-  border-radius: 3px;
+  padding: 8px 12px;
+  border: 2px solid transparent;
+  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar));
   background: var(--color-bg);
   color: var(--color-text);
   font-size: 0.9em;
   cursor: pointer;
+  appearance: auto; /* keep native chevron */
+}
+.user_role_select:focus {
+  outline: none;
+  border-color: var(--color-theme, #888);
 }
 .user_role_select:disabled {
   opacity: 0.6;
