@@ -147,6 +147,21 @@
         </span>
         and get an insight into your mental health and productivity
       </div>
+      <div
+        v-if="$store.is_teacher"
+        class="overlay_contents_text overlay_contents_section"
+      >
+        For classes you manage,
+        <span
+          id="teacher_stats_pointer_button"
+          class="button_pointer_text button_pointer_icon click-action"
+          @click="$router.push({ name: 'teacher-stats', query: $route.query })"
+        >
+          <div class="stats_icon themed_icon icon"></div>
+          Stats
+        </span>
+        shows class-level workload trends
+      </div>
       <div class="overlay_contents_text overlay_contents_section">
         <span class="tutorial_redo_section">
           Feeling lost? Try

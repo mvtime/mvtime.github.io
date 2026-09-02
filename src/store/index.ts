@@ -44,9 +44,25 @@ export interface ProcessedTaskInfo extends TaskInfo {
   date: Date | null;
 }
 
-import { apiFetch, parseStatsResponse, type StatRow, type StatsResponse } from "@/common/apiFetch";
+import {
+  ApiFetchError,
+  apiFetch,
+  defaultTeacherStatsRange,
+  isMissingStatsEndpoint,
+  mapWithConcurrency,
+  parseStatsResponse,
+  parseTeacherClassStatsResponse,
+  type StatRow,
+  type StatsResponse,
+  type TeacherClassStats,
+  type TeacherStatsResponse,
+} from "@/common/apiFetch";
 
 type ClassID = string;
+
+const STATS_CACHE_TTL_MS = 5 * 60 * 1000;
+/** Parallel teacher-stats requests per manageable class (mvtt-server#29 requires classId). */
+const TEACHER_STATS_CONCURRENCY = 4;
 
 function enrollmentKeyClassId(enrollmentPath: string): string {
   return bareClassIdFromEnrollment(enrollmentPath);
@@ -264,6 +280,12 @@ export const useMainStore: StoreDefinition = defineStore({
        * @default null
        */
       stats_cache: null as (StatsResponse & { updated: number }) | null,
+      /**
+       * @memberOf .main.state
+       * @property {Object} teacher_stats_cache In-memory GET /api/v1/me/teacher-stats envelope
+       * @default null
+       */
+      teacher_stats_cache: null as (TeacherStatsResponse & { updated: number }) | null,
     };
     // setting up store
     let local: string | null = window.localStorage.getItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_app_state`);
@@ -684,15 +706,21 @@ export const useMainStore: StoreDefinition = defineStore({
     /**
      * @memberOf .main.actions
      * @function fetch_stats
-     * @description Fetch stats from GET /api/v1/me/stats (full list envelope)
+     * @description Fetch stats from GET /api/v1/me/stats (full list envelope). Optional from/to (YYYY-MM-DD). 204 → empty list.
      * @returns {StatsResponse} Server stats envelope
      * @see {@link get_stats}
      * @see {@link save_daily_survey}
      */
-    async fetch_stats(): Promise<StatsResponse> {
+    async fetch_stats(opts?: { from?: string; to?: string }): Promise<StatsResponse> {
       if (!this.user) return Promise.reject("Missing user");
       try {
-        const payload = await apiFetch<StatsResponse>("/api/v1/me/stats");
+        const params = new URLSearchParams();
+        if (opts?.from) params.set("from", opts.from);
+        if (opts?.to) params.set("to", opts.to);
+        const qs = params.toString();
+        const path = qs ? `/api/v1/me/stats?${qs}` : "/api/v1/me/stats";
+        // 204 → apiFetch returns undefined → parseStatsResponse yields empty list
+        const payload = await apiFetch<StatsResponse | undefined>(path);
         return parseStatsResponse(payload);
       } catch (err) {
         return Promise.reject(err);
@@ -701,23 +729,28 @@ export const useMainStore: StoreDefinition = defineStore({
     /**
      * @memberOf .main.actions
      * @function get_stats
-     * @description Get stats for the given dates, using an in-memory cache of the API list envelope. Refetches when force_refresh is set or requested dates are missing from cache.
-     * @param {Array} dates Array of dates to get stats for
+     * @description Get stats from GET /api/v1/me/stats via in-memory cache. Omit dates (or pass []) for the full list (done_surveys ∪ task_count_dates), including task_count_only rows.
+     * @param {Array} dates Optional dates to filter; empty/omitted returns the full envelope list
      * @param {Boolean} force_refresh Bypass cache and refetch from API
-     * @returns {Promise} Promise resolving to stat rows for the given dates
+     * @returns {Promise} Promise resolving to stat rows
      * @see {@link save_daily_survey}
      * @see {@link done_daily_survey}
      */
-    async get_stats(dates: string[], force_refresh: boolean = false): Promise<StatRow[]> {
+    async get_stats(dates?: string[] | null, force_refresh: boolean = false): Promise<StatRow[]> {
       if (!this.user) return Promise.reject("Missing user");
       try {
+        const requested: string[] = dates || [];
+        const wantAll: boolean = requested.length === 0;
         const current: StatRow[] = this.stats_cache?.list || [];
         const current_dates: string[] = current.map((e) => e.date);
-        const all_dates: boolean = dates.every((e) => current_dates.includes(e));
+        const cacheFresh: boolean = !!this.stats_cache && Date.now() - (this.stats_cache.updated || 0) < STATS_CACHE_TTL_MS;
+        const cacheHit: boolean =
+          !!this.stats_cache && !force_refresh && (wantAll ? cacheFresh : requested.every((e) => current_dates.includes(e)));
 
-        if (all_dates && !force_refresh) {
+        if (cacheHit) {
           _status.log("📊 Using cached stats");
-          return dates.map((date) => current.find((e) => e.date === date) || { date, error: "No survey data for this date" } as StatRow);
+          if (wantAll) return current.filter((row) => !row.error);
+          return requested.map((date) => current.find((e) => e.date === date) || ({ date, error: "No survey data for this date" } as StatRow));
         }
 
         if (force_refresh) _status.log("📊 Forcing refresh of stats");
@@ -725,9 +758,113 @@ export const useMainStore: StoreDefinition = defineStore({
         this.stats_cache = { ...envelope, updated: Date.now() };
 
         _status.log("📊 Got stats from API");
-        const byDate = new Map(envelope.list.map((row) => [row.date, row]));
-        return dates.map((date) => byDate.get(date) || ({ date, error: "No survey data for this date" } as StatRow));
+        const list: StatRow[] = envelope.list || [];
+        if (wantAll) return list.filter((row) => !row.error);
+        const byDate = new Map(list.map((row) => [row.date, row]));
+        return requested.map((date) => byDate.get(date) || ({ date, error: "No survey data for this date" } as StatRow));
       } catch (err) {
+        return Promise.reject(err);
+      }
+    },
+    /**
+     * Resolve bare classId for a local class cache entry.
+     */
+    class_id_of(class_obj: ClassInfo | null | undefined): string | null {
+      if (!class_obj) return null;
+      const id =
+        class_obj._class_id ||
+        bareClassIdFromEnrollment(class_obj.id || "") ||
+        writeClassId(class_obj.id || class_obj.ref || "", this.ORG_DOMAIN) ||
+        bareClassIdFromEnrollment(class_obj.ref || "") ||
+        null;
+      return id || null;
+    },
+    /**
+     * @memberOf .main.actions
+     * @function fetch_teacher_stats
+     * @description Per manageable class, GET /api/v1/me/teacher-stats?classId=&from=&to= (ID token). Parallel with a small concurrency limit. Assembles UI from per-class { classId, num, list } responses (mvtt-server#29). No API_KEY.
+     */
+    async fetch_teacher_stats(force_refresh: boolean = false): Promise<TeacherStatsResponse> {
+      if (!this.user) return Promise.reject("Missing user");
+      if (!this.is_teacher) return Promise.reject("Teacher only");
+      try {
+        if (this.teacher_stats_cache && !force_refresh && Date.now() - (this.teacher_stats_cache.updated || 0) < STATS_CACHE_TTL_MS) {
+          _status.log("📊 Using cached teacher stats");
+          return this.teacher_stats_cache;
+        }
+
+        const manageable = (this.classes || []).filter((c) => this.can_manage_class(c));
+        const targets: { classId: string; name: string }[] = [];
+        const seen = new Set<string>();
+        for (const class_obj of manageable) {
+          const classId = this.class_id_of(class_obj);
+          if (!classId || seen.has(classId)) continue;
+          seen.add(classId);
+          targets.push({
+            classId,
+            name: this.class_text(class_obj) || class_obj.name || classId,
+          });
+        }
+
+        if (!targets.length) {
+          const empty: TeacherStatsResponse & { updated: number } = {
+            timestamp: Date.now(),
+            classes: [],
+            unavailable: false,
+            updated: Date.now(),
+          };
+          this.teacher_stats_cache = empty;
+          return empty;
+        }
+
+        const { from, to } = defaultTeacherStatsRange(30);
+        let sawMissingEndpoint = false;
+        let sawSuccess = false;
+
+        const settled = await mapWithConcurrency(targets, TEACHER_STATS_CONCURRENCY, async (target) => {
+          const path = `/api/v1/me/teacher-stats?classId=${encodeURIComponent(target.classId)}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+          try {
+            const payload = await apiFetch<unknown>(path);
+            const parsed = parseTeacherClassStatsResponse(payload, target.classId);
+            sawSuccess = true;
+            const entry: TeacherClassStats = {
+              classId: parsed.classId || target.classId,
+              name: target.name,
+              num: parsed.num,
+              list: parsed.list,
+            };
+            return entry;
+          } catch (err) {
+            if (isMissingStatsEndpoint(err)) {
+              sawMissingEndpoint = true;
+              _status.warn(`📊 Teacher stats endpoint missing for ${target.classId}`, err);
+              return null;
+            }
+            // 403/400: skip this class; other errors log and skip so one class cannot kill the panel
+            if (err instanceof ApiFetchError && (err.status === 403 || err.status === 400)) {
+              _status.warn(`📊 Teacher stats skipped for ${target.classId}`, err);
+              return null;
+            }
+            _status.warn(`📊 Teacher stats failed for ${target.classId}`, err);
+            return null;
+          }
+        });
+
+        const classes = settled.filter((cls): cls is TeacherClassStats => !!cls);
+        const assembled: TeacherStatsResponse & { updated: number } = {
+          timestamp: Date.now(),
+          classes,
+          unavailable: sawMissingEndpoint && !sawSuccess,
+          updated: Date.now(),
+        };
+        this.teacher_stats_cache = assembled;
+        _status.log(`📊 Got teacher stats for ${classes.length}/${targets.length} classes`);
+        return assembled;
+      } catch (err) {
+        if (isMissingStatsEndpoint(err)) {
+          _status.warn("📊 Teacher stats endpoint not available yet", err);
+          return { timestamp: Date.now(), classes: [], unavailable: true };
+        }
         return Promise.reject(err);
       }
     },
@@ -1132,6 +1269,7 @@ export const useMainStore: StoreDefinition = defineStore({
       this.loaded_classes = null;
       this.personal_account = false;
       this.stats_cache = null;
+      this.teacher_stats_cache = null;
       this.teacher = {
         doc_ref: null,
         collection_ref: null,

@@ -448,6 +448,20 @@ const router = createRouter({
           },
         },
         {
+          path: "/portal/teacher-statistics",
+          name: "teacher-stats",
+          component: () => import("../views/Portal/TeacherStatsModal.vue"),
+          meta: {
+            page_title: "Stats",
+            theme_color: {
+              light: "#b5b5b5",
+              dark: "#0d0d0d",
+            },
+            requiresAuth: true,
+            requiresTeacher: true,
+          },
+        },
+        {
           path: "/portal/survey/daily",
           name: "daily",
           component: () => import("../views/Portal/DailySurvey.vue"),
