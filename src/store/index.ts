@@ -45,18 +45,24 @@ export interface ProcessedTaskInfo extends TaskInfo {
 }
 
 import {
+  ApiFetchError,
   apiFetch,
+  defaultTeacherStatsRange,
   isMissingStatsEndpoint,
+  mapWithConcurrency,
   parseStatsResponse,
-  parseTeacherStatsResponse,
+  parseTeacherClassStatsResponse,
   type StatRow,
   type StatsResponse,
+  type TeacherClassStats,
   type TeacherStatsResponse,
 } from "@/common/apiFetch";
 
 type ClassID = string;
 
 const STATS_CACHE_TTL_MS = 5 * 60 * 1000;
+/** Parallel teacher-stats requests per manageable class (mvtt-server#29 requires classId). */
+const TEACHER_STATS_CONCURRENCY = 4;
 
 function enrollmentKeyClassId(enrollmentPath: string): string {
   return bareClassIdFromEnrollment(enrollmentPath);
@@ -700,15 +706,21 @@ export const useMainStore: StoreDefinition = defineStore({
     /**
      * @memberOf .main.actions
      * @function fetch_stats
-     * @description Fetch stats from GET /api/v1/me/stats (full list envelope)
+     * @description Fetch stats from GET /api/v1/me/stats (full list envelope). Optional from/to (YYYY-MM-DD). 204 → empty list.
      * @returns {StatsResponse} Server stats envelope
      * @see {@link get_stats}
      * @see {@link save_daily_survey}
      */
-    async fetch_stats(): Promise<StatsResponse> {
+    async fetch_stats(opts?: { from?: string; to?: string }): Promise<StatsResponse> {
       if (!this.user) return Promise.reject("Missing user");
       try {
-        const payload = await apiFetch<StatsResponse>("/api/v1/me/stats");
+        const params = new URLSearchParams();
+        if (opts?.from) params.set("from", opts.from);
+        if (opts?.to) params.set("to", opts.to);
+        const qs = params.toString();
+        const path = qs ? `/api/v1/me/stats?${qs}` : "/api/v1/me/stats";
+        // 204 → apiFetch returns undefined → parseStatsResponse yields empty list
+        const payload = await apiFetch<StatsResponse | undefined>(path);
         return parseStatsResponse(payload);
       } catch (err) {
         return Promise.reject(err);
@@ -717,7 +729,7 @@ export const useMainStore: StoreDefinition = defineStore({
     /**
      * @memberOf .main.actions
      * @function get_stats
-     * @description Get stats from GET /api/v1/me/stats via in-memory cache. Omit dates (or pass []) for the full list, including upcoming_count-only rows when the server includes task snapshots.
+     * @description Get stats from GET /api/v1/me/stats via in-memory cache. Omit dates (or pass []) for the full list (done_surveys ∪ task_count_dates), including task_count_only rows.
      * @param {Array} dates Optional dates to filter; empty/omitted returns the full envelope list
      * @param {Boolean} force_refresh Bypass cache and refetch from API
      * @returns {Promise} Promise resolving to stat rows
@@ -755,9 +767,22 @@ export const useMainStore: StoreDefinition = defineStore({
       }
     },
     /**
+     * Resolve bare classId for a local class cache entry.
+     */
+    class_id_of(class_obj: ClassInfo | null | undefined): string | null {
+      if (!class_obj) return null;
+      const id =
+        class_obj._class_id ||
+        bareClassIdFromEnrollment(class_obj.id || "") ||
+        writeClassId(class_obj.id || class_obj.ref || "", this.ORG_DOMAIN) ||
+        bareClassIdFromEnrollment(class_obj.ref || "") ||
+        null;
+      return id || null;
+    },
+    /**
      * @memberOf .main.actions
      * @function fetch_teacher_stats
-     * @description Fetch class aggregates from GET /api/v1/me/teacher-stats (ID token). 404/501 treated as empty/unavailable — no API_KEY.
+     * @description Per manageable class, GET /api/v1/me/teacher-stats?classId=&from=&to= (ID token). Parallel with a small concurrency limit. Assembles UI from per-class { classId, num, list } responses (mvtt-server#29). No API_KEY.
      */
     async fetch_teacher_stats(force_refresh: boolean = false): Promise<TeacherStatsResponse> {
       if (!this.user) return Promise.reject("Missing user");
@@ -767,11 +792,74 @@ export const useMainStore: StoreDefinition = defineStore({
           _status.log("📊 Using cached teacher stats");
           return this.teacher_stats_cache;
         }
-        const payload = await apiFetch<TeacherStatsResponse>("/api/v1/me/teacher-stats");
-        const parsed = parseTeacherStatsResponse(payload);
-        this.teacher_stats_cache = { ...parsed, updated: Date.now() };
-        _status.log("📊 Got teacher stats from API");
-        return this.teacher_stats_cache;
+
+        const manageable = (this.classes || []).filter((c) => this.can_manage_class(c));
+        const targets: { classId: string; name: string }[] = [];
+        const seen = new Set<string>();
+        for (const class_obj of manageable) {
+          const classId = this.class_id_of(class_obj);
+          if (!classId || seen.has(classId)) continue;
+          seen.add(classId);
+          targets.push({
+            classId,
+            name: this.class_text(class_obj) || class_obj.name || classId,
+          });
+        }
+
+        if (!targets.length) {
+          const empty: TeacherStatsResponse & { updated: number } = {
+            timestamp: Date.now(),
+            classes: [],
+            unavailable: false,
+            updated: Date.now(),
+          };
+          this.teacher_stats_cache = empty;
+          return empty;
+        }
+
+        const { from, to } = defaultTeacherStatsRange(30);
+        let sawMissingEndpoint = false;
+        let sawSuccess = false;
+
+        const settled = await mapWithConcurrency(targets, TEACHER_STATS_CONCURRENCY, async (target) => {
+          const path = `/api/v1/me/teacher-stats?classId=${encodeURIComponent(target.classId)}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+          try {
+            const payload = await apiFetch<unknown>(path);
+            const parsed = parseTeacherClassStatsResponse(payload, target.classId);
+            sawSuccess = true;
+            const entry: TeacherClassStats = {
+              classId: parsed.classId || target.classId,
+              name: target.name,
+              num: parsed.num,
+              list: parsed.list,
+            };
+            return entry;
+          } catch (err) {
+            if (isMissingStatsEndpoint(err)) {
+              sawMissingEndpoint = true;
+              _status.warn(`📊 Teacher stats endpoint missing for ${target.classId}`, err);
+              return null;
+            }
+            // 403/400: skip this class; other errors log and skip so one class cannot kill the panel
+            if (err instanceof ApiFetchError && (err.status === 403 || err.status === 400)) {
+              _status.warn(`📊 Teacher stats skipped for ${target.classId}`, err);
+              return null;
+            }
+            _status.warn(`📊 Teacher stats failed for ${target.classId}`, err);
+            return null;
+          }
+        });
+
+        const classes = settled.filter((cls): cls is TeacherClassStats => !!cls);
+        const assembled: TeacherStatsResponse & { updated: number } = {
+          timestamp: Date.now(),
+          classes,
+          unavailable: sawMissingEndpoint && !sawSuccess,
+          updated: Date.now(),
+        };
+        this.teacher_stats_cache = assembled;
+        _status.log(`📊 Got teacher stats for ${classes.length}/${targets.length} classes`);
+        return assembled;
       } catch (err) {
         if (isMissingStatsEndpoint(err)) {
           _status.warn("📊 Teacher stats endpoint not available yet", err);

@@ -37,6 +37,8 @@ function moodSentiment(row: Record<string, unknown>): string | number {
 function workCount(row: Record<string, unknown>): number {
   const direct = row.upcoming_count;
   if (typeof direct === "number" && Number.isFinite(direct)) return direct;
+  const avgUpcoming = row.avgUpcoming ?? row.avg_upcoming;
+  if (typeof avgUpcoming === "number" && Number.isFinite(avgUpcoming)) return avgUpcoming;
   const avg = row.avg ?? row.upcoming_avg;
   if (typeof avg === "number" && Number.isFinite(avg)) return avg;
   const sum = row.sum ?? row.upcoming_sum;
@@ -104,7 +106,12 @@ export const WORK_FILTER: StatFilter = {
       return Math.min((data.num as number) || 0, 10) / 2;
     },
     label(data) {
-      return ((data.num as number) || 0) + " tasks";
+      const num = (data.num as number) || 0;
+      // Teacher class aggregates use avgUpcoming (may be fractional)
+      if (typeof num === "number" && !Number.isInteger(num)) {
+        return num.toFixed(1) + " avg";
+      }
+      return num + " tasks";
     },
   },
 };
@@ -114,6 +121,8 @@ export const NOTES_FILTER: StatFilter = {
   filter: "additional",
   data: {
     value(survey) {
+      // Synthetic task-count-only days never have survey notes (#29)
+      if (survey.task_count_only) return { input: "" };
       return { input: survey.notes || "" };
     },
     scale(data) {
@@ -130,8 +139,8 @@ export const NOTES_FILTER: StatFilter = {
 /** Personal Stats filters — same four series as live StatsModal.vue */
 export const PERSONAL_STAT_FILTERS: StatFilter[] = [MOOD_FILTER, STRESS_FILTER, WORK_FILTER, NOTES_FILTER];
 
-/** Teacher Stats filters — aggregates only, never notes / free text */
-export const TEACHER_STAT_FILTERS: StatFilter[] = [MOOD_FILTER, STRESS_FILTER, WORK_FILTER];
+/** Teacher Stats filters — class upcoming aggregates only (no mood/stress/notes from #29) */
+export const TEACHER_STAT_FILTERS: StatFilter[] = [WORK_FILTER];
 
 export interface StatGraphSeries {
   name: string;
@@ -168,6 +177,7 @@ function hasStress(rows: Record<string, unknown>[]): boolean {
 function hasWork(rows: Record<string, unknown>[]): boolean {
   return rows.some((row) => {
     if (typeof row.upcoming_count === "number" && Number.isFinite(row.upcoming_count)) return true;
+    if (typeof row.avgUpcoming === "number" && Number.isFinite(row.avgUpcoming)) return true;
     if (typeof row.avg === "number" && Number.isFinite(row.avg)) return true;
     if (typeof row.sum === "number" && Number.isFinite(row.sum)) return true;
     return false;

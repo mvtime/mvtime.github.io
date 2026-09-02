@@ -70,20 +70,16 @@
 
 <script>
 /**
- * Teacher/admin Stats modal — class-level aggregates only (no other users' notes).
- * Gated by is_teacher on the route; per-class rows filtered with can_manage_class.
+ * Teacher/admin Stats modal — class-level aggregates only (no notes / survey text).
+ * Data: per manageable class via GET /api/v1/me/teacher-stats?classId=&from=&to= (mvtt-server#29).
+ * Gated by is_teacher on the route; store already filters can_manage_class.
  *
  * @module TeacherStatsModal
  */
 import { ErrorToast } from "@svonk/util";
 import StatsChartCard from "@/components/Portal/Stats/StatsChartCard.vue";
 import StatsFilterBar from "@/components/Portal/Stats/StatsFilterBar.vue";
-import {
-  TEACHER_STAT_FILTERS,
-  buildGraphs,
-  defaultActiveFilters,
-  sortStatRows,
-} from "@/components/Portal/Stats/statSeries";
+import { TEACHER_STAT_FILTERS, buildGraphs, sortStatRows } from "@/components/Portal/Stats/statSeries";
 
 export default {
   name: "TeacherStatsModal",
@@ -95,6 +91,7 @@ export default {
       toolbar: false,
       unavailable: false,
       classes: [],
+      // Teacher endpoint is Work aggregates only (#29)
       active: ["upcoming"],
     };
   },
@@ -106,7 +103,9 @@ export default {
       return (this.$store.classes || []).filter((c) => this.$store.can_manage_class(c));
     },
     visibleClasses() {
-      return (this.classes || []).filter((cls) => this.localClassFor(cls.classId));
+      return (this.classes || []).filter(
+        (cls) => this.localClassFor(cls.classId) && (cls.list || []).length > 0
+      );
     },
   },
   methods: {
@@ -138,8 +137,7 @@ export default {
         ...cls,
         list: sortStatRows(cls.list || []),
       }));
-      const rows = this.visibleClasses.flatMap((cls) => cls.list || []);
-      this.active = defaultActiveFilters(rows);
+      this.active = ["upcoming"];
       this.is_ready = true;
     },
     update() {
