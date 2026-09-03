@@ -45,6 +45,8 @@
         id="nav-auth-btn"
         class="small-action-btn auth-action can-logout can-login click-action"
         :class="{ linked: $store.personal_account && $store.user, oauth: !logged_in }"
+        :title="auth_btn_title"
+        :aria-label="auth_btn_title || undefined"
       >
         Log {{ logged_in ? "Out" : "In" }}
       </button>
@@ -79,6 +81,12 @@ export default {
   computed: {
     logged_in() {
       return !!this.$store.user;
+    },
+    auth_btn_title() {
+      if (!this.logged_in) return "Log in";
+      if (this.$store.acting_as_label) return this.$store.acting_as_label;
+      if (this.$store.user?.email) return `Logged in as ${this.$store.user.email}`;
+      return "Log out";
     },
   },
 };
