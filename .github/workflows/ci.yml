@@ -40,5 +40,8 @@ jobs:
       - name: Board hydrate tests
         run: npm run test:me-board
 
+      - name: Acting-as chip tests
+        run: npm run test:acting-as
+
       - name: Build
         run: npm run build

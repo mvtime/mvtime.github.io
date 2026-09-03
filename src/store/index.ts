@@ -60,6 +60,12 @@ import {
   type TeacherStatsResponse,
 } from "@/common/apiFetch";
 import { mapMeBoardToClassInfos, teacherEmailFromBoardClass } from "@/common/meBoard";
+import {
+  actingAsLabel,
+  isActingAsLinked,
+  resolveActingAsEmail,
+  schoolUidFromClaims,
+} from "@/common/actingAs";
 
 type ClassID = string;
 
@@ -265,6 +271,14 @@ export const useMainStore: StoreDefinition = defineStore({
       personal_account: false as boolean,
       /**
        * @memberOf .main.state
+       * @property {Object|null} id_token_claims Latest Firebase ID token claims (for school_uid etc.)
+       * @default null
+       * @see {@link school_uid_claim}
+       * @see {@link refresh_id_token_claims}
+       */
+      id_token_claims: null as Record<string, unknown> | null,
+      /**
+       * @memberOf .main.state
        * @property {Boolean} paused If the app is paused (true) or not (false)
        * @default false
        * @see {@link show_timeout}
@@ -435,6 +449,55 @@ export const useMainStore: StoreDefinition = defineStore({
       if (!this.user) return false;
       const role = this.active_doc?.role;
       return role === "teacher" || role === "admin";
+    },
+    /**
+     * @memberOf .main.getters
+     * @function school_uid_claim
+     * @description school_uid from the latest ID token claims (null when absent)
+     * @returns {String|null}
+     * @see {@link refresh_id_token_claims}
+     * @see {@link is_acting_as_linked}
+     */
+    school_uid_claim(): string | null {
+      return schoolUidFromClaims(this.id_token_claims);
+    },
+    /**
+     * @memberOf .main.getters
+     * @function is_acting_as_linked
+     * @description True when this session acts as a school principal (prefer school_uid claim; else personal_account && linked_to)
+     * @returns {Boolean}
+     * @see {@link acting_as_email}
+     */
+    is_acting_as_linked(): boolean {
+      return isActingAsLinked({
+        schoolUidClaim: this.school_uid_claim,
+        personalAccount: this.personal_account,
+        linkedTo: this.account_doc?.linked_to || null,
+      });
+    },
+    /**
+     * @memberOf .main.getters
+     * @function acting_as_email
+     * @description School principal email for the Acting-as chip (from active_doc — never personal Gmail)
+     * @returns {String|null}
+     */
+    acting_as_email(): string | null {
+      return resolveActingAsEmail({
+        schoolUidClaim: this.school_uid_claim,
+        personalAccount: this.personal_account,
+        linkedTo: this.account_doc?.linked_to || null,
+        activeDocEmail: this.active_doc?.email || null,
+        userEmail: this.user?.email || null,
+      });
+    },
+    /**
+     * @memberOf .main.getters
+     * @function acting_as_label
+     * @description Accessible chip label "Acting as email@school.edu", or null when chip should hide
+     * @returns {String|null}
+     */
+    acting_as_label(): string | null {
+      return actingAsLabel(this.acting_as_email);
     },
     /**
      * @memberOf .main.getters
@@ -696,14 +759,41 @@ export const useMainStore: StoreDefinition = defineStore({
      */
     async set_account_pref(pref: string, value: string | boolean): Promise<void | string> {
       try {
-        if (!this.account_ref) throw "No account doc";
+        // Calendar / principal prefs live on the school doc (active_ref), never the personal wrapper
+        if (!this.active_ref || !this.active_doc) throw "No active doc";
         if (!pref) throw "No pref provided";
-        await this.update_wrapper_with_merge({
-          prefs: { ...this.active_doc?.prefs, [pref]: value },
-        });
+        const prefs = { ...(this.active_doc.prefs || {}), [pref]: value };
+        if (this.personal_account && this.linked_account_doc) {
+          this.linked_account_doc.prefs = prefs;
+        } else if (this.account_doc) {
+          this.account_doc.prefs = prefs;
+        }
+        await setDoc(this.active_ref, { prefs }, { merge: true });
         return Promise.resolve();
       } catch (err) {
         return Promise.reject(err);
+      }
+    },
+    /**
+     * @memberOf .main.actions
+     * @function refresh_id_token_claims
+     * @description Refresh (optionally force) the ID token and store claims for school_uid / Acting-as
+     * @param {Boolean} force Force-refresh so custom claims land before apiFetch
+     * @returns {Promise} Resolves when claims are stored (or cleared if signed out)
+     * @see {@link school_uid_claim}
+     * @see {@link link_account_uid}
+     */
+    async refresh_id_token_claims(force: boolean = false): Promise<void> {
+      if (!this.user) {
+        this.id_token_claims = null;
+        return;
+      }
+      try {
+        const result = await this.user.getIdTokenResult(force);
+        this.id_token_claims = (result?.claims as Record<string, unknown>) || {};
+      } catch (err) {
+        _status.warn("🔑 Couldn't refresh ID token claims", err);
+        this.id_token_claims = null;
       }
     },
     /**
@@ -1271,6 +1361,7 @@ export const useMainStore: StoreDefinition = defineStore({
       this.loaded_email = null;
       this.loaded_classes = null;
       this.personal_account = false;
+      this.id_token_claims = null;
       this.stats_cache = null;
       this.teacher_stats_cache = null;
       this.teacher = {
@@ -1359,10 +1450,8 @@ export const useMainStore: StoreDefinition = defineStore({
           throw data?.error || data?.message || "acceptLink failed";
         }
 
-        // Refresh custom claims / token so rules + callables see the link
-        if (this.user) {
-          await this.user.getIdToken(true);
-        }
+        // Force-refresh so school_uid claims land before any apiFetch (board/stats/survey)
+        await this.refresh_id_token_claims(true);
 
         // Mirror linked_to locally; server owns the write
         this.account_doc.linked_to = uid;
@@ -1723,6 +1812,10 @@ export const useMainStore: StoreDefinition = defineStore({
             return;
           }
           this.user = user;
+          // Load claims (school_uid) for Acting-as chip; non-forced so cache is fine on warm start
+          this.refresh_id_token_claims(false).catch((err) => {
+            _status.warn("🔑 Initial ID token claims refresh failed", err);
+          });
           // if this is a personal account, get the associated linked account doc
           if (this.personal_account) {
             this.get_remote()

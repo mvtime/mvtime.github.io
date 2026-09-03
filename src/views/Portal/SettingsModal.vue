@@ -14,6 +14,22 @@
           You're currently signed in using a personal account. You can unlink it, or link more
           emails, through your main account.
         </div>
+        <div
+          class="acting_as_chip settings_acting_as"
+          v-if="$store.is_acting_as_linked && $store.acting_as_label"
+          :title="$store.acting_as_label"
+          :aria-label="$store.acting_as_label"
+          role="status"
+        >
+          <img
+            class="acting_as_chip__img"
+            width="20"
+            height="20"
+            src="@/assets/img/general/user-linked.png"
+            alt=""
+          />
+          <span class="acting_as_chip__text">{{ $store.acting_as_label }}</span>
+        </div>
         <div class="inputs_row linked_accounts_row">
           <div class="styled_input styled_links_box">
             <div class="styled_links_display">
@@ -342,10 +358,10 @@ export default {
       return !this.$store?.account_doc?.prefs?.hide_timeout;
     },
     prioritize_notes() {
-      return !this.$store?.account_doc?.prefs?.derank_notes;
+      return !this.$store?.active_doc?.prefs?.derank_notes;
     },
     include_finished() {
-      return !this.$store?.account_doc?.prefs?.hide_finished;
+      return !this.$store?.active_doc?.prefs?.hide_finished;
     },
     ready_to_link() {
       return (
@@ -364,27 +380,21 @@ export default {
   },
   methods: {
     update_account_pref(key, value, [on_true, on_false]) {
-      if (this.$store.account_doc) {
-        let before = this.$store.account_doc?.prefs?.[key];
-        if (before != value) {
-          // update the value
-          this.$store
-            .update_wrapper_with_merge({
-              prefs: {
-                ...this.$store.account_doc.prefs,
-                [key]: value,
-              },
-            })
-            .then(() => {
-              this.changed = true;
-              new SuccessToast(value ? on_false : on_true, 2000);
-            })
-            .catch((err) => {
-              this.changed = false;
-              new ErrorToast(`Couldn't update key ${key} of preferences`, err, 2000);
-              this.$status.error('⚙️ Couldn\'t update preferences key "${key}" to "${value}"');
-            });
-        }
+      // Calendar prefs (derank_notes / hide_finished) write to the school principal via set_account_pref
+      if (!this.$store?.active_doc) return;
+      const before = this.$store.active_doc?.prefs?.[key];
+      if (before != value) {
+        this.$store
+          .set_account_pref(key, value)
+          .then(() => {
+            this.changed = true;
+            new SuccessToast(value ? on_false : on_true, 2000);
+          })
+          .catch((err) => {
+            this.changed = false;
+            new ErrorToast(`Couldn't update key ${key} of preferences`, err, 2000);
+            this.$status.error('⚙️ Couldn\'t update preferences key "${key}" to "${value}"');
+          });
       }
     },
     update_email_pref(key, description) {
@@ -508,6 +518,28 @@ export default {
 }
 .linked_accounts_row {
   margin-bottom: 0;
+}
+.acting_as_chip.settings_acting_as {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0.75em 0 0.25em;
+  padding: 6px 10px 6px 6px;
+  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) / 2);
+  background: var(--color-overlay-input);
+  max-width: 100%;
+}
+.acting_as_chip__img {
+  flex: 0 0 20px;
+  filter: var(--filter-icon);
+}
+.acting_as_chip__text {
+  font-size: 0.95em;
+  font-weight: 600;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 /* make space for new button text */
 .links_personal .styled_links_add__text {

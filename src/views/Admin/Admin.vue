@@ -63,7 +63,17 @@
         <span class="admin_sidebar__bottomhaze"></span>
 
         <div class="sidebar_last_block auth-action can-logout doprompt">
-          <div class="linked_acc_icon" v-if="$store && $store.personal_account">
+          <div
+            class="linked_acc_chip"
+            v-if="$store && $store.is_acting_as_linked && $store.acting_as_label"
+            :title="$store.acting_as_label"
+            :aria-label="$store.acting_as_label"
+            role="status"
+          >
+            <img class="linked_acc_chip__img" width="24" height="24" src="@/assets/img/general/user-linked.png" alt="" />
+            <span class="linked_acc_chip__text">{{ $store.acting_as_label }}</span>
+          </div>
+          <div class="linked_acc_icon" v-else-if="$store && $store.personal_account">
             <img class="linked_acc_icon__img" width="24" height="24" src="@/assets/img/general/user-linked.png" alt="Linked Account" />
           </div>
           <div class="active_acc_icon" v-else-if="$store && $store.user && user_pfp" :title="`Logged in as ${$store.user.displayName} (${this.$store.user.email})`">
@@ -387,6 +397,7 @@ main.admin,
   border-radius: calc(var(--radius-sidebar) - 10px);
 }
 .linked_acc_icon,
+.linked_acc_chip,
 .active_acc_icon {
   flex: 0 0 30px;
   height: 30px;
@@ -395,8 +406,42 @@ main.admin,
   align-items: center;
   justify-content: center;
 }
-.linked_acc_icon {
+.linked_acc_icon,
+.linked_acc_chip {
   filter: var(--filter-icon);
+}
+.linked_acc_chip {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
+  max-width: none;
+  height: auto;
+  min-height: 30px;
+  gap: 6px;
+  justify-content: flex-start;
+  padding: 4px 8px 4px 4px;
+  margin-right: 4px;
+  border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) / 2);
+  background: var(--color-on-bg-alt);
+  filter: none;
+}
+.linked_acc_chip__img {
+  flex: 0 0 24px;
+  filter: var(--filter-icon);
+}
+.linked_acc_chip__text {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sidebar_last_block:has(.linked_acc_chip) .auth_logout {
+  flex: 0 0 auto;
 }
 .active_acc_icon {
   border-radius: calc(var(--radius-sidebar) - var(--padding-sidebar) / 2);
