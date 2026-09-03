@@ -37,5 +37,8 @@ jobs:
       - name: Grapheme tests
         run: npm run test:grapheme
 
+      - name: Board hydrate tests
+        run: npm run test:me-board
+
       - name: Build
         run: npm run build

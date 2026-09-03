@@ -331,7 +331,7 @@ export default {
     this.check_and_do_join();
     this.check_and_do_survey();
     this.$store
-      .fetch_classes()
+      .hydrate_from_board_or_fallback()
       .then(() => {
         // run calendar run_get_tasks method
         if (this.$refs.study) this.$refs.study.run_get_tasks();
@@ -341,7 +341,7 @@ export default {
         this.loaded = true;
       })
       .catch((err) => {
-        this.$status.error("🔥 Couldn't fetch classes", err);
+        this.$status.error("🔥 Couldn't hydrate classes", err);
       });
   },
   /** Preform same checks as mounted, but if any of the completion statuses could've changed on page switch or data load */

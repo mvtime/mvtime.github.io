@@ -173,12 +173,11 @@ export function classListenerCount(): number {
 }
 
 /**
- * Hydrate via fetch_classes (dual-read getDocs) then attach listeners.
- * Used on login, Portal mount path, idle resubscribe, and visibility wake.
+ * Board-first hydrate (GET /api/v1/me/board via ID token), then attach class-doc listeners.
+ * On board failure, falls back to dual-read fetch_classes so login never soft-locks.
+ * Used on login, Portal mount, idle resubscribe, and enrollment-change.
  */
 export async function hydrateAndListen(): Promise<void> {
   const store = getMainStore();
-  await store.fetch_classes();
-  const enrollment = store.active_doc?.classes || [];
-  syncClassListeners(enrollment);
+  await store.hydrate_from_board_or_fallback();
 }

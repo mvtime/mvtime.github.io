@@ -50,13 +50,16 @@ import {
   defaultTeacherStatsRange,
   isMissingStatsEndpoint,
   mapWithConcurrency,
+  parseMeBoardResponse,
   parseStatsResponse,
   parseTeacherClassStatsResponse,
+  type MeBoardResponse,
   type StatRow,
   type StatsResponse,
   type TeacherClassStats,
   type TeacherStatsResponse,
 } from "@/common/apiFetch";
+import { mapMeBoardToClassInfos, teacherEmailFromBoardClass } from "@/common/meBoard";
 
 type ClassID = string;
 
@@ -1984,9 +1987,58 @@ export const useMainStore: StoreDefinition = defineStore({
     },
     /**
      * @memberOf .main.actions
+     * @function fetch_board
+     * @description Hydrate this.classes from GET /api/v1/me/board (Firebase ID token via apiFetch). 204/empty → [].
+     * Does not write users.classes[]. Live class-doc listeners still win via hydrateBeatsLive.
+     * Throws on network/401/5xx so callers can fall back to {@link fetch_classes}.
+     */
+    async fetch_board(): Promise<void> {
+      const run_hash: string = Math.random().toString(36).substring(7);
+      _status.log(`📚 Board hydrate   | <${run_hash}>`);
+      const hydrateEpoch = beginHydrateEpoch();
+      const payload = await apiFetch<MeBoardResponse | undefined>("/api/v1/me/board");
+      const board = parseMeBoardResponse(payload, this.ORG_DOMAIN);
+      const mapped = mapMeBoardToClassInfos(board, this.active_doc?.classes, this.ORG_DOMAIN);
+
+      const classes: ClassInfo[] = mapped.map((cls) => {
+        const enrollmentPath = cls.id;
+        if (enrollmentPath && !hydrateBeatsLive(enrollmentPath, hydrateEpoch)) {
+          const live = this.classes.find(
+            (c) => c.id === enrollmentPath || (cls._class_id && classEntryMatchesId(c, cls._class_id))
+          );
+          if (live) return live;
+        }
+        const teacherEmail = teacherEmailFromBoardClass(cls);
+        if (teacherEmail && cls._class_id) {
+          rememberClassEmail(cls._class_id, teacherEmail);
+        }
+        return cls as ClassInfo;
+      });
+
+      this.classes = classes;
+      this.get_tasks();
+      _status.log(`📚 Board applied   | <${run_hash}> (${classes.length} classes)`);
+    },
+    /**
+     * @memberOf .main.actions
+     * @function hydrate_from_board_or_fallback
+     * @description Prefer me/board for initial/enrollment hydrate; fall back to dual-read fetch_classes. Always attaches class-doc listeners.
+     */
+    async hydrate_from_board_or_fallback(): Promise<void> {
+      try {
+        await this.fetch_board();
+      } catch (err) {
+        _status.warn("⚠ Board hydrate failed — falling back to dual-read fetch_classes", err);
+        await this.fetch_classes();
+      }
+      syncClassListeners(this.active_doc?.classes || []);
+    },
+    /**
+     * @memberOf .main.actions
      * @function fetch_classes
-     * @description Fetch all classes from the user's document and combine them into an array, while checking for duplicates and invalid classes
+     * @description Dual-read getDocs per enrollment (flat then nested). Fallback when me/board hydrate fails.
      * @returns {Array} Array of all (unique) classes from the user's document
+     * @see {@link fetch_board}
      * @see {@link classes}
      * @see {@link fetch_classes_by_email}
      * @see {@link remove_invalid}

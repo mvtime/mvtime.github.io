@@ -4,6 +4,11 @@
  */
 
 import { auth } from "@/firebase";
+import type { BoardClass, BoardEmbeddedTask, BoardTask, MeBoardResponse } from "@/common/meBoard";
+import { parseMeBoardResponse } from "@/common/meBoard";
+
+export type { BoardClass, BoardEmbeddedTask, BoardTask, MeBoardResponse };
+export { parseMeBoardResponse };
 
 const API_BASE = `https://${process.env.VUE_APP_BRAND_DOMAIN__API}`;
 

@@ -493,12 +493,12 @@ export default {
         if (a.length != b.length && this.is_ready) {
           this.$status.log("📦 Classes array length changed, calendar updating tasks");
           this.$store
-            .fetch_classes()
+            .hydrate_from_board_or_fallback()
             .then(() => {
               this.run_get_tasks();
             })
             .catch((err) => {
-              this.$status.error("🔥 Couldn't fetch classes", err);
+              this.$status.error("🔥 Couldn't hydrate classes", err);
             });
         }
       },
