@@ -18,6 +18,7 @@ import {
   bareClassIdFromEnrollment,
   flatClassPath,
   flatTaskPath,
+  isValidTaskRouteRef,
 } from "../src/common/paths.ts";
 
 let failed = 0;
@@ -129,6 +130,20 @@ assertEq(
   { classId: "abc123", taskId: "task9" },
   "writeTaskIds legacy local path"
 );
+
+console.log("\n--- isValidTaskRouteRef (EditTask/NotesTask guard) ---\n");
+
+assert(isValidTaskRouteRef("abc123~task9"), "accepts canonical classId~taskId");
+assert(isValidTaskRouteRef("abc123/task9"), "accepts classId/taskId slash form");
+assert(isValidTaskRouteRef("t~abc123~task9", org), "accepts legacy local~classId~taskId");
+assert(isValidTaskRouteRef("t@mvla.net/abc123/task9", org), "accepts legacy email/classId/taskId");
+assert(!isValidTaskRouteRef(""), "rejects empty");
+assert(!isValidTaskRouteRef(null), "rejects null");
+assert(!isValidTaskRouteRef("   "), "rejects whitespace");
+assert(!isValidTaskRouteRef("abc123"), "rejects class-only (one segment)");
+assert(!isValidTaskRouteRef("t@mvla.net/abc123"), "rejects email/classId (class, not task)");
+assert(!isValidTaskRouteRef("a~b~c~d"), "rejects four-segment refs");
+assert(!isValidTaskRouteRef("classId~"), "rejects trailing empty task id");
 
 console.log("\n--- done ---\n");
 if (failed) {

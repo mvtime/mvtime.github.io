@@ -159,6 +159,22 @@ export function parseTaskId(
 }
 
 /**
+ * True when `idOrRef` is a loadable task route ref:
+ * `classId~taskId` | `classId/taskId` | `local~classId~taskId` | `email/classId/taskId`.
+ * Rejects empty, class-only, email/classId, and extra segments.
+ * Used by EditTask / NotesTask so the router canonical 2-segment flat refs pass.
+ */
+export function isValidTaskRouteRef(
+  idOrRef: string | undefined | null,
+  orgDomain: string = "mvla.net"
+): boolean {
+  if (!idOrRef || typeof idOrRef !== "string") return false;
+  const trimmed = idOrRef.trim();
+  if (!trimmed) return false;
+  return parseTaskId(trimmed, orgDomain) != null;
+}
+
+/**
  * Ambiguous 2-segment refs: local~classId (class) vs classId~taskId (task).
  * Returns both interpretations; callers dual-read class-with-email first, then task.
  */
