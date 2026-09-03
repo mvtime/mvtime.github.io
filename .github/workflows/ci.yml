@@ -43,5 +43,8 @@ jobs:
       - name: Acting-as chip tests
         run: npm run test:acting-as
 
+      - name: Repeating edit-scope tests
+        run: npm run test:repeating-scope
+
       - name: Build
         run: npm run build

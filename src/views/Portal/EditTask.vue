@@ -4,7 +4,7 @@
       <Modal
         class="confirm_modal router_center_view"
         :can_continue="true"
-        title="Archive Tasks"
+        :title="archiveConfirmTitle"
         :html="archiveConfirmHtml"
         :continue_action="() => confirmArchiveSeries()"
         :skippable="true"
@@ -58,19 +58,21 @@
       </div>
       <img alt="Loading Icon" class="loading_icon" v-else />
     </div>
-    <div v-if="task.repetition_group_id" class="warning_text overlay_contents_text">Save changes to this {{ task.type || "task" }} series to</div>
+    <div v-if="task.repetition_group_id" class="warning_text overlay_contents_text">
+      Choose what save or archive will affect in this {{ task.type || "task" }} series
+    </div>
     <div v-if="task.repetition_group_id" class="overlay_contents_text repetition_warning bottom_actions">
       <span class="flex_spacer" style="display: none"></span>
-      <button class="scope_button secondary_styled" :class="{ selected: edit_scope == 'this' }" @click="edit_scope = 'this'">This Task</button>
-      <button class="scope_button secondary_styled" :class="{ selected: edit_scope == 'future' }" @click="edit_scope = 'future'">This & Future</button>
-      <button class="scope_button secondary_styled" :class="{ selected: edit_scope == 'all' }" @click="edit_scope = 'all'">All Tasks</button>
+      <button class="scope_button secondary_styled" :class="{ selected: edit_scope == 'this' }" @click="edit_scope = 'this'">This one</button>
+      <button class="scope_button secondary_styled" :class="{ selected: edit_scope == 'future' }" @click="edit_scope = 'future'">This and future</button>
+      <button class="scope_button secondary_styled" :class="{ selected: edit_scope == 'all' }" @click="edit_scope = 'all'">Whole series</button>
     </div>
     <div class="bottom_actions">
       <button class="close_action click_escape" @click="$emit('close')">Cancel</button>
       <div class="flex_spacer"></div>
-      <button class="archive_action primary_styled" :class="{ loading_bg: loading }" @click="archive_task" :disabled="!ready || loading">Archive{{ scope_text }}</button>
+      <button class="archive_action primary_styled" :class="{ loading_bg: loading }" @click="archive_task" :disabled="!ready || loading">{{ archive_button_text }}</button>
       <button class="continue_action click_ctrlenter" :class="{ loading_bg: loading }" @click="try_submit" :disabled="not_submittable">
-        Save{{ scope_text }} {{ task.type || "task" }}{{ scope_text ? "s" : "" }}
+        {{ save_button_text }}
       </button>
     </div>
   </div>
@@ -155,15 +157,37 @@ export default {
         day: "numeric",
       });
     },
-    scope_text() {
-      if (!this.task.repetition_group_id || this.edit_scope === "this") {
-        return "";
-      }
-      return this.edit_scope === "future" ? " future" : " all";
+    save_button_text() {
+      const type = this.task.type || "task";
+      if (!this.task.repetition_group_id || this.edit_scope === "this") return `Save ${type}`;
+      if (this.edit_scope === "future") return `Save this and future ${type}s`;
+      return `Save whole series`;
+    },
+    archive_button_text() {
+      if (!this.task.repetition_group_id || this.edit_scope === "this") return "Archive";
+      if (this.edit_scope === "future") return "Archive this and future";
+      return "Archive whole series";
+    },
+    archiveConfirmTitle() {
+      if (this.edit_scope === "this") return "Archive this task";
+      if (this.edit_scope === "future") return "Archive this and future";
+      return "Archive whole series";
     },
     archiveConfirmHtml() {
-      const scopeText = this.edit_scope === "future" ? "this and all future tasks in the series" : "all tasks in this series";
+      let scopeText;
+      if (this.edit_scope === "this") {
+        scopeText = "this task only (other tasks in the series stay)";
+      } else if (this.edit_scope === "future") {
+        scopeText = "this and all future tasks in the series";
+      } else {
+        scopeText = "the whole series (every task in the series)";
+      }
       return `<div class="overlay_contents_text">Are you sure you want to archive ${scopeText}?<br><br>This action cannot be undone.</div>`;
+    },
+    /** Original instance date for callable identity / future cutoff (not an edited date). */
+    series_task_date() {
+      const d = this.original?.date ?? this.task?.date;
+      return typeof d === "string" ? d.split("T")[0] : d;
     },
     class_obj_for_task() {
       if (this.task?._class) return this.task._class;
@@ -207,12 +231,16 @@ export default {
       }
       this.loading = true;
 
-      let action;
-      if (this.edit_scope === "this") {
-        action = this.$store.update_task(this.task.ref, this.task);
-      } else {
-        action = this.$store.update_repeating_task(this.task.repetition_group_id, this.task_updates(), this.edit_scope, this.task.ref, this.task.date);
-      }
+      // Series instances always use updateRepeatingTask (including scope "this" so date changes go through the callable).
+      const action = this.task.repetition_group_id
+        ? this.$store.update_repeating_task(
+            this.task.repetition_group_id,
+            this.task_updates(),
+            this.edit_scope,
+            this.task.ref,
+            this.series_task_date
+          )
+        : this.$store.update_task(this.task.ref, this.task);
 
       action
         .then(() => {
@@ -233,7 +261,8 @@ export default {
         });
     },
     archive_task() {
-      if (this.edit_scope !== "this" && this.task.repetition_group_id) {
+      if (this.task.repetition_group_id) {
+        // All series scopes (including "this") use deleteRepeatingTask after confirm.
         this.showArchiveConfirm = true;
         return;
       }
@@ -253,7 +282,7 @@ export default {
       this.showArchiveConfirm = false;
       this.loading = true;
       this.$store
-        .delete_repeating_task(this.task.repetition_group_id, this.edit_scope, this.task.ref, this.task.date)
+        .delete_repeating_task(this.task.repetition_group_id, this.edit_scope, this.task.ref, this.series_task_date)
         .then(() => {
           this.$emit("close");
         })

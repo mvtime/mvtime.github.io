@@ -106,6 +106,12 @@ import {
   writeTaskIds,
 } from "@/common/paths";
 import {
+  repeatingArchiveToast,
+  repeatingUpdateToast,
+  shouldTouchRepeatingTask,
+  type RepeatingEditScope,
+} from "@/common/repeatingScope";
+import {
   getClassDoc,
   getTaskDoc,
   rememberClassEmail,
@@ -2575,9 +2581,16 @@ export const useMainStore: StoreDefinition = defineStore({
     /**
      * @memberOf .main.actions
      * @function update_repeating_task
-     * @description Update a repeating task series
+     * @description Update a repeating task series (or a single instance when scope is `"this"`).
+     * @param scope `"this"` | `"future"` | `"all"` — passed through to `updateRepeatingTask` unchanged
      */
-    async update_repeating_task(repetition_group_id: string, updates: any, scope: "future" | "all", task_ref: string, task_date: string): Promise<void> {
+    async update_repeating_task(
+      repetition_group_id: string,
+      updates: any,
+      scope: RepeatingEditScope,
+      task_ref: string,
+      task_date: string
+    ): Promise<void> {
       try {
         const safeUpdates = this.sanitize_repeating_task_updates(updates);
         const ids = writeTaskIds(task_ref, this.ORG_DOMAIN);
@@ -2596,21 +2609,23 @@ export const useMainStore: StoreDefinition = defineStore({
 
         if (data.error) throw data.error;
 
-        _status.log(`📝 Updated repeating task series (${data.count} tasks)`);
-        new SuccessToast(`Updated ${data.count} tasks in series`, 2000);
+        _status.log(`📝 Updated repeating task (${scope}, ${data.count} tasks)`);
+        new SuccessToast(repeatingUpdateToast(scope, data.count), 2000);
 
         // Update local state immediately to prevent UI desync
         const referenceDate = task_date ? new Date(task_date + "T00:00:00") : null;
+        const matchOpts = {
+          preferredRef,
+          classId: ids?.classId ?? null,
+          taskId: ids?.taskId ?? null,
+          task_date,
+          orgDomain: this.ORG_DOMAIN,
+          referenceDate,
+        };
         const updatedClasses = this.classes.map((classInfo: ClassInfo) => {
           if (!classInfo.tasks) return classInfo;
           classInfo.tasks = classInfo.tasks.map((task: TaskInfo) => {
-            if (task.repetition_group_id !== repetition_group_id) return task;
-            // For "future" scope, only update tasks on or after the reference date
-            if (scope === "future" && referenceDate) {
-              const taskDateStr = typeof task.date === "string" ? task.date : "";
-              const taskDate = taskDateStr ? new Date(taskDateStr.split("T")[0] + "T00:00:00") : null;
-              if (taskDate && taskDate < referenceDate) return task;
-            }
+            if (!shouldTouchRepeatingTask(task, repetition_group_id, scope, matchOpts)) return task;
             return { ...task, ...safeUpdates };
           });
           return classInfo;
@@ -2629,9 +2644,15 @@ export const useMainStore: StoreDefinition = defineStore({
     /**
      * @memberOf .main.actions
      * @function delete_repeating_task
-     * @description Delete a repeating task series
+     * @description Archive a repeating task series (or a single instance when scope is `"this"`).
+     * @param scope `"this"` | `"future"` | `"all"` — passed through to `deleteRepeatingTask` unchanged
      */
-    async delete_repeating_task(repetition_group_id: string, scope: "future" | "all", task_ref: string, task_date: string): Promise<void> {
+    async delete_repeating_task(
+      repetition_group_id: string,
+      scope: RepeatingEditScope,
+      task_ref: string,
+      task_date: string
+    ): Promise<void> {
       try {
         const ids = writeTaskIds(task_ref, this.ORG_DOMAIN);
         const preferredRef = ids ? shortShareRef(ids.classId, ids.taskId) : task_ref;
@@ -2647,22 +2668,24 @@ export const useMainStore: StoreDefinition = defineStore({
 
         if (data.error) throw data.error;
 
-        _status.log(`🗑️ Deleted repeating task series (${data.count} tasks)`);
-        new SuccessToast(`Archived ${data.count} tasks in series`, 2000);
+        _status.log(`🗑️ Archived repeating task (${scope}, ${data.count} tasks)`);
+        new SuccessToast(repeatingArchiveToast(scope, data.count), 2000);
 
         // Update local state immediately to prevent UI desync
         const referenceDate = task_date ? new Date(task_date + "T00:00:00") : null;
+        const matchOpts = {
+          preferredRef,
+          classId: ids?.classId ?? null,
+          taskId: ids?.taskId ?? null,
+          task_date,
+          orgDomain: this.ORG_DOMAIN,
+          referenceDate,
+        };
         const updatedClasses = this.classes.map((classInfo: ClassInfo) => {
           if (!classInfo.tasks) return classInfo;
           classInfo.tasks = classInfo.tasks.filter((task: TaskInfo) => {
-            if (task.repetition_group_id !== repetition_group_id) return true;
-            // For "future" scope, only remove tasks on or after the reference date
-            if (scope === "future" && referenceDate) {
-              const taskDateStr = typeof task.date === "string" ? task.date : "";
-              const taskDate = taskDateStr ? new Date(taskDateStr.split("T")[0] + "T00:00:00") : null;
-              if (taskDate && taskDate < referenceDate) return true;
-            }
-            return false;
+            // Keep tasks we should not touch; drop those in scope
+            return !shouldTouchRepeatingTask(task, repetition_group_id, scope, matchOpts);
           });
           return classInfo;
         });
