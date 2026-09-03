@@ -46,5 +46,8 @@ jobs:
       - name: Repeating edit-scope tests
         run: npm run test:repeating-scope
 
+      - name: Join-class ref tests
+        run: npm run test:join-class
+
       - name: Build
         run: npm run build

@@ -14,6 +14,7 @@
     "test:me-board": "node --experimental-strip-types scripts/test-me-board.mjs",
     "test:acting-as": "node --experimental-strip-types scripts/test-acting-as.mjs",
     "test:repeating-scope": "node --experimental-strip-types scripts/test-repeating-scope.mjs",
+    "test:join-class": "node --experimental-strip-types scripts/test-join-class.mjs",
     "deploy": "node deploy.js",
     "postbuild": "cross-env OS_TYPE=$(uname -s) npm-run-all --parallel copy-files echo-message",
     "copy-files": "npm run copy-win || npm run copy-nix",
