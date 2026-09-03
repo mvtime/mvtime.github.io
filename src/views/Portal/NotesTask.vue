@@ -83,6 +83,7 @@
  * @emits {Function} close - An event emitted when the task is created or the modal is closed.
  */
 
+import { isValidTaskRouteRef } from "@/common/paths";
 import { ErrorToast, WarningToast, SuccessToast } from "@svonk/util";
 import smoothReflow from "vue-smooth-reflow";
 
@@ -162,15 +163,19 @@ export default {
         });
     },
     async get_task() {
-      // get task ref from route params
-      const ref = this.$route.params.ref.split("~").join("/");
-      if (!ref) {
+      // get task ref from route params (canonical flat form is classId~taskId)
+      const raw = this.$route.params.ref;
+      if (!raw) {
         new WarningToast("No task specified", 1500);
         this.$emit("close");
-      } else if (ref.split("/").length < 3) {
+        return;
+      }
+      if (!isValidTaskRouteRef(raw)) {
         new WarningToast("Invalid task specified", 1500);
         this.$emit("close");
+        return;
       }
+      const ref = String(raw).split("~").join("/");
       // get task from store
       this.$store
         .task_from_ref(ref)

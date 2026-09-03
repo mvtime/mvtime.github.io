@@ -49,5 +49,8 @@ jobs:
       - name: Join-class ref tests
         run: npm run test:join-class
 
+      - name: Path / task-ref guard tests
+        run: npm run test:paths
+
       - name: Build
         run: npm run build
