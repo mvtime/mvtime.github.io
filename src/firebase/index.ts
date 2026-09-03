@@ -38,7 +38,7 @@ export {
   setupSnapshot,
 };
 
-// Re-export hydrate helper for Portal / callers (listeners-only; no Board GET / API_KEY)
+// Re-export hydrate helper for Portal / callers (board-first + listeners; never API_KEY)
 export { hydrateAndListen } from "./classListeners";
 
 //TODO:TS update common and store to ts to fix below
@@ -136,20 +136,15 @@ function setupSnapshot(uid: string | undefined): void {
         store.linked_account_doc = listening_doc_data;
       }
 
-      // Enrollment change: hydrate (dual-read fetch_classes) then resync class listeners
+      // Enrollment change: board-first hydrate then resync class listeners (never drop listeners)
       if (classesChanged) {
         prevClasses = [...nextClasses];
-        _status.log("⬥ User enrollment changed — hydrate + resync class listeners");
-        store
-          .fetch_classes()
-          .then(() => {
-            syncClassListeners(store.active_doc?.classes || nextClasses);
-          })
-          .catch((err: unknown) => {
-            _status.error("⚠ fetch_classes after user snapshot failed", err);
-            // Still try to attach listeners from enrollment paths
-            syncClassListeners(nextClasses);
-          });
+        _status.log("⬥ User enrollment changed — board hydrate + resync class listeners");
+        store.hydrate_from_board_or_fallback().catch((err: unknown) => {
+          _status.error("⚠ hydrate after user snapshot failed", err);
+          // Still try to attach listeners from enrollment paths
+          syncClassListeners(nextClasses);
+        });
       } else {
         // Ensure listeners exist even when enrollment unchanged (e.g. after idle resub)
         syncClassListeners(store.active_doc?.classes || nextClasses);
