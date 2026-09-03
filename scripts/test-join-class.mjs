@@ -2,7 +2,7 @@
  * Unit tests for P4 join-ref → bare classId resolution (Add Class / Onboarding).
  * Run: node --experimental-strip-types scripts/test-join-class.mjs
  */
-import { parseJoinRef } from "../src/common/joinClass.ts";
+import { parseJoinRef } from "../src/common/paths.ts";
 
 let failed = 0;
 

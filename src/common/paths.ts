@@ -22,6 +22,22 @@ export interface ParsedClassPath {
   hasTeacherPrefix: boolean;
 }
 
+/**
+ * P4 flat enroll: join-ref parts for Add Class / Onboarding.
+ * Prefer bare classId for enrollClass; dual-read when teacher is unknown.
+ */
+export interface JoinRefParts {
+  /** Bare classId for enrollClass({ classId }) / store.add_class. */
+  classId: string;
+  /** Present when the join ref included a teacher email or local prefix. */
+  teacherEmail?: string;
+  /**
+   * True for short bare classId refs — caller must dual-read (class_from_ref)
+   * to obtain teacher email before listing classes.
+   */
+  needsTeacherLookup: boolean;
+}
+
 export interface ParsedTaskPath {
   teacherEmail?: string;
   classId: string;
@@ -84,6 +100,34 @@ export function parseClassId(
     };
   }
   return null;
+}
+
+/**
+ * P4: Parse a join ref (route or code→ref) into teacher + bare classId.
+ * Does not touch Firestore; async teacher lookup stays in AddClassForm.
+ * Accepts: classId | email/classId | local~classId (slash or ~).
+ * No nested classes/{email}/classes writers — bare classId enroll only.
+ */
+export function parseJoinRef(
+  ref: string | undefined | null,
+  orgDomain: string
+): JoinRefParts | null {
+  if (!ref || typeof ref !== "string") return null;
+  const trimmed = ref.trim();
+  if (!trimmed) return null;
+
+  const parsed = parseClassId(trimmed, orgDomain);
+  if (!parsed?.classId) return null;
+
+  if (!parsed.hasTeacherPrefix) {
+    return { classId: parsed.classId, needsTeacherLookup: true };
+  }
+
+  return {
+    classId: parsed.classId,
+    teacherEmail: parsed.teacherEmail,
+    needsTeacherLookup: false,
+  };
 }
 
 /**

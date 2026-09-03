@@ -156,7 +156,7 @@
  */
 import { ErrorToast, WarningToast } from "@svonk/util";
 import smoothReflow from "vue-smooth-reflow";
-import { parseJoinRef } from "@/common/joinClass";
+import { parseJoinRef } from "@/common/paths";
 
 export default {
   name: "AddClassForm",
