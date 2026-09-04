@@ -5,6 +5,9 @@
   "description": "A more effective way to manage test schedules, long-term assignments, and exam stress.",
   "private": true,
   "scripts": {
+    "generate:brief-config": "node scripts/generate-brief-config.js",
+    "prebuild": "node scripts/generate-brief-config.js",
+    "preserve": "node scripts/generate-brief-config.js",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
