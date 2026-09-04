@@ -69,9 +69,7 @@
       </template>
     </div>
     <div class="bottom_actions">
-      <button class="close_action click_escape" @click="onBack">
-        {{ page > 0 ? "Back" : "Settings" }}
-      </button>
+      <button class="close_action click_escape" @click="onBack">Back</button>
       <StatsProgressDots :current="page + 1" :total="pageCount" @open="goTo" />
       <div class="flex_spacer"></div>
       <button class="continue_action click_ctrlenter" @click="onContinue">

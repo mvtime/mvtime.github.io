@@ -70,3 +70,17 @@ export default {
   opacity: 0.6;
 }
 </style>
+
+<!-- Unscoped: beat global .bottom_actions > * button chrome (same layout as Modal.vue). -->
+<style>
+.bottom_actions > .progress_display {
+  padding: 0;
+  height: auto;
+  min-height: var(--height-overlay-action);
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  cursor: default;
+  font-size: inherit;
+}
+</style>
