@@ -10,6 +10,7 @@
     "lint": "vue-cli-service lint",
     "test:grapheme": "node --experimental-strip-types scripts/test-grapheme.mjs",
     "test:paths": "node --experimental-strip-types scripts/test-paths.mjs",
+    "test:color": "node --experimental-strip-types scripts/test-color.mjs",
     "test:class-listeners": "node --experimental-strip-types scripts/test-class-listeners.mjs",
     "test:me-board": "node --experimental-strip-types scripts/test-me-board.mjs",
     "test:acting-as": "node --experimental-strip-types scripts/test-acting-as.mjs",

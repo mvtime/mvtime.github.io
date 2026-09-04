@@ -12,8 +12,8 @@
             <span class="styled_line__label">Class:</span>
             <span class="styled_line__separator"></span>
             <span class="styled_line__value">
-              <a
-                class="class_name button_pointer_text"
+              <ClassNameChip
+                :class-obj="task._class"
                 :href="`/view/${class_share_ref}`"
                 @click="
                   $event.preventDefault();
@@ -23,12 +23,7 @@
                     query: $route.query,
                   });
                 "
-                :style="{
-                  '--color-class': task._class.color,
-                  '--color-class-alt': task._class.color + '2d',
-                }"
-                >{{ $store.class_text(task._class) }}</a
-              >
+              />
             </span>
           </div>
           <div class="styled_obj" v-if="task.type != 'note'">
@@ -137,6 +132,7 @@
 import { WarningToast, ErrorToast } from "@svonk/util";
 import { compatDateObj } from "@/common";
 import { shareUrl } from "@/common/share";
+import ClassNameChip from "@/components/Portal/ClassNameChip.vue";
 import smoothReflow from "vue-smooth-reflow";
 import showdown from "showdown";
 import "@/assets/style/markdown.css";
@@ -144,6 +140,7 @@ let converter = new showdown.Converter();
 export default {
   name: "ViewTaskView",
   emits: ["close", "notes"],
+  components: { ClassNameChip },
   mixins: [smoothReflow],
   data() {
     return {
@@ -299,8 +296,5 @@ export default {
 .loading_icon {
   max-height: 150px;
   min-width: 100%;
-}
-.class_name {
-  line-height: 1em;
 }
 </style>
