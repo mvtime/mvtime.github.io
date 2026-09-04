@@ -52,5 +52,8 @@ jobs:
       - name: Path / task-ref guard tests
         run: npm run test:paths
 
+      - name: Color contrast helper tests
+        run: npm run test:color
+
       - name: Build
         run: npm run build
