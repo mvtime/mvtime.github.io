@@ -3,14 +3,17 @@
  * Generate public/.well-known/brief.json from env (single source of truth).
  *
  * Priority:
- *   1. BRIEF_CLIENT_CONFIG — full JSON blob (same schema as API client-config)
- *   2. Compose from discrete BRIEF_* / VUE_APP_* / FIREBASE_* vars
- *   3. If BRIEF_FETCH_CONFIG=1 — fetch BRIEF_CONFIG_URL or API client-config
+ *   1. If BRIEF_FETCH_CONFIG=1 — fetch BRIEF_CONFIG_URL (production cmutt:
+ *      https://api.cmutt.app/api/v1/client-config). Server .env is the only
+ *      place humans edit brochure values; Pages copies the live API response.
+ *   2. BRIEF_CLIENT_CONFIG — full JSON blob (same schema as API client-config)
+ *   3. Compose from discrete BRIEF_* / VUE_APP_* / FIREBASE_* vars
+ *      (offline CI / .env.test / forks)
  *   4. Minimal stub so offline CI still builds
  *
- * Keep production BRIEF_* values in sync with mvtt-server (same public allowlist).
  * Never put service accounts or server secrets here — Firebase web/iOS client
- * fields are intentionally public.
+ * fields are intentionally public. Never commit a hand-edited production
+ * brief.json.
  */
 
 const fs = require("fs");
@@ -185,44 +188,44 @@ function writeConfig(config) {
   console.log(`[generate-brief-config] Wrote ${path.relative(ROOT, OUT_PATH)}`);
 }
 
+function wantFetch() {
+  return process.env.BRIEF_FETCH_CONFIG === "1" || process.env.BRIEF_FETCH_CONFIG === "true";
+}
+
 async function main() {
   const mode = argMode();
   loadEnvFiles(mode);
 
-  let config = parseClientConfigBlob();
-  let source = "BRIEF_CLIENT_CONFIG";
+  let config = null;
+  let source = null;
+
+  // Production cmutt: prefer live API so server .env is the only human SSOT.
+  if (wantFetch()) {
+    try {
+      config = await fetchRemoteConfig();
+      source = "remote fetch (BRIEF_FETCH_CONFIG)";
+    } catch (err) {
+      console.warn(`[generate-brief-config] Fetch failed: ${err.message}`);
+    }
+  }
+
+  if (!config) {
+    config = parseClientConfigBlob();
+    if (config) source = "BRIEF_CLIENT_CONFIG";
+  }
 
   if (!config) {
     config = composeFromDiscrete();
-    source = "env compose (BRIEF_* / VUE_APP_* / FIREBASE_*)";
-  }
-
-  const hasIosFields =
-    config &&
-    config.firebase &&
-    (config.firebase.appId || config.firebase.clientId || config.firebase.reversedClientId);
-
-  if (
-    (!config || !hasIosFields) &&
-    (process.env.BRIEF_FETCH_CONFIG === "1" || process.env.BRIEF_FETCH_CONFIG === "true")
-  ) {
-    try {
-      config = await fetchRemoteConfig();
-      source = "remote fetch";
-    } catch (err) {
-      console.warn(`[generate-brief-config] Fetch failed: ${err.message}`);
-      if (!config) {
-        config = minimalStub();
-        source = "minimal stub (fetch failed)";
-      } else {
-        source = `${source} (fetch failed; kept compose)`;
-      }
+    if (config) {
+      source = wantFetch()
+        ? "env compose (fetch failed; BRIEF_* / VUE_APP_* / FIREBASE_*)"
+        : "env compose (BRIEF_* / VUE_APP_* / FIREBASE_*)";
     }
   }
 
   if (!config) {
     config = minimalStub();
-    source = "minimal stub";
+    source = wantFetch() ? "minimal stub (fetch failed)" : "minimal stub";
   }
 
   writeConfig(config);
