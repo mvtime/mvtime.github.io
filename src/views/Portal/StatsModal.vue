@@ -1,56 +1,68 @@
 <template>
   <main class="entercode">
     <header class="modal_header">
-      <h2 class="header_style modal_header_title">View Statistics</h2>
+      <h2 class="header_style modal_header_title">{{ pageTitle }}</h2>
     </header>
     <div class="overlay_contents" ref="contents">
-      <div class="overlay_contents_text">
-        Your daily workload and check-ins are shown below. Days without a survey still appear when
-        task counts are available.
-      </div>
-      <br />
-      <StatsFilterBar
-        :filters="filters"
-        :active="active"
-        :is-ready="is_ready"
-        :toolbar="toolbar"
-        @update:active="active = $event"
-        @update:toolbar="toolbar = $event"
-      />
-      <StatsChartCard
-        :rows="surveys"
-        :graphs="graphs"
-        :toolbar="toolbar"
-        :is-ready="is_ready"
-      />
-      <br />
-      <div class="overlay_contents_text">
-        We appreciate your contributions towards our research. If you have any questions, please
-        <router-link to="/contact">contact us</router-link>!
-      </div>
+      <!-- Intro -->
+      <template v-if="page === 0">
+        <div class="overlay_contents_text">Your recent task counts and check-ins.</div>
+        <br />
+        <StatsAlert severity="info">
+          Days without a survey still show when task counts are available.
+        </StatsAlert>
+      </template>
+
+      <!-- Chart -->
+      <template v-else-if="page === 1">
+        <StatsFilterBar
+          :filters="filters"
+          :active="active"
+          :is-ready="is_ready"
+          :toolbar="toolbar"
+          @update:active="active = $event"
+          @update:toolbar="toolbar = $event"
+        />
+        <StatsAlert v-if="load_error" severity="error" text="Couldn't load your stats. Try again later." />
+        <StatsAlert
+          v-else-if="is_ready && !surveys.length"
+          severity="warning"
+          text="No stats to show yet."
+        />
+        <StatsChartCard
+          v-else
+          :rows="surveys"
+          :graphs="graphs"
+          :toolbar="toolbar"
+          :is-ready="is_ready"
+        />
+      </template>
+
+      <!-- Contact -->
+      <template v-else>
+        <StatsAlert severity="info">
+          Questions?
+          <router-link to="/contact">Contact us</router-link>.
+        </StatsAlert>
+      </template>
     </div>
     <div class="bottom_actions">
-      <button
-        class="close_action click_escape"
-        @click="
-          $router.push({
-            name: 'settings',
-            query: $route.query,
-          })
-        "
-      >
-        Back
-      </button>
+      <button class="close_action click_escape" @click="onBack">Back</button>
+      <StatsProgressDots :current="page + 1" :total="pageCount" @open="goTo" />
       <div class="flex_spacer"></div>
-      <button class="continue_action click_ctrlenter" @click="$emit('close')">Close</button>
+      <button class="continue_action click_ctrlenter" @click="onContinue">
+        {{ page < pageCount - 1 ? "Next" : "Close" }}
+      </button>
     </div>
   </main>
 </template>
 
 <script>
 import { ErrorToast, WarningToast } from "@svonk/util";
+import StatsAlert from "@/components/Portal/Stats/StatsAlert.vue";
 import StatsChartCard from "@/components/Portal/Stats/StatsChartCard.vue";
 import StatsFilterBar from "@/components/Portal/Stats/StatsFilterBar.vue";
+import StatsProgressDots from "@/components/Portal/Stats/StatsProgressDots.vue";
 import {
   PERSONAL_STAT_FILTERS,
   buildGraphs,
@@ -60,13 +72,16 @@ import {
 
 export default {
   name: "StatsModal",
-  components: { StatsChartCard, StatsFilterBar },
+  components: { StatsAlert, StatsChartCard, StatsFilterBar, StatsProgressDots },
   emits: ["close"],
   data() {
     return {
+      page: 0,
+      pageCount: 3,
       is_ready: false,
       can_update: true,
       toolbar: false,
+      load_error: false,
       min_delay: 1000 * 15,
       surveys: [],
       active: ["mood", "stress", "upcoming"],
@@ -79,8 +94,34 @@ export default {
     graphs() {
       return buildGraphs(this.surveys, this.filters, this.active);
     },
+    pageTitle() {
+      if (this.page === 0) return "View Statistics";
+      if (this.page === 1) return "Your stats";
+      return "Help";
+    },
   },
   methods: {
+    goTo(index) {
+      if (index < 0 || index >= this.pageCount) return;
+      this.page = index;
+    },
+    onBack() {
+      if (this.page > 0) {
+        this.page -= 1;
+        return;
+      }
+      this.$router.push({
+        name: "settings",
+        query: this.$route.query,
+      });
+    },
+    onContinue() {
+      if (this.page < this.pageCount - 1) {
+        this.page += 1;
+        return;
+      }
+      this.$emit("close");
+    },
     try_update() {
       if (this.can_update) {
         this.update(true);
@@ -91,6 +132,7 @@ export default {
       }
     },
     process(data) {
+      this.load_error = false;
       this.surveys = sortStatRows((data || []).filter((survey) => !survey.error));
       try {
         this.surveys.forEach((survey, index) => {
@@ -105,19 +147,20 @@ export default {
     update(force = false) {
       this.is_ready = false;
       this.can_update = false;
+      this.load_error = false;
       this.last_update = Date.now();
       this.surveys = [];
       this.$store
         .get_stats(undefined, force)
         .then((data) => {
           this.process(data);
-          // set a timeout to allow the user to update again
           setTimeout(() => {
             this.can_update = true;
           }, this.min_delay);
         })
         .catch((err) => {
           new ErrorToast("Failed to get statistics", err, 5000);
+          this.load_error = true;
           this.is_ready = true;
           this.can_update = true;
         });
@@ -128,3 +171,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.overlay_contents > .stats_alert {
+  margin-bottom: calc(var(--padding-overlay-input) / 2);
+}
+</style>
