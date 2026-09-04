@@ -25,7 +25,7 @@
     "copy-win": "copy /Y dist\\index.html dist\\404.html",
     "copy-nix": "cp dist/index.html dist/404.html",
     "echo-message": "echo 'Copied index.html to 404.html'",
-    "publish": "gh-pages -d dist"
+    "publish": "gh-pages -d dist --dotfiles"
   },
   "dependencies": {
     "@lottiefiles/vue-lottie-player": "^1.1.0",
