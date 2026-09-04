@@ -77,6 +77,14 @@ function deploy() {
 
     centerMsg("\x1b[35m\x1b[2m%s\x1b[0m", "NOTE: JSDocs may lose content during compiling");
   }
+  // Refresh Brief discovery JSON from env before build (also runs via npm prebuild).
+  // deploy calls vue-cli-service directly, so invoke the generator explicitly here.
+  runCommand(
+    `node scripts/generate-brief-config.js${mode ? ` --mode ${mode}` : ""}`,
+    "brief-config",
+    "Generating public/.well-known/brief.json from env"
+  );
+
   runCommand(
     `vue-cli-service build${mode ? ` --mode ${mode}` : ""}`,
     "build",

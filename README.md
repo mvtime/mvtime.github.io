@@ -22,6 +22,10 @@ use `npm run serve -- --mode [mode]` to run with alternative `.env.[mode]` or `.
 nvm use 18 && npm run deploy
 ```
 
+Production Brief discovery (`/.well-known/brief.json` on `cmutt.app` / `mvtt.app`) is **generated at deploy time** from env — not a hand-edited JSON file. `deploy.js` runs `scripts/generate-brief-config.js` before `vue-cli-service build`, then publishes `dist/` to `gh-pages`. CI `npm run build` also regenerates via `prebuild`, but **live Pages only updates when you run `npm run deploy`** (or otherwise publish that `dist`).
+
+Keep production `BRIEF_*` / `BRIEF_CLIENT_CONFIG` in sync with mvtt-server’s client-config env (same public allowlist). See `example.env` for the field list. Never commit service accounts; Firebase client fields are OK.
+
 or optionally when cmu-tt is side-by-side (requires all changes to be pushed to remote for full parity):
 
 ```
