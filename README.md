@@ -24,6 +24,8 @@ nvm use 18 && npm run deploy
 
 Production Brief discovery (`/.well-known/brief.json` on `cmutt.app`) is **generated at deploy time** — never a committed production JSON file. `deploy.js` runs `scripts/generate-brief-config.js` before `vue-cli-service build`, then publishes `dist/` to `gh-pages`. CI `npm run build` also regenerates via `prebuild`, but **live Pages only updates when you run `npm run deploy`**.
 
+Publish uses `gh-pages -d dist --dotfiles` so `.well-known` is not skipped, and `public/.nojekyll` lands in `dist/` so GitHub Pages/Jekyll does not strip dot-directories.
+
 **Production cmutt (preferred SSOT):** copy brochure config from the live API so humans only edit server env (e.g. mvtt-server `.env.cmu-tt`). In the deploy `.env` / `.env.local`:
 
 ```
