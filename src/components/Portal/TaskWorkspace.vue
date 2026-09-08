@@ -5,6 +5,23 @@
     <span class="styled_line__value workspace_panel">
       <div v-if="loading" class="workspace_loading overlay_contents_text">Loading workspace…</div>
 
+      <template v-else-if="!driveConnected">
+        <p class="workspace_hint overlay_contents_text">
+          Connect Google Drive to attach a workspace and collect files for this {{ taskType }}.
+          {{ isTeacherMode ? "Shared among class teachers." : "Only you can see your workspace." }}
+        </p>
+        <div class="workspace_actions bottom_actions workspace_actions--compact">
+          <button
+            class="primary_styled workspace_action"
+            type="button"
+            :disabled="busy"
+            @click="connectDrive"
+          >
+            Connect Drive
+          </button>
+        </div>
+      </template>
+
       <template v-else-if="!workspace">
         <p v-if="!showLink" class="workspace_hint overlay_contents_text">
           Attach a workspace to collect files for this {{ taskType }}.
@@ -13,10 +30,10 @@
 
         <template v-if="!showLink">
           <div class="workspace_actions bottom_actions workspace_actions--compact">
-            <button class="primary_styled workspace_action" :disabled="busy" @click="enableWorkspace">
+            <button class="primary_styled workspace_action" type="button" :disabled="busy" @click="enableWorkspace">
               Enable
             </button>
-            <button class="secondary_styled workspace_action" :disabled="busy" @click="openLinkMode">
+            <button class="secondary_styled workspace_action" type="button" :disabled="busy" @click="openLinkMode">
               Link
             </button>
           </div>
@@ -70,16 +87,6 @@
           </a>
           <span v-else class="workspace_chip button_pointer_text" :title="workspace.id">
             {{ workspace.id }}
-          </span>
-          <span
-            v-if="!driveConnected"
-            class="button_pointer_text workspace_drive_quiet"
-            role="button"
-            tabindex="0"
-            @click="connectDrive"
-            @keydown.enter.prevent="connectDrive"
-          >
-            Connect Drive
           </span>
         </div>
 
@@ -173,12 +180,14 @@ import {
   deleteWorkspaceFile,
   destroyTaskWorkspace,
   destroyTeacherWorkspace,
+  fetchDriveStatus,
   fetchTaskWorkspace,
   fetchTeacherWorkspace,
   fetchWorkspace,
   linkTaskWorkspace,
   linkTeacherWorkspace,
   startDriveOAuth,
+  storeDriveOAuthReturnPath,
   uploadWorkspaceFile,
   workspaceDriveFolderUrl,
 } from "@/common/workspace";
@@ -228,6 +237,13 @@ export default {
   },
   mounted() {
     this.loadWorkspace();
+    this._onDriveStatusChanged = () => this.refreshDriveStatus();
+    window.addEventListener("drive-status-changed", this._onDriveStatusChanged);
+  },
+  beforeUnmount() {
+    if (this._onDriveStatusChanged) {
+      window.removeEventListener("drive-status-changed", this._onDriveStatusChanged);
+    }
   },
   methods: {
     openLinkMode() {
@@ -288,6 +304,7 @@ export default {
     async loadWorkspace() {
       this.loading = true;
       try {
+        const driveStatusPromise = fetchDriveStatus();
         let ws = null;
         if (this.initialWorkspaceId) {
           ws = await fetchWorkspace(this.initialWorkspaceId);
@@ -297,11 +314,28 @@ export default {
           ws = await fetchTaskWorkspace(this.taskPath);
         }
         this.workspace = ws;
-        this.driveConnected = ws?.drive_connected === true;
+        this.driveConnected = await driveStatusPromise;
       } catch (err) {
         this.$status?.warn?.("Workspace load failed", err);
       } finally {
         this.loading = false;
+      }
+    },
+    async refreshDriveStatus() {
+      try {
+        this.driveConnected = await fetchDriveStatus();
+        if (!this.driveConnected) return;
+        let ws = null;
+        if (this.initialWorkspaceId) {
+          ws = await fetchWorkspace(this.initialWorkspaceId);
+        } else if (this.isTeacherMode) {
+          ws = await fetchTeacherWorkspace(this.classId);
+        } else {
+          ws = await fetchTaskWorkspace(this.taskPath);
+        }
+        this.workspace = ws;
+      } catch (err) {
+        this.$status?.warn?.("Drive status refresh failed", err);
       }
     },
     async enableWorkspace() {
@@ -355,8 +389,9 @@ export default {
     },
     async connectDrive() {
       try {
-        const url = await startDriveOAuth();
-        window.open(url, "_blank", "noopener");
+        storeDriveOAuthReturnPath(this.$route.fullPath);
+        const url = await startDriveOAuth("web");
+        window.location.assign(url);
       } catch (err) {
         new ErrorToast("Couldn't start Drive connect", err, 2000);
       }
@@ -452,10 +487,16 @@ export default {
   min-width: 0;
   margin-left: 0;
   height: var(--height-overlay-secondary-input);
+  min-height: var(--height-overlay-secondary-input);
   padding: 0 var(--padding-overlay-secondary-input);
   border-radius: 0;
   font-size: 13px;
+  line-height: 1.2;
   white-space: nowrap;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .workspace_actions--compact.bottom_actions .workspace_action:first-child {
   border-top-left-radius: var(--radius-overlay-input);
@@ -464,6 +505,18 @@ export default {
 .workspace_actions--compact.bottom_actions .workspace_action:last-child {
   border-top-right-radius: var(--radius-overlay-input);
   border-bottom-right-radius: var(--radius-overlay-input);
+}
+.workspace_footer.bottom_actions .secondary_styled.workspace_destroy {
+  height: var(--height-overlay-secondary-input);
+  min-height: var(--height-overlay-secondary-input);
+  padding: 0 var(--padding-overlay-secondary-input);
+  font-size: 13px;
+  line-height: 1.2;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0;
 }
 .workspace_link_select {
   margin: 0;
@@ -509,7 +562,10 @@ a.workspace_chip:hover {
   font-size: 14px;
   font-family: inherit;
   flex-shrink: 0;
-  line-height: 1;
+  line-height: 1.2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .workspace_panel .workspace_add_file {
   background-color: var(--color-overlay-action);
@@ -573,7 +629,7 @@ a.workspace_chip:hover {
   min-width: 0;
   padding: 6px 8px 6px 10px;
   border-radius: var(--radius-overlay-input);
-  background: var(--color-overlay-input);
+  background-color: var(--color-overlay-secondary-input);
   color: var(--color-on-overlay-input);
 }
 .workspace_file__icon {
@@ -584,7 +640,7 @@ a.workspace_chip:hover {
   align-items: center;
   justify-content: center;
   border-radius: 4px;
-  background-color: var(--color-overlay-secondary-input);
+  background-color: var(--color-overlay-secondary-action);
   color: var(--color-on-overlay-input-alt);
   font-size: 8px;
   font-weight: 700;
@@ -641,7 +697,7 @@ span.workspace_file__name {
   height: 20px;
   border: none;
   border-radius: 3px;
-  background-color: var(--color-overlay-input);
+  background-color: var(--color-overlay-secondary-action);
   cursor: pointer;
   padding: 0;
   display: inline-flex;

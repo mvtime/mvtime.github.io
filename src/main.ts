@@ -127,7 +127,34 @@ $(document.body).on("click", ".gohome", function () {
 });
 
 // page change
-import { removePopup } from "@svonk/util";
+import { removePopup, SuccessToast, ErrorToast } from "@svonk/util";
+import { consumeDriveOAuthReturnPath, dispatchDriveStatusChanged } from "@/common/workspace";
+
+function handleDriveOAuthReturn(to: { query: Record<string, unknown>; path: string; hash?: string }) {
+  const drive = typeof to.query.drive === "string" ? to.query.drive : "";
+  if (!drive) return;
+
+  const driveError = typeof to.query.drive_error === "string" ? to.query.drive_error : "";
+  const returnPath = consumeDriveOAuthReturnPath();
+
+  if (drive === "connected") {
+    new SuccessToast("Google Drive connected", 2000);
+    dispatchDriveStatusChanged();
+  } else if (drive === "error") {
+    new ErrorToast("Couldn't connect Google Drive", driveError || undefined, 2500);
+  }
+
+  const nextQuery = { ...to.query } as Record<string, string | string[] | null | undefined>;
+  delete nextQuery.drive;
+  delete nextQuery.drive_error;
+
+  if (returnPath) {
+    router.replace(returnPath);
+  } else {
+    router.replace({ path: to.path, query: nextQuery, hash: to.hash || undefined });
+  }
+}
+
 router.afterEach((to: any) => {
   if (to.meta && to.meta.page_title) {
     document.title = `${process.env.VUE_APP_BRAND_NAME_LONG} | ` + to.meta.page_title;
@@ -154,6 +181,8 @@ router.afterEach((to: any) => {
   style.setProperty("--theme-color-text-dark", text_dark);
   style.setProperty("--theme-color-hover", text_light + "33");
   style.setProperty("--theme-color-hover-dark", text_dark + "33");
+
+  handleDriveOAuthReturn(to);
 });
 
 // router guard — requiresTeacher: role teacher|admin; requiresAdmin: role admin (via store getters)
