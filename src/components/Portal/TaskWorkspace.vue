@@ -10,7 +10,8 @@
           Attach a workspace to collect files for this {{ taskType }}.
           {{ isTeacherMode ? "Shared among class teachers." : "Only you can see your workspace." }}
         </p>
-        <div class="workspace_actions">
+        <div class="workspace_actions bottom_actions">
+          <span class="flex_spacer workspace_actions__spacer" aria-hidden="true"></span>
           <button class="primary_styled workspace_action" :disabled="busy" @click="enableWorkspace">
             Enable workspace
           </button>
@@ -26,16 +27,18 @@
             placeholder="Workspace ID (share across project steps)"
             @keydown.enter="linkWorkspace"
           />
-          <button class="primary_styled workspace_action" :disabled="busy || !linkId.trim()" @click="linkWorkspace">
+          <button class="primary_styled workspace_inline_action" :disabled="busy || !linkId.trim()" @click="linkWorkspace">
             Link
           </button>
-          <button class="secondary_styled workspace_action" @click="showLink = false">Cancel</button>
+          <button class="secondary_styled workspace_inline_action" @click="showLink = false">Cancel</button>
         </div>
       </template>
 
       <template v-else>
         <div class="workspace_meta overlay_contents_text">
-          <span>Workspace <code class="workspace_id">{{ workspace.id }}</code></span>
+          <span class="workspace_meta__id">
+            Workspace <code class="workspace_id">{{ workspace.id }}</code>
+          </span>
           <button
             v-if="!driveConnected"
             class="secondary_styled workspace_drive_btn"
@@ -57,34 +60,49 @@
         >
           <span class="workspace_dropzone__text">Drop files here</span>
           <input ref="fileInput" class="workspace_file_input" type="file" multiple @change="onFilePick" />
-          <button class="primary_styled workspace_add_file" :disabled="busy" @click="$refs.fileInput?.click()">
+          <button
+            class="primary_styled workspace_add_file"
+            type="button"
+            :disabled="busy"
+            @click="$refs.fileInput?.click()"
+          >
             Add file
           </button>
         </div>
 
         <ul v-if="workspace.files?.length" class="workspace_files">
           <li v-for="file in workspace.files" :key="file.id" class="workspace_file">
-            <a v-if="file.url" class="workspace_file__name" :href="file.url" target="_blank" rel="noopener">
-              {{ file.name }}
-            </a>
-            <span v-else class="workspace_file__name">{{ file.name }}</span>
+            <span class="workspace_file__icon" :class="fileIconClass(file)" :title="fileIconTitle(file)">
+              {{ fileIconLabel(file) }}
+            </span>
+            <div class="workspace_file__body">
+              <a v-if="file.url" class="workspace_file__name" :href="file.url" target="_blank" rel="noopener">
+                {{ file.name }}
+              </a>
+              <span v-else class="workspace_file__name">{{ file.name }}</span>
+              <span v-if="fileMeta(file)" class="workspace_file__meta">{{ fileMeta(file) }}</span>
+            </div>
             <button
               class="workspace_file__remove"
+              type="button"
               title="Remove file"
               :disabled="busy"
               @click="removeFile(file.id)"
             >
-              ×
+              <img class="remove_icon" src="@/assets/img/general/portal/remove.svg" alt="" />
             </button>
           </li>
         </ul>
         <p v-else class="workspace_empty overlay_contents_text">No files yet.</p>
 
-        <div class="workspace_footer">
+        <div class="workspace_footer bottom_actions">
+          <span class="flex_spacer workspace_actions__spacer" aria-hidden="true"></span>
           <button class="secondary_styled workspace_action" :disabled="busy" @click="showLink = true">
             Link existing
           </button>
-          <button class="workspace_destroy" :disabled="busy" @click="confirmDestroy = true">Destroy</button>
+          <button class="workspace_destroy" type="button" :disabled="busy" @click="confirmDestroy = true">
+            Destroy
+          </button>
         </div>
 
         <div v-if="showLink" class="workspace_link_row inputs_row">
@@ -95,10 +113,10 @@
             placeholder="Workspace ID to link"
             @keydown.enter="linkWorkspace"
           />
-          <button class="primary_styled workspace_action" :disabled="busy || !linkId.trim()" @click="linkWorkspace">
+          <button class="primary_styled workspace_inline_action" :disabled="busy || !linkId.trim()" @click="linkWorkspace">
             Link
           </button>
-          <button class="secondary_styled workspace_action" @click="showLink = false">Cancel</button>
+          <button class="secondary_styled workspace_inline_action" @click="showLink = false">Cancel</button>
         </div>
       </template>
 
@@ -175,6 +193,53 @@ export default {
     this.loadWorkspace();
   },
   methods: {
+    fileIconLabel(file) {
+      const mime = (file?.mime_type || "").toLowerCase();
+      const name = file?.name || "";
+      const ext = name.includes(".") ? name.split(".").pop().toLowerCase() : "";
+      if (mime.startsWith("image/")) return "IMG";
+      if (mime.startsWith("video/")) return "VID";
+      if (mime.startsWith("audio/")) return "AUD";
+      if (mime.includes("pdf") || ext === "pdf") return "PDF";
+      if (mime.includes("spreadsheet") || ["xls", "xlsx", "csv"].includes(ext)) return "XLS";
+      if (mime.includes("presentation") || ["ppt", "pptx"].includes(ext)) return "PPT";
+      if (mime.includes("word") || mime.includes("document") || ["doc", "docx", "txt", "md"].includes(ext)) {
+        return "DOC";
+      }
+      if (mime.includes("zip") || ["zip", "rar", "7z", "tar", "gz"].includes(ext)) return "ZIP";
+      if (file?.source === "drive") return "DRV";
+      if (ext && ext.length <= 4) return ext.slice(0, 4).toUpperCase();
+      return "FILE";
+    },
+    fileIconClass(file) {
+      const label = this.fileIconLabel(file);
+      if (label === "IMG") return "workspace_file__icon--image";
+      if (label === "PDF") return "workspace_file__icon--pdf";
+      if (label === "DOC") return "workspace_file__icon--doc";
+      if (label === "DRV") return "workspace_file__icon--drive";
+      return "workspace_file__icon--generic";
+    },
+    fileIconTitle(file) {
+      return file?.mime_type || file?.name || "File";
+    },
+    fileMeta(file) {
+      const parts = [];
+      if (typeof file?.size === "number" && file.size >= 0) {
+        parts.push(this.formatFileSize(file.size));
+      }
+      if (file?.source === "drive") {
+        parts.push("Drive");
+      }
+      return parts.join(" · ");
+    },
+    formatFileSize(bytes) {
+      if (bytes < 1024) return `${bytes} B`;
+      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(bytes < 10 * 1024 ? 1 : 0)} KB`;
+      if (bytes < 1024 * 1024 * 1024) {
+        return `${(bytes / (1024 * 1024)).toFixed(bytes < 10 * 1024 * 1024 ? 1 : 0)} MB`;
+      }
+      return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
+    },
     async loadWorkspace() {
       this.loading = true;
       try {
@@ -314,26 +379,98 @@ export default {
 .workspace_section {
   align-items: flex-start;
 }
+.workspace_section .styled_line__value {
+  flex: 1;
+  min-width: 0;
+}
 .workspace_panel {
   display: flex;
   flex-direction: column;
   gap: 10px;
   width: 100%;
+  min-width: 0;
+  font-weight: 400;
+  white-space: normal;
 }
-.workspace_hint {
+.workspace_hint,
+.workspace_empty,
+.workspace_loading {
   margin: 0;
 }
-.workspace_actions,
-.workspace_footer,
+.workspace_actions.bottom_actions,
+.workspace_footer.bottom_actions {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0;
+  gap: 0;
+}
+.workspace_actions.bottom_actions .workspace_action,
+.workspace_footer.bottom_actions .workspace_action {
+  flex: 0 1 auto;
+  white-space: nowrap;
+}
+.workspace_actions__spacer {
+  display: none !important;
+}
 .workspace_link_row {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: calc(var(--padding-overlay) / 2);
   align-items: center;
+  margin: 0;
 }
 .workspace_link_row .styled_input {
-  flex: 1;
-  min-width: 160px;
+  flex: 1 1 160px;
+  min-width: 0;
+  width: auto;
+  height: var(--height-overlay-input);
+}
+.workspace_panel .workspace_inline_action,
+.workspace_panel .workspace_add_file,
+.workspace_panel .workspace_drive_btn,
+.workspace_panel .workspace_destroy {
+  height: var(--height-overlay-secondary-input);
+  min-height: var(--height-overlay-secondary-input);
+  padding: 0 var(--padding-overlay-action);
+  border-radius: 1000px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: inherit;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.workspace_panel .primary_styled,
+.workspace_panel .workspace_add_file {
+  background-color: var(--color-overlay-action);
+  color: var(--color-on-overlay-action);
+}
+.workspace_panel .primary_styled:not([disabled]):hover,
+.workspace_panel .workspace_add_file:not([disabled]):hover {
+  filter: brightness(1.05);
+}
+.workspace_panel .primary_styled[disabled],
+.workspace_panel .workspace_add_file[disabled] {
+  cursor: not-allowed;
+  background-color: var(--color-overlay-action-disabled);
+  color: var(--color-on-overlay-action-disabled);
+}
+.workspace_panel .secondary_styled,
+.workspace_panel .workspace_drive_btn {
+  background-color: var(--color-overlay-secondary-action);
+  color: var(--color-on-overlay-input);
+}
+.workspace_panel .secondary_styled:not([disabled]):hover,
+.workspace_panel .workspace_drive_btn:not([disabled]):hover {
+  filter: brightness(1.05);
+}
+.workspace_panel .secondary_styled[disabled],
+.workspace_panel .workspace_drive_btn[disabled] {
+  cursor: not-allowed;
+  background-color: var(--color-overlay-action-disabled);
+  color: var(--color-on-overlay-action-disabled);
 }
 .workspace_meta {
   display: flex;
@@ -341,6 +478,12 @@ export default {
   gap: 10px;
   align-items: center;
   margin: 0;
+  min-width: 0;
+}
+.workspace_meta__id {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .workspace_id {
   font-family: var(--font-mono, monospace);
@@ -348,6 +491,7 @@ export default {
   background: var(--color-overlay-input);
   padding: 2px 6px;
   border-radius: var(--radius-overlay-input);
+  word-break: break-all;
 }
 .workspace_dropzone {
   position: relative;
@@ -356,6 +500,7 @@ export default {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  box-sizing: border-box;
   min-height: calc(var(--height-overlay-input) * 2.5);
   padding: var(--padding-overlay-input);
   border-radius: var(--radius-overlay-input);
@@ -370,6 +515,7 @@ export default {
   color: var(--color-action);
 }
 .workspace_dropzone__text {
+  font-size: 14px;
   font-weight: 500;
   text-align: center;
   pointer-events: none;
@@ -388,54 +534,126 @@ export default {
   flex-direction: column;
   gap: 6px;
   width: 100%;
+  min-width: 0;
 }
 .workspace_file {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 8px;
-  padding: 6px 10px;
+  min-width: 0;
+  padding: 6px 8px 6px 10px;
   border-radius: var(--radius-overlay-input);
   background: var(--color-overlay-input);
   color: var(--color-on-overlay-input);
 }
+.workspace_file__icon {
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background-color: var(--color-overlay-secondary-input);
+  color: var(--color-on-overlay-input-alt);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  user-select: none;
+}
+.workspace_file__icon--image {
+  color: var(--color-link);
+}
+.workspace_file__icon--pdf {
+  color: var(--color-on-overlay-link-remove-hover);
+}
+.workspace_file__icon--doc {
+  color: var(--color-on-overlay-input);
+}
+.workspace_file__icon--drive {
+  color: var(--color-link);
+}
+.workspace_file__body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  overflow: hidden;
+}
 .workspace_file__name {
-  flex: 1;
+  display: block;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--color-link);
   text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.3;
+}
+span.workspace_file__name {
+  color: var(--color-on-overlay-input);
+}
+.workspace_file__meta {
+  font-size: 12px;
+  line-height: 1.2;
+  color: var(--color-on-overlay-input-alt);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .workspace_file__remove {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
   border: none;
-  background: transparent;
-  color: var(--color-on-overlay-input-alt);
-  font-size: 1.2rem;
-  line-height: 1;
+  border-radius: 3px;
+  background-color: var(--color-overlay-input);
   cursor: pointer;
-  padding: 0 4px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
-.workspace_file__remove:hover {
+.workspace_file__remove .remove_icon {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  filter: var(--filter-icon);
+}
+.workspace_file__remove:not([disabled]):hover {
+  background-color: var(--color-overlay-link-remove-hover);
   color: var(--color-on-overlay-link-remove-hover);
 }
-.workspace_destroy {
+.workspace_file__remove[disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.workspace_footer {
+  margin-top: 2px;
+}
+.workspace_footer.bottom_actions .workspace_destroy {
   margin-left: auto;
-  border: none;
-  background: transparent;
+  background-color: var(--color-overlay-link-remove-hover);
   color: var(--color-on-overlay-link-remove-hover);
-  cursor: pointer;
-  text-decoration: underline;
-  font: inherit;
+}
+.workspace_destroy:not([disabled]):hover {
+  filter: brightness(0.95);
+}
+.workspace_destroy[disabled] {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 .workspace_drive_btn {
   font-size: 0.9em;
+  margin-left: auto;
 }
 .workspace_drive_connected {
   color: var(--color-link);
   font-size: 0.9em;
-}
-.workspace_empty {
-  margin: 0;
+  margin-left: auto;
 }
 </style>
