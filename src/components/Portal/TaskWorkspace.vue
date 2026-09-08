@@ -12,8 +12,7 @@
         </p>
 
         <template v-if="!showLink">
-          <div class="workspace_actions bottom_actions">
-            <div class="flex_spacer"></div>
+          <div class="workspace_actions bottom_actions workspace_actions--compact">
             <button class="primary_styled workspace_action" :disabled="busy" @click="enableWorkspace">
               Enable
             </button>
@@ -131,7 +130,12 @@
 
         <div class="workspace_footer bottom_actions">
           <div class="flex_spacer"></div>
-          <button class="workspace_destroy" type="button" :disabled="busy" @click="confirmDestroy = true">
+          <button
+            class="secondary_styled workspace_destroy"
+            type="button"
+            :disabled="busy"
+            @click="confirmDestroy = true"
+          >
             Destroy
           </button>
         </div>
@@ -440,10 +444,26 @@ export default {
   padding: 0;
   gap: 0;
 }
-.workspace_actions.bottom_actions .workspace_action,
-.workspace_footer.bottom_actions .workspace_destroy {
-  flex: 0 1 auto;
+.workspace_actions--compact.bottom_actions {
+  gap: 2px;
+}
+.workspace_actions--compact.bottom_actions .workspace_action {
+  flex: 1 1 0;
+  min-width: 0;
+  margin-left: 0;
+  height: var(--height-overlay-secondary-input);
+  padding: 0 var(--padding-overlay-secondary-input);
+  border-radius: 0;
+  font-size: 13px;
   white-space: nowrap;
+}
+.workspace_actions--compact.bottom_actions .workspace_action:first-child {
+  border-top-left-radius: var(--radius-overlay-input);
+  border-bottom-left-radius: var(--radius-overlay-input);
+}
+.workspace_actions--compact.bottom_actions .workspace_action:last-child {
+  border-top-right-radius: var(--radius-overlay-input);
+  border-bottom-right-radius: var(--radius-overlay-input);
 }
 .workspace_link_select {
   margin: 0;
@@ -479,8 +499,7 @@ a.workspace_chip:hover {
   margin-left: auto;
   cursor: pointer;
 }
-.workspace_panel .workspace_add_file,
-.workspace_panel .workspace_destroy {
+.workspace_panel .workspace_add_file {
   height: var(--height-overlay-secondary-input);
   min-height: var(--height-overlay-secondary-input);
   padding: 0 var(--padding-overlay-action);
@@ -646,15 +665,11 @@ span.workspace_file__name {
 .workspace_footer {
   margin-top: 2px;
 }
-.workspace_footer.bottom_actions .workspace_destroy {
+.workspace_footer.bottom_actions .secondary_styled.workspace_destroy:not([disabled]) {
   background-color: var(--color-overlay-link-remove-hover);
   color: var(--color-on-overlay-link-remove-hover);
 }
-.workspace_destroy:not([disabled]):hover {
+.workspace_footer.bottom_actions .secondary_styled.workspace_destroy:not([disabled]):hover {
   filter: brightness(0.95);
-}
-.workspace_destroy[disabled] {
-  cursor: not-allowed;
-  opacity: 0.6;
 }
 </style>
