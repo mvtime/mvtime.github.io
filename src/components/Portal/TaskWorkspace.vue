@@ -1,53 +1,87 @@
 <template>
   <div class="task_workspace styled_obj workspace_section">
-    <span class="styled_line__label">{{ sectionLabel }}:</span>
+    <span class="styled_line__label">Workspace:</span>
     <span class="styled_line__separator"></span>
     <span class="styled_line__value workspace_panel">
       <div v-if="loading" class="workspace_loading overlay_contents_text">Loading workspace…</div>
 
       <template v-else-if="!workspace">
-        <p class="workspace_hint overlay_contents_text">
+        <p v-if="!showLink" class="workspace_hint overlay_contents_text">
           Attach a workspace to collect files for this {{ taskType }}.
           {{ isTeacherMode ? "Shared among class teachers." : "Only you can see your workspace." }}
         </p>
-        <div class="workspace_actions bottom_actions">
-          <span class="flex_spacer workspace_actions__spacer" aria-hidden="true"></span>
-          <button class="primary_styled workspace_action" :disabled="busy" @click="enableWorkspace">
-            Enable workspace
-          </button>
-          <button class="secondary_styled workspace_action" :disabled="busy" @click="showLink = true">
-            Link existing
-          </button>
-        </div>
-        <div v-if="showLink" class="workspace_link_row inputs_row">
-          <input
-            v-model="linkId"
-            class="styled_input"
-            type="text"
-            placeholder="Workspace ID (share across project steps)"
-            @keydown.enter="linkWorkspace"
-          />
-          <button class="primary_styled workspace_inline_action" :disabled="busy || !linkId.trim()" @click="linkWorkspace">
-            Link
-          </button>
-          <button class="secondary_styled workspace_inline_action" @click="showLink = false">Cancel</button>
-        </div>
+
+        <template v-if="!showLink">
+          <div class="workspace_actions bottom_actions">
+            <div class="flex_spacer"></div>
+            <button class="primary_styled workspace_action" :disabled="busy" @click="enableWorkspace">
+              Enable
+            </button>
+            <button class="secondary_styled workspace_action" :disabled="busy" @click="openLinkMode">
+              Link
+            </button>
+          </div>
+        </template>
+
+        <template v-else>
+          <div class="inputs_row workspace_link_select">
+            <select
+              v-model="linkId"
+              class="styled_input"
+              :disabled="busy || !linkOptions.length"
+            >
+              <option value="" disabled hidden selected>
+                {{ linkOptions.length ? "Select a workspace" : "No workspaces to link" }}
+              </option>
+              <option
+                v-for="option in linkOptions"
+                :key="option.workspace_id"
+                :value="option.workspace_id"
+              >
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+          <div class="workspace_actions bottom_actions">
+            <button class="back_action click_escape" :disabled="busy" @click="cancelLink">Back</button>
+            <div class="flex_spacer"></div>
+            <button
+              class="continue_action"
+              :class="{ alt_bg: !linkId.trim() }"
+              :disabled="busy || !linkId.trim()"
+              @click="linkWorkspace"
+            >
+              Link
+            </button>
+          </div>
+        </template>
       </template>
 
       <template v-else>
-        <div class="workspace_meta overlay_contents_text">
-          <span class="workspace_meta__id">
-            Workspace <code class="workspace_id">{{ workspace.id }}</code>
+        <div class="workspace_header">
+          <a
+            v-if="workspaceDriveUrl"
+            class="workspace_chip button_pointer_text"
+            :href="workspaceDriveUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            :title="workspaceDriveUrl"
+          >
+            {{ workspace.id }}
+          </a>
+          <span v-else class="workspace_chip button_pointer_text" :title="workspace.id">
+            {{ workspace.id }}
           </span>
-          <button
+          <span
             v-if="!driveConnected"
-            class="secondary_styled workspace_drive_btn"
-            :disabled="busy"
+            class="button_pointer_text workspace_drive_quiet"
+            role="button"
+            tabindex="0"
             @click="connectDrive"
+            @keydown.enter.prevent="connectDrive"
           >
             Connect Drive
-          </button>
-          <span v-else class="workspace_drive_connected">Drive connected</span>
+          </span>
         </div>
 
         <div
@@ -96,27 +130,10 @@
         <p v-else class="workspace_empty overlay_contents_text">No files yet.</p>
 
         <div class="workspace_footer bottom_actions">
-          <span class="flex_spacer workspace_actions__spacer" aria-hidden="true"></span>
-          <button class="secondary_styled workspace_action" :disabled="busy" @click="showLink = true">
-            Link existing
-          </button>
+          <div class="flex_spacer"></div>
           <button class="workspace_destroy" type="button" :disabled="busy" @click="confirmDestroy = true">
             Destroy
           </button>
-        </div>
-
-        <div v-if="showLink" class="workspace_link_row inputs_row">
-          <input
-            v-model="linkId"
-            class="styled_input"
-            type="text"
-            placeholder="Workspace ID to link"
-            @keydown.enter="linkWorkspace"
-          />
-          <button class="primary_styled workspace_inline_action" :disabled="busy || !linkId.trim()" @click="linkWorkspace">
-            Link
-          </button>
-          <button class="secondary_styled workspace_inline_action" @click="showLink = false">Cancel</button>
         </div>
       </template>
 
@@ -159,6 +176,7 @@ import {
   linkTeacherWorkspace,
   startDriveOAuth,
   uploadWorkspaceFile,
+  workspaceDriveFolderUrl,
 } from "@/common/workspace";
 
 export default {
@@ -170,6 +188,10 @@ export default {
     taskType: { type: String, default: "task" },
     isTeacherMode: { type: Boolean, default: false },
     initialWorkspaceId: { type: String, default: null },
+    linkableWorkspaces: {
+      type: Array,
+      default: () => [],
+    },
   },
   emits: ["workspace-changed"],
   data() {
@@ -185,14 +207,33 @@ export default {
     };
   },
   computed: {
-    sectionLabel() {
-      return this.isTeacherMode ? "Teacher workspace" : "Workspace";
+    linkOptions() {
+      const seen = new Set();
+      const options = [];
+      for (const entry of this.linkableWorkspaces || []) {
+        const workspaceId = entry?.workspace_id;
+        if (!workspaceId || seen.has(workspaceId)) continue;
+        seen.add(workspaceId);
+        options.push(entry);
+      }
+      return options;
+    },
+    workspaceDriveUrl() {
+      return workspaceDriveFolderUrl(this.workspace);
     },
   },
   mounted() {
     this.loadWorkspace();
   },
   methods: {
+    openLinkMode() {
+      this.showLink = true;
+      this.linkId = "";
+    },
+    cancelLink() {
+      this.showLink = false;
+      this.linkId = "";
+    },
     fileIconLabel(file) {
       const mime = (file?.mime_type || "").toLowerCase();
       const name = file?.name || "";
@@ -281,8 +322,7 @@ export default {
         this.workspace = this.isTeacherMode
           ? await linkTeacherWorkspace(this.classId, id)
           : await linkTaskWorkspace(this.taskPath, id);
-        this.showLink = false;
-        this.linkId = "";
+        this.cancelLink();
         this.$emit("workspace-changed", this.workspace.id);
         new SuccessToast("Workspace linked", 1500);
       } catch (err) {
@@ -401,35 +441,50 @@ export default {
 .workspace_footer.bottom_actions {
   display: flex;
   flex-wrap: nowrap;
-  justify-content: flex-start;
   align-items: center;
   padding: 0;
   gap: 0;
 }
 .workspace_actions.bottom_actions .workspace_action,
-.workspace_footer.bottom_actions .workspace_action {
+.workspace_footer.bottom_actions .workspace_destroy {
   flex: 0 1 auto;
   white-space: nowrap;
 }
-.workspace_actions__spacer {
-  display: none !important;
-}
-.workspace_link_row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: calc(var(--padding-overlay) / 2);
-  align-items: center;
+.workspace_link_select {
   margin: 0;
 }
-.workspace_link_row .styled_input {
-  flex: 1 1 160px;
+.workspace_link_select .styled_input {
+  flex: 1 1 auto;
   min-width: 0;
-  width: auto;
+  width: 100%;
   height: var(--height-overlay-input);
 }
-.workspace_panel .workspace_inline_action,
+.workspace_header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.workspace_chip {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78em;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+a.workspace_chip:hover {
+  filter: brightness(1.05);
+}
+.workspace_drive_quiet {
+  margin-left: auto;
+  cursor: pointer;
+}
 .workspace_panel .workspace_add_file,
-.workspace_panel .workspace_drive_btn,
 .workspace_panel .workspace_destroy {
   height: var(--height-overlay-secondary-input);
   min-height: var(--height-overlay-secondary-input);
@@ -442,56 +497,17 @@ export default {
   flex-shrink: 0;
   line-height: 1;
 }
-.workspace_panel .primary_styled,
 .workspace_panel .workspace_add_file {
   background-color: var(--color-overlay-action);
   color: var(--color-on-overlay-action);
 }
-.workspace_panel .primary_styled:not([disabled]):hover,
 .workspace_panel .workspace_add_file:not([disabled]):hover {
   filter: brightness(1.05);
 }
-.workspace_panel .primary_styled[disabled],
 .workspace_panel .workspace_add_file[disabled] {
   cursor: not-allowed;
   background-color: var(--color-overlay-action-disabled);
   color: var(--color-on-overlay-action-disabled);
-}
-.workspace_panel .secondary_styled,
-.workspace_panel .workspace_drive_btn {
-  background-color: var(--color-overlay-secondary-action);
-  color: var(--color-on-overlay-input);
-}
-.workspace_panel .secondary_styled:not([disabled]):hover,
-.workspace_panel .workspace_drive_btn:not([disabled]):hover {
-  filter: brightness(1.05);
-}
-.workspace_panel .secondary_styled[disabled],
-.workspace_panel .workspace_drive_btn[disabled] {
-  cursor: not-allowed;
-  background-color: var(--color-overlay-action-disabled);
-  color: var(--color-on-overlay-action-disabled);
-}
-.workspace_meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-  margin: 0;
-  min-width: 0;
-}
-.workspace_meta__id {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.workspace_id {
-  font-family: var(--font-mono, monospace);
-  font-size: 0.85em;
-  background: var(--color-overlay-input);
-  padding: 2px 6px;
-  border-radius: var(--radius-overlay-input);
-  word-break: break-all;
 }
 .workspace_dropzone {
   position: relative;
@@ -636,7 +652,6 @@ span.workspace_file__name {
   margin-top: 2px;
 }
 .workspace_footer.bottom_actions .workspace_destroy {
-  margin-left: auto;
   background-color: var(--color-overlay-link-remove-hover);
   color: var(--color-on-overlay-link-remove-hover);
 }
@@ -646,14 +661,5 @@ span.workspace_file__name {
 .workspace_destroy[disabled] {
   cursor: not-allowed;
   opacity: 0.6;
-}
-.workspace_drive_btn {
-  font-size: 0.9em;
-  margin-left: auto;
-}
-.workspace_drive_connected {
-  color: var(--color-link);
-  font-size: 0.9em;
-  margin-left: auto;
 }
 </style>

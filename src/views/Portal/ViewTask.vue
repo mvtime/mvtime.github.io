@@ -74,6 +74,7 @@
             :task-type="task.type || 'task'"
             :is-teacher-mode="showTeacherWorkspace"
             :initial-workspace-id="task.workspace_id || taskState?.workspace_id"
+            :linkable-workspaces="linkableWorkspaces"
             @workspace-changed="onWorkspaceChanged"
           />
         </div>
@@ -144,6 +145,7 @@ import { compatDateObj } from "@/common";
 import { shareUrl } from "@/common/share";
 import ClassNameChip from "@/components/Portal/ClassNameChip.vue";
 import TaskWorkspace from "@/components/Portal/TaskWorkspace.vue";
+import { linkableWorkspaceLabel } from "@/common/workspace";
 import smoothReflow from "vue-smooth-reflow";
 import showdown from "showdown";
 import "@/assets/style/markdown.css";
@@ -218,6 +220,50 @@ export default {
     },
     showTeacherWorkspace() {
       return this.can_manage_task && this.$store.is_teacher;
+    },
+    linkableWorkspaces() {
+      const seen = new Set();
+      const currentWorkspaceId = this.task?.workspace_id || this.taskState?.workspace_id || null;
+      const currentPath = this.taskPath;
+      const options = [];
+
+      const addOption = (workspaceId, taskName, className) => {
+        if (!workspaceId || seen.has(workspaceId)) return;
+        if (currentWorkspaceId && workspaceId === currentWorkspaceId) return;
+        seen.add(workspaceId);
+        options.push({
+          workspace_id: workspaceId,
+          task_name: taskName || "Task",
+          class_name: className || "",
+          label: linkableWorkspaceLabel({ task_name: taskName || "Task", class_name: className }),
+        });
+      };
+
+      for (const boardTask of this.$store.tasks || []) {
+        const workspaceId = boardTask.workspace_id;
+        if (!workspaceId) continue;
+        const taskPath = boardTask.ref
+          ? this.$store.ref_to_path(boardTask.ref) || String(boardTask.ref).replace(/~/g, "/")
+          : null;
+        if (taskPath && currentPath && taskPath === currentPath) continue;
+        addOption(workspaceId, boardTask.name, boardTask.class_name);
+      }
+
+      for (const state of Object.values(this.$store.task_states || {})) {
+        if (!state?.workspace_id) continue;
+        const taskPath = state.path || (state.ref ? this.$store.ref_to_path(state.ref) : null);
+        if (taskPath && currentPath && taskPath === currentPath) continue;
+        const boardTask = (this.$store.tasks || []).find(
+          (task) => task.ref === state.ref || task.ref === state.path
+        );
+        addOption(
+          state.workspace_id,
+          boardTask?.name || "Task",
+          boardTask?.class_name || (this.task_class_obj ? this.$store.class_text(this.task_class_obj) : "")
+        );
+      }
+
+      return options;
     },
   },
   mounted() {
