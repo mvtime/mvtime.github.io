@@ -110,6 +110,10 @@ export interface BoardTask {
   color?: string;
   date: string | null;
   completed: boolean;
+  completed_at?: string | null;
+  note?: string | null;
+  note_updated_at?: string | null;
+  workspace_id?: string | null;
   repetition_group_id: string | null;
   name?: string;
   type?: string;
@@ -316,6 +320,30 @@ function normalizeBoardTask(raw: unknown, _orgDomain?: string): BoardTask | null
     class_id: classId,
     date: typeof rec.date === "string" ? rec.date : rec.date === null ? null : null,
     completed: rec.completed === true,
+    completed_at:
+      typeof rec.completed_at === "string"
+        ? rec.completed_at
+        : rec.completed_at === null
+          ? null
+          : null,
+    note:
+      typeof rec.note === "string"
+        ? rec.note
+        : rec.note === null
+          ? null
+          : undefined,
+    note_updated_at:
+      typeof rec.note_updated_at === "string"
+        ? rec.note_updated_at
+        : rec.note_updated_at === null
+          ? null
+          : undefined,
+    workspace_id:
+      typeof rec.workspace_id === "string"
+        ? rec.workspace_id
+        : rec.workspace_id === null
+          ? null
+          : undefined,
     repetition_group_id:
       typeof rec.repetition_group_id === "string"
         ? rec.repetition_group_id

@@ -235,8 +235,8 @@ export default {
 
       // sort those with is_finished = false to the top
       filtered.sort((a, b) => {
-        let a_finished = this.$store.finished_tasks.includes(a.ref);
-        let b_finished = this.$store.finished_tasks.includes(b.ref);
+        let a_finished = this.$store.is_task_completed(a.ref);
+        let b_finished = this.$store.is_task_completed(b.ref);
         if (a_finished && !b_finished) return 1;
         if (!a_finished && b_finished) return -1;
         return 0;
@@ -321,7 +321,7 @@ export default {
       this.is_ready = true;
     },
     is_finished(ref) {
-      return this.$store.finished_tasks?.includes(ref);
+      return this.$store.is_task_completed(ref);
     },
     toggle_finished(ref) {
       this.$store

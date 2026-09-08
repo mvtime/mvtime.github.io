@@ -16,6 +16,7 @@
     "test:color": "node --experimental-strip-types scripts/test-color.mjs",
     "test:class-listeners": "node --experimental-strip-types scripts/test-class-listeners.mjs",
     "test:me-board": "node --experimental-strip-types scripts/test-me-board.mjs",
+    "test:me-tasks": "node --experimental-strip-types scripts/test-me-tasks.mjs",
     "test:acting-as": "node --experimental-strip-types scripts/test-acting-as.mjs",
     "test:repeating-scope": "node --experimental-strip-types scripts/test-repeating-scope.mjs",
     "test:join-class": "node --experimental-strip-types scripts/test-join-class.mjs",

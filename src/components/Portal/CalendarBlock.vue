@@ -118,7 +118,7 @@
               @click="
                 $event.preventDefault();
                 if ($event.ctrlKey || $event.metaKey) {
-                  if (task.type != 'note') $store.set_finished(!$store.finished_tasks.includes(task.ref), task.ref);
+                  if (task.type != 'note') $store.set_finished(!$store.is_task_completed(task.ref), task.ref);
                 } else {
                   $emit('taskclick', task);
                 }
@@ -357,7 +357,7 @@ export default {
       return day1.getDate() === day2.getDate() && day1.getMonth() === day2.getMonth() && day1.getFullYear() === day2.getFullYear();
     },
     is_completed(task) {
-      return this.$store.finished_tasks?.includes(task.ref);
+      return this.$store.is_task_completed(task.ref);
     },
     get_day_tasks(day) {
       return this.tasks
