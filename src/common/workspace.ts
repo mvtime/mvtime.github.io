@@ -22,7 +22,39 @@ export interface Workspace {
   kind: "task" | "teacher" | string;
   files: WorkspaceFile[];
   drive_connected?: boolean;
+  drive_folder_id?: string | null;
+  drive_folder_url?: string | null;
   linked_task_refs?: string[];
+}
+
+/** Board task row suitable for workspace link picker (deduped by workspace_id). */
+export interface LinkableWorkspace {
+  workspace_id: string;
+  task_name: string;
+  class_name?: string;
+  label: string;
+}
+
+/** Human-readable option label: task name primary, optional "class · task". */
+export function linkableWorkspaceLabel(entry: {
+  task_name: string;
+  class_name?: string | null;
+}): string {
+  const taskName = entry.task_name?.trim() || "Task";
+  const className = entry.class_name?.trim();
+  return className ? `${className} · ${taskName}` : taskName;
+}
+
+/** Google Drive folder URL for a workspace chip link. */
+export function workspaceDriveFolderUrl(workspace: Workspace | null | undefined): string | null {
+  if (!workspace) return null;
+  if (typeof workspace.drive_folder_url === "string" && workspace.drive_folder_url.trim()) {
+    return workspace.drive_folder_url.trim();
+  }
+  if (typeof workspace.drive_folder_id === "string" && workspace.drive_folder_id.trim()) {
+    return `https://drive.google.com/drive/folders/${encodeURIComponent(workspace.drive_folder_id.trim())}`;
+  }
+  return null;
 }
 
 const stubWorkspaces = new Map<string, Workspace>();
@@ -62,6 +94,18 @@ function normalizeWorkspace(raw: unknown): Workspace | null {
     kind: typeof row.kind === "string" ? row.kind : "task",
     files,
     drive_connected: row.drive_connected === true,
+    drive_folder_id:
+      typeof row.drive_folder_id === "string"
+        ? row.drive_folder_id
+        : row.drive_folder_id === null
+          ? null
+          : undefined,
+    drive_folder_url:
+      typeof row.drive_folder_url === "string"
+        ? row.drive_folder_url
+        : row.drive_folder_url === null
+          ? null
+          : undefined,
     linked_task_refs: Array.isArray(row.linked_task_refs)
       ? row.linked_task_refs.filter((r): r is string => typeof r === "string")
       : undefined,
