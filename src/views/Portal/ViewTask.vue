@@ -66,6 +66,16 @@
             <span class="styled_line__separator"></span>
             <span class="styled_line__value md md_contents" v-html="note || 'None Yet'"></span>
           </div>
+
+          <TaskWorkspace
+            v-if="$store.user && task && task.type != 'note' && taskPath"
+            :task-path="taskPath"
+            :class-id="task.class_id || task._class?._class_id"
+            :task-type="task.type || 'task'"
+            :is-teacher-mode="showTeacherWorkspace"
+            :initial-workspace-id="task.workspace_id || taskState?.workspace_id"
+            @workspace-changed="onWorkspaceChanged"
+          />
         </div>
         <div class="overlay_contents_text" v-if="task.archived">
           This {{ task.type || "task" }} is archived and hidden from the calendar.
@@ -133,6 +143,7 @@ import { WarningToast, ErrorToast } from "@svonk/util";
 import { compatDateObj } from "@/common";
 import { shareUrl } from "@/common/share";
 import ClassNameChip from "@/components/Portal/ClassNameChip.vue";
+import TaskWorkspace from "@/components/Portal/TaskWorkspace.vue";
 import smoothReflow from "vue-smooth-reflow";
 import showdown from "showdown";
 import "@/assets/style/markdown.css";
@@ -140,7 +151,7 @@ let converter = new showdown.Converter();
 export default {
   name: "ViewTaskView",
   emits: ["close", "notes"],
-  components: { ClassNameChip },
+  components: { ClassNameChip, TaskWorkspace },
   mixins: [smoothReflow],
   data() {
     return {
@@ -195,6 +206,18 @@ export default {
     },
     can_manage_task() {
       return !!(this.$store.user && this.$store.can_manage_class(this.task_class_obj));
+    },
+    taskPath() {
+      const ref = this.task?.ref || this.$route?.params?.ref;
+      if (!ref) return null;
+      return this.$store.ref_to_path(ref) || String(ref).replace(/~/g, "/");
+    },
+    taskState() {
+      const ref = this.$route?.params?.ref || this.task?.ref;
+      return ref ? this.$store.task_state_for(ref) : null;
+    },
+    showTeacherWorkspace() {
+      return this.can_manage_task && this.$store.is_teacher;
     },
   },
   mounted() {
@@ -258,6 +281,23 @@ export default {
         });
       } else {
         this.$emit("notes", this.task);
+      }
+    },
+    onWorkspaceChanged(workspaceId) {
+      if (!this.task) return;
+      this.task = { ...this.task, workspace_id: workspaceId };
+      const ref = this.task.ref || this.$route?.params?.ref;
+      if (ref && workspaceId) {
+        const path = this.$store.ref_to_path(ref) || String(ref).replace(/~/g, "/");
+        this.$store.apply_task_state({
+          ref,
+          path,
+          completed: this.$store.is_task_completed(ref),
+          completed_at: this.taskState?.completed_at ?? null,
+          note: this.$store.note_for(ref),
+          note_updated_at: this.taskState?.note_updated_at ?? null,
+          workspace_id: workspaceId,
+        });
       }
     },
     async get_task() {

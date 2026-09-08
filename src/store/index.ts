@@ -61,6 +61,12 @@ import {
 } from "@/common/apiFetch";
 import { mapMeBoardToClassInfos, teacherEmailFromBoardClass } from "@/common/meBoard";
 import {
+  applyMeTaskState,
+  meTaskStateFromBoardTask,
+  patchMeTask,
+  type MeTaskState,
+} from "@/common/meTasks";
+import {
   actingAsLabel,
   isActingAsLinked,
   resolveActingAsEmail,
@@ -309,6 +315,12 @@ export const useMainStore: StoreDefinition = defineStore({
        * @default null
        */
       teacher_stats_cache: null as (TeacherStatsResponse & { updated: number }) | null,
+      /**
+       * @memberOf .main.state
+       * @property {Object} task_states Per-task personal state from GET /api/v1/me/board and PATCH /api/v1/me/tasks
+       * @default {}
+       */
+      task_states: {} as Record<string, MeTaskState>,
     };
     // setting up store
     let local: string | null = window.localStorage.getItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_app_state`);
@@ -402,7 +414,7 @@ export const useMainStore: StoreDefinition = defineStore({
      */
     upcoming_todo(): ProcessedTaskInfo[] {
       if (!this.upcoming) return [];
-      return this.upcoming.filter((task: ProcessedTaskInfo) => !this.finished_tasks?.includes(task.ref));
+      return this.upcoming.filter((task: ProcessedTaskInfo) => !this.is_task_completed(task.ref));
     },
     /**
      * @memberOf .main.getters
@@ -656,7 +668,15 @@ export const useMainStore: StoreDefinition = defineStore({
      */
     finished_tasks(): string[] {
       try {
-        if (!this.active_doc) throw "No active doc";
+        const refs = new Set<string>();
+        for (const state of Object.values(this.task_states || {})) {
+          if (state?.completed) {
+            if (state.ref) refs.add(state.ref);
+            if (state.path) refs.add(state.path);
+          }
+        }
+        if (refs.size) return [...refs];
+        if (!this.active_doc) return [];
         return this.active_doc.finished || [];
       } catch (err) {
         _status.warn("🔗 Couldn't get finished tasks", err);
@@ -978,6 +998,12 @@ export const useMainStore: StoreDefinition = defineStore({
      */
     note_for(ref: string): string | null {
       const path = this.ref_to_path(ref);
+      const flat = ref?.replace(/~/g, "/");
+      const state =
+        (ref && this.task_states?.[ref]) ||
+        (path && this.task_states?.[path]) ||
+        (flat && this.task_states?.[flat]);
+      if (state?.note) return state.note;
       return (this.notes && path && this.notes[path]) || null;
     },
     /**
@@ -995,18 +1021,10 @@ export const useMainStore: StoreDefinition = defineStore({
         if (!this.active_doc) throw "No active doc";
         if (!ref) throw "No ref provided";
         const path: string | null = this.ref_to_path(ref);
-
         if (!path) throw "Invalid ref";
 
-        let doc: DocumentData = this.active_doc;
-        if (!doc.notes) {
-          doc.notes = {};
-        }
-
-        doc.notes[path] = note || null;
-
-        this.set_active(doc);
-        await this.update_remote();
+        const state = await patchMeTask(path, { note: note || null });
+        this.apply_task_state(state);
         return Promise.resolve();
       } catch (err) {
         return Promise.reject(err);
@@ -1027,23 +1045,12 @@ export const useMainStore: StoreDefinition = defineStore({
         if (!ref) throw "No reference(s) provided";
         const paths: string[] = Array.isArray(ref) ? ref : [ref];
 
-        let doc = this.active_doc;
-        if (!doc.finished) {
-          doc.finished = [];
+        for (const taskRef of paths) {
+          const path = this.ref_to_path(taskRef) || String(taskRef).replace(/~/g, "/");
+          if (!path) throw "Invalid ref";
+          const state = await patchMeTask(path, { completed: finished });
+          this.apply_task_state(state);
         }
-        // if finished, add to finished array, else remove from finished array
-        if (finished) {
-          for (let p of paths) {
-            if (!doc.finished.includes(p)) {
-              doc.finished.push(p);
-            }
-          }
-        } else {
-          doc.finished = doc.finished.filter((p) => !paths.includes(p));
-        }
-
-        this.set_active(doc);
-        await this.update_remote();
 
         new SuccessToast((paths.length > 1 ? "Tasks" : useMagic().done_prefix(this.tasks.find((e) => e.ref == paths[0]))) + (finished ? " marked as finished" : " marked as unfinished"), 2000);
 
@@ -1052,6 +1059,79 @@ export const useMainStore: StoreDefinition = defineStore({
         new ErrorToast(`Task(s) could not be ${finished ? "marked as finished" : "marked as unfinished"}`, err, 2000);
         return Promise.reject(err);
       }
+    },
+    /**
+     * Whether a task is completed — prefers API/board task_states, then legacy finished[].
+     */
+    is_task_completed(ref: string): boolean {
+      if (!ref) return false;
+      const path = this.ref_to_path(ref) || ref.replace(/~/g, "/");
+      const state =
+        this.task_states?.[ref] ||
+        (path && this.task_states?.[path]) ||
+        (ref.includes("~") && this.task_states?.[ref.split("~").join("/")]);
+      if (state) return state.completed === true;
+      if (this.active_doc?.finished?.includes(ref)) return true;
+      const task = (this.tasks as ProcessedTaskInfo[])?.find(
+        (t) => t.ref === ref || t.ref === path
+      );
+      return task?.completed === true;
+    },
+    /**
+     * Personal task state DTO for a ref (note, completed, workspace_id).
+     */
+    task_state_for(ref: string): MeTaskState | null {
+      if (!ref) return null;
+      const path = this.ref_to_path(ref) || ref.replace(/~/g, "/");
+      return (
+        this.task_states?.[ref] ||
+        (path && this.task_states?.[path]) ||
+        null
+      );
+    },
+    /**
+     * Merge API task state into store and refresh derived task flags.
+     */
+    apply_task_state(state: MeTaskState): void {
+      this.task_states = applyMeTaskState(this.task_states || {}, state);
+      this.patch_task_completion_flags();
+    },
+    /**
+     * Hydrate task_states from GET /api/v1/me/board envelope.
+     */
+    ingest_board_task_states(board: MeBoardResponse): void {
+      let map = { ...(this.task_states || {}) };
+      for (const task of board.tasks || []) {
+        const row = task as Record<string, unknown>;
+        const state = meTaskStateFromBoardTask(row, task.class_id, task.id);
+        map = applyMeTaskState(map, state);
+      }
+      for (const entry of board.finished || []) {
+        const path = String(entry).replace(/~/g, "/");
+        const existing = map[path] || map[entry];
+        const state: MeTaskState = existing || {
+          ref: path,
+          path,
+          completed: true,
+          completed_at: null,
+          note: null,
+          note_updated_at: null,
+          workspace_id: null,
+        };
+        map = applyMeTaskState(map, { ...state, completed: true });
+      }
+      this.task_states = map;
+      this.patch_task_completion_flags();
+    },
+    /** Sync completed flags on processed tasks from task_states. */
+    patch_task_completion_flags(): void {
+      if (!this.tasks?.length) return;
+      this.tasks = (this.tasks as ProcessedTaskInfo[]).map((task) => ({
+        ...task,
+        completed: this.is_task_completed(task.ref),
+        note: this.note_for(task.ref),
+        workspace_id: this.task_state_for(task.ref)?.workspace_id ?? task.workspace_id,
+      }));
     },
     /**
      * @memberOf .main.actions
@@ -1328,6 +1408,9 @@ export const useMainStore: StoreDefinition = defineStore({
               class_name: this.class_text(classes[i]),
               class_id: classes[i].id,
               ...(ref ? { ref } : {}),
+              completed: ref ? this.is_task_completed(ref) : false,
+              note: ref ? this.note_for(ref) : null,
+              workspace_id: ref ? this.task_state_for(ref)?.workspace_id ?? null : null,
             });
           }
         }
@@ -1370,6 +1453,7 @@ export const useMainStore: StoreDefinition = defineStore({
       this.id_token_claims = null;
       this.stats_cache = null;
       this.teacher_stats_cache = null;
+      this.task_states = {};
       this.teacher = {
         doc_ref: null,
         collection_ref: null,
@@ -2098,6 +2182,7 @@ export const useMainStore: StoreDefinition = defineStore({
       const payload = await apiFetch<MeBoardResponse | undefined>("/api/v1/me/board");
       const board = parseMeBoardResponse(payload, this.ORG_DOMAIN);
       const mapped = mapMeBoardToClassInfos(board, this.active_doc?.classes, this.ORG_DOMAIN);
+      this.ingest_board_task_states(board);
 
       const classes: ClassInfo[] = mapped.map((cls) => {
         const enrollmentPath = cls.id;
