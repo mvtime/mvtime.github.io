@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en" style="font-size:16px"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="../img/icons/favicon-32x32.png"><title>Source: store/index.js</title><!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]--><script src="scripts/third-party/hljs.js" defer="defer"></script><script src="scripts/third-party/hljs-line-num.js" defer="defer"></script><script src="scripts/third-party/popper.js" defer="defer"></script><script src="scripts/third-party/tippy.js" defer="defer"></script><script src="scripts/third-party/tocbot.min.js"></script><script>var baseURL="/",locationPathname="";baseURL=(locationPathname=document.location.pathname).substr(0,locationPathname.lastIndexOf("/")+1)</script><link rel="stylesheet" href="styles/clean-jsdoc-theme.min.css"><svg aria-hidden="true" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display:none"><defs><symbol id="copy-icon" viewbox="0 0 488.3 488.3"><g><path d="M314.25,85.4h-227c-21.3,0-38.6,17.3-38.6,38.6v325.7c0,21.3,17.3,38.6,38.6,38.6h227c21.3,0,38.6-17.3,38.6-38.6V124    C352.75,102.7,335.45,85.4,314.25,85.4z M325.75,449.6c0,6.4-5.2,11.6-11.6,11.6h-227c-6.4,0-11.6-5.2-11.6-11.6V124    c0-6.4,5.2-11.6,11.6-11.6h227c6.4,0,11.6,5.2,11.6,11.6V449.6z"/><path d="M401.05,0h-227c-21.3,0-38.6,17.3-38.6,38.6c0,7.5,6,13.5,13.5,13.5s13.5-6,13.5-13.5c0-6.4,5.2-11.6,11.6-11.6h227    c6.4,0,11.6,5.2,11.6,11.6v325.7c0,6.4-5.2,11.6-11.6,11.6c-7.5,0-13.5,6-13.5,13.5s6,13.5,13.5,13.5c21.3,0,38.6-17.3,38.6-38.6    V38.6C439.65,17.3,422.35,0,401.05,0z"/></g></symbol><symbol id="search-icon" viewBox="0 0 512 512"><g><g><path d="M225.474,0C101.151,0,0,101.151,0,225.474c0,124.33,101.151,225.474,225.474,225.474    c124.33,0,225.474-101.144,225.474-225.474C450.948,101.151,349.804,0,225.474,0z M225.474,409.323    c-101.373,0-183.848-82.475-183.848-183.848S124.101,41.626,225.474,41.626s183.848,82.475,183.848,183.848    S326.847,409.323,225.474,409.323z"/></g></g><g><g><path d="M505.902,476.472L386.574,357.144c-8.131-8.131-21.299-8.131-29.43,0c-8.131,8.124-8.131,21.306,0,29.43l119.328,119.328    c4.065,4.065,9.387,6.098,14.715,6.098c5.321,0,10.649-2.033,14.715-6.098C514.033,497.778,514.033,484.596,505.902,476.472z"/></g></g></symbol><symbol id="font-size-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M11.246 15H4.754l-2 5H.6L7 4h2l6.4 16h-2.154l-2-5zm-.8-2L8 6.885 5.554 13h4.892zM21 12.535V12h2v8h-2v-.535a4 4 0 1 1 0-6.93zM19 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></symbol><symbol id="add-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"/></symbol><symbol id="minus-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M5 11h14v2H5z"/></symbol><symbol id="dark-theme-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M10 7a7 7 0 0 0 12 4.9v.1c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2h.1A6.979 6.979 0 0 0 10 7zm-6 5a8 8 0 0 0 15.062 3.762A9 9 0 0 1 8.238 4.938 7.999 7.999 0 0 0 4 12z"/></symbol><symbol id="light-theme-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM11 1h2v3h-2V1zm0 19h2v3h-2v-3zM3.515 4.929l1.414-1.414L7.05 5.636 5.636 7.05 3.515 4.93zM16.95 18.364l1.414-1.414 2.121 2.121-1.414 1.414-2.121-2.121zm2.121-14.85l1.414 1.415-2.121 2.121-1.414-1.414 2.121-2.121zM5.636 16.95l1.414 1.414-2.121 2.121-1.414-1.414 2.121-2.121zM23 11v2h-3v-2h3zM4 11v2H1v-2h3z"/></symbol><symbol id="reset-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M18.537 19.567A9.961 9.961 0 0 1 12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10c0 2.136-.67 4.116-1.81 5.74L17 12h3a8 8 0 1 0-2.46 5.772l.997 1.795z"/></symbol><symbol id="down-icon" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.7803 6.21967C13.0732 6.51256 13.0732 6.98744 12.7803 7.28033L8.53033 11.5303C8.23744 11.8232 7.76256 11.8232 7.46967 11.5303L3.21967 7.28033C2.92678 6.98744 2.92678 6.51256 3.21967 6.21967C3.51256 5.92678 3.98744 5.92678 4.28033 6.21967L8 9.93934L11.7197 6.21967C12.0126 5.92678 12.4874 5.92678 12.7803 6.21967Z"></path></symbol><symbol id="codepen-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M16.5 13.202L13 15.535v3.596L19.197 15 16.5 13.202zM14.697 12L12 10.202 9.303 12 12 13.798 14.697 12zM20 10.869L18.303 12 20 13.131V10.87zM19.197 9L13 4.869v3.596l3.5 2.333L19.197 9zM7.5 10.798L11 8.465V4.869L4.803 9 7.5 10.798zM4.803 15L11 19.131v-3.596l-3.5-2.333L4.803 15zM4 13.131L5.697 12 4 10.869v2.262zM2 9a1 1 0 0 1 .445-.832l9-6a1 1 0 0 1 1.11 0l9 6A1 1 0 0 1 22 9v6a1 1 0 0 1-.445.832l-9 6a1 1 0 0 1-1.11 0l-9-6A1 1 0 0 1 2 15V9z"/></symbol><symbol id="close-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/></symbol><symbol id="menu-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z"/></symbol></defs></svg></head><body data-theme="dark"><div class="sidebar-container"><div class="sidebar" id="sidebar"><a href="/" class="sidebar-title sidebar-title-anchor">Home</a><div class="sidebar-items-container"><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-namespaces"><div>Namespaces</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="magic.html">.magic</a></div><div class="sidebar-section-children"><a href="magic.actions.html">actions</a></div><div class="sidebar-section-children"><a href="magic.getters.html">getters</a></div><div class="sidebar-section-children"><a href="magic.state.html">state</a></div><div class="sidebar-section-children"><a href="main.html">.main</a></div><div class="sidebar-section-children"><a href="main.actions.html">actions</a></div><div class="sidebar-section-children"><a href="main.getters.html">getters</a></div><div class="sidebar-section-children"><a href="main.state.html">state</a></div><div class="sidebar-section-children"><a href="notify.html">.notify</a></div><div class="sidebar-section-children"><a href="notify.actions.html">actions</a></div><div class="sidebar-section-children"><a href="notify.getters.html">getters</a></div><div class="sidebar-section-children"><a href="shortcuts.html">.shortcuts</a></div><div class="sidebar-section-children"><a href="shortcuts.actions.html">actions</a></div><div class="sidebar-section-children"><a href="shortcuts.getters.html">getters</a></div><div class="sidebar-section-children"><a href="common.html">common</a></div><div class="sidebar-section-children"><a href="store.html">store</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-global"><div>Global</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="global.html#_log">_log</a></div><div class="sidebar-section-children"><a href="global.html#_status">_status</a></div><div class="sidebar-section-children"><a href="global.html#_statuslog">_statuslog</a></div><div class="sidebar-section-children"><a href="global.html#compatDateObj">compatDateObj</a></div><div class="sidebar-section-children"><a href="global.html#downloadLogData">downloadLogData</a></div><div class="sidebar-section-children"><a href="global.html#getFirstNonStandardCharacter">getFirstNonStandardCharacter</a></div><div class="sidebar-section-children"><a href="global.html#msToTime">msToTime</a></div><div class="sidebar-section-children"><a href="global.html#save">save</a></div><div class="sidebar-section-children"><a href="global.html#state">state</a></div></div></div></div></div><div class="navbar-container" id="VuAckcnZhf"><nav class="navbar"><div class="navbar-left-items"></div><div class="navbar-right-items"><div class="navbar-right-item"><button class="icon-button search-button" aria-label="open-search"><svg><use xlink:href="#search-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button theme-toggle" aria-label="toggle-theme"><svg><use class="theme-svg-use" xlink:href="#light-theme-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button font-size" aria-label="change-font-size"><svg><use xlink:href="#font-size-icon"></use></svg></button></div></div><nav></nav></nav></div><div class="toc-container"><div class="toc-content"><span class="bold">On this page</span><div id="eed4d2a0bfd64539bb9df78095dec881"></div></div></div><div class="body-wrapper"><div class="main-content"><div class="main-wrapper"><section id="source-page" class="source-page"><header><h1 id="title" class="has-anchor">store_index.js</h1></header><article><pre class="prettyprint source lang-js"><code>/**
+    <![endif]--><script src="scripts/third-party/hljs.js" defer="defer"></script><script src="scripts/third-party/hljs-line-num.js" defer="defer"></script><script src="scripts/third-party/popper.js" defer="defer"></script><script src="scripts/third-party/tippy.js" defer="defer"></script><script src="scripts/third-party/tocbot.min.js"></script><script>var baseURL="/",locationPathname="";baseURL=(locationPathname=document.location.pathname).substr(0,locationPathname.lastIndexOf("/")+1)</script><link rel="stylesheet" href="styles/clean-jsdoc-theme.min.css"><svg aria-hidden="true" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display:none"><defs><symbol id="copy-icon" viewbox="0 0 488.3 488.3"><g><path d="M314.25,85.4h-227c-21.3,0-38.6,17.3-38.6,38.6v325.7c0,21.3,17.3,38.6,38.6,38.6h227c21.3,0,38.6-17.3,38.6-38.6V124    C352.75,102.7,335.45,85.4,314.25,85.4z M325.75,449.6c0,6.4-5.2,11.6-11.6,11.6h-227c-6.4,0-11.6-5.2-11.6-11.6V124    c0-6.4,5.2-11.6,11.6-11.6h227c6.4,0,11.6,5.2,11.6,11.6V449.6z"/><path d="M401.05,0h-227c-21.3,0-38.6,17.3-38.6,38.6c0,7.5,6,13.5,13.5,13.5s13.5-6,13.5-13.5c0-6.4,5.2-11.6,11.6-11.6h227    c6.4,0,11.6,5.2,11.6,11.6v325.7c0,6.4-5.2,11.6-11.6,11.6c-7.5,0-13.5,6-13.5,13.5s6,13.5,13.5,13.5c21.3,0,38.6-17.3,38.6-38.6    V38.6C439.65,17.3,422.35,0,401.05,0z"/></g></symbol><symbol id="search-icon" viewBox="0 0 512 512"><g><g><path d="M225.474,0C101.151,0,0,101.151,0,225.474c0,124.33,101.151,225.474,225.474,225.474    c124.33,0,225.474-101.144,225.474-225.474C450.948,101.151,349.804,0,225.474,0z M225.474,409.323    c-101.373,0-183.848-82.475-183.848-183.848S124.101,41.626,225.474,41.626s183.848,82.475,183.848,183.848    S326.847,409.323,225.474,409.323z"/></g></g><g><g><path d="M505.902,476.472L386.574,357.144c-8.131-8.131-21.299-8.131-29.43,0c-8.131,8.124-8.131,21.306,0,29.43l119.328,119.328    c4.065,4.065,9.387,6.098,14.715,6.098c5.321,0,10.649-2.033,14.715-6.098C514.033,497.778,514.033,484.596,505.902,476.472z"/></g></g></symbol><symbol id="font-size-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M11.246 15H4.754l-2 5H.6L7 4h2l6.4 16h-2.154l-2-5zm-.8-2L8 6.885 5.554 13h4.892zM21 12.535V12h2v8h-2v-.535a4 4 0 1 1 0-6.93zM19 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></symbol><symbol id="add-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2z"/></symbol><symbol id="minus-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M5 11h14v2H5z"/></symbol><symbol id="dark-theme-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M10 7a7 7 0 0 0 12 4.9v.1c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2h.1A6.979 6.979 0 0 0 10 7zm-6 5a8 8 0 0 0 15.062 3.762A9 9 0 0 1 8.238 4.938 7.999 7.999 0 0 0 4 12z"/></symbol><symbol id="light-theme-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM11 1h2v3h-2V1zm0 19h2v3h-2v-3zM3.515 4.929l1.414-1.414L7.05 5.636 5.636 7.05 3.515 4.93zM16.95 18.364l1.414-1.414 2.121 2.121-1.414 1.414-2.121-2.121zm2.121-14.85l1.414 1.415-2.121 2.121-1.414-1.414 2.121-2.121zM5.636 16.95l1.414 1.414-2.121 2.121-1.414-1.414 2.121-2.121zM23 11v2h-3v-2h3zM4 11v2H1v-2h3z"/></symbol><symbol id="reset-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M18.537 19.567A9.961 9.961 0 0 1 12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10c0 2.136-.67 4.116-1.81 5.74L17 12h3a8 8 0 1 0-2.46 5.772l.997 1.795z"/></symbol><symbol id="down-icon" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.7803 6.21967C13.0732 6.51256 13.0732 6.98744 12.7803 7.28033L8.53033 11.5303C8.23744 11.8232 7.76256 11.8232 7.46967 11.5303L3.21967 7.28033C2.92678 6.98744 2.92678 6.51256 3.21967 6.21967C3.51256 5.92678 3.98744 5.92678 4.28033 6.21967L8 9.93934L11.7197 6.21967C12.0126 5.92678 12.4874 5.92678 12.7803 6.21967Z"></path></symbol><symbol id="codepen-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M16.5 13.202L13 15.535v3.596L19.197 15 16.5 13.202zM14.697 12L12 10.202 9.303 12 12 13.798 14.697 12zM20 10.869L18.303 12 20 13.131V10.87zM19.197 9L13 4.869v3.596l3.5 2.333L19.197 9zM7.5 10.798L11 8.465V4.869L4.803 9 7.5 10.798zM4.803 15L11 19.131v-3.596l-3.5-2.333L4.803 15zM4 13.131L5.697 12 4 10.869v2.262zM2 9a1 1 0 0 1 .445-.832l9-6a1 1 0 0 1 1.11 0l9 6A1 1 0 0 1 22 9v6a1 1 0 0 1-.445.832l-9 6a1 1 0 0 1-1.11 0l-9-6A1 1 0 0 1 2 15V9z"/></symbol><symbol id="close-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 10.586l4.95-4.95 1.414 1.414-4.95 4.95 4.95 4.95-1.414 1.414-4.95-4.95-4.95 4.95-1.414-1.414 4.95-4.95-4.95-4.95L7.05 5.636z"/></symbol><symbol id="menu-icon" viewBox="0 0 24 24"><path fill="none" d="M0 0h24v24H0z"/><path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z"/></symbol></defs></svg></head><body data-theme="dark"><div class="sidebar-container"><div class="sidebar" id="sidebar"><div class="sidebar-items-container"><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-modules"><div>Modules</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="module-common_actingAs.html">common/actingAs</a></div><div class="sidebar-section-children"><a href="module-common_classListenerState.html">common/classListenerState</a></div><div class="sidebar-section-children"><a href="module-common_dualRead.html">common/dualRead</a></div><div class="sidebar-section-children"><a href="module-common_meBoard.html">common/meBoard</a></div><div class="sidebar-section-children"><a href="module-common_meTaskState.html">common/meTaskState</a></div><div class="sidebar-section-children"><a href="module-common_meTasks.html">common/meTasks</a></div><div class="sidebar-section-children"><a href="module-common_paths.html">common/paths</a></div><div class="sidebar-section-children"><a href="module-common_repeatingScope.html">common/repeatingScope</a></div><div class="sidebar-section-children"><a href="module-common_share.html">common/share</a></div><div class="sidebar-section-children"><a href="module-common_workspace.html">common/workspace</a></div><div class="sidebar-section-children"><a href="module-firebase_classListeners.html">firebase/classListeners</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-namespaces"><div>Namespaces</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="magic.html">.magic</a></div><div class="sidebar-section-children"><a href="magic.actions.html">actions</a></div><div class="sidebar-section-children"><a href="magic.getters.html">getters</a></div><div class="sidebar-section-children"><a href="magic.state.html">state</a></div><div class="sidebar-section-children"><a href="main.html">.main</a></div><div class="sidebar-section-children"><a href="main.actions.html">actions</a></div><div class="sidebar-section-children"><a href="main.getters.html">getters</a></div><div class="sidebar-section-children"><a href="main.state.html">state</a></div><div class="sidebar-section-children"><a href="notify.html">.notify</a></div><div class="sidebar-section-children"><a href="notify.actions.html">actions</a></div><div class="sidebar-section-children"><a href="notify.getters.html">getters</a></div><div class="sidebar-section-children"><a href="shortcuts.html">.shortcuts</a></div><div class="sidebar-section-children"><a href="shortcuts.actions.html">actions</a></div><div class="sidebar-section-children"><a href="shortcuts.getters.html">getters</a></div><div class="sidebar-section-children"><a href="common.html">common</a></div><div class="sidebar-section-children"><a href="store.html">store</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-global"><div>Global</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="global.html#CLASS_CHIP_MIX_ALPHA">CLASS_CHIP_MIX_ALPHA</a></div><div class="sidebar-section-children"><a href="global.html#CONTRAST_TARGET">CONTRAST_TARGET</a></div><div class="sidebar-section-children"><a href="global.html#GRAPHEME_FALLBACK">GRAPHEME_FALLBACK</a></div><div class="sidebar-section-children"><a href="global.html#PAGE_BG_LIGHT">PAGE_BG_LIGHT</a></div><div class="sidebar-section-children"><a href="global.html#PERSONAL_STAT_FILTERS">PERSONAL_STAT_FILTERS</a></div><div class="sidebar-section-children"><a href="global.html#TEACHER_STATS_CONCURRENCY">TEACHER_STATS_CONCURRENCY</a></div><div class="sidebar-section-children"><a href="global.html#TEACHER_STAT_FILTERS">TEACHER_STAT_FILTERS</a></div><div class="sidebar-section-children"><a href="global.html#_log">_log</a></div><div class="sidebar-section-children"><a href="global.html#_status">_status</a></div><div class="sidebar-section-children"><a href="global.html#_statuslog">_statuslog</a></div><div class="sidebar-section-children"><a href="global.html#apiFetch">apiFetch</a></div><div class="sidebar-section-children"><a href="global.html#bestAlongPath">bestAlongPath</a></div><div class="sidebar-section-children"><a href="global.html#clampByte">clampByte</a></div><div class="sidebar-section-children"><a href="global.html#classChipColors">classChipColors</a></div><div class="sidebar-section-children"><a href="global.html#classEntryMatchesId">classEntryMatchesId</a></div><div class="sidebar-section-children"><a href="global.html#classSquareGlyph">classSquareGlyph</a></div><div class="sidebar-section-children"><a href="global.html#classTextName">classTextName</a></div><div class="sidebar-section-children"><a href="global.html#compatDateObj">compatDateObj</a></div><div class="sidebar-section-children"><a href="global.html#contrastRatio">contrastRatio</a></div><div class="sidebar-section-children"><a href="global.html#defaultActiveFilters">defaultActiveFilters</a></div><div class="sidebar-section-children"><a href="global.html#defaultTeacherStatsRange">defaultTeacherStatsRange</a></div><div class="sidebar-section-children"><a href="global.html#downloadLogData">downloadLogData</a></div><div class="sidebar-section-children"><a href="global.html#firstGrapheme">firstGrapheme</a></div><div class="sidebar-section-children"><a href="global.html#getFirstNonStandardCharacter">getFirstNonStandardCharacter</a></div><div class="sidebar-section-children"><a href="global.html#graphemes">graphemes</a></div><div class="sidebar-section-children"><a href="global.html#isEmojiGrapheme">isEmojiGrapheme</a></div><div class="sidebar-section-children"><a href="global.html#lerpRgb">lerpRgb</a></div><div class="sidebar-section-children"><a href="global.html#localYmd">localYmd</a></div><div class="sidebar-section-children"><a href="global.html#mapWithConcurrency">mapWithConcurrency</a></div><div class="sidebar-section-children"><a href="global.html#mixClassChipBackground">mixClassChipBackground</a></div><div class="sidebar-section-children"><a href="global.html#mixRgb">mixRgb</a></div><div class="sidebar-section-children"><a href="global.html#msToTime">msToTime</a></div><div class="sidebar-section-children"><a href="global.html#normalizeTeacherDay">normalizeTeacherDay</a></div><div class="sidebar-section-children"><a href="global.html#parseHex">parseHex</a></div><div class="sidebar-section-children"><a href="global.html#parseStatsResponse">parseStatsResponse</a></div><div class="sidebar-section-children"><a href="global.html#parseTeacherClassStatsResponse">parseTeacherClassStatsResponse</a></div><div class="sidebar-section-children"><a href="global.html#parseTeacherStatsResponse">parseTeacherStatsResponse</a></div><div class="sidebar-section-children"><a href="global.html#prevClasses">prevClasses</a></div><div class="sidebar-section-children"><a href="global.html#readableTextOnBackground">readableTextOnBackground</a></div><div class="sidebar-section-children"><a href="global.html#redirectToShortViewIfNeeded">redirectToShortViewIfNeeded</a></div><div class="sidebar-section-children"><a href="global.html#relativeLuminance">relativeLuminance</a></div><div class="sidebar-section-children"><a href="global.html#resolvePageBg">resolvePageBg</a></div><div class="sidebar-section-children"><a href="global.html#resolveShortViewRef">resolveShortViewRef</a></div><div class="sidebar-section-children"><a href="global.html#rgbToHex">rgbToHex</a></div><div class="sidebar-section-children"><a href="global.html#save">save</a></div><div class="sidebar-section-children"><a href="global.html#shortViewFromSlashPath">shortViewFromSlashPath</a></div><div class="sidebar-section-children"><a href="global.html#splitLeadingEmoji">splitLeadingEmoji</a></div><div class="sidebar-section-children"><a href="global.html#srgbChannelToLinear">srgbChannelToLinear</a></div><div class="sidebar-section-children"><a href="global.html#state">state</a></div></div></div></div></div><div class="navbar-container" id="VuAckcnZhf"><nav class="navbar"><div class="navbar-left-items"></div><div class="navbar-right-items"><div class="navbar-right-item"><button class="icon-button search-button" aria-label="open-search"><svg><use xlink:href="#search-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button theme-toggle" aria-label="toggle-theme"><svg><use class="theme-svg-use" xlink:href="#light-theme-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button font-size" aria-label="change-font-size"><svg><use xlink:href="#font-size-icon"></use></svg></button></div></div><nav></nav></nav></div><div class="toc-container"><div class="toc-content"><span class="bold">On this page</span><div id="eed4d2a0bfd64539bb9df78095dec881"></div></div></div><div class="body-wrapper"><div class="main-content"><div class="main-wrapper"><section id="source-page" class="source-page"><header><h1 id="title" class="has-anchor">store_index.js</h1></header><article><pre class="prettyprint source lang-js"><code>/**
  * Group of stores that handle page-inspecific data and methods
  * @namespace store
  */
@@ -37,27 +37,65 @@ export var Theme;
     Theme["Light"] = "light";
     Theme["Dark"] = "dark";
 })(Theme || (Theme = {}));
+import { ApiFetchError, apiFetch, defaultTeacherStatsRange, isMissingStatsEndpoint, mapWithConcurrency, parseMeBoardResponse, parseStatsResponse, parseTeacherClassStatsResponse, } from "@/common/apiFetch";
+import { mapMeBoardToClassInfos, teacherEmailFromBoardClass } from "@/common/meBoard";
+import { applyMeTaskState, meTaskStateFromBoardTask, patchMeTask, } from "@/common/meTasks";
+import { actingAsLabel, isActingAsLinked, resolveActingAsEmail, schoolUidFromClaims, } from "@/common/actingAs";
+const STATS_CACHE_TTL_MS = 5 * 60 * 1000;
+/** Parallel teacher-stats requests per manageable class (mvtt-server#29 requires classId). */
+const TEACHER_STATS_CONCURRENCY = 4;
+function enrollmentKeyClassId(enrollmentPath) {
+    return bareClassIdFromEnrollment(enrollmentPath);
+}
+/** True when a local class cache entry matches a bare classId (enrollment may be email/classId or classId). */
+function classEntryMatchesId(entry, classId) {
+    if (!entry || !classId)
+        return false;
+    if (entry._class_id === classId)
+        return true;
+    if (entry.id === classId || entry.ref === classId)
+        return true;
+    if (typeof entry.id === "string" &amp;&amp; (entry.id.endsWith("/" + classId) || entry.id.endsWith("~" + classId)))
+        return true;
+    if (typeof entry.ref === "string" &amp;&amp; (entry.ref.endsWith("/" + classId) || entry.ref === classId))
+        return true;
+    return false;
+}
 // setup Pinia store
 import { defineStore } from "pinia";
 import { _status, compatDateObj } from "@/common";
+import { classTextName } from "@/common/grapheme";
+import { bareClassIdFromEnrollment, classPath, flatTaskPath, humanTeachers, isCanvasImportEmail, parseClassId, parseTaskId, shortShareRef, splitRefSegments, taskPath as buildTaskPath, writeClassId, writeTaskIds, } from "@/common/paths";
+import { repeatingArchiveToast, repeatingUpdateToast, shouldTouchRepeatingTask, } from "@/common/repeatingScope";
+import { getClassDoc, getTaskDoc, rememberClassEmail, } from "@/common/dualRead";
 import { Toast, ErrorToast, cleanError, WarningToast, SuccessToast } from "@svonk/util";
 // get firebase requirements
-import { collection, doc, setDoc, getDoc, getDocs, addDoc, writeBatch, updateDoc, deleteDoc, } from "firebase/firestore";
+import { collection, doc, setDoc, getDoc, getDocs, addDoc, writeBatch, deleteDoc, deleteField, } from "firebase/firestore";
 import CryptoJS from "crypto-js";
-import { auth, db, authChangeAction, refreshTimeout, functions, httpsCallable } from "../firebase";
+import { auth, db, authChangeAction, refreshTimeout, setupSnapshot, functions, httpsCallable } from "../firebase";
+import { syncClassListeners } from "../firebase/classListeners";
+import { beginHydrateEpoch, hydrateBeatsLive } from "@/common/classListenerState";
 import { signInWithPopup, GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
 const provider = new GoogleAuthProvider();
 const isElectron = ((_b = (_a = navigator === null || navigator === void 0 ? void 0 : navigator.userAgent) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === null || _b === void 0 ? void 0 : _b.indexOf(" electron/")) > -1;
 let ORG_DOMAIN = `@${process.env.VUE_APP_ORG_DOMAIN}`;
-// add email and name to provider
+// add email and name to provider (safe at import time — does not touch `auth`)
 provider.addScope("email");
 provider.addScope("profile");
-auth.useDeviceLanguage();
 // constrict to only ORG_DOMAIN emails
 provider.setCustomParameters({
     login_hint: "username" + ORG_DOMAIN,
     // hd: ORG_DOMAIN,
 });
+// Do NOT call auth.useDeviceLanguage() at module top level — store↔firebase ESM cycle
+// leaves `auth` in TDZ during import. Configure lazily on first login.
+let authLanguageConfigured = false;
+function ensureAuthLanguage() {
+    if (authLanguageConfigured)
+        return;
+    auth.useDeviceLanguage();
+    authLanguageConfigured = true;
+}
 // setup class name handlebars template
 import Handlebars from "handlebars";
 const CLASS_TEXT = Handlebars.compile(process.env.VUE_APP_MUSTACHE_CLASS_TEXT || "{{#period}}P{{period}} - {{/period}}{{name}}");
@@ -174,6 +212,14 @@ export const useMainStore = defineStore({
             personal_account: false,
             /**
              * @memberOf .main.state
+             * @property {Object|null} id_token_claims Latest Firebase ID token claims (for school_uid etc.)
+             * @default null
+             * @see {@link school_uid_claim}
+             * @see {@link refresh_id_token_claims}
+             */
+            id_token_claims: null,
+            /**
+             * @memberOf .main.state
              * @property {Boolean} paused If the app is paused (true) or not (false)
              * @default false
              * @see {@link show_timeout}
@@ -186,6 +232,24 @@ export const useMainStore = defineStore({
              * @default false
              */
             logout_prompt: false,
+            /**
+             * @memberOf .main.state
+             * @property {Object} stats_cache In-memory stats rows from GET /api/v1/me/stats
+             * @default null
+             */
+            stats_cache: null,
+            /**
+             * @memberOf .main.state
+             * @property {Object} teacher_stats_cache In-memory GET /api/v1/me/teacher-stats envelope
+             * @default null
+             */
+            teacher_stats_cache: null,
+            /**
+             * @memberOf .main.state
+             * @property {Object} task_states Per-task personal state from GET /api/v1/me/board and PATCH /api/v1/me/tasks
+             * @default {}
+             */
+            task_states: {},
         };
         // setting up store
         let local = window.localStorage.getItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_app_state`);
@@ -290,7 +354,8 @@ export const useMainStore = defineStore({
         upcoming_todo() {
             if (!this.upcoming)
                 return [];
-            return this.upcoming.filter((task) => { var _a; return !((_a = this.finished_tasks) === null || _a === void 0 ? void 0 : _a.includes(task.ref)); });
+            const finished = this.finished_tasks;
+            return this.upcoming.filter((task) => !finished.includes(task.ref));
         },
         /**
          * @memberOf .main.getters
@@ -331,53 +396,78 @@ export const useMainStore = defineStore({
         /**
          * @memberOf .main.getters
          * @function is_admin
-         * @description Check if user is a admin - currently true for all users for testing purposes TODO
+         * @description True only when active_doc.role is "admin" (users.role is the sole admin signal)
          * @returns {Boolean} if the user is an admin
          * @default false
          */
-        // TODO: update this to use actual permissions
         is_admin() {
-            return this.is_teacher;
+            var _a;
+            return ((_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.role) === "admin";
         },
         /**
          * @memberOf .main.getters
          * @function is_teacher
-         * @description Check if user is a teacher, or is in teacher mode locally (for testing)
-         * @returns {Boolean} if the user is a teacher
+         * @description True when active_doc.role is "teacher" or "admin" (users.role is the sole teacher signal)
+         * @returns {Boolean} if the user is a teacher or admin
          * @default false
          */
         is_teacher() {
-            var _a, _b, _c, _d;
-            // check if email is a teacher email (ends in this.ORG_DOMAIN) &amp;&amp; has letters in the first part
+            var _a;
             if (!this.user)
                 return false;
-            if (((_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.teacher_mode) == true || ((_b = window === null || window === void 0 ? void 0 : window.localStorage) === null || _b === void 0 ? void 0 : _b[`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`]) == "true") {
-                if (((_c = this.active_doc) === null || _c === void 0 ? void 0 : _c.teacher_mode) == true || ((_d = this.active_doc) === null || _d === void 0 ? void 0 : _d.teacher_mode) == null) {
-                    window.localStorage.setItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`, "true");
-                    if (this.personal_account) {
-                        _status.log("🏫 No teacher mode for personal account");
-                        return false;
-                    }
-                    else {
-                        _status.log("🏫 Local teacher mode");
-                        return true;
-                    }
-                }
-                else {
-                    window.localStorage.setItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`, "false");
-                    _status.log("🏫 Teacher mode disabled locally to reflect remote changes");
-                }
-            }
-            let email = this.user.email;
-            let [first, last] = email.split("@");
-            // TODO: add .env option for teacher/student pattern
-            if ("@" + last == this.ORG_DOMAIN &amp;&amp; !/\d/.test(first) &amp;&amp; this.ORG_DOMAIN == "@mvla.net") {
-                _status.log("🏫 Teacher mode enabled for non-student district account");
-                return true;
-            }
-            else {
-                return false;
-            }
+            const role = (_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.role;
+            return role === "teacher" || role === "admin";
+        },
+        /**
+         * @memberOf .main.getters
+         * @function school_uid_claim
+         * @description school_uid from the latest ID token claims (null when absent)
+         * @returns {String|null}
+         * @see {@link refresh_id_token_claims}
+         * @see {@link is_acting_as_linked}
+         */
+        school_uid_claim() {
+            return schoolUidFromClaims(this.id_token_claims);
+        },
+        /**
+         * @memberOf .main.getters
+         * @function is_acting_as_linked
+         * @description True when this session acts as a school principal (prefer school_uid claim; else personal_account &amp;&amp; linked_to)
+         * @returns {Boolean}
+         * @see {@link acting_as_email}
+         */
+        is_acting_as_linked() {
+            var _a;
+            return isActingAsLinked({
+                schoolUidClaim: this.school_uid_claim,
+                personalAccount: this.personal_account,
+                linkedTo: ((_a = this.account_doc) === null || _a === void 0 ? void 0 : _a.linked_to) || null,
+            });
+        },
+        /**
+         * @memberOf .main.getters
+         * @function acting_as_email
+         * @description School principal email for the Acting-as chip (from active_doc — never personal Gmail)
+         * @returns {String|null}
+         */
+        acting_as_email() {
+            var _a, _b, _d;
+            return resolveActingAsEmail({
+                schoolUidClaim: this.school_uid_claim,
+                personalAccount: this.personal_account,
+                linkedTo: ((_a = this.account_doc) === null || _a === void 0 ? void 0 : _a.linked_to) || null,
+                activeDocEmail: ((_b = this.active_doc) === null || _b === void 0 ? void 0 : _b.email) || null,
+                userEmail: ((_d = this.user) === null || _d === void 0 ? void 0 : _d.email) || null,
+            });
+        },
+        /**
+         * @memberOf .main.getters
+         * @function acting_as_label
+         * @description Accessible chip label "Acting as email@school.edu", or null when chip should hide
+         * @returns {String|null}
+         */
+        acting_as_label() {
+            return actingAsLabel(this.acting_as_email);
         },
         /**
          * @memberOf .main.getters
@@ -389,17 +479,17 @@ export const useMainStore = defineStore({
          * @note Returns true if user is a teacher, since we're not tracking data for them
          */
         done_daily_survey() {
-            var _a, _b, _c, _d, _e, _f;
+            var _a, _b, _d, _e, _f, _g;
             if (!this.done_tutorial)
                 return true;
             if (!this.active_doc)
                 return false;
             if (((_b = (_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.prefs) === null || _b === void 0 ? void 0 : _b.skip_survey) || process.env.VUE_APP_NOSURVEY) {
-                _status.log(`📃 Skipping survey from {${((_d = (_c = this.active_doc) === null || _c === void 0 ? void 0 : _c.prefs) === null || _d === void 0 ? void 0 : _d.skip_survey) ? "user prefs" : ".env"}} override`);
+                _status.log(`📃 Skipping survey from {${((_e = (_d = this.active_doc) === null || _d === void 0 ? void 0 : _d.prefs) === null || _e === void 0 ? void 0 : _e.skip_survey) ? "user prefs" : ".env"}} override`);
                 return "skipped";
             }
             // if (this.is_teacher) return true;
-            return ((_e = this.active_doc) === null || _e === void 0 ? void 0 : _e.done_surveys) &amp;&amp; ((_f = this.active_doc.done_surveys) === null || _f === void 0 ? void 0 : _f.includes(today));
+            return ((_f = this.active_doc) === null || _f === void 0 ? void 0 : _f.done_surveys) &amp;&amp; ((_g = this.active_doc.done_surveys) === null || _g === void 0 ? void 0 : _g.includes(today));
         },
         /**
          * @memberOf .main.getters
@@ -544,8 +634,19 @@ export const useMainStore = defineStore({
          */
         finished_tasks() {
             try {
+                const refs = new Set();
+                for (const state of Object.values(this.task_states || {})) {
+                    if (state === null || state === void 0 ? void 0 : state.completed) {
+                        if (state.ref)
+                            refs.add(state.ref);
+                        if (state.path)
+                            refs.add(state.path);
+                    }
+                }
+                if (refs.size)
+                    return [...refs];
                 if (!this.active_doc)
-                    throw "No active doc";
+                    return [];
                 return this.active_doc.finished || [];
             }
             catch (err) {
@@ -619,7 +720,33 @@ export const useMainStore = defineStore({
         class_text(class_obj) {
             if (!class_obj)
                 return;
-            return CLASS_TEXT(class_obj);
+            // Strip leading emoji from a copy so class squares don't repeat it in lists
+            return CLASS_TEXT(Object.assign(Object.assign({}, class_obj), { name: classTextName(class_obj.name) }));
+        },
+        /**
+         * Whether the signed-in user may edit a flat class (matches Firestore canWriteFlatClass).
+         * Site admin bypasses roster; site teacher role alone does not.
+         */
+        can_manage_class(class_obj) {
+            var _a;
+            if (!this.user || !class_obj)
+                return false;
+            if (this.is_admin)
+                return true;
+            const email = (((_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.email) || this.user.email || "").toLowerCase();
+            if (!email)
+                return false;
+            const teachers = humanTeachers(class_obj.teachers);
+            if (teachers.some((t) => t.email &amp;&amp; t.email.toLowerCase() === email)) {
+                return true;
+            }
+            const owner = (typeof class_obj.owner_email === "string" ? class_obj.owner_email : undefined) ||
+                class_obj._teacher_email ||
+                (class_obj._implied_owner &amp;&amp; class_obj._implied_owner.email);
+            if (owner &amp;&amp; !isCanvasImportEmail(owner) &amp;&amp; owner.toLowerCase() === email) {
+                return true;
+            }
+            return false;
         },
         /**
          * @memberOf .main.actions
@@ -631,15 +758,20 @@ export const useMainStore = defineStore({
          */
         set_account_pref(pref, value) {
             return __awaiter(this, void 0, void 0, function* () {
-                var _a;
                 try {
-                    if (!this.account_ref)
-                        throw "No account doc";
+                    // Calendar / principal prefs live on the school doc (active_ref), never the personal wrapper
+                    if (!this.active_ref || !this.active_doc)
+                        throw "No active doc";
                     if (!pref)
                         throw "No pref provided";
-                    yield this.update_wrapper_with_merge({
-                        prefs: Object.assign(Object.assign({}, (_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.prefs), { [pref]: value }),
-                    });
+                    const prefs = Object.assign(Object.assign({}, (this.active_doc.prefs || {})), { [pref]: value });
+                    if (this.personal_account &amp;&amp; this.linked_account_doc) {
+                        this.linked_account_doc.prefs = prefs;
+                    }
+                    else if (this.account_doc) {
+                        this.account_doc.prefs = prefs;
+                    }
+                    yield setDoc(this.active_ref, { prefs }, { merge: true });
                     return Promise.resolve();
                 }
                 catch (err) {
@@ -649,29 +781,52 @@ export const useMainStore = defineStore({
         },
         /**
          * @memberOf .main.actions
-         * @function get_surveys
-         * @description Get the survey data for the given dates for this user
-         * @param {Array} dates Array of dates to get the survey data for
-         * @returns {Array} The survey data for the given dates, with date objects added to each object
-         * @see {@link save_daily_survey}
-         * @see {@link done_daily_survey}
+         * @function refresh_id_token_claims
+         * @description Refresh (optionally force) the ID token and store claims for school_uid / Acting-as
+         * @param {Boolean} force Force-refresh so custom claims land before apiFetch
+         * @returns {Promise} Resolves when claims are stored (or cleared if signed out)
+         * @see {@link school_uid_claim}
+         * @see {@link link_account_uid}
          */
-        get_surveys(dates) {
+        refresh_id_token_claims() {
+            return __awaiter(this, arguments, void 0, function* (force = false) {
+                if (!this.user) {
+                    this.id_token_claims = null;
+                    return;
+                }
+                try {
+                    const result = yield this.user.getIdTokenResult(force);
+                    this.id_token_claims = (result === null || result === void 0 ? void 0 : result.claims) || {};
+                }
+                catch (err) {
+                    _status.warn("🔑 Couldn't refresh ID token claims", err);
+                    this.id_token_claims = null;
+                }
+            });
+        },
+        /**
+         * @memberOf .main.actions
+         * @function fetch_stats
+         * @description Fetch stats from GET /api/v1/me/stats (full list envelope). Optional from/to (YYYY-MM-DD). 204 → empty list.
+         * @returns {StatsResponse} Server stats envelope
+         * @see {@link get_stats}
+         * @see {@link save_daily_survey}
+         */
+        fetch_stats(opts) {
             return __awaiter(this, void 0, void 0, function* () {
                 if (!this.user)
                     return Promise.reject("Missing user");
-                // get all the firebase surveys in "/survey/{date}/{uid}" format, in parallel
                 try {
-                    let survey_refs = dates.map((date) => { var _a, _b; return doc(db, "survey", "daily", date, this.personal_account ? (_a = this.account_doc) === null || _a === void 0 ? void 0 : _a.linked_to : (_b = this.user) === null || _b === void 0 ? void 0 : _b.uid); });
-                    let survey_promises = survey_refs.map((ref) => getDoc(ref));
-                    const surveys = (yield Promise.all(survey_promises))
-                        // convert each survey doc to an object with date and data
-                        .map((doc, i) => {
-                        if (!doc.exists())
-                            return { date: dates[i], error: "No survey data for this date" };
-                        return { date: dates[i], data: doc.data() };
-                    });
-                    return Promise.resolve(surveys);
+                    const params = new URLSearchParams();
+                    if (opts === null || opts === void 0 ? void 0 : opts.from)
+                        params.set("from", opts.from);
+                    if (opts === null || opts === void 0 ? void 0 : opts.to)
+                        params.set("to", opts.to);
+                    const qs = params.toString();
+                    const path = qs ? `/api/v1/me/stats?${qs}` : "/api/v1/me/stats";
+                    // 204 → apiFetch returns undefined → parseStatsResponse yields empty list
+                    const payload = yield apiFetch(path);
+                    return parseStatsResponse(payload);
                 }
                 catch (err) {
                     return Promise.reject(err);
@@ -680,60 +835,148 @@ export const useMainStore = defineStore({
         },
         /**
          * @memberOf .main.actions
-         * @function get_cached_surveys
-         * @description Get the survey data for the given dates for this user, using the cached data in the active doc. If the data does not include the given dates, get the data from the server and save it to use as the cashe
-         * @param {Array} dates Array of dates to get the survey data for
-         * @returns {Promise} Promise resolving to survey data for the given dates, with date objects added to each object
+         * @function get_stats
+         * @description Get stats from GET /api/v1/me/stats via in-memory cache. Omit dates (or pass []) for the full list (done_surveys ∪ task_count_dates), including task_count_only rows.
+         * @param {Array} dates Optional dates to filter; empty/omitted returns the full envelope list
+         * @param {Boolean} force_refresh Bypass cache and refetch from API
+         * @returns {Promise} Promise resolving to stat rows
          * @see {@link save_daily_survey}
          * @see {@link done_daily_survey}
          */
-        get_cached_surveys(dates_1) {
+        get_stats(dates_1) {
             return __awaiter(this, arguments, void 0, function* (dates, force_refresh = false) {
-                var _a, _b, _c;
+                var _a;
                 if (!this.user)
                     return Promise.reject("Missing user");
                 try {
-                    const processed_ref = doc(db, "processed_surveys", this.personal_account ? (_a = this.account_doc) === null || _a === void 0 ? void 0 : _a.linked_to : this === null || this === void 0 ? void 0 : this.user.uid);
-                    // check if active doc has survey data for the given dates, and if so, return it
-                    const current_get = yield getDoc(processed_ref);
-                    const current = current_get.exists() ? ((_b = current_get.data()) === null || _b === void 0 ? void 0 : _b.list) || [] : [];
-                    // get array of all the dates by mapping
-                    const current_dates = current === null || current === void 0 ? void 0 : current.map((e) => e.date);
-                    const errored_dates = ((_c = current === null || current === void 0 ? void 0 : current.filter((e) => e.error)) === null || _c === void 0 ? void 0 : _c.map((e) => e.date)) || [];
-                    // check if current_dates includes all the dates
-                    const all_dates = dates.every((e) => current_dates.includes(e));
-                    // if has all, return the cashed data
-                    if (all_dates &amp;&amp; !force_refresh) {
-                        _status.log("📊 Using cached surveys");
-                        return Promise.resolve(current);
+                    const requested = dates || [];
+                    const wantAll = requested.length === 0;
+                    const current = ((_a = this.stats_cache) === null || _a === void 0 ? void 0 : _a.list) || [];
+                    const current_dates = current.map((e) => e.date);
+                    const cacheFresh = !!this.stats_cache &amp;&amp; Date.now() - (this.stats_cache.updated || 0) &lt; STATS_CACHE_TTL_MS;
+                    const cacheHit = !!this.stats_cache &amp;&amp; !force_refresh &amp;&amp; (wantAll ? cacheFresh : requested.every((e) => current_dates.includes(e)));
+                    if (cacheHit) {
+                        _status.log("📊 Using cached stats");
+                        if (wantAll)
+                            return current.filter((row) => !row.error);
+                        return requested.map((date) => current.find((e) => e.date === date) || { date, error: "No survey data for this date" });
                     }
-                    // if not, get the survey data for the given dates, and save it to the active doc
-                    else {
-                        if (force_refresh)
-                            _status.log("📊 Forcing refresh of surveys");
-                        // identify which dates are missing if !force_refresh
-                        const added_dates = force_refresh ? dates : dates.filter((e) => !current_dates.includes(e) || errored_dates.includes(e));
-                        // use get_surveys to get the ungotten data
-                        const added_surveys = (yield this.get_surveys(added_dates));
-                        // add the new surveys to the current surveys without doubling up, keep them in order
-                        let new_surveys = [];
-                        for (const date of dates) {
-                            if (added_dates.includes(date)) {
-                                // add the new survey
-                                new_surveys.push(added_surveys[added_dates.indexOf(date)]);
-                            }
-                            else {
-                                // add the old survey
-                                new_surveys.push(current[current_dates.indexOf(date)]);
-                            }
-                        }
-                        // add the surveys to the active doc
-                        yield setDoc(processed_ref, { list: new_surveys, updated: Date.now() }, { merge: true });
-                        _status.log("📊 Got surveys from server");
-                        return Promise.resolve(new_surveys);
-                    }
+                    if (force_refresh)
+                        _status.log("📊 Forcing refresh of stats");
+                    const envelope = yield this.fetch_stats();
+                    this.stats_cache = Object.assign(Object.assign({}, envelope), { updated: Date.now() });
+                    _status.log("📊 Got stats from API");
+                    const list = envelope.list || [];
+                    if (wantAll)
+                        return list.filter((row) => !row.error);
+                    const byDate = new Map(list.map((row) => [row.date, row]));
+                    return requested.map((date) => byDate.get(date) || { date, error: "No survey data for this date" });
                 }
                 catch (err) {
+                    return Promise.reject(err);
+                }
+            });
+        },
+        /**
+         * Resolve bare classId for a local class cache entry.
+         */
+        class_id_of(class_obj) {
+            if (!class_obj)
+                return null;
+            const id = class_obj._class_id ||
+                bareClassIdFromEnrollment(class_obj.id || "") ||
+                writeClassId(class_obj.id || class_obj.ref || "", this.ORG_DOMAIN) ||
+                bareClassIdFromEnrollment(class_obj.ref || "") ||
+                null;
+            return id || null;
+        },
+        /**
+         * @memberOf .main.actions
+         * @function fetch_teacher_stats
+         * @description Per manageable class, GET /api/v1/me/teacher-stats?classId=&amp;from=&amp;to= (ID token). Parallel with a small concurrency limit. Assembles UI from per-class { classId, num, list } responses (mvtt-server#29). No API_KEY.
+         */
+        fetch_teacher_stats() {
+            return __awaiter(this, arguments, void 0, function* (force_refresh = false) {
+                if (!this.user)
+                    return Promise.reject("Missing user");
+                if (!this.is_teacher)
+                    return Promise.reject("Teacher only");
+                try {
+                    if (this.teacher_stats_cache &amp;&amp; !force_refresh &amp;&amp; Date.now() - (this.teacher_stats_cache.updated || 0) &lt; STATS_CACHE_TTL_MS) {
+                        _status.log("📊 Using cached teacher stats");
+                        return this.teacher_stats_cache;
+                    }
+                    const manageable = (this.classes || []).filter((c) => this.can_manage_class(c));
+                    const targets = [];
+                    const seen = new Set();
+                    for (const class_obj of manageable) {
+                        const classId = this.class_id_of(class_obj);
+                        if (!classId || seen.has(classId))
+                            continue;
+                        seen.add(classId);
+                        targets.push({
+                            classId,
+                            name: this.class_text(class_obj) || class_obj.name || classId,
+                        });
+                    }
+                    if (!targets.length) {
+                        const empty = {
+                            timestamp: Date.now(),
+                            classes: [],
+                            unavailable: false,
+                            updated: Date.now(),
+                        };
+                        this.teacher_stats_cache = empty;
+                        return empty;
+                    }
+                    const { from, to } = defaultTeacherStatsRange(30);
+                    let sawMissingEndpoint = false;
+                    let sawSuccess = false;
+                    const settled = yield mapWithConcurrency(targets, TEACHER_STATS_CONCURRENCY, (target) => __awaiter(this, void 0, void 0, function* () {
+                        const path = `/api/v1/me/teacher-stats?classId=${encodeURIComponent(target.classId)}&amp;from=${encodeURIComponent(from)}&amp;to=${encodeURIComponent(to)}`;
+                        try {
+                            const payload = yield apiFetch(path);
+                            const parsed = parseTeacherClassStatsResponse(payload, target.classId);
+                            sawSuccess = true;
+                            const entry = {
+                                classId: parsed.classId || target.classId,
+                                name: target.name,
+                                num: parsed.num,
+                                list: parsed.list,
+                            };
+                            return entry;
+                        }
+                        catch (err) {
+                            if (isMissingStatsEndpoint(err)) {
+                                sawMissingEndpoint = true;
+                                _status.warn(`📊 Teacher stats endpoint missing for ${target.classId}`, err);
+                                return null;
+                            }
+                            // 403/400: skip this class; other errors log and skip so one class cannot kill the panel
+                            if (err instanceof ApiFetchError &amp;&amp; (err.status === 403 || err.status === 400)) {
+                                _status.warn(`📊 Teacher stats skipped for ${target.classId}`, err);
+                                return null;
+                            }
+                            _status.warn(`📊 Teacher stats failed for ${target.classId}`, err);
+                            return null;
+                        }
+                    }));
+                    const classes = settled.filter((cls) => !!cls);
+                    const assembled = {
+                        timestamp: Date.now(),
+                        classes,
+                        unavailable: sawMissingEndpoint &amp;&amp; !sawSuccess,
+                        updated: Date.now(),
+                    };
+                    this.teacher_stats_cache = assembled;
+                    _status.log(`📊 Got teacher stats for ${classes.length}/${targets.length} classes`);
+                    return assembled;
+                }
+                catch (err) {
+                    if (isMissingStatsEndpoint(err)) {
+                        _status.warn("📊 Teacher stats endpoint not available yet", err);
+                        return { timestamp: Date.now(), classes: [], unavailable: true };
+                    }
                     return Promise.reject(err);
                 }
             });
@@ -748,7 +991,14 @@ export const useMainStore = defineStore({
          * @see {@link notes}
          */
         note_for(ref) {
+            var _a, _b, _d;
             const path = this.ref_to_path(ref);
+            const flat = ref === null || ref === void 0 ? void 0 : ref.replace(/~/g, "/");
+            const state = (ref ? (_a = this.task_states) === null || _a === void 0 ? void 0 : _a[ref] : undefined) ||
+                (path ? (_b = this.task_states) === null || _b === void 0 ? void 0 : _b[path] : undefined) ||
+                (flat ? (_d = this.task_states) === null || _d === void 0 ? void 0 : _d[flat] : undefined);
+            if (state === null || state === void 0 ? void 0 : state.note)
+                return state.note;
             return (this.notes &amp;&amp; path &amp;&amp; this.notes[path]) || null;
         },
         /**
@@ -771,13 +1021,8 @@ export const useMainStore = defineStore({
                     const path = this.ref_to_path(ref);
                     if (!path)
                         throw "Invalid ref";
-                    let doc = this.active_doc;
-                    if (!doc.notes) {
-                        doc.notes = {};
-                    }
-                    doc.notes[path] = note || null;
-                    this.set_active(doc);
-                    yield this.update_remote();
+                    const state = yield patchMeTask(path, { note: note || null });
+                    this.apply_task_state(state);
                     return Promise.resolve();
                 }
                 catch (err) {
@@ -802,23 +1047,13 @@ export const useMainStore = defineStore({
                     if (!ref)
                         throw "No reference(s) provided";
                     const paths = Array.isArray(ref) ? ref : [ref];
-                    let doc = this.active_doc;
-                    if (!doc.finished) {
-                        doc.finished = [];
+                    for (const taskRef of paths) {
+                        const path = this.ref_to_path(taskRef) || String(taskRef).replace(/~/g, "/");
+                        if (!path)
+                            throw "Invalid ref";
+                        const state = yield patchMeTask(path, { completed: finished });
+                        this.apply_task_state(state);
                     }
-                    // if finished, add to finished array, else remove from finished array
-                    if (finished) {
-                        for (let p of paths) {
-                            if (!doc.finished.includes(p)) {
-                                doc.finished.push(p);
-                            }
-                        }
-                    }
-                    else {
-                        doc.finished = doc.finished.filter((p) => !paths.includes(p));
-                    }
-                    this.set_active(doc);
-                    yield this.update_remote();
                     new SuccessToast((paths.length > 1 ? "Tasks" : useMagic().done_prefix(this.tasks.find((e) => e.ref == paths[0]))) + (finished ? " marked as finished" : " marked as unfinished"), 2000);
                     return Promise.resolve();
                 }
@@ -826,6 +1061,80 @@ export const useMainStore = defineStore({
                     new ErrorToast(`Task(s) could not be ${finished ? "marked as finished" : "marked as unfinished"}`, err, 2000);
                     return Promise.reject(err);
                 }
+            });
+        },
+        /**
+         * Whether a task is completed — prefers API/board task_states, then legacy finished[].
+         */
+        is_task_completed(ref) {
+            var _a, _b, _d, _e, _f, _g;
+            if (!ref)
+                return false;
+            const path = this.ref_to_path(ref) || ref.replace(/~/g, "/");
+            const state = ((_a = this.task_states) === null || _a === void 0 ? void 0 : _a[ref]) ||
+                (path ? (_b = this.task_states) === null || _b === void 0 ? void 0 : _b[path] : undefined) ||
+                (ref.includes("~") ? (_d = this.task_states) === null || _d === void 0 ? void 0 : _d[ref.split("~").join("/")] : undefined);
+            if (state)
+                return state.completed === true;
+            if ((_f = (_e = this.active_doc) === null || _e === void 0 ? void 0 : _e.finished) === null || _f === void 0 ? void 0 : _f.includes(ref))
+                return true;
+            const task = (_g = this.tasks) === null || _g === void 0 ? void 0 : _g.find((t) => t.ref === ref || t.ref === path);
+            return (task === null || task === void 0 ? void 0 : task.completed) === true;
+        },
+        /**
+         * Personal task state DTO for a ref (note, completed, workspace_id).
+         */
+        task_state_for(ref) {
+            var _a, _b;
+            if (!ref)
+                return null;
+            const path = this.ref_to_path(ref) || ref.replace(/~/g, "/");
+            return (((_a = this.task_states) === null || _a === void 0 ? void 0 : _a[ref]) ||
+                (path &amp;&amp; ((_b = this.task_states) === null || _b === void 0 ? void 0 : _b[path])) ||
+                null);
+        },
+        /**
+         * Merge API task state into store and refresh derived task flags.
+         */
+        apply_task_state(state) {
+            this.task_states = applyMeTaskState(this.task_states || {}, state);
+            this.patch_task_completion_flags();
+        },
+        /**
+         * Hydrate task_states from GET /api/v1/me/board envelope.
+         */
+        ingest_board_task_states(board) {
+            let map = Object.assign({}, (this.task_states || {}));
+            for (const task of board.tasks || []) {
+                const row = task;
+                const state = meTaskStateFromBoardTask(row, task.class_id, task.id);
+                map = applyMeTaskState(map, state);
+            }
+            for (const entry of board.finished || []) {
+                const path = String(entry).replace(/~/g, "/");
+                const existing = map[path] || map[entry];
+                const state = existing || {
+                    ref: path,
+                    path,
+                    completed: true,
+                    completed_at: null,
+                    note: null,
+                    note_updated_at: null,
+                    workspace_id: null,
+                };
+                map = applyMeTaskState(map, Object.assign(Object.assign({}, state), { completed: true }));
+            }
+            this.task_states = map;
+            this.patch_task_completion_flags();
+        },
+        /** Sync completed flags on processed tasks from task_states. */
+        patch_task_completion_flags() {
+            var _a;
+            if (!((_a = this.tasks) === null || _a === void 0 ? void 0 : _a.length))
+                return;
+            this.tasks = this.tasks.map((task) => {
+                var _a, _b;
+                return (Object.assign(Object.assign({}, task), { completed: this.is_task_completed(task.ref), note: this.note_for(task.ref), workspace_id: (_b = (_a = this.task_state_for(task.ref)) === null || _a === void 0 ? void 0 : _a.workspace_id) !== null &amp;&amp; _b !== void 0 ? _b : task.workspace_id }));
             });
         },
         /**
@@ -841,16 +1150,34 @@ export const useMainStore = defineStore({
             const path = [...args].join("/");
             if (!path.length)
                 return null;
-            let [_email, _id, task_id] = path.split("/");
-            if (!_email || !_id)
-                return null;
-            _email = _email.split("@")[0];
-            return task_id ? `${_email}~${_id}~${task_id}` : `${_email}~${_id}`;
+            const parts = splitRefSegments(path);
+            if (parts.length === 1) {
+                // Already classId-only — emit short share form
+                return shortShareRef(parts[0]);
+            }
+            if (parts.length === 2) {
+                const [a, b] = parts;
+                if (a.includes("@") || a.includes(this.ORG_DOMAIN.replace("@", ""))) {
+                    // email/classId → short classId (preferred share form)
+                    rememberClassEmail(b, a.includes("@") ? a : a + this.ORG_DOMAIN);
+                    return shortShareRef(b);
+                }
+                // classId/taskId → short classId~taskId
+                return shortShareRef(a, b);
+            }
+            if (parts.length >= 3) {
+                const [emailPart, classId, taskId] = parts;
+                const email = emailPart.includes("@") ? emailPart : emailPart + this.ORG_DOMAIN;
+                rememberClassEmail(classId, email);
+                return shortShareRef(classId, taskId);
+            }
+            return null;
         },
         /**
          * @memberOf .main.actions
          * @function ref_to_path
-         * @description Convert a ref to a path (email/class_id?/task_id)
+         * @description Convert a ref to a nested path (email/class_id?/task_id) when email is known.
+         * Short classId-only refs resolve email via dual-read cache when possible.
          * @param {String} path The path to convert
          * @returns {String} The ref (email/class_id?/task_id)
          * @default null
@@ -860,11 +1187,26 @@ export const useMainStore = defineStore({
             const ref = [...args].join("~");
             if (!ref.length)
                 return null;
-            let [_email, _id, task_id] = ref.split("~");
-            if (!_email || !_id)
-                return null;
-            _email += this.ORG_DOMAIN;
-            return task_id ? `${_email}/${_id}/${task_id}` : `${_email}/${_id}`;
+            const taskParsed = parseTaskId(ref, this.ORG_DOMAIN);
+            if (taskParsed) {
+                const email = taskParsed.teacherEmail;
+                if (email)
+                    return buildTaskPath(email, taskParsed.classId, taskParsed.taskId);
+                // Short classId~taskId — cannot build nested path without email
+                return `${taskParsed.classId}/${taskParsed.taskId}`;
+            }
+            const classParsed = parseClassId(ref, this.ORG_DOMAIN);
+            if (classParsed) {
+                if (classParsed.teacherEmail) {
+                    return classPath(classParsed.teacherEmail, classParsed.classId);
+                }
+                return classParsed.classId;
+            }
+            return null;
+        },
+        /** Short share/view ref for a class (and optional task), dropping email prefix. */
+        short_share_ref(classId, taskId) {
+            return shortShareRef(classId, taskId);
         },
         /**
          * @memberOf .main.actions
@@ -889,28 +1231,40 @@ export const useMainStore = defineStore({
                 try {
                     if (!ref)
                         return Promise.reject("No ref provided");
-                    // fix ref to be in email@ORG_DOMAIN/uid
-                    // - fix for different formats
-                    ref = ref.split("~").join("/");
-                    // - remove domain from email and re-add
-                    let [_email, _id] = ref.split("/");
-                    if (!_email || !_id)
+                    // Resolve classId (+ owner email for enroll code doc soak)
+                    const parsed = parseClassId(ref, this.ORG_DOMAIN);
+                    let _email = parsed === null || parsed === void 0 ? void 0 : parsed.teacherEmail;
+                    let _id = (parsed === null || parsed === void 0 ? void 0 : parsed.classId) || writeClassId(ref, this.ORG_DOMAIN) || undefined;
+                    if (!_email &amp;&amp; _id) {
+                        const resolved = yield getClassDoc(db, _id);
+                        _email = resolved === null || resolved === void 0 ? void 0 : resolved.teacherEmail;
+                    }
+                    if (!_id) {
+                        // Legacy slash fallback
+                        ref = ref.split("~").join("/");
+                        let parts = ref.split("/");
+                        if (parts.length &lt; 2)
+                            return Promise.reject("Invalid ref");
+                        _email = parts[0].split("@")[0] + this.ORG_DOMAIN;
+                        _id = parts[1];
+                    }
+                    if (!_id)
                         return Promise.reject("Invalid ref");
-                    _email = _email.split("@")[0] + this.ORG_DOMAIN;
-                    ref = _email + "/" + _id;
-                    // get code
-                    const code = this.hash(ref);
+                    // Hash stays on nested email/classId when email known (enroll codes unchanged);
+                    // fall back to bare classId hash for flat-only classes.
+                    const hashSource = _email ? _email + "/" + _id : _id;
+                    const code = this.hash(hashSource);
                     // check if class object already has code in this.classes
-                    const class_obj = this.classes.find((e) => e.id == ref);
+                    const class_obj = this.classes.find((e) => classEntryMatchesId(e, _id));
                     if (!class_obj)
                         return Promise.reject("No matching class found");
                     if ((class_obj === null || class_obj === void 0 ? void 0 : class_obj.code) !== code) {
-                        // add ref to code doc
+                        // Codes doc: keep nested ref when email known so enroll soak stays compatible
                         const code_ref = doc(db, "codes", code);
-                        yield setDoc(code_ref, { ref: ref });
-                        // add code to class doc
-                        const class_ref = doc(db, "classes", _email, "classes", _id);
-                        yield updateDoc(class_ref, { code: code });
+                        yield setDoc(code_ref, { ref: _email ? _email + "/" + _id : _id });
+                        // Write code onto flat class doc
+                        const class_ref = doc(db, "classes", _id);
+                        yield setDoc(class_ref, { code: code }, { merge: true });
                     }
                     return Promise.resolve(code);
                 }
@@ -950,28 +1304,61 @@ export const useMainStore = defineStore({
         },
         /**
          * @memberOf .main.actions
-         * @function toggle_teacher
-         * @description Toggle teacher mode (for testing)
-         * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
-         * @see {@link is_teacher}
+         * @function apply_live_class
+         * @description Replace one enrolled class in Pinia from a remote class-doc snapshot (incl. tasks[]),
+         * then re-run get_tasks stamping (date hotfix, color, ref, class_id). Used by live onSnapshot listeners.
+         * @param {String} enrollmentPath User-doc classes[] entry (email/classId or classId)
+         * @param {Object} raw Class document data from Firestore
+         * @param {Object} meta Dual-read resolution metadata
          */
-        toggle_teacher() {
-            return __awaiter(this, void 0, void 0, function* () {
-                var _a;
-                // use localStorage. _teacher_mode as basis for toggle, then set the localStorage and remote doc
-                if (!this.user)
-                    return;
-                let prev = ((_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.teacher_mode) || window.localStorage.getItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`) == "true";
-                window.localStorage.setItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`, !prev);
-                let new_text = !prev ? "on" : "off";
-                if (this.active_doc) {
-                    this.active_doc.teacher_mode = !prev;
-                    yield this.update_remote();
-                    _status.log(`🏫 Remote teacher mode toggled ${new_text}`);
+        apply_live_class(enrollmentPath, raw, meta = {}) {
+            if (!enrollmentPath)
+                return;
+            if (raw === null || raw === void 0 ? void 0 : raw.archived) {
+                this.remove_invalid(enrollmentPath);
+                return;
+            }
+            const classId = meta.classId || enrollmentKeyClassId(enrollmentPath);
+            if (meta.teacherEmail)
+                rememberClassEmail(classId, meta.teacherEmail);
+            let doc_data = Object.assign({}, raw);
+            doc_data.id = enrollmentPath;
+            doc_data.ref = meta.legacyPath || enrollmentPath;
+            if (classId)
+                doc_data._class_id = classId;
+            doc_data.tasks = doc_data.tasks || [];
+            doc_data.tasks = doc_data.tasks.map((task) => {
+                const stamped = Object.assign({}, task);
+                const tid = stamped.id || (typeof stamped.ref === "string" ? stamped.ref.split("/").pop() : undefined);
+                if (tid &amp;&amp; classId) {
+                    stamped.ref = flatTaskPath(classId, tid);
                 }
-                _status.log(`🏫 Local teacher mode toggled ${new_text}`);
-                new SuccessToast(`Teacher mode toggled ${new_text}`, 2000);
+                delete stamped.id;
+                return stamped;
             });
+            const idx = this.classes.findIndex((c) => c.id === enrollmentPath ||
+                c.ref === enrollmentPath ||
+                (classId &amp;&amp; (c._class_id === classId || (typeof c.id === "string" &amp;&amp; c.id.endsWith("/" + classId)))));
+            if (idx >= 0) {
+                const next = [...this.classes];
+                next[idx] = doc_data;
+                this.classes = next;
+            }
+            else {
+                const next = [...this.classes, doc_data];
+                next.sort((a, b) => {
+                    if (a.period == b.period) {
+                        return a.name.localeCompare(b.name);
+                    }
+                    if (!a.period &amp;&amp; a.period !== 0)
+                        return 1;
+                    if (!b.period &amp;&amp; b.period !== 0)
+                        return -1;
+                    return a.period - b.period;
+                });
+                this.classes = next;
+            }
+            this.get_tasks();
         },
         /**
          * @memberOf .main.actions
@@ -983,7 +1370,7 @@ export const useMainStore = defineStore({
          */
         get_tasks() {
             return __awaiter(this, void 0, void 0, function* () {
-                var _a, _b, _c, _d, _e;
+                var _a, _b, _d, _e, _f, _g, _h;
                 try {
                     if (!((_a = this.classes) === null || _a === void 0 ? void 0 : _a.length))
                         return Promise.resolve([]);
@@ -995,13 +1382,15 @@ export const useMainStore = defineStore({
                         class_tasks = class_tasks ? class_tasks : [];
                         // add class name and color to each task
                         for (let j = 0; j &lt; ((class_tasks === null || class_tasks === void 0 ? void 0 : class_tasks.length) || 0); j++) {
+                            if (class_tasks[j].archived)
+                                continue;
                             classes[i].name = classes[i].name ? classes[i].name : "Unnamed Class";
                             // check task date type and convert to date object if necessary
                             let date;
                             if (typeof class_tasks[j].date == "string") {
                                 // convert to mm-dd-yyyy from yyyy-mm-dd if needed
-                                class_tasks[j].date = (_c = (_b = class_tasks[j]) === null || _b === void 0 ? void 0 : _b.date) === null || _c === void 0 ? void 0 : _c.split("T")[0];
-                                let [year, month, day] = (_e = (_d = class_tasks[j]) === null || _d === void 0 ? void 0 : _d.date) === null || _e === void 0 ? void 0 : _e.split("-");
+                                class_tasks[j].date = (_d = (_b = class_tasks[j]) === null || _b === void 0 ? void 0 : _b.date) === null || _d === void 0 ? void 0 : _d.split("T")[0];
+                                let [year, month, day] = (_f = (_e = class_tasks[j]) === null || _e === void 0 ? void 0 : _e.date) === null || _f === void 0 ? void 0 : _f.split("-");
                                 // TODO: track down root of issue where dates are interpreted twice &amp; thus may switch formats w/o hotfix;
                                 if (year.length == 4) {
                                     class_tasks[j].date = `${month}-${day}-${year}`;
@@ -1014,7 +1403,13 @@ export const useMainStore = defineStore({
                             }
                             // set color from parent class color
                             class_tasks[j].color = classes[i].color;
-                            tasks.push(Object.assign(Object.assign({}, class_tasks[j]), { date: date, class_name: this.class_text(classes[i]) }));
+                            const classTask = class_tasks[j];
+                            let ref = classTask.ref;
+                            if (!ref &amp;&amp; classTask.id) {
+                                const cid = classes[i]._class_id || enrollmentKeyClassId(classes[i].id || "") || enrollmentKeyClassId(classes[i].ref || "");
+                                ref = cid ? flatTaskPath(cid, classTask.id) : undefined;
+                            }
+                            tasks.push(Object.assign(Object.assign(Object.assign(Object.assign({}, classTask), { date: date, class_name: this.class_text(classes[i]), class_id: classes[i].id }), (ref ? { ref } : {})), { completed: ref ? this.is_task_completed(ref) : false, note: ref ? this.note_for(ref) : null, workspace_id: ref ? (_h = (_g = this.task_state_for(ref)) === null || _g === void 0 ? void 0 : _g.workspace_id) !== null &amp;&amp; _h !== void 0 ? _h : null : null }));
                         }
                     }
                     // sort tasks by day, if day the same, sort by period, then by name
@@ -1047,7 +1442,7 @@ export const useMainStore = defineStore({
          * @note Imperfect, and isn't enough to prevent errors when the app updates to a version with a different store state structure
          */
         clear() {
-            var _a, _b, _c;
+            var _a, _b, _d;
             this.user = null;
             this.account_doc = null;
             this.linked_account_doc = null;
@@ -1056,13 +1451,17 @@ export const useMainStore = defineStore({
             this.loaded_email = null;
             this.loaded_classes = null;
             this.personal_account = false;
+            this.id_token_claims = null;
+            this.stats_cache = null;
+            this.teacher_stats_cache = null;
+            this.task_states = {};
             this.teacher = {
                 doc_ref: null,
                 collection_ref: null,
             };
             window.localStorage.removeItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_app_state`);
             // if page requires auth, redirect to home
-            if ((_c = (_b = (_a = router.currentRoute) === null || _a === void 0 ? void 0 : _a.value) === null || _b === void 0 ? void 0 : _b.meta) === null || _c === void 0 ? void 0 : _c.requiresAuth) {
+            if ((_d = (_b = (_a = router.currentRoute) === null || _a === void 0 ? void 0 : _a.value) === null || _b === void 0 ? void 0 : _b.meta) === null || _d === void 0 ? void 0 : _d.requiresAuth) {
                 router.push("/");
             }
         },
@@ -1118,14 +1517,14 @@ export const useMainStore = defineStore({
         /**
          * @memberOf .main.actions
          * @function link_account_uid
-         * @description Link a user account to another user's account by uid (for personal accounts only)
-         * @param {String} uid The uid of the user to link to
+         * @description Accept a school-account link invite via callable acceptLink({ schoolUid }), refresh the ID token, then listen to users/{schoolUid} as principal
+         * @param {String} uid The school account uid to link to
          * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
          * @see {@link invite_linked}
          */
         link_account_uid(uid) {
             return __awaiter(this, void 0, void 0, function* () {
-                if (!uid || !this.account_doc)
+                if (!uid)
                     return;
                 if (!this.personal_account) {
                     new WarningToast("This account is a primary account and cannot be linked", 3000);
@@ -1133,19 +1532,37 @@ export const useMainStore = defineStore({
                 }
                 if (!this.account_doc) {
                     yield this.create_doc();
-                    _status.log("📄 Dreated doc", this.account_doc);
+                    _status.log("📄 Created doc", this.account_doc);
                 }
+                if (!this.account_doc)
+                    return;
                 try {
-                    const linked_doc = yield this.doc_from_uid(uid);
-                    if (!linked_doc)
-                        throw "Account doesn't exist or you haven't been invited";
-                    // update remote
+                    let schoolName = "school";
+                    try {
+                        const linked_doc = yield this.doc_from_uid(uid);
+                        if (linked_doc === null || linked_doc === void 0 ? void 0 : linked_doc.name)
+                            schoolName = linked_doc.name;
+                    }
+                    catch (_a) {
+                        // Callable is authoritative for invite validation; name is toast-only
+                    }
+                    const acceptLink = httpsCallable(functions, "acceptLink");
+                    const result = yield acceptLink({ schoolUid: uid });
+                    const data = result === null || result === void 0 ? void 0 : result.data;
+                    if ((data === null || data === void 0 ? void 0 : data.error) || (data === null || data === void 0 ? void 0 : data.success) === false) {
+                        throw (data === null || data === void 0 ? void 0 : data.error) || (data === null || data === void 0 ? void 0 : data.message) || "acceptLink failed";
+                    }
+                    // Force-refresh so school_uid claims land before any apiFetch (board/stats/survey)
+                    yield this.refresh_id_token_claims(true);
+                    // Mirror linked_to locally; server owns the write
                     this.account_doc.linked_to = uid;
-                    yield this.update_wrapper_acc_doc();
-                    new SuccessToast(`Successfully linked to ${linked_doc.name}'s account!`, 4000);
+                    // Listen to school principal doc, not the personal uid
+                    setupSnapshot(uid);
+                    yield this.get_remote();
+                    new SuccessToast(`Successfully linked to ${schoolName}'s account!`, 4000);
                 }
                 catch (err) {
-                    new ErrorToast("Couldn't link account", err, 2000);
+                    new ErrorToast("Couldn't link account", cleanError(err), 2000);
                     return Promise.reject(err);
                 }
                 return Promise.resolve();
@@ -1154,29 +1571,29 @@ export const useMainStore = defineStore({
         /**
          * @memberOf .main.actions
          * @function invite_linked
-         * @description Invite a user account to link to another user's account (for personal accounts only,) including sending them an email with the code to join
+         * @description Invite a personal email to link to this school account via callable inviteLinkedAccount (server queues link_invite mail and updates users.linked)
          * @param {String} email The email of the user to invite (and send an invite email to)
          * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
          */
         invite_linked(email) {
             return __awaiter(this, void 0, void 0, function* () {
-                var _a, _b, _c, _d, _e, _f, _g, _h;
                 if (!this.user || !this.active_doc || !this.account_doc)
                     return;
                 if (this.personal_account) {
                     new WarningToast("This account is already linked!", 2000);
                 }
-                // exclude empty or mvla emails
+                // exclude empty or org emails
                 if (!email || validOrgAcc(email) || !email.includes("@")) {
                     new WarningToast(`Please enter a valid non-${process.env.VUE_APP_ORG_NAME} email`, 2000);
                     return;
                 }
-                // check if email is already linked (has entry with matching .email)
+                email = email.trim().toLowerCase();
+                // check if email is already linked
                 if (this.linked_accounts.includes(email)) {
                     new WarningToast("That account is already linked", 2000);
                     return;
                 }
-                // add to doc.linked
+                // ensure local linked array exists for UI update after success
                 if (!this.active_doc.linked) {
                     if (this.personal_account &amp;&amp; this.linked_account_doc) {
                         this.linked_account_doc.linked = [];
@@ -1185,49 +1602,24 @@ export const useMainStore = defineStore({
                         this.account_doc.linked = [];
                     }
                 }
-                // add email to queue
-                const email_queue = collection(db, "mail");
                 try {
-                    const sent_email = yield addDoc(email_queue, {
-                        to: email,
-                        cc: this.user.email,
-                        from: `${this.active_doc.name} via ${process.env.VUE_APP_BRAND_NAME_LONG} &lt;${process.env.VUE_APP_BRAND_MAIL_ADDRESS}>`,
-                        fromname: this.active_doc.name + ` via ${process.env.VUE_APP_BRAND_NAME_LONG}`,
-                        template: {
-                            name: "link_invite",
-                            data: {
-                                sender_name: this.active_doc.name.split(" ")[0],
-                                sender_uid: this.user.uid,
-                            },
-                        },
-                    });
-                    // wait for the email document to have keys .delivery.attempts > 0 and .delivery.error == null
-                    const email_doc_ref = doc(email_queue, sent_email.id);
-                    let email_doc = yield getDoc(email_doc_ref);
-                    let checks = 1;
-                    while (!email_doc.exists() || (!!((_b = (_a = email_doc.data()) === null || _a === void 0 ? void 0 : _a.delivery) === null || _b === void 0 ? void 0 : _b.attempts) == 0 &amp;&amp; checks &lt;= 3)) {
-                        yield new Promise((resolve) => setTimeout(resolve, (2 ^ checks) * 2000));
-                        email_doc = yield getDoc(email_doc_ref);
-                        _status.log("📧 Checked email doc");
-                        checks++;
-                    }
-                    if (!((_f = (_e = (_d = (_c = email_doc.data()) === null || _c === void 0 ? void 0 : _c.delivery) === null || _d === void 0 ? void 0 : _d.info) === null || _e === void 0 ? void 0 : _e.accepted) === null || _f === void 0 ? void 0 : _f.includes(email)) || ((_h = (_g = email_doc.data()) === null || _g === void 0 ? void 0 : _g.delivery) === null || _h === void 0 ? void 0 : _h.attempts) == 0) {
-                        _status.log("📧 Email failed to send", email_doc.data());
-                        throw "Email failed to send";
-                    }
-                    // update remote
+                    const inviteLinkedAccount = httpsCallable(functions, "inviteLinkedAccount");
+                    const result = yield inviteLinkedAccount({ email });
+                    const data = result.data;
+                    if (data.error)
+                        throw data.error;
+                    // Server already arrayUnions onto users.linked; mirror locally for UI
                     if (this.personal_account &amp;&amp; this.linked_account_doc) {
                         this.linked_account_doc.linked.push(email);
                     }
                     else {
                         this.account_doc.linked.push(email);
                     }
-                    yield this.update_remote();
                     new SuccessToast(`We notified ${email}, you'll receive a copy of the email too!`, 4000);
                     return Promise.resolve();
                 }
                 catch (err) {
-                    new ErrorToast(`Couldn't invite "${email}"`, err, 2000);
+                    new ErrorToast(`Couldn't invite "${email}"`, cleanError(err), 2000);
                     return Promise.reject(err);
                 }
             });
@@ -1235,35 +1627,44 @@ export const useMainStore = defineStore({
         /**
          * @memberOf .main.actions
          * @function uninvite_linked
-         * @description Unlink a user account from another user's account (for personal accounts only)
+         * @description Unlink a personal email from this school account via callable unlink({ email })
          * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
          * @see {@link invite_linked}
          */
         uninvite_linked(email) {
             return __awaiter(this, void 0, void 0, function* () {
-                var _a, _b;
+                var _a, _b, _d, _e, _f;
                 try {
                     if (!this.user)
                         return;
-                    // if exists in userdoc.linked, remove and save
-                    if ((_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.linked.includes(email)) {
-                        let filtered_linked = ((_b = this.active_doc.linked) === null || _b === void 0 ? void 0 : _b.filter((e) => e != email)) || [];
-                        if (this.personal_account &amp;&amp; this.linked_account_doc) {
-                            this.linked_account_doc.linked = filtered_linked;
-                        }
-                        else if (this.account_doc) {
-                            this.account_doc.linked = filtered_linked;
-                        }
-                        yield this.update_remote();
-                        new SuccessToast(`Removed ${email} from your linked accounts`, 2000);
+                    const normalized = (email || "").trim().toLowerCase();
+                    if (!normalized)
+                        return;
+                    if (!((_b = (_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.linked) === null || _b === void 0 ? void 0 : _b.includes(normalized)) &amp;&amp; !((_e = (_d = this.active_doc) === null || _d === void 0 ? void 0 : _d.linked) === null || _e === void 0 ? void 0 : _e.includes(email))) {
+                        new WarningToast(`${normalized} is not linked to this account`, 2000);
+                        return;
                     }
-                    else {
-                        new WarningToast(`${email} is not linked to this account`, 2000);
+                    const unlinkCallable = httpsCallable(functions, "unlink");
+                    const result = yield unlinkCallable({ email: normalized });
+                    const data = result === null || result === void 0 ? void 0 : result.data;
+                    if ((data === null || data === void 0 ? void 0 : data.error) || (data === null || data === void 0 ? void 0 : data.success) === false) {
+                        throw (data === null || data === void 0 ? void 0 : data.error) || (data === null || data === void 0 ? void 0 : data.message) || "unlink failed";
                     }
-                    Promise.resolve();
+                    // Server owns users.linked[]; mirror locally for UI
+                    const filtered_linked = Array.isArray(data === null || data === void 0 ? void 0 : data.linked)
+                        ? data.linked
+                        : ((_f = this.active_doc.linked) === null || _f === void 0 ? void 0 : _f.filter((e) => e != normalized &amp;&amp; e != email)) || [];
+                    if (this.personal_account &amp;&amp; this.linked_account_doc) {
+                        this.linked_account_doc.linked = filtered_linked;
+                    }
+                    else if (this.account_doc) {
+                        this.account_doc.linked = filtered_linked;
+                    }
+                    new SuccessToast(`Removed ${normalized} from your linked accounts`, 2000);
+                    return Promise.resolve();
                 }
                 catch (err) {
-                    new ErrorToast(`Couldn't unlink "${email}"`, err, 2000);
+                    new ErrorToast(`Couldn't unlink "${email}"`, cleanError(err), 2000);
                     return Promise.reject(err);
                 }
             });
@@ -1364,27 +1765,24 @@ export const useMainStore = defineStore({
          */
         save_daily_survey(responses) {
             return __awaiter(this, void 0, void 0, function* () {
-                var _a, _b, _c;
-                // save responses in /survey/daily/{date}/{uid}
+                var _a;
                 try {
-                    // wait for user login
                     if (!this.user)
                         yield this.login_promise();
-                    const survey_ref = doc(db, "survey", "daily", today, this.personal_account ? (_a = this.account_doc) === null || _a === void 0 ? void 0 : _a.linked_to : (_b = this.user) === null || _b === void 0 ? void 0 : _b.uid);
-                    yield setDoc(survey_ref, {
-                        time: new Date().getTime(),
-                        responses: responses,
+                    yield apiFetch("/api/v1/me/surveys/daily", {
+                        method: "POST",
+                        body: { responses },
                     });
-                    // update user doc to have date in "done_surveys"
-                    let updated_surveys = ((_c = this.active_doc) === null || _c === void 0 ? void 0 : _c.done_surveys) ? this.active_doc.done_surveys : [];
-                    updated_surveys.push(today);
+                    this.stats_cache = null;
+                    const updated_surveys = [...(((_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.done_surveys) || [])];
+                    if (!updated_surveys.includes(today))
+                        updated_surveys.push(today);
                     if (this.personal_account &amp;&amp; this.linked_account_doc) {
                         this.linked_account_doc.done_surveys = updated_surveys;
                     }
                     else if (this.account_doc) {
                         this.account_doc.done_surveys = updated_surveys;
                     }
-                    yield this.update_remote();
                     new SuccessToast("Saved daily survey", 2000);
                     return Promise.resolve();
                 }
@@ -1439,7 +1837,7 @@ export const useMainStore = defineStore({
         /**
          * @memberOf .main.actions
          * @function remove_class_id_helper
-         * @description Helper function to remove a class from the active user's document and save changes to remote
+         * @description Leave/unenroll via callable unenrollClass({ classId }). Server owns users.classes[]; local cache only.
          * @see {@link remove_class}
          * @see {@link remove_invalid}
          * @see {@link fetch_classes}
@@ -1447,18 +1845,28 @@ export const useMainStore = defineStore({
         remove_class_id_helper(class_id) {
             return __awaiter(this, void 0, void 0, function* () {
                 var _a;
-                const filtered_classes = (_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.classes.filter((c) => c != class_id);
+                const classId = bareClassIdFromEnrollment(class_id) || writeClassId(class_id, this.ORG_DOMAIN) || class_id;
+                if (!classId)
+                    throw "Invalid class id";
+                const unenrollClass = httpsCallable(functions, "unenrollClass");
+                const result = yield unenrollClass({ classId });
+                const data = result === null || result === void 0 ? void 0 : result.data;
+                if ((data === null || data === void 0 ? void 0 : data.error) || (data === null || data === void 0 ? void 0 : data.success) === false) {
+                    throw (data === null || data === void 0 ? void 0 : data.error) || (data === null || data === void 0 ? void 0 : data.message) || "unenrollClass failed";
+                }
+                // Mirror enrollment locally — do not write users.classes[] from the client
+                const filtered_classes = Array.isArray(data === null || data === void 0 ? void 0 : data.classes)
+                    ? data.classes
+                    : (((_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.classes) || []).filter((c) => c != class_id &amp;&amp; bareClassIdFromEnrollment(c) !== classId);
                 if (this.personal_account &amp;&amp; this.linked_account_doc) {
                     this.linked_account_doc.classes = filtered_classes;
                 }
                 else if (this.account_doc) {
                     this.account_doc.classes = filtered_classes;
                 }
-                // remove from local
-                this.classes = this.classes.filter((c) => c.id != class_id);
+                this.classes = this.classes.filter((c) => c.id != class_id &amp;&amp; !classEntryMatchesId(c, classId));
                 this.get_tasks();
-                // update remote
-                yield this.update_remote();
+                syncClassListeners(filtered_classes || []);
                 return Promise.resolve();
             });
         },
@@ -1509,10 +1917,12 @@ export const useMainStore = defineStore({
         set_user(user) {
             // TODO: TS rewrite this to use async/await and return a promise
             _status.log("🔑 Setting user");
+            // Legacy local teacher-mode override; role is authoritative now
+            window.localStorage.removeItem(`${process.env.VUE_APP_BRAND_NAME_SHORT}_teacher_mode`);
             // load user doc to check .personal_account
             getDoc(doc(db, "users", user.uid))
                 .then((userDoc) => {
-                var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
+                var _a, _b, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q;
                 if (userDoc.exists()) {
                     this.account_doc = userDoc.data();
                     this.personal_account = (_a = this.account_doc) === null || _a === void 0 ? void 0 : _a.personal_account;
@@ -1522,22 +1932,36 @@ export const useMainStore = defineStore({
                     this.linked_account_doc = null;
                 }
                 if (!user.email ||
-                    (!validOrgAcc(user.email) &amp;&amp; !(this.personal_account &amp;&amp; (((_c = (_b = router === null || router === void 0 ? void 0 : router.currentRoute) === null || _b === void 0 ? void 0 : _b.value) === null || _c === void 0 ? void 0 : _c.name) == "link" || (((_d = this.account_doc) === null || _d === void 0 ? void 0 : _d.personal_account) &amp;&amp; ((_e = this.account_doc) === null || _e === void 0 ? void 0 : _e.linked_to)))))) {
+                    (!validOrgAcc(user.email) &amp;&amp; !(this.personal_account &amp;&amp; (((_d = (_b = router === null || router === void 0 ? void 0 : router.currentRoute) === null || _b === void 0 ? void 0 : _b.value) === null || _d === void 0 ? void 0 : _d.name) == "link" || (((_e = this.account_doc) === null || _e === void 0 ? void 0 : _e.personal_account) &amp;&amp; ((_f = this.account_doc) === null || _f === void 0 ? void 0 : _f.linked_to)))))) {
                     auth.signOut();
                     new WarningToast(`Please use your ${process.env.VUE_APP_ORG_NAME} (@${process.env.VUE_APP_ORG_DOMAIN}) email to log in, or use an account that has been linked`, 4000);
                     this.clear();
                     return;
                 }
                 this.user = user;
+                // Load claims (school_uid) for Acting-as chip; non-forced so cache is fine on warm start
+                this.refresh_id_token_claims(false).catch((err) => {
+                    _status.warn("🔑 Initial ID token claims refresh failed", err);
+                });
                 // if this is a personal account, get the associated linked account doc
                 if (this.personal_account) {
-                    this.get_remote();
+                    this.get_remote()
+                        .then(() => {
+                        var _a;
+                        // Principal listener: school uid, not personal uid
+                        if ((_a = this.account_doc) === null || _a === void 0 ? void 0 : _a.linked_to) {
+                            setupSnapshot(this.account_doc.linked_to);
+                        }
+                    })
+                        .catch((err) => {
+                        _status.warn("🔗 get_remote / principal snapshot failed", err);
+                    });
                 }
-                // if teacher, setup this.teacher refs
+                // if teacher, point collection_ref at top-level classes (flat writes)
                 if (this.is_teacher) {
                     _status.log("🏫 In teacher mode");
-                    this.teacher.doc_ref = doc(db, "classes", (_f = this.user) === null || _f === void 0 ? void 0 : _f.email);
-                    this.teacher.collection_ref = collection(this.teacher.doc_ref, "classes");
+                    this.teacher.doc_ref = null;
+                    this.teacher.collection_ref = collection(db, "classes");
                 }
                 // if router has a redirect, go to it
                 if (((_j = (_h = (_g = router.currentRoute) === null || _g === void 0 ? void 0 : _g.value) === null || _h === void 0 ? void 0 : _h.query) === null || _j === void 0 ? void 0 : _j.redirect) &amp;&amp; !((_m = (_l = (_k = router.currentRoute) === null || _k === void 0 ? void 0 : _k.value) === null || _l === void 0 ? void 0 : _l.meta) === null || _m === void 0 ? void 0 : _m.blockStandardRedirect)) {
@@ -1567,6 +1991,7 @@ export const useMainStore = defineStore({
         login() {
             return __awaiter(this, void 0, void 0, function* () {
                 // TODO: TS rewrite this to use async/await and return a promise
+                ensureAuthLanguage();
                 // check that we dont have a useragent that will be blocked by google (Instagram)
                 const disallowedAgents = ["Instagram"];
                 if (disallowedAgents.some((agent) => {
@@ -1580,13 +2005,13 @@ export const useMainStore = defineStore({
                 // if electron, use redirect, otherwise, use popup
                 yield (isElectron || isIFrame() ? signInWithRedirect(auth, provider) : signInWithPopup(auth, provider))
                     .then(() => {
-                    var _a, _b, _c, _d, _e, _f;
+                    var _a, _b, _d, _e, _f, _g;
                     if (!this.user || !this.user.email || !validOrgAcc(this.user.email))
                         return;
                     new Toast("Logged in as " + this.user.displayName + "!", "default", 2000, require("@svonk/util/assets/info-unlocked-icon.svg"));
                     _status.log("🔑 Logged in as " + this.user.displayName);
                     authChangeAction(this.user);
-                    if (!((_c = (_b = (_a = router.currentRoute) === null || _a === void 0 ? void 0 : _a.value) === null || _b === void 0 ? void 0 : _b.query) === null || _c === void 0 ? void 0 : _c.redirect) &amp;&amp; !((_f = (_e = (_d = router.currentRoute) === null || _d === void 0 ? void 0 : _d.value) === null || _e === void 0 ? void 0 : _e.meta) === null || _f === void 0 ? void 0 : _f.blockStandardRedirect)) {
+                    if (!((_d = (_b = (_a = router.currentRoute) === null || _a === void 0 ? void 0 : _a.value) === null || _b === void 0 ? void 0 : _b.query) === null || _d === void 0 ? void 0 : _d.redirect) &amp;&amp; !((_g = (_f = (_e = router.currentRoute) === null || _e === void 0 ? void 0 : _e.value) === null || _f === void 0 ? void 0 : _f.meta) === null || _g === void 0 ? void 0 : _g.blockStandardRedirect)) {
                         router.push("/portal");
                     }
                     return Promise.resolve();
@@ -1615,6 +2040,7 @@ export const useMainStore = defineStore({
         login_personal() {
             return __awaiter(this, void 0, void 0, function* () {
                 // TODO: TS rewrite this to use async/await and return a promise
+                ensureAuthLanguage();
                 new Toast("Opening login popup...", "default", 1000, require("@svonk/util/assets/info-locked-icon.svg"));
                 // create new provider with no hd
                 const personal_provider = new GoogleAuthProvider();
@@ -1645,8 +2071,8 @@ export const useMainStore = defineStore({
          */
         logout() {
             return __awaiter(this, void 0, void 0, function* () {
-                var _a, _b, _c;
-                if ((_c = (_b = (_a = router.currentRoute) === null || _a === void 0 ? void 0 : _a.value) === null || _b === void 0 ? void 0 : _b.meta) === null || _c === void 0 ? void 0 : _c.requiresAuth) {
+                var _a, _b, _d;
+                if ((_d = (_b = (_a = router.currentRoute) === null || _a === void 0 ? void 0 : _a.value) === null || _b === void 0 ? void 0 : _b.meta) === null || _d === void 0 ? void 0 : _d.requiresAuth) {
                     yield router.push({ path: "/" });
                 }
                 auth.signOut();
@@ -1797,28 +2223,74 @@ export const useMainStore = defineStore({
          */
         create_teacher_doc() {
             return __awaiter(this, void 0, void 0, function* () {
-                var _a, _b, _c, _d, _e, _f;
-                const email = ((_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.email) || ((_b = this.user) === null || _b === void 0 ? void 0 : _b.email);
-                if (!email)
-                    return;
-                // create teacher doc under (classes/teacher_email+this.ORG_DOMAIN) with sub-collection (classes)
-                let teacher_ref = doc(db, "classes", email);
-                yield setDoc(teacher_ref, {
-                    name: ((_c = this.active_doc) === null || _c === void 0 ? void 0 : _c.name) || ((_d = this.user) === null || _d === void 0 ? void 0 : _d.displayName),
-                    email: ((_e = this.active_doc) === null || _e === void 0 ? void 0 : _e.email) || ((_f = this.user) === null || _f === void 0 ? void 0 : _f.email),
-                });
+                // Flat model: do NOT create classes/{email} teacher-root docs — they collide
+                // with classes/{classId}. Writers use collection(db, "classes") directly.
                 this.teacher = {
-                    doc_ref: teacher_ref,
-                    collection_ref: collection(teacher_ref, "classes"),
+                    doc_ref: null,
+                    collection_ref: collection(db, "classes"),
                 };
                 router.push("/portal/create");
             });
         },
         /**
          * @memberOf .main.actions
+         * @function fetch_board
+         * @description Hydrate this.classes from GET /api/v1/me/board (Firebase ID token via apiFetch). 204/empty → [].
+         * Does not write users.classes[]. Live class-doc listeners still win via hydrateBeatsLive.
+         * Throws on network/401/5xx so callers can fall back to {@link fetch_classes}.
+         */
+        fetch_board() {
+            return __awaiter(this, void 0, void 0, function* () {
+                var _a;
+                const run_hash = Math.random().toString(36).substring(7);
+                _status.log(`📚 Board hydrate   | &lt;${run_hash}>`);
+                const hydrateEpoch = beginHydrateEpoch();
+                const payload = yield apiFetch("/api/v1/me/board");
+                const board = parseMeBoardResponse(payload, this.ORG_DOMAIN);
+                const mapped = mapMeBoardToClassInfos(board, (_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.classes, this.ORG_DOMAIN);
+                this.ingest_board_task_states(board);
+                const classes = mapped.map((cls) => {
+                    const enrollmentPath = cls.id;
+                    if (enrollmentPath &amp;&amp; !hydrateBeatsLive(enrollmentPath, hydrateEpoch)) {
+                        const live = this.classes.find((c) => c.id === enrollmentPath || (cls._class_id &amp;&amp; classEntryMatchesId(c, cls._class_id)));
+                        if (live)
+                            return live;
+                    }
+                    const teacherEmail = teacherEmailFromBoardClass(cls);
+                    if (teacherEmail &amp;&amp; cls._class_id) {
+                        rememberClassEmail(cls._class_id, teacherEmail);
+                    }
+                    return cls;
+                });
+                this.classes = classes;
+                this.get_tasks();
+                _status.log(`📚 Board applied   | &lt;${run_hash}> (${classes.length} classes)`);
+            });
+        },
+        /**
+         * @memberOf .main.actions
+         * @function hydrate_from_board_or_fallback
+         * @description Prefer me/board for initial/enrollment hydrate; fall back to dual-read fetch_classes. Always attaches class-doc listeners.
+         */
+        hydrate_from_board_or_fallback() {
+            return __awaiter(this, void 0, void 0, function* () {
+                var _a;
+                try {
+                    yield this.fetch_board();
+                }
+                catch (err) {
+                    _status.warn("⚠ Board hydrate failed — falling back to dual-read fetch_classes", err);
+                    yield this.fetch_classes();
+                }
+                syncClassListeners(((_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.classes) || []);
+            });
+        },
+        /**
+         * @memberOf .main.actions
          * @function fetch_classes
-         * @description Fetch all classes from the user's document and combine them into an array, while checking for duplicates and invalid classes
+         * @description Dual-read getDocs per enrollment (flat then nested). Fallback when me/board hydrate fails.
          * @returns {Array} Array of all (unique) classes from the user's document
+         * @see {@link fetch_board}
          * @see {@link classes}
          * @see {@link fetch_classes_by_email}
          * @see {@link remove_invalid}
@@ -1827,7 +2299,7 @@ export const useMainStore = defineStore({
          */
         fetch_classes() {
             return __awaiter(this, void 0, void 0, function* () {
-                var _a, _b, _c;
+                var _a, _b, _d;
                 let run_hash = Math.random().toString(36).substring(7);
                 _status.log(`📚 Started fetch   | &lt;${run_hash}>`);
                 // check for duplicates
@@ -1838,7 +2310,7 @@ export const useMainStore = defineStore({
                         yield new Promise((resolve) => setTimeout(resolve, len));
                         i++;
                     }
-                    if (!((_c = this.active_doc) === null || _c === void 0 ? void 0 : _c.classes)) {
+                    if (!((_d = this.active_doc) === null || _d === void 0 ? void 0 : _d.classes)) {
                         return Promise.reject("Classes not found in user doc within load cycle");
                     }
                     else if (i * len >= warn) {
@@ -1848,51 +2320,68 @@ export const useMainStore = defineStore({
                 }
                 let unique = [...new Set(this.active_doc.classes)];
                 if (unique.length != this.active_doc.classes.length) {
+                    // Local-only dedupe — do not write users.classes[] from the client
                     if (this.personal_account &amp;&amp; this.linked_account_doc) {
                         this.linked_account_doc.classes = unique;
                     }
                     else if (this.account_doc) {
                         this.account_doc.classes = unique;
                     }
-                    yield this.update_remote();
                     new WarningToast("Removed duplicate classes", 2000);
-                    _status.log("📚 Removed duplicate classes");
+                    _status.log("📚 Removed duplicate classes (local)");
                 }
-                // get all classes' data and combine into an array
+                // Snapshot wins race if it lands after this hydrate starts
+                const hydrateEpoch = beginHydrateEpoch();
+                // get all classes' data and combine into an array (dual-read: flat first, nested fallback)
                 let classes = [];
                 for (let class_path of this.active_doc.classes) {
-                    // split class path into teacher/uid
-                    let [teacher, class_id] = class_path.split("/");
-                    if (!teacher || !class_id) {
+                    // split class path into teacher/uid (or bare classId)
+                    const parts = (class_path || "").split("/").filter(Boolean);
+                    const teacher = parts.length >= 2 ? parts[0] : undefined;
+                    const class_id = parts.length >= 2 ? parts[1] : parts[0];
+                    if (!class_id) {
                         yield this.remove_invalid(class_path);
                         continue;
                     }
-                    // get classes sub-collection from teacher's doc
-                    const teacher_classes = collection(db, "classes", teacher, "classes");
-                    if (!teacher_classes) {
+                    if (teacher)
+                        rememberClassEmail(class_id, teacher);
+                    const classResult = yield getClassDoc(db, class_id, teacher);
+                    if (!classResult) {
                         yield this.remove_invalid(class_path);
                         continue;
                     }
-                    // get class doc from classes sub-collection
-                    const subclass_ref = doc(teacher_classes, class_id);
-                    let subclass_doc = yield getDoc(subclass_ref);
-                    if (!subclass_doc.exists()) {
-                        yield this.remove_invalid(class_path);
-                        continue;
+                    // Snapshot wins a race if newer than this hydrate — keep live copy
+                    if (!hydrateBeatsLive(class_path, hydrateEpoch)) {
+                        const live = this.classes.find((c) => c.id === class_path);
+                        if (live) {
+                            classes.push(live);
+                            continue;
+                        }
                     }
                     // push class to array
-                    let doc_data = subclass_doc.data();
+                    let doc_data = Object.assign({}, classResult.data);
+                    if (doc_data.archived) {
+                        yield this.remove_invalid(class_path);
+                        continue;
+                    }
+                    // Keep enrollment pointer as id; dual-read may still expose nested legacyPath
                     doc_data.id = class_path;
-                    doc_data.ref = [teacher, class_id].join("/");
+                    doc_data.ref = classResult.legacyPath || class_path;
+                    doc_data._class_id = class_id;
+                    if (classResult.teacherEmail) {
+                        rememberClassEmail(class_id, classResult.teacherEmail);
+                    }
                     classes.push(doc_data);
                 }
                 _status.log(`📚 Got class docs  | &lt;${run_hash}>`);
-                // get tasks for all classes in parallel
+                // Stamp task refs as flat classId/taskId for writers
                 classes = classes.map((class_data) => {
-                    let [_email, _id] = class_data.ref.split("/");
+                    const cid = class_data._class_id || enrollmentKeyClassId(class_data.id || "");
                     class_data.tasks = class_data.tasks || [];
                     class_data.tasks = class_data.tasks.map((task) => {
-                        task.ref = [_email, _id, task.id].join("/");
+                        if (task.id &amp;&amp; cid) {
+                            task.ref = flatTaskPath(cid, task.id);
+                        }
                         delete task.id;
                         return task;
                     });
@@ -1913,6 +2402,8 @@ export const useMainStore = defineStore({
                 });
                 this.classes = classes;
                 this.get_tasks();
+                // Attach / resync live class-doc listeners after hydrate (cap = enrollment size)
+                syncClassListeners(unique);
                 Promise.resolve();
             });
         },
@@ -1945,7 +2436,8 @@ export const useMainStore = defineStore({
                     class_data.id = class_doc.id;
                     // if user already in class, change name to "[JOINED] name"
                     class_data.is_joined = (_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.classes.includes([email, class_doc.id].join("/"));
-                    classes.push(class_data);
+                    if (!class_data.archived)
+                        classes.push(class_data);
                 });
                 classes.sort((a, b) => {
                     if (a.period == b.period) {
@@ -1960,54 +2452,85 @@ export const useMainStore = defineStore({
         /**
          * @memberOf .main.actions
          * @function add_class
-         * @description Add a class to the active user's document, and show a toast saying that the class was added
+         * @description Enroll in a class via callable enrollClass({ classId }) (classId or join code). Server owns users.classes[].
          * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
-         * @param {String} teacher_email The email of the teacher whose class it is
-         * @param {String} class_id The id of the class to add
+         * @param {String} teacher_email The email of the teacher whose class it is (legacy; used to resolve classId)
+         * @param {String} class_id The id of the class to add (or join code)
          * @param {String} class_name The name of the class being added
          * @param {Number} class_period The period of the class being added
          * @see {@link classes}
          */
-        add_class(teacher_email, class_id, class_name, class_period) {
+        add_class(teacher_email, class_id, class_name, class_period, options) {
             return __awaiter(this, void 0, void 0, function* () {
                 var _a;
                 if (!((_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.classes))
                     return;
                 if (!class_id)
                     return;
-                const class_key = [teacher_email, class_id].join("/");
-                if (this.active_doc.classes.includes(class_key))
+                const classId = writeClassId(class_id, this.ORG_DOMAIN) ||
+                    (teacher_email ? writeClassId([teacher_email, class_id].join("/"), this.ORG_DOMAIN) : null) ||
+                    class_id;
+                const alreadyEnrolled = (this.active_doc.classes || []).some((c) => c === classId ||
+                    bareClassIdFromEnrollment(c) === classId ||
+                    (teacher_email &amp;&amp; c === [teacher_email, class_id].join("/")));
+                if (alreadyEnrolled)
                     return;
-                if (this.personal_account &amp;&amp; this.linked_account_doc) {
-                    this.linked_account_doc.classes.push(class_key);
+                try {
+                    const enrollClass = httpsCallable(functions, "enrollClass");
+                    const result = yield enrollClass({ classId });
+                    const data = result === null || result === void 0 ? void 0 : result.data;
+                    if ((data === null || data === void 0 ? void 0 : data.error) || (data === null || data === void 0 ? void 0 : data.success) === false) {
+                        throw (data === null || data === void 0 ? void 0 : data.error) || (data === null || data === void 0 ? void 0 : data.message) || "enrollClass failed";
+                    }
+                    // Mirror enrollment locally — do not write users.classes[] from the client
+                    if (Array.isArray(data === null || data === void 0 ? void 0 : data.classes)) {
+                        if (this.personal_account &amp;&amp; this.linked_account_doc) {
+                            this.linked_account_doc.classes = data.classes;
+                        }
+                        else if (this.account_doc) {
+                            this.account_doc.classes = data.classes;
+                        }
+                    }
+                    else {
+                        const enrollmentKey = classId;
+                        if (!(this.active_doc.classes || []).some((c) => bareClassIdFromEnrollment(c) === classId || c === enrollmentKey)) {
+                            if (this.personal_account &amp;&amp; this.linked_account_doc) {
+                                this.linked_account_doc.classes.push(enrollmentKey);
+                            }
+                            else if (this.account_doc) {
+                                this.account_doc.classes.push(enrollmentKey);
+                            }
+                        }
+                    }
+                    yield this.fetch_classes();
+                    if (!(options === null || options === void 0 ? void 0 : options.quiet)) {
+                        new SuccessToast(`Added "${this.class_text({
+                            name: class_name,
+                            period: class_period,
+                            ref: classId,
+                            tasks: [],
+                        })}" to your classes`, 2000);
+                    }
+                    return Promise.resolve();
                 }
-                else if (this.account_doc) {
-                    this.account_doc.classes.push(class_key);
+                catch (err) {
+                    new ErrorToast("Couldn't add class", cleanError(err), 2000);
+                    return Promise.reject(err);
                 }
-                yield this.update_remote();
-                yield this.fetch_classes();
-                new SuccessToast(`Added "${this.class_text({
-                    name: class_name,
-                    period: class_period,
-                    ref: class_key,
-                    tasks: [],
-                })}" to your classes`, 2000);
-                // return new success promise
-                return Promise.resolve();
             });
         },
         /**
          * @memberOf .main.actions
          * @function create_class
-         * @description Create a class with the given object, and add it to the active user's document. (for teachers)
-         * @param {Object} class_obj The class object to with the class data, document will be created in /classes under the teacher's email with these contents
+         * @description Create a class at classes/{classId} (flat), with owner teachers[] + teachers/{email} subdoc. (for teachers)
+         * @param {Object} class_obj The class object with class data
          * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
          * @see {@link is_teacher}
          * @see {@link teacher}
          */
         create_class(class_obj) {
             return __awaiter(this, void 0, void 0, function* () {
-                var _a, _b;
+                var _a, _b, _d, _e, _f;
                 _status.log("🔨 Creating class", class_obj);
                 if (!this.is_teacher) {
                     new WarningToast("You need to be a teacher to create a class", 2000);
@@ -2015,21 +2538,43 @@ export const useMainStore = defineStore({
                 }
                 if (!class_obj.name)
                     return; // handled in disabled attr of button, failsafe for db
+                const email = ((_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.email) || ((_b = this.user) === null || _b === void 0 ? void 0 : _b.email);
+                if (!email) {
+                    return Promise.reject("No teacher email");
+                }
                 try {
-                    // check if there is a teacher doc and collection
-                    if (!this.teacher.doc_ref || !this.teacher.collection_ref) {
-                        // create teacher doc
-                        yield this.create_teacher_doc();
-                        // call this again
-                        yield this.create_class(class_obj);
-                        return;
+                    // Ensure teacher collection points at top-level classes (never classes/{email})
+                    if (!this.teacher.collection_ref) {
+                        this.teacher.collection_ref = collection(db, "classes");
                     }
-                    // create class doc under teacher.collection_ref
-                    const class_doc_ref = yield addDoc(this.teacher.collection_ref, class_obj);
-                    // add class to user doc;
+                    const ownerName = ((_d = this.active_doc) === null || _d === void 0 ? void 0 : _d.name) || ((_e = this.user) === null || _e === void 0 ? void 0 : _e.displayName) || email.split("@")[0];
+                    const owner = { email, name: ownerName, role: "owner" };
+                    const _g = class_obj, { id: _dropId, ref: _dropRef, tasks: _dropTasks, _class_id: _c, _teacher_email: _t, _source: _s, _share_ref: _sh, _implied_owner: _i } = _g, rest = __rest(_g, ["id", "ref", "tasks", "_class_id", "_teacher_email", "_source", "_share_ref", "_implied_owner"]);
+                    void _dropId;
+                    void _dropRef;
+                    void _dropTasks;
+                    void _c;
+                    void _t;
+                    void _s;
+                    void _sh;
+                    void _i;
+                    const write_obj = Object.assign(Object.assign({}, rest), { owner_email: email, teachers: [owner], teacher_emails: [email] });
+                    // Flat create: addDoc on top-level classes collection (never classes/{email}/classes)
+                    const class_doc_ref = yield addDoc(collection(db, "classes"), write_obj);
+                    const classId = class_doc_ref.id;
+                    // Owner person subdoc under classes/{classId}/teachers/{email}
+                    yield setDoc(doc(db, "classes", classId, "teachers", email), {
+                        email,
+                        name: ownerName,
+                        role: "owner",
+                    }, { merge: true });
+                    rememberClassEmail(classId, email);
                     new SuccessToast(`Created class "${this.class_text(class_obj)}"`, 2000);
-                    _status.log("🏫 Created class w/ ref", class_doc_ref);
-                    yield this.add_class(((_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.email) || ((_b = this.user) === null || _b === void 0 ? void 0 : _b.email), class_doc_ref.id, class_obj.name, class_obj.period);
+                    _status.log("🏫 Created flat class w/ id", classId);
+                    // Enroll self via callable (server owns users.classes[])
+                    if ((_f = this.active_doc) === null || _f === void 0 ? void 0 : _f.classes) {
+                        yield this.add_class(email, classId, class_obj.name, class_obj.period, { quiet: true });
+                    }
                     return Promise.resolve();
                 }
                 catch (e) {
@@ -2055,23 +2600,22 @@ export const useMainStore = defineStore({
                     else if (!task_classes || task_classes.length == 0) {
                         return Promise.reject("No classes selected");
                     }
-                    // use firebase array add to add task to each class
+                    // Flat writes: classes/{classId}/tasks/{taskId}
                     let batch = writeBatch(db);
                     let updated_classes = Array.from(this.classes);
-                    task_classes.forEach((class_id) => {
-                        // fix any class_id that has the teacher email in it
-                        const displayed_class_id = class_id;
-                        const [_email, _id] = class_id.split("/");
-                        // use this.teacher.collection_ref to get class collection ref, then update the class documents within
-                        const class_tasks_collection = collection(db, "classes", _email, "classes", _id, "tasks");
-                        task_obj.class_id = displayed_class_id;
-                        // batch add a new task doc with the data to the class_tasks_collection collection, using auto-generated id
+                    task_classes.forEach((enrollmentOrId) => {
+                        const classId = bareClassIdFromEnrollment(enrollmentOrId) || writeClassId(enrollmentOrId, this.ORG_DOMAIN);
+                        if (!classId)
+                            return;
+                        const displayed_class_id = enrollmentOrId;
+                        const class_tasks_collection = collection(db, "classes", classId, "tasks");
+                        task_obj.class_id = classId;
                         const task_ref = doc(class_tasks_collection);
-                        batch.set(task_ref, task_obj);
+                        batch.set(task_ref, Object.assign(Object.assign({}, task_obj), { class_id: classId }));
                         updated_classes.forEach((class_obj) => {
                             var _a;
-                            if (class_obj.id == displayed_class_id) {
-                                (_a = class_obj.tasks) === null || _a === void 0 ? void 0 : _a.push(Object.assign(Object.assign({}, task_obj), { ref: [_email, _id, task_ref.id].join("/"), class_id: displayed_class_id, _proxy: true }));
+                            if (classEntryMatchesId(class_obj, classId) || class_obj.id == displayed_class_id) {
+                                (_a = class_obj.tasks) === null || _a === void 0 ? void 0 : _a.push(Object.assign(Object.assign({}, task_obj), { ref: flatTaskPath(classId, task_ref.id), class_id: class_obj.id || classId, _proxy: true }));
                             }
                         });
                     });
@@ -2098,6 +2642,21 @@ export const useMainStore = defineStore({
          * @param {Object} repetition The repetition configuration
          * @returns {Promise} A promise that resolves to nothing or rejects with an error
          */
+        normalize_repetition_end(end) {
+            var _a, _b, _d;
+            const normalized = {
+                type: end.type,
+                value: end.type === "date" ? (_a = end.date) !== null &amp;&amp; _a !== void 0 ? _a : end.value : end.value,
+            };
+            if (end.type === "date" &amp;&amp; ((_b = end.date) !== null &amp;&amp; _b !== void 0 ? _b : end.value)) {
+                normalized.date = ((_d = end.date) !== null &amp;&amp; _d !== void 0 ? _d : end.value);
+            }
+            return normalized;
+        },
+        sanitize_repeating_task_updates(updates) {
+            const _a = updates || {}, { ref, id, _class, class_obj, class_id, color } = _a, safeUpdates = __rest(_a, ["ref", "id", "_class", "class_obj", "class_id", "color"]);
+            return safeUpdates;
+        },
         create_repeating_task(task_obj, task_classes, repetition) {
             return __awaiter(this, void 0, void 0, function* () {
                 try {
@@ -2107,8 +2666,18 @@ export const useMainStore = defineStore({
                     else if (!task_classes || task_classes.length == 0) {
                         return Promise.reject("No classes selected");
                     }
+                    const normalizedRepetition = Object.assign(Object.assign({}, repetition), { end: this.normalize_repetition_end(repetition.end) });
+                    // Prefer bare classId for callable payload (server accepts both during cutover)
+                    const classIds = task_classes
+                        .map((c) => bareClassIdFromEnrollment(c) || writeClassId(c, this.ORG_DOMAIN))
+                        .filter(Boolean);
+                    const taskPayload = Object.assign(Object.assign({}, task_obj), { class_id: classIds[0] || writeClassId(task_obj.class_id, this.ORG_DOMAIN) || task_obj.class_id });
                     const createRepeatingTask = httpsCallable(functions, "createRepeatingTask");
-                    const result = yield createRepeatingTask({ task: task_obj, classes: task_classes, repetition });
+                    const result = yield createRepeatingTask({
+                        task: taskPayload,
+                        classes: classIds.length ? classIds : task_classes,
+                        repetition: normalizedRepetition,
+                    });
                     const data = result.data;
                     if (data.error)
                         throw data.error;
@@ -2127,35 +2696,40 @@ export const useMainStore = defineStore({
         /**
          * @memberOf .main.actions
          * @function update_repeating_task
-         * @description Update a repeating task series
+         * @description Update a repeating task series (or a single instance when scope is `"this"`).
+         * @param scope `"this"` | `"future"` | `"all"` — passed through to `updateRepeatingTask` unchanged
          */
         update_repeating_task(repetition_group_id, updates, scope, task_ref, task_date) {
             return __awaiter(this, void 0, void 0, function* () {
+                var _a, _b;
                 try {
+                    const safeUpdates = this.sanitize_repeating_task_updates(updates);
+                    const ids = writeTaskIds(task_ref, this.ORG_DOMAIN);
+                    // Prefer classId~taskId (or classId/taskId) for callable; server accepts both
+                    const preferredRef = ids ? shortShareRef(ids.classId, ids.taskId) : task_ref;
                     const updateRepeatingTask = httpsCallable(functions, "updateRepeatingTask");
-                    const result = yield updateRepeatingTask({ repetition_group_id, updates, scope, task_ref, task_date });
+                    const result = yield updateRepeatingTask(Object.assign({ repetition_group_id, updates: safeUpdates, scope, task_ref: preferredRef, task_date }, (ids ? { classId: ids.classId, taskId: ids.taskId } : {})));
                     const data = result.data;
                     if (data.error)
                         throw data.error;
-                    _status.log(`📝 Updated repeating task series (${data.count} tasks)`);
-                    new SuccessToast(`Updated ${data.count} tasks in series`, 2000);
+                    _status.log(`📝 Updated repeating task (${scope}, ${data.count} tasks)`);
+                    new SuccessToast(repeatingUpdateToast(scope, data.count), 2000);
                     // Update local state immediately to prevent UI desync
                     const referenceDate = task_date ? new Date(task_date + "T00:00:00") : null;
+                    const matchOpts = {
+                        preferredRef,
+                        classId: (_a = ids === null || ids === void 0 ? void 0 : ids.classId) !== null &amp;&amp; _a !== void 0 ? _a : null,
+                        taskId: (_b = ids === null || ids === void 0 ? void 0 : ids.taskId) !== null &amp;&amp; _b !== void 0 ? _b : null,
+                        task_date,
+                        orgDomain: this.ORG_DOMAIN,
+                        referenceDate,
+                    };
                     const updatedClasses = this.classes.map((classInfo) => {
                         if (!classInfo.tasks)
                             return classInfo;
                         classInfo.tasks = classInfo.tasks.map((task) => {
-                            if (task.repetition_group_id !== repetition_group_id)
+                            if (!shouldTouchRepeatingTask(task, repetition_group_id, scope, matchOpts))
                                 return task;
-                            // For "future" scope, only update tasks on or after the reference date
-                            if (scope === "future" &amp;&amp; referenceDate) {
-                                const taskDateStr = typeof task.date === "string" ? task.date : "";
-                                const taskDate = taskDateStr ? new Date(taskDateStr.split("T")[0] + "T00:00:00") : null;
-                                if (taskDate &amp;&amp; taskDate &lt; referenceDate)
-                                    return task;
-                            }
-                            // Apply updates (excluding internal fields)
-                            const { ref, class_id, _class } = updates, safeUpdates = __rest(updates, ["ref", "class_id", "_class"]);
                             return Object.assign(Object.assign({}, task), safeUpdates);
                         });
                         return classInfo;
@@ -2174,34 +2748,39 @@ export const useMainStore = defineStore({
         /**
          * @memberOf .main.actions
          * @function delete_repeating_task
-         * @description Delete a repeating task series
+         * @description Archive a repeating task series (or a single instance when scope is `"this"`).
+         * @param scope `"this"` | `"future"` | `"all"` — passed through to `deleteRepeatingTask` unchanged
          */
         delete_repeating_task(repetition_group_id, scope, task_ref, task_date) {
             return __awaiter(this, void 0, void 0, function* () {
+                var _a, _b;
                 try {
+                    const ids = writeTaskIds(task_ref, this.ORG_DOMAIN);
+                    const preferredRef = ids ? shortShareRef(ids.classId, ids.taskId) : task_ref;
                     const deleteRepeatingTask = httpsCallable(functions, "deleteRepeatingTask");
-                    const result = yield deleteRepeatingTask({ repetition_group_id, scope, task_ref, task_date });
+                    const result = yield deleteRepeatingTask(Object.assign({ repetition_group_id,
+                        scope, task_ref: preferredRef, task_date }, (ids ? { classId: ids.classId, taskId: ids.taskId } : {})));
                     const data = result.data;
                     if (data.error)
                         throw data.error;
-                    _status.log(`🗑️ Deleted repeating task series (${data.count} tasks)`);
-                    new SuccessToast(`Archived ${data.count} tasks in series`, 2000);
+                    _status.log(`🗑️ Archived repeating task (${scope}, ${data.count} tasks)`);
+                    new SuccessToast(repeatingArchiveToast(scope, data.count), 2000);
                     // Update local state immediately to prevent UI desync
                     const referenceDate = task_date ? new Date(task_date + "T00:00:00") : null;
+                    const matchOpts = {
+                        preferredRef,
+                        classId: (_a = ids === null || ids === void 0 ? void 0 : ids.classId) !== null &amp;&amp; _a !== void 0 ? _a : null,
+                        taskId: (_b = ids === null || ids === void 0 ? void 0 : ids.taskId) !== null &amp;&amp; _b !== void 0 ? _b : null,
+                        task_date,
+                        orgDomain: this.ORG_DOMAIN,
+                        referenceDate,
+                    };
                     const updatedClasses = this.classes.map((classInfo) => {
                         if (!classInfo.tasks)
                             return classInfo;
                         classInfo.tasks = classInfo.tasks.filter((task) => {
-                            if (task.repetition_group_id !== repetition_group_id)
-                                return true;
-                            // For "future" scope, only remove tasks on or after the reference date
-                            if (scope === "future" &amp;&amp; referenceDate) {
-                                const taskDateStr = typeof task.date === "string" ? task.date : "";
-                                const taskDate = taskDateStr ? new Date(taskDateStr.split("T")[0] + "T00:00:00") : null;
-                                if (taskDate &amp;&amp; taskDate &lt; referenceDate)
-                                    return true;
-                            }
-                            return false;
+                            // Keep tasks we should not touch; drop those in scope
+                            return !shouldTouchRepeatingTask(task, repetition_group_id, scope, matchOpts);
                         });
                         return classInfo;
                     });
@@ -2219,25 +2798,55 @@ export const useMainStore = defineStore({
         /**
          * @memberOf .main.actions
          * @function update_class
-         * @description Update an instance of a class (for teachers). Intended to be preformed from the EditClass Modal
-         * @param {String} class_ref the "email/class_id" String representation of the class ref in firebase
+         * @description Update an instance of a class (for teachers). Writes flat classes/{classId}.
+         * @param {String} class_ref classId or legacy email/class_id
          * @param {Object} class_obj The updated class object
          * @returns {Promise} A promise that resolves to nothing or rejects with an error
          */
         update_class(class_ref, class_obj) {
             return __awaiter(this, void 0, void 0, function* () {
+                var _a;
                 try {
-                    let [_email, _id] = class_ref.split("/");
-                    _email += this.ORG_DOMAIN;
-                    // update the document with the same id as the class from the classes collection
-                    yield updateDoc(doc(db, "classes", _email, "classes", _id), class_obj);
-                    _status.log("📝 Updated remote class");
+                    // Strip UI-only fields before write
+                    const _b = class_obj, { _class_id: _c, _teacher_email: _t, _source: _s, _share_ref: _sh, _implied_owner: _i, ref: _r, id: _idField, teachers: _teachersWrite, teacher_emails: _teacherEmailsWrite } = _b, write_obj = __rest(_b, ["_class_id", "_teacher_email", "_source", "_share_ref", "_implied_owner", "ref", "id", "teachers", "teacher_emails"]);
+                    void _c;
+                    void _t;
+                    void _s;
+                    void _sh;
+                    void _i;
+                    void _r;
+                    void _idField;
+                    // teachers[] membership is owned by addClassTeacher/removeClassTeacher callables (never canvas.import here)
+                    void _teachersWrite;
+                    void _teacherEmailsWrite;
+                    const classId = writeClassId(class_ref, this.ORG_DOMAIN) ||
+                        class_obj._class_id ||
+                        bareClassIdFromEnrollment(class_ref);
+                    if (!classId)
+                        throw "Cannot resolve classId for class update";
+                    // Flat writer path
+                    yield setDoc(doc(db, "classes", classId), write_obj, { merge: true });
+                    _status.log("📝 Updated remote class (flat)", classId);
+                    if (class_obj.archived) {
+                        // Remove any enrollment pointer form (bare or nested)
+                        const enrollmentKeys = [
+                            ...(((_a = this.active_doc) === null || _a === void 0 ? void 0 : _a.classes) || []).filter((c) => c === classId || bareClassIdFromEnrollment(c) === classId),
+                        ];
+                        for (const key of enrollmentKeys) {
+                            yield this.remove_class_id_helper(key);
+                        }
+                        if (this.loaded_classes !== null) {
+                            this.loaded_classes = this.loaded_classes.filter((c) => c.id !== classId &amp;&amp; bareClassIdFromEnrollment(c.id) !== classId);
+                        }
+                        _status.log("📝 Archived class");
+                        return Promise.resolve();
+                    }
                     let classes = this.classes;
                     // update local version of class in classes
-                    const classIndex = classes.findIndex((class_obj) => class_obj.id === [_email, _id].join("/"));
+                    const classIndex = classes.findIndex((c) => classEntryMatchesId(c, classId));
                     if (classIndex !== -1) {
                         // Update the class object within the classes array
-                        classes[classIndex] = Object.assign(Object.assign(Object.assign({}, classes[classIndex]), class_obj), { _proxy: true });
+                        classes[classIndex] = Object.assign(Object.assign(Object.assign({}, classes[classIndex]), write_obj), { _proxy: true });
                         _status.log("📝 Updated local class");
                     }
                     // show changes
@@ -2254,8 +2863,8 @@ export const useMainStore = defineStore({
         /**
          * @memberOf .main.actions
          * @function update_task
-         * @description Update an instance of a task from a class (for teachers). Intended to be preformed from the EditTask Modal
-         * @param {String} task_ref the "email/class_id/task_id" String representation of the task ref in firebase
+         * @description Update an instance of a task from a class (for teachers). Writes flat classes/{classId}/tasks/{taskId}.
+         * @param {String} task_ref classId/taskId or legacy email/class_id/task_id
          * @param {Object} task_obj The updated task object
          * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
          */
@@ -2266,25 +2875,28 @@ export const useMainStore = defineStore({
                     delete task_obj.class_id;
                     delete task_obj.ref;
                     delete task_obj._class;
-                    let [_email, _id, task_id] = task_ref.split("/");
-                    if (!_email.includes(this.ORG_DOMAIN)) {
-                        _email += this.ORG_DOMAIN;
-                    }
-                    // update the document with the same id as the task from the tasks collection
-                    yield updateDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id), task_obj);
-                    _status.log("📝 Updated remote task");
+                    const ids = writeTaskIds(task_ref, this.ORG_DOMAIN);
+                    if (!ids)
+                        throw "Invalid task ref";
+                    const { classId, taskId } = ids;
+                    // Flat writer path
+                    yield setDoc(doc(db, "classes", classId, "tasks", taskId), task_obj, { merge: true });
+                    _status.log("📝 Updated remote task (flat)", classId, taskId);
                     let classes = this.classes;
-                    // update local version of task in classes
-                    let class_id = [_email, _id].join("/");
-                    const classIndex = classes.findIndex((class_obj) => class_obj.id === class_id);
-                    const ref = [_email, _id, task_id].join("/");
+                    const classIndex = classes.findIndex((class_obj) => classEntryMatchesId(class_obj, classId));
+                    const ref = flatTaskPath(classId, taskId);
                     if (classIndex !== -1) {
-                        const taskIndex = (_a = classes[classIndex].tasks) === null || _a === void 0 ? void 0 : _a.findIndex((task) => task.ref === ref);
-                        if (taskIndex !== -1) {
+                        const taskIndex = (_a = classes[classIndex].tasks) === null || _a === void 0 ? void 0 : _a.findIndex((task) => {
+                            if (task.ref === ref || task.ref === task_ref)
+                                return true;
+                            const tid = writeTaskIds(task.ref, this.ORG_DOMAIN);
+                            return (tid === null || tid === void 0 ? void 0 : tid.taskId) === taskId &amp;&amp; (tid === null || tid === void 0 ? void 0 : tid.classId) === classId;
+                        });
+                        if (taskIndex !== undefined &amp;&amp; taskIndex !== -1) {
                             // Update the task object within the tasks array of the class_obj
                             // TODO: TS doesn't like this, but should work always
                             // @ts-ignore
-                            classes[classIndex].tasks[taskIndex] = Object.assign(Object.assign({}, task_obj), { ref: ref, class_id: class_id, _proxy: true });
+                            classes[classIndex].tasks[taskIndex] = Object.assign(Object.assign({}, task_obj), { ref: ref, class_id: classes[classIndex].id || classId, _proxy: true });
                             _status.log("📝 Updated local task");
                         }
                     }
@@ -2302,27 +2914,31 @@ export const useMainStore = defineStore({
         /**
          * @memberOf .main.actions
          * @function archive_task
-         * @description Archive an instance of a task from a class (for teachers). Intended to be preformed from the ViewTask Modal
-         * @param {String} task_ref the "email/class_id" String representation of the task ref in firebase
+         * @description Archive an instance of a task from a class (for teachers). Deletes flat classes/{classId}/tasks/{taskId}.
+         * @param {String} task_ref classId/taskId or legacy email/class_id/task_id
          * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
          * @see {@link create_task}
          * @note This currently only removes the instance of the task being viewed. Could add a secondary modal to allow deletion of multiple instances instead?
          */
         archive_task(task_ref) {
             return __awaiter(this, void 0, void 0, function* () {
-                let [_email, _id, task_id] = task_ref.split("/");
-                _email += this.ORG_DOMAIN;
+                const ids = writeTaskIds(task_ref, this.ORG_DOMAIN);
+                if (!ids)
+                    return Promise.reject("Invalid task ref");
+                const { classId, taskId } = ids;
                 try {
-                    // remove the document with the same id as the task from the tasks collection
-                    yield deleteDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id));
-                    _status.log("📄 Archived task");
+                    yield deleteDoc(doc(db, "classes", classId, "tasks", taskId));
+                    _status.log("📄 Archived task (flat)", classId, taskId);
                     try {
                         let classes = this.classes;
                         classes.forEach((class_obj) => {
                             var _a;
-                            if (class_obj.id == [_email, _id].join("/")) {
+                            if (classEntryMatchesId(class_obj, classId)) {
                                 class_obj.tasks = (_a = class_obj.tasks) === null || _a === void 0 ? void 0 : _a.filter((task) => {
-                                    return task.ref != [_email, _id, task_id].join("/");
+                                    if (task.ref === flatTaskPath(classId, taskId) || task.ref === task_ref)
+                                        return false;
+                                    const tid = writeTaskIds(task.ref, this.ORG_DOMAIN);
+                                    return !((tid === null || tid === void 0 ? void 0 : tid.taskId) === taskId &amp;&amp; (tid === null || tid === void 0 ? void 0 : tid.classId) === classId);
                                 });
                             }
                         });
@@ -2342,6 +2958,67 @@ export const useMainStore = defineStore({
         },
         /**
          * @memberOf .main.actions
+         * @function unarchive_task
+         * @description Restore a flattened archived task in-place (classes/{classId}/tasks/{taskId}).
+         * Clears archived / archived_at set by migrateFlattenClasses. Writes flat only.
+         * @param {String} task_ref classId/taskId or legacy email/class_id/task_id
+         * @returns {Promise} A promise that resolves to nothing or rejects with an {String} error
+         */
+        unarchive_task(task_ref) {
+            return __awaiter(this, void 0, void 0, function* () {
+                const ids = writeTaskIds(task_ref, this.ORG_DOMAIN);
+                if (!ids)
+                    return Promise.reject("Invalid task ref");
+                const { classId, taskId } = ids;
+                try {
+                    const parsed = parseTaskId(task_ref, this.ORG_DOMAIN);
+                    const taskResult = yield getTaskDoc(db, classId, taskId, parsed === null || parsed === void 0 ? void 0 : parsed.teacherEmail);
+                    if (!taskResult)
+                        return Promise.reject("Task not found");
+                    const _a = taskResult.data, { id: _dropId } = _a, taskFields = __rest(_a, ["id"]);
+                    void _dropId;
+                    yield setDoc(doc(db, "classes", classId, "tasks", taskId), Object.assign(Object.assign({}, taskFields), { archived: false, archived_at: deleteField() }), { merge: true });
+                    _status.log("📄 Unarchived task (flat)", classId, taskId);
+                    try {
+                        const flatRef = flatTaskPath(classId, taskId);
+                        let classes = this.classes;
+                        classes.forEach((class_obj) => {
+                            if (!classEntryMatchesId(class_obj, classId))
+                                return;
+                            const restored = Object.assign(Object.assign({}, taskResult.data), { ref: flatRef, class_id: class_obj.id || classId, archived: false, _proxy: true });
+                            delete restored.archived_at;
+                            delete restored.id;
+                            const tasks = class_obj.tasks ? [...class_obj.tasks] : [];
+                            const taskIndex = tasks.findIndex((task) => {
+                                if (task.ref === flatRef || task.ref === task_ref)
+                                    return true;
+                                const tid = writeTaskIds(task.ref, this.ORG_DOMAIN);
+                                return (tid === null || tid === void 0 ? void 0 : tid.taskId) === taskId &amp;&amp; (tid === null || tid === void 0 ? void 0 : tid.classId) === classId;
+                            });
+                            if (taskIndex >= 0) {
+                                tasks[taskIndex] = restored;
+                            }
+                            else {
+                                tasks.push(restored);
+                            }
+                            class_obj.tasks = tasks;
+                        });
+                        this.classes = classes;
+                        this.get_tasks();
+                    }
+                    catch (err) {
+                        _status.error("🔥 Error restoring task in local state", err);
+                        throw err;
+                    }
+                }
+                catch (err) {
+                    return Promise.reject(err);
+                }
+                return Promise.resolve();
+            });
+        },
+        /**
+         * @memberOf .main.actions
          * @function task_from_ref
          * @description Get the task object from a task reference
          * @param {String} ref The task reference to get the task object from
@@ -2350,20 +3027,36 @@ export const useMainStore = defineStore({
         task_from_ref(ref) {
             return __awaiter(this, void 0, void 0, function* () {
                 try {
-                    let [_email, _id, task_id] = ref.split("/");
-                    _email += this.ORG_DOMAIN;
-                    _status.log("📄 Getting task from ref:", [_email, _id, task_id].join(" - "));
-                    const class_doc = yield getDoc(doc(db, "classes", _email, "classes", _id));
-                    if (!class_doc.exists())
+                    const org = this.ORG_DOMAIN;
+                    let parsed = parseTaskId(ref, org);
+                    // Allow slash form email/classId/taskId without going through ~ join
+                    if (!parsed) {
+                        const parts = splitRefSegments(ref);
+                        if (parts.length === 3) {
+                            parsed = parseTaskId(parts.join("~"), org);
+                        }
+                        else if (parts.length === 2) {
+                            parsed = parseTaskId(parts.join("~"), org);
+                        }
+                    }
+                    if (!parsed)
                         return Promise.resolve(null);
-                    let class_data = class_doc.data();
+                    _status.log("📄 Getting task from ref:", [parsed.teacherEmail, parsed.classId, parsed.taskId].join(" - "));
+                    const classResult = yield getClassDoc(db, parsed.classId, parsed.teacherEmail);
+                    if (!classResult)
+                        return Promise.resolve(null);
+                    let class_data = Object.assign({}, classResult.data);
                     delete class_data.tasks;
                     _status.log("📚 Got class from ref");
-                    const task_doc = yield getDoc(doc(db, "classes", _email, "classes", _id, "tasks", task_id));
-                    if (!task_doc.exists())
+                    const taskResult = yield getTaskDoc(db, parsed.classId, parsed.taskId, parsed.teacherEmail || classResult.teacherEmail);
+                    if (!taskResult)
                         return Promise.resolve(null);
                     _status.log("📄 Got task from ref");
-                    return Promise.resolve(Object.assign(Object.assign({}, task_doc.data()), { ref: ref, class_id: [_email, _id].join("/"), class_name: this.class_text(class_data), _class: Object.assign(Object.assign({}, class_data), { ref: [_email.split(this.ORG_DOMAIN)[0], _id].join("~") }) }));
+                    const email = taskResult.teacherEmail || classResult.teacherEmail;
+                    const classShareRef = shortShareRef(parsed.classId);
+                    const taskShareRef = shortShareRef(parsed.classId, parsed.taskId);
+                    const flatRef = flatTaskPath(parsed.classId, parsed.taskId);
+                    return Promise.resolve(Object.assign(Object.assign({}, taskResult.data), { ref: flatRef, class_id: parsed.classId, class_name: this.class_text(class_data), _class: Object.assign(Object.assign({}, class_data), { ref: classShareRef, _share_ref: classShareRef, _teacher_email: email, _class_id: parsed.classId }), _share_ref: taskShareRef, _local_prefix: email ? email.split("@")[0] : undefined }));
                 }
                 catch (err) {
                     return Promise.reject(err);
@@ -2373,22 +3066,57 @@ export const useMainStore = defineStore({
         /**
          * @memberOf .main.actions
          * @function class_from_ref
-         * @description Get the class object from a class reference
+         * @description Get the class object from a class reference (dual-read: flat then nested)
          * @param {String} ref The class reference to get the class object from
          * @returns {Promise} A promise that resolves to the class object or rejects with an error
          */
         class_from_ref(ref_1) {
             return __awaiter(this, arguments, void 0, function* (ref, include_tasks = false) {
                 try {
-                    let [_email, _id] = ref.split("/");
-                    _email += this.ORG_DOMAIN;
-                    const class_doc = yield getDoc(doc(db, "classes", _email, "classes", _id));
-                    _status.log("📄 Got class doc");
-                    if (!class_doc.exists())
+                    const org = this.ORG_DOMAIN;
+                    let parsed = parseClassId(ref, org);
+                    // If ref was task-shaped, take the class portion
+                    if (!parsed) {
+                        const taskParsed = parseTaskId(ref, org);
+                        if (taskParsed) {
+                            parsed = {
+                                classId: taskParsed.classId,
+                                teacherEmail: taskParsed.teacherEmail,
+                                hasTeacherPrefix: !!taskParsed.teacherEmail,
+                            };
+                        }
+                    }
+                    // Slash email/classId without parseClassId teacher when already full email path
+                    if (!parsed) {
+                        const parts = splitRefSegments(ref);
+                        if (parts.length >= 1) {
+                            parsed = parseClassId(parts.slice(0, 2).join("/"), org);
+                        }
+                    }
+                    if (!(parsed === null || parsed === void 0 ? void 0 : parsed.classId))
+                        return Promise.reject("Invalid class ref");
+                    const classResult = yield getClassDoc(db, parsed.classId, parsed.teacherEmail);
+                    _status.log("📄 Got class doc", (classResult === null || classResult === void 0 ? void 0 : classResult.source) || "miss");
+                    if (!classResult)
                         return Promise.reject("Class doesn't exist");
-                    let class_data = class_doc.data();
+                    let class_data = Object.assign({}, classResult.data);
                     if (!include_tasks)
                         delete class_data.tasks;
+                    class_data._class_id = classResult.classId;
+                    class_data._teacher_email = classResult.teacherEmail;
+                    class_data._source = classResult.source;
+                    class_data.ref = classResult.legacyPath || classResult.classId;
+                    class_data._share_ref = shortShareRef(classResult.classId);
+                    // Ensure teachers[] humans-only view helper fields for EditClass
+                    if (!Array.isArray(class_data.teachers) || !class_data.teachers.length) {
+                        if (classResult.teacherEmail &amp;&amp; !isCanvasImportEmail(classResult.teacherEmail)) {
+                            class_data._implied_owner = {
+                                email: classResult.teacherEmail,
+                                name: class_data.teacher_name || classResult.teacherEmail.split("@")[0],
+                                role: "owner",
+                            };
+                        }
+                    }
                     _status.log("📚 Got class data");
                     return Promise.resolve(class_data);
                 }
@@ -2414,15 +3142,20 @@ export const useMainStore = defineStore({
                     if (!class_doc) {
                         class_doc = (yield this.class_from_ref(class_ref));
                     }
-                    let [_email, _id] = class_ref.split("/");
-                    _email += this.ORG_DOMAIN;
-                    let class_snapshot = yield getDoc(doc(db, "classes", _email, "classes", _id));
-                    if (!class_snapshot.exists()) {
+                    const parsed = parseClassId(class_ref, this.ORG_DOMAIN) || {
+                        classId: (class_doc === null || class_doc === void 0 ? void 0 : class_doc._class_id) || splitRefSegments(class_ref).pop() || "",
+                        teacherEmail: class_doc === null || class_doc === void 0 ? void 0 : class_doc._teacher_email,
+                        hasTeacherPrefix: false,
+                    };
+                    const classResult = yield getClassDoc(db, parsed.classId, parsed.teacherEmail || (class_doc === null || class_doc === void 0 ? void 0 : class_doc._teacher_email));
+                    if (!classResult) {
                         throw "Class doesn't exist";
                     }
-                    let class_tasks = ((_a = class_snapshot.data()) === null || _a === void 0 ? void 0 : _a.tasks) || [];
+                    let class_tasks = ((_a = classResult.data) === null || _a === void 0 ? void 0 : _a.tasks) || [];
                     class_tasks = class_tasks.filter((task) => {
-                        return task.type != "note" &amp;&amp; compatDateObj(task.date).getTime() >= new Date().getTime();
+                        return (!task.archived &amp;&amp;
+                            task.type != "note" &amp;&amp;
+                            compatDateObj(task.date).getTime() >= new Date().getTime());
                     });
                     class_tasks.sort((a, b) => {
                         var _a, _b;
@@ -2434,7 +3167,7 @@ export const useMainStore = defineStore({
                     class_tasks.forEach((task) => {
                         const task_id = task.id;
                         delete task.id;
-                        upcoming_tasks.push(Object.assign(Object.assign({}, task), { ref: [...class_ref.split("/"), task_id].join("~"), date: compatDateObj(task.date), color: class_doc === null || class_doc === void 0 ? void 0 : class_doc.color, class_id: [_email, _id].join("/"), class_name: this.class_text(class_doc) }));
+                        upcoming_tasks.push(Object.assign(Object.assign({}, task), { ref: shortShareRef(parsed.classId, task_id), date: compatDateObj(task.date), color: class_doc === null || class_doc === void 0 ? void 0 : class_doc.color, class_id: parsed.classId, class_name: this.class_text(class_doc) }));
                     });
                     _status.log("📚 Got upcoming tasks");
                     return Promise.resolve(upcoming_tasks);
@@ -2442,6 +3175,112 @@ export const useMainStore = defineStore({
                 catch (err) {
                     return Promise.reject(err);
                 }
+            });
+        },
+        /**
+         * Resolve human teachers for EditClass: teachers[] people only, else sole owner from nested email.
+         */
+        teachers_for_class(class_obj, fallbackEmail) {
+            const humans = humanTeachers(class_obj === null || class_obj === void 0 ? void 0 : class_obj.teachers);
+            if (humans.length)
+                return humans;
+            const email = fallbackEmail ||
+                (class_obj === null || class_obj === void 0 ? void 0 : class_obj._teacher_email) ||
+                (typeof (class_obj === null || class_obj === void 0 ? void 0 : class_obj.owner_email) === "string" ? class_obj.owner_email : undefined);
+            if (email &amp;&amp; !isCanvasImportEmail(email)) {
+                return [
+                    {
+                        email,
+                        name: (class_obj === null || class_obj === void 0 ? void 0 : class_obj.teacher_name) || email.split("@")[0],
+                        role: "owner",
+                    },
+                ];
+            }
+            return [];
+        },
+        /**
+         * Add a co-teacher via callable addClassTeacher({ classId, email }).
+         * Does not enroll the teacher as a student; server owns teachers[] writes.
+         */
+        add_class_teacher(classId, email) {
+            return __awaiter(this, void 0, void 0, function* () {
+                var _a, _b;
+                if (!classId)
+                    throw "Invalid class id";
+                const normalized = (email || "").trim().toLowerCase();
+                if (!normalized)
+                    throw "Email required";
+                const addClassTeacher = httpsCallable(functions, "addClassTeacher");
+                const result = yield addClassTeacher({ classId, email: normalized });
+                const data = result === null || result === void 0 ? void 0 : result.data;
+                if ((data === null || data === void 0 ? void 0 : data.error) || (data === null || data === void 0 ? void 0 : data.success) === false) {
+                    throw (data === null || data === void 0 ? void 0 : data.error) || (data === null || data === void 0 ? void 0 : data.message) || "addClassTeacher failed";
+                }
+                // Mirror teachers onto local classes cache when the callable returns them
+                if (Array.isArray(data === null || data === void 0 ? void 0 : data.teachers)) {
+                    const humans = humanTeachers(data.teachers);
+                    const teacher_emails = humans.map((t) => t.email);
+                    const idx = this.classes.findIndex((c) => classEntryMatchesId(c, classId));
+                    if (idx !== -1) {
+                        this.classes[idx] = Object.assign(Object.assign({}, this.classes[idx]), { teachers: humans, teacher_emails });
+                        this.classes = [...this.classes];
+                    }
+                    return (data.teacher ||
+                        humans.find((t) => { var _a; return ((_a = t.email) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === normalized; }) || {
+                        email: normalized,
+                        name: normalized.split("@")[0],
+                        role: "teacher",
+                    });
+                }
+                // Optimistic local cache: append co-teacher if class is already loaded
+                const idx = this.classes.findIndex((c) => classEntryMatchesId(c, classId));
+                if (idx !== -1) {
+                    const existing = humanTeachers(this.classes[idx].teachers);
+                    if (!existing.some((t) => { var _a; return ((_a = t.email) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === normalized; })) {
+                        const next = [
+                            ...existing,
+                            {
+                                email: normalized,
+                                name: ((_a = data === null || data === void 0 ? void 0 : data.teacher) === null || _a === void 0 ? void 0 : _a.name) || normalized.split("@")[0],
+                                role: ((_b = data === null || data === void 0 ? void 0 : data.teacher) === null || _b === void 0 ? void 0 : _b.role) || "teacher",
+                            },
+                        ];
+                        this.classes[idx] = Object.assign(Object.assign({}, this.classes[idx]), { teachers: next, teacher_emails: next.map((t) => t.email) });
+                        this.classes = [...this.classes];
+                    }
+                }
+                return ((data === null || data === void 0 ? void 0 : data.teacher) || {
+                    email: normalized,
+                    name: normalized.split("@")[0],
+                    role: "teacher",
+                });
+            });
+        },
+        /**
+         * Remove a co-teacher via callable removeClassTeacher({ classId, email }).
+         * Cannot remove the last owner — server rejects; caller surfaces that error.
+         */
+        remove_class_teacher(classId, email) {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (!classId)
+                    throw "Invalid class id";
+                const normalized = (email || "").trim().toLowerCase();
+                if (!normalized)
+                    throw "Email required";
+                const removeClassTeacher = httpsCallable(functions, "removeClassTeacher");
+                const result = yield removeClassTeacher({ classId, email: normalized });
+                const data = result === null || result === void 0 ? void 0 : result.data;
+                if ((data === null || data === void 0 ? void 0 : data.error) || (data === null || data === void 0 ? void 0 : data.success) === false) {
+                    throw (data === null || data === void 0 ? void 0 : data.error) || (data === null || data === void 0 ? void 0 : data.message) || "removeClassTeacher failed";
+                }
+                const idx = this.classes.findIndex((c) => classEntryMatchesId(c, classId));
+                if (idx === -1)
+                    return;
+                const next = Array.isArray(data === null || data === void 0 ? void 0 : data.teachers)
+                    ? humanTeachers(data.teachers)
+                    : humanTeachers(this.classes[idx].teachers).filter((t) => { var _a; return ((_a = t.email) === null || _a === void 0 ? void 0 : _a.toLowerCase()) !== normalized; });
+                this.classes[idx] = Object.assign(Object.assign({}, this.classes[idx]), { teachers: next, teacher_emails: next.map((t) => t.email) });
+                this.classes = [...this.classes];
             });
         },
         /**
@@ -2474,4 +3313,4 @@ export const useMainStore = defineStore({
         },
     },
 });
-</code></pre></article></section></div></div></div><div class="search-container" id="PkfLWpAbet" style="display:none"><div class="wrapper" id="iCxFxjkHbP"><button class="icon-button search-close-button" id="VjLlGakifb" aria-label="close search"><svg><use xlink:href="#close-icon"></use></svg></button><div class="search-box-c"><svg><use xlink:href="#search-icon"></use></svg> <input type="text" id="vpcKVYIppa" class="search-input" placeholder="Search..." autofocus></div><div class="search-result-c" id="fWwVHRuDuN"><span class="search-result-c-text">Type anything to view search result</span></div></div></div><div class="mobile-menu-icon-container"><button class="icon-button" id="mobile-menu" data-isopen="false" aria-label="menu"><svg><use xlink:href="#menu-icon"></use></svg></button></div><div id="mobile-sidebar" class="mobile-sidebar-container"><div class="mobile-sidebar-wrapper"><a href="/" class="sidebar-title sidebar-title-anchor">Home</a><div class="mobile-nav-links"></div><div class="mobile-sidebar-items-c"><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-namespaces"><div>Namespaces</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="magic.html">.magic</a></div><div class="sidebar-section-children"><a href="magic.actions.html">actions</a></div><div class="sidebar-section-children"><a href="magic.getters.html">getters</a></div><div class="sidebar-section-children"><a href="magic.state.html">state</a></div><div class="sidebar-section-children"><a href="main.html">.main</a></div><div class="sidebar-section-children"><a href="main.actions.html">actions</a></div><div class="sidebar-section-children"><a href="main.getters.html">getters</a></div><div class="sidebar-section-children"><a href="main.state.html">state</a></div><div class="sidebar-section-children"><a href="notify.html">.notify</a></div><div class="sidebar-section-children"><a href="notify.actions.html">actions</a></div><div class="sidebar-section-children"><a href="notify.getters.html">getters</a></div><div class="sidebar-section-children"><a href="shortcuts.html">.shortcuts</a></div><div class="sidebar-section-children"><a href="shortcuts.actions.html">actions</a></div><div class="sidebar-section-children"><a href="shortcuts.getters.html">getters</a></div><div class="sidebar-section-children"><a href="common.html">common</a></div><div class="sidebar-section-children"><a href="store.html">store</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-global"><div>Global</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="global.html#_log">_log</a></div><div class="sidebar-section-children"><a href="global.html#_status">_status</a></div><div class="sidebar-section-children"><a href="global.html#_statuslog">_statuslog</a></div><div class="sidebar-section-children"><a href="global.html#compatDateObj">compatDateObj</a></div><div class="sidebar-section-children"><a href="global.html#downloadLogData">downloadLogData</a></div><div class="sidebar-section-children"><a href="global.html#getFirstNonStandardCharacter">getFirstNonStandardCharacter</a></div><div class="sidebar-section-children"><a href="global.html#msToTime">msToTime</a></div><div class="sidebar-section-children"><a href="global.html#save">save</a></div><div class="sidebar-section-children"><a href="global.html#state">state</a></div></div></div><div class="mobile-navbar-actions"><div class="navbar-right-item"><button class="icon-button search-button" aria-label="open-search"><svg><use xlink:href="#search-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button theme-toggle" aria-label="toggle-theme"><svg><use class="theme-svg-use" xlink:href="#light-theme-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button font-size" aria-label="change-font-size"><svg><use xlink:href="#font-size-icon"></use></svg></button></div></div></div></div><script type="text/javascript" src="scripts/core.min.js"></script><script src="scripts/search.min.js" defer="defer"></script><script src="scripts/third-party/fuse.js" defer="defer"></script><script type="text/javascript">var tocbotInstance=tocbot.init({tocSelector:"#eed4d2a0bfd64539bb9df78095dec881",contentSelector:".main-content",headingSelector:"h1, h2, h3",hasInnerContainers:!0,scrollContainer:".main-content",headingsOffset:130,onClick:bringLinkToView})</script></body></html>
+</code></pre></article></section></div></div></div><div class="search-container" id="PkfLWpAbet" style="display:none"><div class="wrapper" id="iCxFxjkHbP"><button class="icon-button search-close-button" id="VjLlGakifb" aria-label="close search"><svg><use xlink:href="#close-icon"></use></svg></button><div class="search-box-c"><svg><use xlink:href="#search-icon"></use></svg> <input type="text" id="vpcKVYIppa" class="search-input" placeholder="Search..." autofocus></div><div class="search-result-c" id="fWwVHRuDuN"><span class="search-result-c-text">Type anything to view search result</span></div></div></div><div class="mobile-menu-icon-container"><button class="icon-button" id="mobile-menu" data-isopen="false" aria-label="menu"><svg><use xlink:href="#menu-icon"></use></svg></button></div><div id="mobile-sidebar" class="mobile-sidebar-container"><div class="mobile-sidebar-wrapper"><div class="mobile-nav-links"></div><div class="mobile-sidebar-items-c"><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-modules"><div>Modules</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="module-common_actingAs.html">common/actingAs</a></div><div class="sidebar-section-children"><a href="module-common_classListenerState.html">common/classListenerState</a></div><div class="sidebar-section-children"><a href="module-common_dualRead.html">common/dualRead</a></div><div class="sidebar-section-children"><a href="module-common_meBoard.html">common/meBoard</a></div><div class="sidebar-section-children"><a href="module-common_meTaskState.html">common/meTaskState</a></div><div class="sidebar-section-children"><a href="module-common_meTasks.html">common/meTasks</a></div><div class="sidebar-section-children"><a href="module-common_paths.html">common/paths</a></div><div class="sidebar-section-children"><a href="module-common_repeatingScope.html">common/repeatingScope</a></div><div class="sidebar-section-children"><a href="module-common_share.html">common/share</a></div><div class="sidebar-section-children"><a href="module-common_workspace.html">common/workspace</a></div><div class="sidebar-section-children"><a href="module-firebase_classListeners.html">firebase/classListeners</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-namespaces"><div>Namespaces</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="magic.html">.magic</a></div><div class="sidebar-section-children"><a href="magic.actions.html">actions</a></div><div class="sidebar-section-children"><a href="magic.getters.html">getters</a></div><div class="sidebar-section-children"><a href="magic.state.html">state</a></div><div class="sidebar-section-children"><a href="main.html">.main</a></div><div class="sidebar-section-children"><a href="main.actions.html">actions</a></div><div class="sidebar-section-children"><a href="main.getters.html">getters</a></div><div class="sidebar-section-children"><a href="main.state.html">state</a></div><div class="sidebar-section-children"><a href="notify.html">.notify</a></div><div class="sidebar-section-children"><a href="notify.actions.html">actions</a></div><div class="sidebar-section-children"><a href="notify.getters.html">getters</a></div><div class="sidebar-section-children"><a href="shortcuts.html">.shortcuts</a></div><div class="sidebar-section-children"><a href="shortcuts.actions.html">actions</a></div><div class="sidebar-section-children"><a href="shortcuts.getters.html">getters</a></div><div class="sidebar-section-children"><a href="common.html">common</a></div><div class="sidebar-section-children"><a href="store.html">store</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-global"><div>Global</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="global.html#CLASS_CHIP_MIX_ALPHA">CLASS_CHIP_MIX_ALPHA</a></div><div class="sidebar-section-children"><a href="global.html#CONTRAST_TARGET">CONTRAST_TARGET</a></div><div class="sidebar-section-children"><a href="global.html#GRAPHEME_FALLBACK">GRAPHEME_FALLBACK</a></div><div class="sidebar-section-children"><a href="global.html#PAGE_BG_LIGHT">PAGE_BG_LIGHT</a></div><div class="sidebar-section-children"><a href="global.html#PERSONAL_STAT_FILTERS">PERSONAL_STAT_FILTERS</a></div><div class="sidebar-section-children"><a href="global.html#TEACHER_STATS_CONCURRENCY">TEACHER_STATS_CONCURRENCY</a></div><div class="sidebar-section-children"><a href="global.html#TEACHER_STAT_FILTERS">TEACHER_STAT_FILTERS</a></div><div class="sidebar-section-children"><a href="global.html#_log">_log</a></div><div class="sidebar-section-children"><a href="global.html#_status">_status</a></div><div class="sidebar-section-children"><a href="global.html#_statuslog">_statuslog</a></div><div class="sidebar-section-children"><a href="global.html#apiFetch">apiFetch</a></div><div class="sidebar-section-children"><a href="global.html#bestAlongPath">bestAlongPath</a></div><div class="sidebar-section-children"><a href="global.html#clampByte">clampByte</a></div><div class="sidebar-section-children"><a href="global.html#classChipColors">classChipColors</a></div><div class="sidebar-section-children"><a href="global.html#classEntryMatchesId">classEntryMatchesId</a></div><div class="sidebar-section-children"><a href="global.html#classSquareGlyph">classSquareGlyph</a></div><div class="sidebar-section-children"><a href="global.html#classTextName">classTextName</a></div><div class="sidebar-section-children"><a href="global.html#compatDateObj">compatDateObj</a></div><div class="sidebar-section-children"><a href="global.html#contrastRatio">contrastRatio</a></div><div class="sidebar-section-children"><a href="global.html#defaultActiveFilters">defaultActiveFilters</a></div><div class="sidebar-section-children"><a href="global.html#defaultTeacherStatsRange">defaultTeacherStatsRange</a></div><div class="sidebar-section-children"><a href="global.html#downloadLogData">downloadLogData</a></div><div class="sidebar-section-children"><a href="global.html#firstGrapheme">firstGrapheme</a></div><div class="sidebar-section-children"><a href="global.html#getFirstNonStandardCharacter">getFirstNonStandardCharacter</a></div><div class="sidebar-section-children"><a href="global.html#graphemes">graphemes</a></div><div class="sidebar-section-children"><a href="global.html#isEmojiGrapheme">isEmojiGrapheme</a></div><div class="sidebar-section-children"><a href="global.html#lerpRgb">lerpRgb</a></div><div class="sidebar-section-children"><a href="global.html#localYmd">localYmd</a></div><div class="sidebar-section-children"><a href="global.html#mapWithConcurrency">mapWithConcurrency</a></div><div class="sidebar-section-children"><a href="global.html#mixClassChipBackground">mixClassChipBackground</a></div><div class="sidebar-section-children"><a href="global.html#mixRgb">mixRgb</a></div><div class="sidebar-section-children"><a href="global.html#msToTime">msToTime</a></div><div class="sidebar-section-children"><a href="global.html#normalizeTeacherDay">normalizeTeacherDay</a></div><div class="sidebar-section-children"><a href="global.html#parseHex">parseHex</a></div><div class="sidebar-section-children"><a href="global.html#parseStatsResponse">parseStatsResponse</a></div><div class="sidebar-section-children"><a href="global.html#parseTeacherClassStatsResponse">parseTeacherClassStatsResponse</a></div><div class="sidebar-section-children"><a href="global.html#parseTeacherStatsResponse">parseTeacherStatsResponse</a></div><div class="sidebar-section-children"><a href="global.html#prevClasses">prevClasses</a></div><div class="sidebar-section-children"><a href="global.html#readableTextOnBackground">readableTextOnBackground</a></div><div class="sidebar-section-children"><a href="global.html#redirectToShortViewIfNeeded">redirectToShortViewIfNeeded</a></div><div class="sidebar-section-children"><a href="global.html#relativeLuminance">relativeLuminance</a></div><div class="sidebar-section-children"><a href="global.html#resolvePageBg">resolvePageBg</a></div><div class="sidebar-section-children"><a href="global.html#resolveShortViewRef">resolveShortViewRef</a></div><div class="sidebar-section-children"><a href="global.html#rgbToHex">rgbToHex</a></div><div class="sidebar-section-children"><a href="global.html#save">save</a></div><div class="sidebar-section-children"><a href="global.html#shortViewFromSlashPath">shortViewFromSlashPath</a></div><div class="sidebar-section-children"><a href="global.html#splitLeadingEmoji">splitLeadingEmoji</a></div><div class="sidebar-section-children"><a href="global.html#srgbChannelToLinear">srgbChannelToLinear</a></div><div class="sidebar-section-children"><a href="global.html#state">state</a></div></div></div><div class="mobile-navbar-actions"><div class="navbar-right-item"><button class="icon-button search-button" aria-label="open-search"><svg><use xlink:href="#search-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button theme-toggle" aria-label="toggle-theme"><svg><use class="theme-svg-use" xlink:href="#light-theme-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button font-size" aria-label="change-font-size"><svg><use xlink:href="#font-size-icon"></use></svg></button></div></div></div></div><script type="text/javascript" src="scripts/core.min.js"></script><script src="scripts/search.min.js" defer="defer"></script><script src="scripts/third-party/fuse.js" defer="defer"></script><script type="text/javascript">var tocbotInstance=tocbot.init({tocSelector:"#eed4d2a0bfd64539bb9df78095dec881",contentSelector:".main-content",headingSelector:"h1, h2, h3",hasInnerContainers:!0,scrollContainer:".main-content",headingsOffset:130,onClick:bringLinkToView})</script></body></html>

@@ -1,0 +1,16 @@
+{
+  "name": "[BETA]",
+  "apiBase": "https://api.mvtt.app",
+  "brandColor": "#f5c14b",
+  "firebase": {
+    "apiKey": "AIzaSyDGqqhApln4pxm4EynPCSkfwyK8aopjfCk",
+    "projectId": "mvtrack",
+    "appId": "1:1070634963357:ios:teststub00000000000000",
+    "gcmSenderId": "1070634963357",
+    "clientId": "1070634963357-teststub.apps.googleusercontent.com",
+    "reversedClientId": "com.googleusercontent.apps.1070634963357-teststub",
+    "storageBucket": "mvtrack.appspot.com",
+    "databaseURL": null,
+    "authDomain": "auth.mvtt.app"
+  }
+}
