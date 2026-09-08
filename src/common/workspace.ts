@@ -360,10 +360,51 @@ export async function deleteWorkspaceFile(workspaceId: string, fileId: string): 
   }
 }
 
+/** sessionStorage key for post-OAuth return path (web platform). */
+export const DRIVE_OAUTH_RETURN_KEY = "mv_drive_oauth_return";
+
+/** Account-level Drive connection (not per-workspace `drive_connected`). */
+export function parseDriveConnected(payload: unknown): boolean {
+  if (!payload || typeof payload !== "object") return false;
+  const row = payload as Record<string, unknown>;
+  if (row.connected === true) return true;
+  if (row.drive_connected === true) return true;
+  const status = typeof row.status === "string" ? row.status.toLowerCase() : "";
+  return status === "connected" || status === "ok";
+}
+
+/** GET /api/v1/me/drive/status — whether the signed-in account has Drive linked. */
+export async function fetchDriveStatus(): Promise<boolean> {
+  try {
+    const payload = await apiFetch<unknown>("/api/v1/me/drive/status");
+    return parseDriveConnected(payload);
+  } catch (err) {
+    if (isMissingEndpoint(err)) return false;
+    throw err;
+  }
+}
+
+export function storeDriveOAuthReturnPath(path?: string): void {
+  const target = (path || `${window.location.pathname}${window.location.search}`).trim();
+  if (!target) return;
+  sessionStorage.setItem(DRIVE_OAUTH_RETURN_KEY, target);
+}
+
+export function consumeDriveOAuthReturnPath(): string | null {
+  const path = sessionStorage.getItem(DRIVE_OAUTH_RETURN_KEY);
+  sessionStorage.removeItem(DRIVE_OAUTH_RETURN_KEY);
+  return path?.trim() || null;
+}
+
+export function dispatchDriveStatusChanged(): void {
+  window.dispatchEvent(new CustomEvent("drive-status-changed"));
+}
+
 /** Start Google Drive OAuth — returns redirect URL. */
-export async function startDriveOAuth(): Promise<string> {
+export async function startDriveOAuth(platform: "web" | "brief" = "web"): Promise<string> {
   const payload = await apiFetch<{ url?: string; state?: string }>("/api/v1/me/drive/oauth/start", {
     method: "POST",
+    body: { platform },
   });
   const url = payload?.url?.trim();
   if (!url) {
