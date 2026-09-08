@@ -160,7 +160,7 @@
  * @module TaskWorkspace
  */
 
-import { ErrorToast, SuccessToast, WarningToast } from "@svonk/util";
+import { ErrorToast, SuccessToast } from "@svonk/util";
 import OverlayWrapper from "@/components/Modal/OverlayWrapper.vue";
 import Modal from "@/components/Modal/Modal.vue";
 import {
@@ -352,12 +352,7 @@ export default {
     async connectDrive() {
       try {
         const url = await startDriveOAuth();
-        if (url && url !== "#drive-oauth-stub") {
-          window.open(url, "_blank", "noopener");
-        } else {
-          new WarningToast("Drive connect will be available when the server route is live", 2500);
-          this.driveConnected = true;
-        }
+        window.open(url, "_blank", "noopener");
       } catch (err) {
         new ErrorToast("Couldn't start Drive connect", err, 2000);
       }

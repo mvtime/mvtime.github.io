@@ -362,14 +362,12 @@ export async function deleteWorkspaceFile(workspaceId: string, fileId: string): 
 
 /** Start Google Drive OAuth — returns redirect URL. */
 export async function startDriveOAuth(): Promise<string> {
-  try {
-    const payload = await apiFetch<{ url?: string }>("/api/v1/oauth/drive/start", { method: "POST" });
-    if (payload?.url) return payload.url;
-  } catch (err) {
-    if (isMissingEndpoint(err)) {
-      return "#drive-oauth-stub";
-    }
-    throw err;
+  const payload = await apiFetch<{ url?: string; state?: string }>("/api/v1/me/drive/oauth/start", {
+    method: "POST",
+  });
+  const url = payload?.url?.trim();
+  if (!url) {
+    throw new Error("Drive OAuth start did not return a URL");
   }
-  return "#drive-oauth-stub";
+  return url;
 }
