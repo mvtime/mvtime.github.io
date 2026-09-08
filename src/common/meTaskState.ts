@@ -3,7 +3,7 @@
  * @module common/meTaskState
  */
 
-import { flatTaskPath } from "./paths.ts";
+import { flatTaskPath } from "./paths";
 
 /** Per-task personal state returned by me/tasks and board payloads. */
 export interface MeTaskState {

@@ -414,7 +414,8 @@ export const useMainStore: StoreDefinition = defineStore({
      */
     upcoming_todo(): ProcessedTaskInfo[] {
       if (!this.upcoming) return [];
-      return this.upcoming.filter((task: ProcessedTaskInfo) => !this.is_task_completed(task.ref));
+      const finished = this.finished_tasks;
+      return this.upcoming.filter((task: ProcessedTaskInfo) => !finished.includes(task.ref));
     },
     /**
      * @memberOf .main.getters
@@ -999,10 +1000,10 @@ export const useMainStore: StoreDefinition = defineStore({
     note_for(ref: string): string | null {
       const path = this.ref_to_path(ref);
       const flat = ref?.replace(/~/g, "/");
-      const state =
-        (ref && this.task_states?.[ref]) ||
-        (path && this.task_states?.[path]) ||
-        (flat && this.task_states?.[flat]);
+      const state: MeTaskState | undefined =
+        (ref ? this.task_states?.[ref] : undefined) ||
+        (path ? this.task_states?.[path] : undefined) ||
+        (flat ? this.task_states?.[flat] : undefined);
       if (state?.note) return state.note;
       return (this.notes && path && this.notes[path]) || null;
     },
@@ -1068,8 +1069,8 @@ export const useMainStore: StoreDefinition = defineStore({
       const path = this.ref_to_path(ref) || ref.replace(/~/g, "/");
       const state =
         this.task_states?.[ref] ||
-        (path && this.task_states?.[path]) ||
-        (ref.includes("~") && this.task_states?.[ref.split("~").join("/")]);
+        (path ? this.task_states?.[path] : undefined) ||
+        (ref.includes("~") ? this.task_states?.[ref.split("~").join("/")] : undefined);
       if (state) return state.completed === true;
       if (this.active_doc?.finished?.includes(ref)) return true;
       const task = (this.tasks as ProcessedTaskInfo[])?.find(
