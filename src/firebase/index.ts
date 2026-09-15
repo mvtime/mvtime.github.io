@@ -150,16 +150,18 @@ function setupSnapshot(uid: string | undefined): void {
         syncClassListeners(store.active_doc?.classes || nextClasses);
       }
 
-      // finished[] lives on the user doc; updating account_doc is enough for calendar
-      // (finished_tasks getter + hide_finished). Re-stamp tasks only if needed for reactivity.
+      // finished[] lives on the user doc; merge into task_states so is_task_completed
+      // stays correct after API writes (and after reload when board overlay lags).
       if (finishedChanged) {
         prevFinished = [...nextFinished];
-        _status.log("⬥ User finished[] changed — store already updated via account_doc");
+        _status.log("⬥ User finished[] changed — syncing task_states + restamping tasks");
+        store.sync_finished_from_user_doc(nextFinished);
         if (store.classes?.length) {
           store.get_tasks();
         }
       } else if (prevFinished === null) {
         prevFinished = [...nextFinished];
+        store.sync_finished_from_user_doc(nextFinished);
       }
     },
     (err) => {

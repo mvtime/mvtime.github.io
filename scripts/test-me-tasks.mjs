@@ -1,5 +1,6 @@
 /**
- * Unit tests for me/tasks API helpers (patch + board state merge).
+ * Unit tests for me/tasks API helpers (board state merge).
+ * Path encoding lives in scripts/test-paths.mjs (encodeTaskPathParam).
  * Run: node --experimental-strip-types scripts/test-me-tasks.mjs
  */
 import {

@@ -19,6 +19,8 @@ import {
   flatClassPath,
   flatTaskPath,
   isValidTaskRouteRef,
+  encodeTaskPathParam,
+  normalizeMeTaskPointer,
 } from "../src/common/paths.ts";
 
 let failed = 0;
@@ -144,6 +146,33 @@ assert(!isValidTaskRouteRef("abc123"), "rejects class-only (one segment)");
 assert(!isValidTaskRouteRef("t@mvla.net/abc123"), "rejects email/classId (class, not task)");
 assert(!isValidTaskRouteRef("a~b~c~d"), "rejects four-segment refs");
 assert(!isValidTaskRouteRef("classId~"), "rejects trailing empty task id");
+
+console.log("\n--- me/tasks path encoding (tilde, not %2F) ---\n");
+
+assertEq(
+  normalizeMeTaskPointer("classA/taskB"),
+  { path: "classA/taskB", tildeRef: "classA~taskB" },
+  "normalize slash"
+);
+assertEq(
+  normalizeMeTaskPointer("classA~taskB"),
+  { path: "classA/taskB", tildeRef: "classA~taskB" },
+  "normalize tilde"
+);
+assertEq(
+  normalizeMeTaskPointer("teacher@school.edu/classA/taskB"),
+  { path: "classA/taskB", tildeRef: "classA~taskB" },
+  "normalize legacy email path"
+);
+assert(
+  encodeTaskPathParam("classA/taskB") === encodeURIComponent("classA~taskB"),
+  "encode prefers tilde, not %2F"
+);
+assert(!encodeTaskPathParam("classA/taskB").includes("%2F"), "encoded path must not contain %2F");
+assert(
+  encodeTaskPathParam("classA~taskB") === encodeURIComponent("classA~taskB"),
+  "encode tilde passthrough"
+);
 
 console.log("\n--- done ---\n");
 if (failed) {

@@ -6,6 +6,7 @@
  */
 
 import { ApiFetchError, apiFetch } from "@/common/apiFetch";
+import { encodeTaskPathParam } from "@/common/paths";
 
 export interface WorkspaceFile {
   id: string;
@@ -61,7 +62,7 @@ const stubWorkspaces = new Map<string, Workspace>();
 const stubTaskWorkspaceLinks = new Map<string, string>();
 
 function encodeTaskPath(taskPath: string): string {
-  return encodeURIComponent(taskPath.replace(/~/g, "/"));
+  return encodeTaskPathParam(taskPath);
 }
 
 function normalizeWorkspace(raw: unknown): Workspace | null {

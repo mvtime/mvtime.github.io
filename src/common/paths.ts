@@ -284,6 +284,43 @@ export function flatTaskPath(classId: string, taskId: string): string {
 }
 
 /**
+ * Canonical flat slash path + board tilde ref for a personal-task API pointer.
+ * Accepts classId/taskId, classId~taskId, or legacy email/local prefixed forms.
+ */
+export function normalizeMeTaskPointer(
+  taskPath: string,
+  orgDomain: string = "mvla.net"
+): { path: string; tildeRef: string } | null {
+  const trimmed = (taskPath || "").trim();
+  if (!trimmed) return null;
+  const ids = writeTaskIds(trimmed, orgDomain);
+  if (!ids) {
+    const parts = trimmed.replace(/~/g, "/").split("/").filter(Boolean);
+    if (parts.length === 2 && !looksLikeEmail(parts[0])) {
+      return { path: flatTaskPath(parts[0], parts[1]), tildeRef: `${parts[0]}~${parts[1]}` };
+    }
+    return null;
+  }
+  return {
+    path: flatTaskPath(ids.classId, ids.taskId),
+    tildeRef: `${ids.classId}~${ids.taskId}`,
+  };
+}
+
+/**
+ * Encode a task identity for `/api/v1/me/tasks/:taskId`.
+ * Prefers tilde refs (`classId~taskId`) — never embeds raw `/` / `%2F` in the segment.
+ */
+export function encodeTaskPathParam(
+  taskPath: string,
+  orgDomain: string = "mvla.net"
+): string {
+  const normalized = normalizeMeTaskPointer(taskPath, orgDomain);
+  const tilde = normalized?.tildeRef || taskPath.replace(/\//g, "~");
+  return encodeURIComponent(tilde);
+}
+
+/**
  * Short share/view ref when classId is known (drops email/local prefix).
  * Class → `classId`; task → `classId~taskId`.
  */

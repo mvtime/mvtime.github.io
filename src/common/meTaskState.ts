@@ -3,8 +3,6 @@
  * @module common/meTaskState
  */
 
-import { flatTaskPath } from "./paths";
-
 /** Per-task personal state returned by me/tasks and board payloads. */
 export interface MeTaskState {
   ref: string;
@@ -14,6 +12,10 @@ export interface MeTaskState {
   note: string | null;
   note_updated_at: string | null;
   workspace_id: string | null;
+}
+
+function flatTaskPath(classId: string, taskId: string): string {
+  return [classId, taskId].join("/");
 }
 
 /** Merge board task row fields into a MeTaskState map entry. */

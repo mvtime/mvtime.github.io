@@ -64,8 +64,10 @@ import {
   applyMeTaskState,
   meTaskStateFromBoardTask,
   patchMeTask,
+  patchMeTasksCompleted,
   type MeTaskState,
 } from "@/common/meTasks";
+import { normalizeMeTaskPointer } from "@/common/paths";
 import {
   actingAsLabel,
   isActingAsLinked,
@@ -1046,10 +1048,25 @@ export const useMainStore: StoreDefinition = defineStore({
         if (!ref) throw "No reference(s) provided";
         const paths: string[] = Array.isArray(ref) ? ref : [ref];
 
-        for (const taskRef of paths) {
-          const path = this.ref_to_path(taskRef) || String(taskRef).replace(/~/g, "/");
+        const resolved = paths.map((taskRef) => {
+          const path =
+            this.ref_to_path(taskRef) ||
+            normalizeMeTaskPointer(String(taskRef))?.path ||
+            String(taskRef).replace(/~/g, "/");
           if (!path) throw "Invalid ref";
-          const state = await patchMeTask(path, { completed: finished });
+          return path;
+        });
+
+        if (resolved.length > 1) {
+          const batch = await patchMeTasksCompleted(resolved, finished);
+          for (const state of batch.states) {
+            this.apply_task_state(state);
+          }
+          if (batch.failed && !batch.succeeded) {
+            throw batch.errors[0]?.error || "Batch complete failed";
+          }
+        } else {
+          const state = await patchMeTask(resolved[0], { completed: finished });
           this.apply_task_state(state);
         }
 
@@ -1066,15 +1083,25 @@ export const useMainStore: StoreDefinition = defineStore({
      */
     is_task_completed(ref: string): boolean {
       if (!ref) return false;
-      const path = this.ref_to_path(ref) || ref.replace(/~/g, "/");
+      const pointer = normalizeMeTaskPointer(ref);
+      const path = this.ref_to_path(ref) || pointer?.path || ref.replace(/~/g, "/");
+      const tilde = pointer?.tildeRef || (path ? path.replace(/\//g, "~") : "");
       const state =
         this.task_states?.[ref] ||
         (path ? this.task_states?.[path] : undefined) ||
+        (tilde ? this.task_states?.[tilde] : undefined) ||
         (ref.includes("~") ? this.task_states?.[ref.split("~").join("/")] : undefined);
       if (state) return state.completed === true;
-      if (this.active_doc?.finished?.includes(ref)) return true;
+      const finished = this.active_doc?.finished || [];
+      if (
+        finished.includes(ref) ||
+        (path && finished.includes(path)) ||
+        (tilde && finished.includes(tilde))
+      ) {
+        return true;
+      }
       const task = (this.tasks as ProcessedTaskInfo[])?.find(
-        (t) => t.ref === ref || t.ref === path
+        (t) => t.ref === ref || t.ref === path || t.ref === tilde
       );
       return task?.completed === true;
     },
@@ -1107,11 +1134,26 @@ export const useMainStore: StoreDefinition = defineStore({
         const state = meTaskStateFromBoardTask(row, task.class_id, task.id);
         map = applyMeTaskState(map, state);
       }
-      for (const entry of board.finished || []) {
-        const path = String(entry).replace(/~/g, "/");
-        const existing = map[path] || map[entry];
+      map = this.merge_finished_pointers(map, board.finished || []);
+      this.task_states = map;
+      this.patch_task_completion_flags();
+    },
+    /**
+     * Merge users.finished[] (or board.finished) pointers into task_states as completed.
+     * Keeps live user-doc snapshots in sync when API writes land without a board re-fetch.
+     */
+    merge_finished_pointers(
+      map: Record<string, MeTaskState>,
+      finished: string[]
+    ): Record<string, MeTaskState> {
+      let next = map;
+      for (const entry of finished || []) {
+        const pointer = normalizeMeTaskPointer(String(entry));
+        const path = pointer?.path || String(entry).replace(/~/g, "/");
+        const tilde = pointer?.tildeRef || path.replace(/\//g, "~");
+        const existing = next[path] || next[entry] || next[tilde];
         const state: MeTaskState = existing || {
-          ref: path,
+          ref: tilde,
           path,
           completed: true,
           completed_at: null,
@@ -1119,8 +1161,41 @@ export const useMainStore: StoreDefinition = defineStore({
           note_updated_at: null,
           workspace_id: null,
         };
-        map = applyMeTaskState(map, { ...state, completed: true });
+        next = applyMeTaskState(next, { ...state, completed: true });
       }
+      return next;
+    },
+    /** Apply users/{uid}.finished[] from a live snapshot into task_states. */
+    sync_finished_from_user_doc(finished: string[] | null | undefined): void {
+      if (!Array.isArray(finished)) return;
+      const finishedSet = new Set<string>();
+      for (const entry of finished) {
+        const pointer = normalizeMeTaskPointer(String(entry));
+        if (pointer) {
+          finishedSet.add(pointer.path);
+          finishedSet.add(pointer.tildeRef);
+        }
+        finishedSet.add(String(entry));
+      }
+
+      let map = { ...(this.task_states || {}) };
+      const seenPaths = new Set<string>();
+      for (const state of Object.values(map)) {
+        if (!state?.path || seenPaths.has(state.path)) continue;
+        seenPaths.add(state.path);
+        const isDone =
+          finishedSet.has(state.path) ||
+          finishedSet.has(state.ref) ||
+          finishedSet.has(state.path.replace(/\//g, "~"));
+        if (state.completed !== isDone) {
+          map = applyMeTaskState(map, {
+            ...state,
+            completed: isDone,
+            completed_at: isDone ? state.completed_at : null,
+          });
+        }
+      }
+      map = this.merge_finished_pointers(map, finished);
       this.task_states = map;
       this.patch_task_completion_flags();
     },
